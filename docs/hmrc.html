@@ -46,6 +46,7 @@ on or off.
     <li><a href="#mailcommand">mailcommand</a> controls most mailto's
     <li><a href="#mailto">mailto</a> for &lt;link rev=made href=mailto:
     <li><a href="#domainaddr">domainaddr</a> to append to incomplete addresses
+    <li><a href="#use_sender_date">use_sender_date</a> which date to trust more
     </ul>
   </ul>
 <li><a href="#index">Index page options</a>
@@ -342,6 +343,16 @@ to domain-ize these addresses for delivery.  In such cases, hypermail
 will add the DOMAINADDR to the email address.
 <br>
 <br><i>domainaddr = hypermail.org</i> (disabled by default)
+</dd>
+<a name="use_sender_date"></a>
+<dt><strong>use_sender_date = [ 0 | 1 ]</strong></dt><dd>
+Set this to On to have it use the Date: header (created by the
+the system that sent the message) rather than the date/time the
+message was received, for purposes such as putting in folders
+or sorting. Details of which purposes this affects may change
+in the future.
+<br>
+<br><i>use_sender_date = 0</i>
 </dd>
 
 <h2><a name="index">Index page options</a></h2>

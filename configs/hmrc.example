@@ -869,3 +869,13 @@ show_index_links = 1
 # if that is what you use to specify the archive directory.
 
 #report_new_file = 0
+
+# use_sender_date = [ 0 | 1 ]
+#
+# Set this to On to have it use the Date: header (created by the
+# the system that sent the message) rather than the date/time the
+# message was received, for purposes such as putting in folders
+# or sorting. Details of which purposes this affects may change
+# in the future.
+
+# use_sender_date = 0
