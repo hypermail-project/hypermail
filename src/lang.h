@@ -248,7 +248,7 @@ char *de[] = {       /* German */
   "Über dieses Archiv",                /* About this archive -HTML*/
   "sortiert nach",            /* sorted by -HTML*/
   "Weitere Mail-Archive",                 /* Other mail archives -HTML*/
-  "Datum",                                /* By Date             -HTML*/
+  "Nach Datum",                                /* By Date             -HTML*/
   "Neueste Nachrichten",                  /* Most recent messages-HTML*/
   "Autor",                                /* author              -HTML*/
   "Datum",                                /* date                -HTML*/
@@ -261,7 +261,7 @@ char *de[] = {       /* German */
   "Schreibe Titel-Index in",            /* Writing subject index to-STDOUT*/
   "Schreibe Autoren-Index in",            /* Writing author index to-STDOUT*/
   "Letztes Datum",                        /* Last message date   -HTML*/
-  "Archiviert auf",                       /* Archived on         -HTML*/
+  "Archiviert am",                       /* Archived on         -HTML*/
   "Kann Dateimodus nicht ändern",      /* Can not chmod     -STDERR*/
   "Kann nicht schreiben",                 /* Could not write   -STDERR*/
   "Nächste Nachricht",                 /* Next message        -HTML*/
@@ -369,46 +369,46 @@ char *de[] = {       /* German */
   "Autor",                              /* MSG_FROM              -HTML*/
   "Erstelle haof XML Dateien",  /* Write hoaf XML files       -STDOUT */
   "Schreibe Hoaf in",           /* Writing haof to               -HTML*/
-  "This message",                 /* This message -HTML */
-  "Message body",                 /* Message body -HTML */
-  "Respond",                      /* Respond -HTML */
-  "More options",                 /* More options -HTML */
-  "Related messages",             /* Related messages -HTML */
+  "Diese Nachricht",                 /* This message -HTML */
+  "Inhalt",                 /* Message body -HTML */
+  "Antworten",                      /* Respond -HTML */
+  "Weitere Möglichkeiten",                 /* More options -HTML */
+  "Zugehörige Nachrichten",             /* Related messages -HTML */
   "Next",                         /* Next -HTML */
   "Previous",                     /* Previous -HTML */
-  "Replies",                      /* Replies -HTML */
-  "Contemporary messages sorted", /* Contemporary messages sorted -HTML */
-  "Help",                         /* Help  -HTML */
+  "Antworten",                      /* Replies -HTML */
+  "Nachrichten aus dem gleichen Zeitraum, sortiert", /* Contemporary messages sorted -HTML */
+  "Hilfe",                         /* Help  -HTML */
   "Message to which this message replies", /* In Reply To - HTML link*/
   "Next message in this discussion thread", /* Next message in thread - HTML link*/
   "Message sent in reply to this message", /* Replies to this message - HTML link*/
-  "Contemporary messages by date", /* Contemporary messages by date */
-  "Contemporary discussion threads", /* Contemporary messages by threads -  HTML */
-  "Contemporary messages by subject", /* Contemporary messages by subject - HTML */
-  "Contemporary messages by author", /* Contemporary messages by author - HTML*/
+  "Nachrichten im gleichen Zeitraum, nach Datum", /* Contemporary messages by date */
+  "Themenstränge im gleichen Zeitraum", /* Contemporary messages by threads -  HTML */
+  "Nachrichten im gleichen Zeitraum, nach Betreff", /* Contemporary messages by subject - HTML */
+  "Nachrichten im gleichen Zeitraum, nach Autor", /* Contemporary messages by author - HTML*/
   "Next message in the list", /* Next message - HTML */
   "Previous message in the list", /* Previous message - HTML */
   "Contemporary messages by attachment", /* Contemporary messages by attachments - HTML*/
   "Navigation bar to upper levels", /* Navigation bar, upper levels - HTML*/
   "Navigation bar", /* Navigation bar - HTML*/
-  "sort by", /* Sort by - HTML*/
-  "Other periods", /* Other periods - HTML */
-  "Next", /* Next folder - HTML */
-  "Messages archived in the next period, sorted by date", /* Next folder, by date - HTML link */
-  "Previous", /* Previous folder - HTML */
-  "Messages archived in the previous period, sorted by date", /* Previous folder, by date - HTML Link */
-  "List of all periods", /* List of all periods - HTML*/
-  "This period", /* This period - HTML*/
-  "Received on", /* Received on - HTML */
-  "Nearby", /* Nearby - HTML */
-  "re-sorted", /* Resorted - HTML */
-  "listed by date", /* listed by date - HTML */
-  "by discussion threads" , /* discussion threads - HTML */
-  "listed by author", /* listed by author - HTML */
-  "by subject", /* listed by subject - HTML */
-  "by attachment", /* by attachment - HTML */
-  "period", /* period - HTML */
-  " to ", /* to - HTML */
+  "sortieren nach", /* Sort by - HTML*/
+  "Weitere Zeiträume", /* Other periods - HTML */
+  "Später", /* Next folder - HTML */
+  "Im nächsten Zeitraum gespeicherte Nachrichten, sortiert nach Datum", /* Next folder, by date - HTML link */
+  "Früher", /* Previous folder - HTML */
+  "Im vorigen Zeitraum gespeicherte Nachrichten, sortiert nach Datum", /* Previous folder, by date - HTML Link */
+  "Liste aller Zeiträume", /* List of all periods - HTML*/
+  "Dieser Zeitraum", /* This period - HTML*/
+  "Empfangen am", /* Received on - HTML */
+  "Dazu", /* Nearby - HTML */
+  "sortiert", /* Resorted - HTML */
+  "in zeitlicher Reihenfolge", /* listed by date - HTML */
+  "nach Themenstrang" , /* discussion threads - HTML */
+  "nach Autor geordnet", /* listed by author - HTML */
+  "nach Titel", /* listed by subject - HTML */
+  "nach Anhängen", /* by attachment - HTML */
+  "Zeitraum", /* period - HTML */
+  " bis ", /* to - HTML */
   NULL,                              /* End Of Message Table - NOWHERE*/
 };
 
