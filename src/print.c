@@ -755,7 +755,7 @@ void printdates(FILE *fp, struct header *hp, int year, int month, struct emailin
       subj = convchars(em->subject, em->charset);
       if(set_indextable) {
 	startline = "<tr><td>";
-	break_str = "</td><td>";
+	break_str = "</td><td nowrap>";
 	strcpy(date_str, getdateindexdatestr(hp->data->date));
 	endline = "</td></tr>";
 	subj_tag = "";
@@ -2132,7 +2132,7 @@ void writedates(int amountmsgs, struct emailinfo *email)
      * Print out the actual message index lists. Here's the beef.
      */
     if (set_indextable)
-	fprintf(fp, "<div class=\"center\">\n<table width=\"100%%\">\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong>%s</strong></td></tr>\n", lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
+	fprintf(fp, "<div class=\"center\">\n<table>\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong>%s</strong></td></tr>\n", lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
     else {
         fprintf (fp, "<div class=\"messages-list\">\n");
 	fprintf(fp, "<ul>\n");
@@ -2221,7 +2221,7 @@ void writeattachments(int amountmsgs, struct emailinfo *email)
      */
 
     if (set_indextable) {
-	fprintf(fp, "<div class=\"center\">\n<table width=\"100%%\">\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong>%s</strong></td></tr>\n", lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
+	fprintf(fp, "<div class=\"center\">\n<table>\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong>%s</strong></td></tr>\n", lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
 	printattachments(fp, datelist, email, &is_first);
 	fprintf(fp, "</table>\n</div>\n");
     }
@@ -2382,8 +2382,8 @@ void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
 	    }
 	}
 	if(set_indextable) {
-	    startline = "<tr><td>&nbsp;</td><td>";
-	    break_str = "</td><td>";
+	    startline = "<tr><td>&nbsp;</td><td nowrap>";
+	    break_str = "</td><td nowrap>";
 	    strcpy(date_str, getindexdatestr(hp->data->date));
 	    endline = "</td></tr>";
 	}
@@ -2531,7 +2531,7 @@ void printauthors(FILE *fp, struct header *hp, char **oldname,
       }
       if(set_indextable) {
 	startline = "<tr><td>&nbsp;</td><td>";
-	break_str = "</td><td>";
+	break_str = "</td><td nowrap>";
 	strcpy(date_str, getindexdatestr(hp->data->date));
 	endline = "</td></tr>";
       }

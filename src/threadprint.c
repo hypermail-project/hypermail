@@ -273,7 +273,7 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
     if (set_indextable) {
 	fprintf(fp,
 		"<tr><td>%s<a href=\"%s\"%s><strong>%s</strong></a></td>"
-		"<td><a name=\"%d\">%s</a></td>" "<td>%s</td></tr>\n",
+		"<td nowrap><a name=\"%d\">%s</a></td>" "<td nowrap>%s</td></tr>\n",
 		level > 1 ? "--&gt; " : "", 
 		href, first_attributes,
 		subj, email->msgnum, email->name, getindexdatestr(email->date));

@@ -4,6 +4,14 @@ Version Changes for Hypermail
 ============================
 HYPERMAIL VERSION pre-2.1.9:
 ============================
+ Peter McCluskey (Sep 3, 2003)
+  Applied patches from Mike McDonald to use nowrap option in the author and
+ date columns in the index tables and get rid of all of the 'width=100%'
+ options to the tables.
+
+ Peter McCluskey (Sep 3, 2003)
+  French language improvements from Olivier Kaloudoff.
+
  Peter McCluskey (Sep 1, 2003)
   Applied patches from Mike McDonald to make spamify_replacedomain use
  set_antispam_at, change printdates to include the dates in the table
