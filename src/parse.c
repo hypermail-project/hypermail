@@ -912,7 +912,8 @@ static char *mdecodeRFC2047(char *string, int length)
 ** Written by Daniel.Stenberg@haxx.nu
 */
 
-static char * mdecodeQP(FILE *file, char *input, char **result, int *length)
+static char * mdecodeQP(FILE *file, char *input, char **result, int *length,
+			FILE *fpo)
 {
     int outcount = 0;
     char *buffer = input;
@@ -945,6 +946,11 @@ static char * mdecodeQP(FILE *file, char *input, char **result, int *length)
 	    if ('\n' == *input) {
 		if (!fgets(buffer, MAXLINE, file))
 		    break;
+		if (set_append) {
+		  if(fputs(buffer, fpo) < 0) {
+		    progerr("Can't write to \"mbox\""); /* revisit me */
+		  }
+		}
 		input = buffer;
 		PushString(&pbuf, buffer);
 		continue;
@@ -2186,7 +2192,7 @@ int parsemail(char *mbox,	/* file name */
 		switch (decode) {
 		case ENCODE_QP:
 		    {
-			char *p2 = mdecodeQP(fp, line, &data, &datalen);
+			char *p2 = mdecodeQP(fp, line, &data, &datalen, fpo);
 			if (p2) {
 			    if (set_txtsuffix) {
 			        PushString(&raw_text_buf, line_buf);

@@ -2,6 +2,9 @@ Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+ Peter McCluskey (Feb 19, 2003)
+   Fix to append option to handle some lines getting discarded in mdecodeQP.
+
  Kent Landfield (Feb 19, 2003)
    - Updated TODO with configure issues and other corrections we want
      to make to the code in the near future.
