@@ -11,9 +11,10 @@
 #     With modifications by Kent Landfield. 
 #     Further modifications by Peter McCluskey (pcm@rahul.net).
 #     If it's broke, it's my fault.
-#     For the latest version, check http://www.rahul.net/pcm/hypetombox.pl
-#     There should also be a version at http://www.hypermail.org, but it
-#     may be older.
+#     For the very latest version, check the hypermail cvs repository:
+#     http://cvs.hypermail.org/cgi-bin/cvsweb.cgi/hypermail/contrib/#hypetombox.pl
+#     Or get the version in a recent hypermail distribution at
+#     http://sourceforge.net/projects/hypermail/ or http://www.hypermail.org.
 #
 #     A few more mods by Fyodor (fyodor@insecure.org) [9/24/00]:
 #        * Added -H (additional header) option (useful for filtering messages)
