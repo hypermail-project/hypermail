@@ -542,6 +542,14 @@ The CSS will be associated to the indexes thru an HTML LINK element.
 # in the output HTML but instead it will obfuscate them a little.
 #spamprotect = 0
 
+# spamprotect_id = [ 0 | 1 ]
+#
+# Set this to On to make hypermail not output real email message
+# ids in HTML comments (sometimes used internally by hypermail) but
+# instead it will obfuscate them a little so they don't look like
+# email addresses to spammers.
+#spamprotect_id = 0
+
 # attachmentsindex = [ 0 | 1 ]
 #
 # Set this to  Off to make hypermail not output an index of

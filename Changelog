@@ -1,5 +1,8 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (May 14, 2002)
+   Add spamprotect_id option.
+
  Peter McCluskey (Apr 26, 2002)
    Changed to convert ampersands in urls to &amp;.
 

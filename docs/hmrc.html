@@ -100,6 +100,7 @@ on or off.
     <li><a href="#link_to_replies">link_to_replies</a> fine-grained link to responses
     <li><a href="#quote_link_string">quote_link_string</a> linkquotes labels
     <li><a href="#spamprotect">spamprotect</a> obfuscate email addresses
+    <li><a href="#spamprotect_id">spamprotect_id</a> obfuscate message ids
     </ul>
   <li><a href="#msg_head">Headers/footers</a>
     <ul>
@@ -668,6 +669,15 @@ Set this to On to make hypermail not output real email addresses
 in the output HTML but instead it will obfuscate them a little.
 <br>
 <br><i>spamprotect = Off</i>
+</dd>
+<a name="spamprotect_id"></a>
+<dt><strong>spamprotect_id = [ 0 | 1 ]</strong></dt><dd>
+Set this to On to make hypermail not output real email message
+ids in HTML comments (sometimes used internally by hypermail) but
+instead it will obfuscate them a little so they don't look like
+email addresses to spammers.
+<br>
+<br><i>spamprotect_id = Off</i>
 </dd>
 <h3><a name="msg_head">Message page headers/footers</a></h3>
 <a name="showreplies"></a>
