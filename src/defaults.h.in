@@ -17,7 +17,7 @@
 
 #define SHOW_HEADERS "From Subject Date Message-ID"
 
-#define MAILCOMMAND "mailto:$TO?Subject=$SUBJECT&In-Reply-To=&lt;$ID&gt;"
+#define MAILCOMMAND "mailto:$TO?Subject=$SUBJECT&In-Reply-To=%26lt;$ID%26gt;"
 
 #define PROGRESS 0
 
