@@ -81,13 +81,6 @@ o Make it configurable to get test/plain attachments to have a link
   created for them, instead of having them printed out beneath the 
   original email.
 
-o BUG: At present if you have an archive that you are periodically 
-       updating via a mailbox and are not overwiting the archive, 
-       the bin* files are not reused but are recreated anew. This 
-       leaves the previous bin* files in the archive directory and 
-       orphaned. The "attachment=xxx" comment should be read and
-       the referenced file removed.
-
 o If a filename is not known and the MIME type is known, the proper 
   extension should be added to the randomly generated file name.
 
@@ -113,12 +106,6 @@ o Hypermail should be able to deal with Sun's (silly) mailtool
   attachments in a manner similar to how it deals with mime attachments. 
   It would be really cool if the output would be identical and the 
   differences hidden from the user(s).
-
-o Put separate attachments in subdirectories under the archive, like:
-        archivename/.attachments/NNNN/
-  
-  Default to the same directory as the html files and then add a new 
-  setting that enables changing of the attachment directory.
 
 ============
 Misc. Needs:
