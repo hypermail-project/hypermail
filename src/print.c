@@ -937,6 +937,11 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply)
 			pre = FALSE;
 		  }
 		  fprintf(fp, "<p>\n");
+		} else {
+		  if (!pre) {
+			fprintf(fp, "<pre>\n");
+			pre = TRUE;
+		  }
 		}
 		inheader = FALSE;
 	    }
