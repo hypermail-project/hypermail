@@ -381,6 +381,12 @@ int main(int argc, char **argv)
     }
 #endif
 
+#ifndef HAVE_LIBFNV
+    if (set_nonsequential)
+      progerr("Hypermail isn't built with the libfnv hash library.\n"
+	     "You cannot use the nonsequential option.\n");
+#endif /* HAVE_LIBFNV */
+
     if (set_mbox && !strcasecmp(set_mbox, "NONE")) {
 	use_stdin = TRUE;
     }

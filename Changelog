@@ -2,6 +2,10 @@ Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+ Jose Kahan (jose@w3.org) (February 06, 2003)
+  Added a protection against the use of the nonsequential messaging option
+  when hypermail wasn't compiled with the libfnv.
+
  Kent Landfield (kent@hypermail.org) (February 06, 2003)
   Hypermail 2.1.6 runs on a DEC Alpha running TRU64 when compiled
   with GCC 2.95. It does however require the -mieee flag be set for the

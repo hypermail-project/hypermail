@@ -339,7 +339,12 @@ struct Config cfg[] = {
 
     {"nonsequential",  &set_nonsequential,  BFALSE,    CFG_SWITCH,
      "# Set this to On to generate filenames that are not sequential, but\n"
-     "rather a hash of the message properties.\n"},
+     "# rather a hash of the message properties.\n"
+#ifndef HAVE_LIBFNV
+     "# (This particular binary has been build with LIBFNV disabled.\n"
+     "# This option won't work)\n"
+#endif
+     },
 
     {"thrdlevels", &set_thrdlevels, INT(4), CFG_INTEGER,
      "# This specifies the number of thread levels to outline\n"
