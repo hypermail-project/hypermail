@@ -742,7 +742,7 @@ void printattachments(FILE *fp, struct header *hp,
 
 	    /* See if there's a directory corresponding to this message */
 	    msgnum = message_name (em);
-	    trio_asprintf(&attdir, "%s%c" DIR_PREFIXER "s",
+	    trio_asprintf(&attdir, "%s%c" DIR_PREFIXER "%s",
 			  set_dir, PATH_SEPARATOR, msgnum);
 	    if (isdir(attdir)) {
 	        DIR *dir = opendir(attdir);
