@@ -1,6 +1,15 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Peter McCluskey (Nov 30 2001)
+   - Add Polish language support from Piotr Waskiewicz. Change some hardcoded
+   From's to new macro MSG_FROM, change a Date to MSG_CDATE.
+   - update config.sub, config.guess from ftp.gnu.org/gnu/config/.
+
+Peter McCluskey (Nov 26 2001)
+   Applied patches from William King to update man pages for body, lang
+   options changes, and add new domain codes.
+
 Peter McCluskey (Nov 24 2001)
    Applied patch from William King to add lang= to <html> tag, get rid of
    duplicate <em>.
