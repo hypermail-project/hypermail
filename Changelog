@@ -1,6 +1,10 @@
 Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Jose Kahan (jose@w3.org) (October 2, 2002)
+  The access righs of the msgindex file (for the hashed filenames)
+  were not being set at all.
+
  Jose Kahan (jose@w3.org) (October 1, 2002)
   The non-sequential msgid mode didn't work when updating the
   archives by one message. Fixed a confusion in the generation of

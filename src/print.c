@@ -2814,6 +2814,7 @@ void write_messageindex (int startnum, int maxnum)
     struct emailinfo *email;
 
     FILE *fp;
+    char *filename;
     char *buf;
 
     struct body *bp;
@@ -2822,9 +2823,8 @@ void write_messageindex (int startnum, int maxnum)
 	printf("%s \"%s\"...    ", lang[MSG_WRITING_ARTICLES], set_dir);
 
     /* write the intial message and number of messages in the index */
-    buf = messageindex_name ();
-    fp = fopen (buf, "w");
-    free (buf);
+    filename = messageindex_name ();
+    fp = fopen (filename, "w");
     fprintf (fp, "%.04d %.04d\n", startnum, maxnum - 1);
 
     /* write the reference to the message filenames */
@@ -2838,4 +2838,6 @@ void write_messageindex (int startnum, int maxnum)
       num++;
     }
     fclose (fp);
+    chmod(filename, set_filemode);
+    free (filename);
 } /* end write_messageindex () */
