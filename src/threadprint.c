@@ -47,6 +47,10 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
     if (!last_email && rp->msgnum == -1 && set_files_by_thread) {
 	progerr("files_by_thread error start with rp->msgnum == -1");
     }
+
+    for (i = 0; i <= MAXSTACK; i++)
+      num_replies[i] = 0;
+
     while (rp != NULL) {
 #if DEBUG_THREAD
 	fprintf(stderr, "print_all_threads: message %d prev %d level %d\n",
