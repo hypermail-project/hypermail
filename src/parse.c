@@ -92,9 +92,9 @@ int inlinecontent(char *type)
     return (inlist(set_inline_types, type));
 }
 
-int preferedcontent(int *current_weight, char *type)
+int preferedcontent(int *current_weight, char *type, int decode)
 {
-    int weight;
+    int weight = -1;
     int status;
 
     status = 0;
@@ -113,8 +113,14 @@ int preferedcontent(int *current_weight, char *type)
     /* find the weight of the type arg. If the weight is
        inferior to the current_weight, we make it the
        prefered content */
-    else if (set_prefered_types) {
-	weight = inlist_pos(set_prefered_types, type);
+    else {
+	if (set_prefered_types)
+	    weight = inlist_pos(set_prefered_types, type);
+	if (weight == -1) {	/* not known to be good, use weaker evidence */
+	    if (!strncasecmp("text/", type, 5))
+	        weight = 1000;
+	    else weight = 2000 + decode;
+	}
 	if (weight != -1) {
 	    /* +1 so that weight 0 is reserved for text/plain */
 	    weight++;
@@ -126,7 +132,7 @@ int preferedcontent(int *current_weight, char *type)
 		*current_weight = weight;
 		status = 1;
 	    }
-	}
+ 	}
     }
 
     return status;
@@ -728,6 +734,26 @@ char *getreply(char *line)
     RETURN_PUSH(buff);
 }
 
+static char *
+extract_rfc2047_content(char *iptr)
+{
+    char *end_ptr, *ptr, *blurb = NULL;
+    struct Push buff;
+
+    INIT_PUSH(buff);
+
+    ptr = end_ptr = strstr(iptr+2, "?=");
+    if (ptr) {
+	while(--ptr > iptr && *ptr != '?')
+	    ;
+	if (ptr > iptr) {
+	    PushNString(&buff, ptr + 1, end_ptr - ptr - 1);
+	    RETURN_PUSH(buff);
+	}
+    }
+    return NULL;
+}
+
 /*
 ** RFC 2047 defines MIME extensions for mail headers.
 **
@@ -755,7 +781,7 @@ static char *mdecodeRFC2047(char *string, int length)
 
     char charset[129];
     char encoding[33];
-    char blurb[129];
+    char dummy[129];
     char equal;
     int value;
 
@@ -764,15 +790,11 @@ static char *mdecodeRFC2047(char *string, int length)
     while (*iptr) {
 	if (!strncmp(iptr, "=?", 2) &&
 	    (3 == sscanf(iptr + 2, "%128[^?]?%32[^?]?%128[^ ]",
-			 charset, encoding, blurb))) {
+			 charset, encoding, dummy))) {
 	    /* This is a full, valid 'encoded-word'. Decode! */
-	    char *ptr = blurb;
-
-	    ptr = strstr(blurb, "?=");
-	    if (ptr) {
-		*ptr = 0;
-	    }
-	    else {
+	    char *ptr;
+	    char *blurb = extract_rfc2047_content(iptr);
+	    if (!blurb) {
 		*output++ = *iptr++;
 		/* it wasn't a real encoded-word */
 		continue;
@@ -787,6 +809,9 @@ static char *mdecodeRFC2047(char *string, int length)
 	    iptr +=
 		2 + strlen(charset) + 1 + strlen(encoding) + 1 +
 		strlen(blurb) + 2;
+
+	    free(blurb);
+	    blurb = NULL;
 
 	    if (!strcasecmp("q", encoding)) {
 		/* quoted printable decoding */
@@ -829,9 +854,10 @@ static char *mdecodeRFC2047(char *string, int length)
 	       whitespaces in the output. */
 
 	    if (!strncmp(iptr, "=?", 2) &&
-		(4 == sscanf(iptr + 2, "%128[^?]?%32[^?]?%128[^?]?%c",
-			     charset, encoding, blurb, &equal)) &&
-		('=' == equal)) {
+		(3 == sscanf(iptr + 2, "%128[^?]?%32[^?]?%128[^?]?",
+			     charset, encoding, dummy)) &&
+		(blurb = extract_rfc2047_content(iptr))) {
+		free(blurb);
 		continue;	/* this IS an encoded-word, continue from here */
 	    }
 	    else
@@ -1531,7 +1557,7 @@ int parsemail(char *mbox,	/* file name */
 
 			    /* We are parsing alternatives... */
 
-			    if (preferedcontent(&alternative_weight, type)) {
+			    if (preferedcontent(&alternative_weight, type, decode)) {
 				/* ... this is a prefered type, we want to store
 				   this [instead of the earlier one]. */
 				/* erase the previous alternative info */
@@ -1903,8 +1929,10 @@ int parsemail(char *mbox,	/* file name */
 		    bp = append_body(bp, &lp, append_bp);
 		    append_bp = append_lp = NULL;
 		}
-		else if(!bp)
-		    bp = addbody(bp, &lp, "Hypermail was not able to parse this message correctly.\n", bodyflags);
+		else if(!bp)	/* probably never used */
+		    bp = addbody(bp, &lp, "Hypermail was not able "
+				 "to parse this message correctly.\n",
+				 bodyflags);
 
 		while (rmlastlines(bp));
 

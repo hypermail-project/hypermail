@@ -4,7 +4,7 @@
 
 int ignorecontent(char *);
 int inlinecontent(char *);
-int preferedcontent(int *, char *);
+int preferedcontent(int *, char *, int);
 char *safe_filename(char *);
 char *getmaildate(char *);
 char *getfromdate(char *);
