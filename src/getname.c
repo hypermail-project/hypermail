@@ -43,7 +43,7 @@ char *spamify(char *input)
 char *spamify_replacedomain(char *input, char *antispamdomain)
 {
     /* replace everything after the @-letter in the email address */
-    int newlen = strlen(input) + 4;
+    int newlen = strlen(input) + strlen(set_antispam_at);
     int domainlen = strlen(antispamdomain);
 
     char *atptr = strchr(input, '@');
@@ -58,14 +58,14 @@ char *spamify_replacedomain(char *input, char *antispamdomain)
         /* copy the part before the @ */
         memcpy(newbuf, input, index);
         /* append _at_ */
-        memcpy(newbuf + index, "_at_", 4);
+        memcpy(newbuf + index, set_antispam_at, strlen(set_antispam_at));
         if (domainlen > 0) {
             /* append the new domain */
-            strcpy(newbuf + index + 4, antispamdomain);
+            strcpy(newbuf + index + strlen(set_antispam_at), antispamdomain);
         }
         else {
             /* append the part after the @ */
-            strcpy(newbuf + index + 4, input + index + 1);
+            strcpy(newbuf + index + strlen(set_antispam_at), input + index + 1);
         }
         /* correct the pointer and free the old */
         free(input);
