@@ -68,12 +68,13 @@ void check1dir(char *dir)
 
     if (stat(dir, &sbuf)) {
 	if (errno != ENOENT || mkdir(dir, set_dirmode) < 0) {
-	    sprintf(errmsg, "%s \"%s\".",
-		    lang[MSG_CANNOT_CREATE_DIRECTORY], dir);
-	    progerr(errmsg);
-	    return;
+            if (errno != EEXIST) {
+	        sprintf(errmsg, "%s \"%s\".",
+			lang[MSG_CANNOT_CREATE_DIRECTORY], dir);
+		progerr(errmsg);
+	    }
 	}
-	else if (set_showprogress)
+	if (set_showprogress)
 	    printf(" %s \"%s\", %s %o.\n",
 		   lang[MSG_CREATING_DIRECTORY], dir,
 		   lang[MSG_MODE], set_dirmode);
@@ -107,12 +108,13 @@ void checkdir(char *dir)
 	    *p = '\0';
 	    if (stat(dir, &sbuf)) {
 		if (errno != ENOENT || mkdir(dir, set_dirmode) < 0) {
-		    sprintf(errmsg, "%s \"%s\".",
-			    lang[MSG_CANNOT_CREATE_DIRECTORY], dir);
-		    progerr(errmsg);
-		    return;
+		    if (errno != EEXIST) {
+		        sprintf(errmsg, "%s \"%s\".",
+				lang[MSG_CANNOT_CREATE_DIRECTORY],dir);
+			progerr(errmsg);
+		    }
 		}
-		else if (set_showprogress)
+		if (set_showprogress)
 		    printf(" %s \"%s\", %s %o.\n",
 			   lang[MSG_CREATING_DIRECTORY], dir,
 			   lang[MSG_MODE], set_dirmode);
