@@ -188,8 +188,8 @@ int main(int argc, char **argv)
     /* 
        ** Append it to the current month's message file
      */
-    sprintf(cmdstr, "%s/%s.%.2d%.2d", mailboxdir, listname,
-	    now->tm_year, now->tm_mon + 1);
+    sprintf(cmdstr, "%s/%s.%.4d%.2d", mailboxdir, listname, year, 
+		now->tm_mon+1);
 
     if (verbose)
 	fprintf(stderr, "Appending message to [%s]\n", cmdstr);
@@ -213,8 +213,8 @@ int main(int argc, char **argv)
     }
 
     /* 
-       ** Send it to hypermail to archive it in the current month's archive
-     */
+    ** Send it to hypermail to archive it in the current month's archive
+    */
 
     if (configfile == NULL)
 	sprintf(cmdstr, "%s -u -i -d %s/%d/%s -l \"%s\" -b %s",

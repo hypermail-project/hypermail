@@ -366,7 +366,7 @@ mailcommand = mailto:$TO?subject=$SUBJECT&amp;replyto=$ID
 # The <link...> header can be disabled by default by setting
 # mailto to NONE.
 
-mailto = webmaster@landfield.com
+mailto = webmaster@hypermail.org
 
 # domainaddr = [ domainname | NONE ]
 #
@@ -376,7 +376,7 @@ mailto = webmaster@landfield.com
 # to domain-ize these addresses for delivery. In such cases, hypermail
 # will add the DOMAINADDR to the email address.
 
-domainaddr = landfield.com
+domainaddr = hypermail.org
 
 # hmail = [ Mailing List Submission Address | NONE ]
 #
@@ -384,7 +384,7 @@ domainaddr = landfield.com
 # used to submit a new message to the list served by the hypermail archive.
 # "NONE" means don't use it.
 
-hmail = hypermail@landfield.com
+hmail = hypermail@hypermail.org
 
 # ihtmlheaderfile = [ path to index header template file | NONE ]
 #

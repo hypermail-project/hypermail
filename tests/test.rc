@@ -48,9 +48,9 @@ filemode = 0644
 #mailcommand = /cgi-bin/mail?to=$TO&amp;replyto=$ID&amp;subject=$SUBJECT
 #newmsg_command=mailto:$TO
 #replymsg_command=mailto:$TO?Subject=$SUBJECT
-mailto = webmusket@landfield.com
-domainaddr = landfield.com
-#hmail = hypermail@landfield.com
+mailto = webmusket@hypermail.org
+domainaddr = hypermail.org
+#hmail = hypermail@hypermail.org
 
 stripsubject = [hypermail]
 linkquotes = 0

@@ -26,6 +26,9 @@ char **valid_language(char *lg, char **locale_code)
 
 #ifdef LANG_PROG
 
+extern char *optarg;
+extern int opterr;
+
 int main(int argc, char **argv)
 {
     char *progname;
@@ -35,8 +38,6 @@ int main(int argc, char **argv)
     int verbose = 0;
     int print_table = 0;
 
-    extern char *optarg;
-    extern int opterr;
 
     opterr = 0;
     progname = argv[0];

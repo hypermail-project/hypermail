@@ -276,8 +276,9 @@ void readconfigs(char *path, int cmd_show_variables)
 }
 
 void symlink_latest()
- {  char filename[MAXFILELEN];
-    char dirname[MAXFILELEN];
+ { 
+    char filename[MAXFILELEN];
+    
     struct stat stbuf;
 
     if (!latest_folder_path)
@@ -700,7 +701,7 @@ int matches_existing(int msgnum)
 
       trio_asprintf(&indexname, "%s%s", set_dir, GDBM_INDEX_NAME);
 
-      if(gp = gdbm_open(indexname, 0, GDBM_READER, 0, 0)) {
+      if((gp = gdbm_open(indexname, 0, GDBM_READER, 0, 0))) {
 
 	/* we _can_ read the index */
 

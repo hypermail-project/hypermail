@@ -129,11 +129,13 @@ int is_sig_start(const char *line);
 int find_quote_depth(char *);
 char *find_quote_class(char *);
 
+#ifdef NOTDEF
 #ifdef lint
 int isspace(int);
 int isalpha(int);
 int isalnum(int);
 int isxdigit(int);
+#endif
 #endif
 
 #endif

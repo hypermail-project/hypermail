@@ -1,10 +1,13 @@
 This is a file of things to do. If you have other ideas or needs send
-them to hypermail@landfield.com or enter them in the Hypermail Development
-Center's Suggestions located at http://www.landfield.com/cgi-bin/hmsuggest.
+them to hypermail@hypermail.org or enter them in the Hypermail Development
+Center's Suggestions located at http://www.hypermail.org/cgi-bin/hmsuggest.
 
 ===============
 General Things:
 ===============
+
+- Modify configure to locate the appropriate htdocs directory locations
+  for installing the documentation and image files.
 
 - Add the msgid hash to the emailinfo structure to speed-up looking
   of this value when we already know it.

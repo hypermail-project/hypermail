@@ -25,13 +25,13 @@ hm_eurodate = 0
 hm_dirmode = 0755
 hm_filemode = 0644
 hm_locktime = 3600
-hm_hmail = hypermail@landfield.com
+hm_hmail = hypermail@hypermail.org
 hm_mailcommand = mailto:$TO?subject=$SUBJECT&replyto=$ID
 #hm_mailcommand = mailto:$TO&replyto=$ID?subject=$SUBJECT
 #hm_mailcommand = mailto:$TO?subject=$SUBJECT
 #hm_mailcommand = /cgi-bin/mail?to=$TO&replyto=$ID&subject=$SUBJECT
-hm_mailto = webmaster@landfield.com
-hm_domainaddr = landfield.com
+hm_mailto = webmaster@hypermail.org
+hm_domainaddr = hypermail.org
 hm_ihtmlheaderfile = /usr/local/lib/hypermail/hypermail-index.hyp
 hm_mhtmlheaderfile = /usr/local/lib/hypermail/hypermail-msg.hyp
 hm_ihtmlfooterfile = /usr/local/lib/hypermail/hypermail-footer.hyp

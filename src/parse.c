@@ -2985,8 +2985,10 @@ static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
     if (num_from_gdbm == -1)
         authorlist = subjectlist = datelist = NULL;
 
+#ifdef WANTDUPMESSAGES
     if (set_showprogress)
 	printf("%s...\n", lang[MSG_READING_OLD_HEADERS]);
+#endif
 
 
     /* Strategy: loop on files, opening each and copying the header comments
@@ -3024,8 +3026,10 @@ static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
 	msgnum_id_table = NULL;
       }
 
+#ifdef WANTDUPMESSAGES
     if (set_showprogress)
 	printf("\b\b\b\b%4d %s.\n", num, lang[MSG_ARTICLES]);
+#endif
 
     if (set_linkquotes)
 	set_alt_replylist(replylist_tmp);

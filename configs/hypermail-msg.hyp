@@ -8,8 +8,8 @@
 <title>%l: %s</title>
 <link rev="made" href="mailto:%m">
 </head>
-<body background="http://www.landfield.com/images/stars.gif" bgcolor="#000000" text="#FFFFFF" link="#c7a317" alink="#FFFFFF" vlink="#998800">
+<body background="http://www.hypermail.org/images/stars.gif" bgcolor="#000000" text="#FFFFFF" link="#c7a317" alink="#FFFFFF" vlink="#998800">
 
 <h1 align="center">%s</h1>
-<p align="center"><img src="http://www.landfield.com/images/common/yellowline.gif" width="400" height="4" alt="---------"></p>
+<p align="center"><img src="http://www.hypermail.org/images/common/yellowline.gif" width="400" height="4" alt="---------"></p>
 
