@@ -6,7 +6,7 @@
 # for you list needs.
 #
 
-# language = [ en | es | de | se ]
+# language = [ en | de | es | fi | fr | is | pl | pt | sv | no | el | gr | ru | it ]
 #
 # This is a two-letter string specifying the default language to use.
 # Set this the value of the language table you wish to use when running 
@@ -221,16 +221,28 @@ showhr = 1
 
 # overwrite = [ 0 | 1 ]
 #
-# Set to 1 to make Hypermail overwrite existing archives by default.
+# Set to 1 to make Hypermail rewrite all messages.
+# Set to 0 to rewrite as few messages as possible.
+#  Rewriting all messages is slower, but if you change the options
+# that control the appearance of the messages you may want to rewrite
+# all the messages to make the appearance consistent throughout the archive.
 
 overwrite = 0
 
-# increment = [ 0 | 1 ]
+# increment = [ -1 | 0 | 1 ]
 #
-# Define as 1 to read in one article only and update existing archives.
-# Define as 0 for it to read and process entire mailboxes.
-# WHICH IS IT ?????
-# Set this to On to append the input to existing archive.
+#  Define as 1 to append all input messages to the end of existing archives.
+#  Define as 0 for it to read a mailbox that corresponds to the entire
+# archive. (See the mbox_shortened option for an exception to the requirement
+# that it be the entire archive).
+#  If there are any existing html messages, it will figure out which
+# ones at the end of the mailbox are new, and add only those that haven't been
+# converted yet.
+#  Define as -1 to have hypermail figure out whether the input
+# is entirely new messages to be appended or whether it contains
+# messages that are already in the archive. A value of -1 cannot be
+# used with the mbox_shortened option or with the -i command line
+# option or with mbox = NONE.
 
 increment = 0
 
@@ -540,7 +552,7 @@ The CSS will be associated to the indexes thru an HTML LINK element.
 #
 # Set this to On to make hypermail not output real email addresses
 # in the output HTML but instead it will obfuscate them a little.
-#spamprotect = 0
+spamprotect = 1
 
 # spamprotect_id = [ 0 | 1 ]
 #
@@ -548,7 +560,7 @@ The CSS will be associated to the indexes thru an HTML LINK element.
 # ids in HTML comments (sometimes used internally by hypermail) but
 # instead it will obfuscate them a little so they don't look like
 # email addresses to spammers.
-#spamprotect_id = 0
+spamprotect_id = 1
 
 # attachmentsindex = [ 0 | 1 ]
 #
@@ -762,3 +774,17 @@ show_index_links = 1
 # syntax as Perl regular expressions.
 
 #filter_require_full_body = 
+
+# mbox_shortened = [ 0 | 1 ]
+#
+#  Set this to 1 to enable use of mbox that has had some of its
+# initial messages deleted. Requires usegdbm = 1 and increment = 0.
+# The first message in the shortened mbox must have a Message-Id header.
+# If discard_dup_msgids is 0, the first message in the shortened mbox
+# may not have the same Message-Id as a message that was deleted.
+# The mbox may not be altered in any way other than deleting from
+# beginning of the mbox or appending new messages to the end (unless
+# you rebuild the archive from scratch using a complete mbox).
+
+#mbox_shortened = 0
+

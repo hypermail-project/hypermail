@@ -8,8 +8,7 @@
 #
 # and then edit the file as appropriate for your list..
 #
-# Additionally, see the hmrc.example file and read the hypermail 
-# configuration file manual page
+# Additionally, see the hmrc.example file and read hmrc.html
 #
 #  $ man hmrc
 #
@@ -89,7 +88,11 @@ avoid_indices =
 #avoid_top_indices = date thread
 avoid_top_indices = 
 
-# Set this to On to make Hypermail overwrite existing archives.
+# Set to On to make Hypermail rewrite all messages.
+# Set to Off to rewrite as few messages as possible.
+#  Rewriting all messages is slower, but if you change the options
+# that control the appearance of the messages you may want to rewrite
+# all the messages to make the appearance consistent throughout the archive.
 overwrite = Off
 
 # Define to On to make text/html parts to get inlined with the mails.
@@ -99,8 +102,19 @@ overwrite = Off
 # option is On.
 inlinehtml = On
 
-# Set this to On to append the input to existing archive.
-increment = On
+#  Define as 1 to append all input messages to the end of existing archives.
+#  Define as 0 for it to read a mailbox that corresponds to the entire
+# archive. (See the mbox_shortened option for an exception to the requirement
+# that it be the entire archive).
+#  If there are any existing html messages, it will figure out which
+# ones at the end of the mailbox are new, and add only those that haven't been
+# converted yet.
+#  Define as -1 to have hypermail figure out whether the input
+# is entirely new messages to be appended or whether it contains
+# messages that are already in the archive. A value of -1 cannot be
+# used with the mbox_shortened option or with the -i command line
+# option or with mbox = NONE.
+increment = 1
 
 # Set this to On to specify there is only one message in the input.
 readone = Off
