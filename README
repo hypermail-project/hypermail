@@ -1,12 +1,13 @@
                              Hypermail
 
-                          Version:  2.0
+                          Version:  2.1
 
-This is a beta release of the 2.0 version of hypermail.  It is expected 
-that this will go through a beta period before being officially released 
-as Hypermail 2.0.
+This is a alpha release of the 2.1 version of hypermail.
 
 Please refer to Changelog for the list of changes made to this release.
+
+Hypermail is a program that takes a file of mail messages in UNIX mailbox
+format and generates a set of cross-referenced HTML documents. 
 
 Hypermail Background:
 =====================

@@ -93,6 +93,7 @@ Options:
   -v            : Show configuration variables only
   -V            : Show version information and exit
   -x            : Overwrite previous messages
+  -0 number     : Delete messages
   -1            : Read only one mail from input
   -L lang       : Specify language to use (de en es se fi )
 
@@ -255,7 +256,11 @@ The <STRONG>-p</STRONG> option shows a progress report as Hypermail reads in and
 The <STRONG>-v</STRONG> option shows the configuration variables and their values that Hypermail would use if it was run with the same <A HREF="hmrc.html">configuration file</A> and command line options. This is useful when starting up a new list or modifying a list configuration file. Once the information is displayed, Hypermail terminates and not actual processing occurs.
 <P>
 The <STRONG>-V</STRONG> option prints the Hypermail version information. Once the information is displayed, Hypermail terminates and not actual processing occurs.
-
+<p>
+The <strong>-0</strong> option list message numbers that should be deleted
+from the html archive. The mbox is not changed.
+It is equivalent to the <a href="hmrc.html#delete_msgnum">delete_msgnum</a>
+option.
 <P>
 <HR>
 
@@ -330,7 +335,7 @@ option, a Z will be inserted between the DD and HH.
 <DD> This is a two-letter string specifying the default
      language  to  use.   Set this the value of the language
      table you wish  to  use  when  running  and  generating
-     archives.  
+     archives.  See also <a href="hmrc.html#iso2022jp">iso2022jp</a>.
 <BR> 
 <BR> Current supported languages:
 <BLOCKQUOTE>

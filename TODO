@@ -117,10 +117,6 @@ Misc. Needs:
 
 - Ability to refer to articles via message ID as well
 
-- The ability to delete a message
-
-- Expire old articles, honor "X-Expires" or "Expires"
-
 - The ability to cap the archive to X most recent messages
 
 - Allow for multiple mailbox formats to be recognized, like news articles,

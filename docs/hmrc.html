@@ -27,6 +27,7 @@ on or off.
   <li><a href="#locale">Locale</a>
     <ul>
     <li><a href="#language">language</a> English, German, French, etc.
+    <li><a href="#iso2022jp">iso2022jp</a> Japanese characters
     <li><a href="#eurodate">eurodate</a> format
     <li><a href="#dateformat">dateformat</a> strftime-style format string
     <li><a href="#isodate">isodate</a> standard YYYY-MM-DD HH:MM:SS format
@@ -147,6 +148,10 @@ on or off.
     <li><a href="#usegdbm">usegdbm</a> cache header info
     <li><a href="#append">append</a> create mbox archive also
     <li><a href="#append_filename">append_filename</a> name of mbox output
+    <li><a href="#deleted">deleted</a> what headers indicate deletion
+    <li><a href="#expires">expires</a> what headers indicate expire date
+    <li><a href="#delete_msgnum">delete_msgnum</a> delete these messages
+    <li><a href="#delete_level">delete_level</a> what to do with deleted messages
     <li><a href="#progress">progress</a> verbosity
     <li><a href="#uselock">uselock</a> serialize
     <li><a href="#locktime">locktime</a> timeouts
@@ -174,6 +179,12 @@ archives.
 <br>  se - Swedish
 <br>
 <br><i>language = en</i>
+</dd>
+<a name="iso2022jp"></a>
+<dt><strong>iso2022jp = [ 0 | 1 ]</strong></dt><dd>
+Set this to On to support ISO-2022-JP messages.
+<br>
+<br><i>iso2022jp = 0</i>
 </dd>
 <a name="eurodate"></a>
 <dt><strong>eurodate = [ 0 | 1 ]</strong></dt><dd>
@@ -324,7 +335,8 @@ monthly indices.
 Put messages in subdirectories with this many messages per
 directory. Do not use this and folder_by_date on the same archive.
 Do not alter this for an existing archive without removing the old
-html files.
+html files. Deleted/expired messages <strong>are counted</stromg>
+for the purpose of deciding how many messages to put in a subdirectory.
 <br>
 <br><i>msgsperfolder = 100</i> (disabled by default)
 </dd>
@@ -907,6 +919,39 @@ $DIR may be used to specify a name relative to the directory
 specified in the -d or dir option.
 <br>
 <br><i>append_filename = $DIR/INBOX</i>
+</dd>
+<a name="deleted"></a>
+<dt><strong>deleted = list of headers used to indicate deletion</strong></dt><dd>
+ This is the list of headers that indicate the message should
+not be displayed if the value of this header is 'yes'.
+<br>
+<br><i>deleted = X-Hypermail-Deleted X-No-Archive</i>
+</dd>
+<a name="expires"></a>
+<dt><strong>expires = list of headers used to indicate expiration</strong></dt><dd>
+ This is the list of headers that indicate the message should
+not be displayed if the value of this header is a date in the past.
+<br>
+<br><i>expires = Expires</i>
+</dd>
+<a name="delete_msgnum"></a>
+<dt><strong>delete_msgnum = list of message numbers</strong></dt><dd>
+ This is the list of message numbers that should be deleted from the
+html archive. The mbox is not changed.
+<br>
+<br><i>delete_msgnum = 42 666</i> (off by default)
+<a name="delete_level"></a>
+<dt><strong>delete_level = [ 0 | 1 | 2 | 3 ]</strong></dt><dd>
+<br> 0 - remove deleted and expired files. Note that with this choice
+     threading may be screwed up if there are replies to deleted or
+     expired options and the archive is updated incrementally
+<br> 1 - remove message body
+<br> 2 - remove message body for deleted messages, leave expired messages
+<br> 3 - leave all messages
+<br> Deleted and expired messages are removed from the index files
+ regardless of the delete_level selection.
+<br>
+<br><i>delete_level = 1</i>
 </dd>
 <a name="progress"></a>
 <dt><strong>progress = [ 0 | 1 | 2 ]</strong></dt><dd>
