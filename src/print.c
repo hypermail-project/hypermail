@@ -783,10 +783,10 @@ void printdates(FILE *fp, struct header *hp, int year, int month, struct emailin
 	subj_tag = "";
 	subj_end_tag = "";
       }
-      fprintf(fp,"%s<a href=\"%s\">%s%s%s</a>%s<a name=\"%d\"><em>%s</em></a>%s%s\n",
+      fprintf(fp,"%s<a href=\"%s\">%s%s%s</a>%s<a name=\"%d\"><em>%s</em></a>%s%s%s\n",
 	      startline, msg_href(em, subdir_email, FALSE), 
 	      subj_tag, subj, subj_end_tag, break_str, em->msgnum, em->name,
-	      break_str, endline);
+	      break_str, date_str, endline);
       free(subj);
     }
     printdates(fp, hp->right, year, month, subdir_email, prev_date_str);
@@ -2132,7 +2132,7 @@ void writedates(int amountmsgs, struct emailinfo *email)
      * Print out the actual message index lists. Here's the beef.
      */
     if (set_indextable)
-	fprintf(fp, "<div class=\"center\">\n<table width=\"80%%\">\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong>%s</strong></td></tr>\n", lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
+	fprintf(fp, "<div class=\"center\">\n<table width=\"100%%\">\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong>%s</strong></td></tr>\n", lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
     else {
         fprintf (fp, "<div class=\"messages-list\">\n");
 	fprintf(fp, "<ul>\n");
@@ -2221,7 +2221,7 @@ void writeattachments(int amountmsgs, struct emailinfo *email)
      */
 
     if (set_indextable) {
-      fprintf(fp, "<div class=\"center\">\n<table width=\"80%%\">\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong>%s</strong></td></tr>\n", lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
+	fprintf(fp, "<div class=\"center\">\n<table width=\"100%%\">\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong>%s</strong></td></tr>\n", lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
 	printattachments(fp, datelist, email, &is_first);
 	fprintf(fp, "</table>\n</div>\n");
     }

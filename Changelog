@@ -4,6 +4,11 @@ Version Changes for Hypermail
 ============================
 HYPERMAIL VERSION pre-2.1.9:
 ============================
+ Peter McCluskey (Sep 1, 2003)
+  Applied patches from Mike McDonald to make spamify_replacedomain use
+ set_antispam_at, change printdates to include the dates in the table
+ version of the bydate index, and make the table use the whole screen
+ width instead of 80%. 
 
  Jose Kahan (Aug  18, 2003)
   - Changed to lowercase the suffixes added to the message indexes. That is,
