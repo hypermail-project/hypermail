@@ -653,6 +653,8 @@ char *unconvchars(char *line)
 	    else
 	        PushByte(&buff, *line);
 	}
+	else
+	  PushByte(&buff, *line);
     }
     RETURN_PUSH(buff);
 }

@@ -1,6 +1,10 @@
 Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Jose Kahan (Apr 23, 2003)
+   - As a consequence of the XHTML convertion, unconvchars() wasn't
+     storing information into the buffer when there were no entities.
+
  Jose Kahan (Apr 10, 2003)
    - Converted hypermail to XHTML. The only remaining issue concerns
      charsets. Some mail clients don't specify a correct charset or
