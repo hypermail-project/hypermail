@@ -82,6 +82,7 @@ clobber: clean
 
 tgz:
 	@(dir=`pwd`;name=`basename $$dir`;echo Creates $$name.tar.gz; cd .. ; \
-	tar -cf $$name.tar `cat $$name/FILES | sed "s:^:$$name/:g"` ; \
+	tar -cf $$name.tar \
+           `cat $$name/FILES | grep -v "^#" | sed "s:^:$$name/:g"` ; \
 	gzip $$name.tar ; chmod a+r $$name.tar.gz ; mv $$name.tar.gz $$name/)
 

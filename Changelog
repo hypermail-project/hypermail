@@ -2,6 +2,11 @@ Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  Jose Kahan (jose@w3.org) (September 25, 2002)
+  Updated the FILES tgz file (added libfnv, removed two non-existent
+  tests).
+  Fixed the make tgz rule (how long was it since it was last used?)
+
+ Jose Kahan (jose@w3.org) (September 25, 2002)
   Added a new option to compute the archived filenames using an fnv hash
   of the msgid + received From date. The resulting filename is 8 bytes long
   (a space of 2^32 bits) + the extension. You can eventually change it to

@@ -220,7 +220,6 @@ src/fnv/config.guess
 src/fnv/config.sub
 src/fnv/ltmain.sh
 src/fnv/config.in
-
 #
 # Tests 
 #
@@ -233,10 +232,8 @@ tests/test-msg.hyp
 tests/test.rc
 tests/testhm.in
 tests/mboxes/1msg.mbox
-tests/mboxes/content-base.msg
 tests/mboxes/critmail.mbox
 tests/mboxes/embedded.msg
-tests/mboxes/mimetext.msg
 tests/mboxes/t1
 tests/mboxes/t2
 tests/mboxes/t3
