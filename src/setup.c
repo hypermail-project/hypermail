@@ -55,6 +55,7 @@ bool set_writehaof;
 bool set_append;
 char *set_append_filename;
 bool set_warn_surpressions;
+bool set_files_by_thread;
 
 int set_showhtml;
 int set_thrdlevels;
@@ -647,6 +648,11 @@ struct Config cfg[] = {
      "# \".\" here (e.g. if a web server is configured to enable server side\n"
      "# includes on filenames ending in something other than .shtml), but\n"
      "# that will prevent browsers from recognizing many file types.\n"},
+
+    {"files_by_thread", &set_files_by_thread, BFALSE, CFG_SWITCH,
+     "# Set this to On to generate (in addition to the usual files),\n"
+     "# a file for each thread that contains all the messages in that\n"
+     "# thread.\n"},
 };
 
 /* ---------------------------------------------------------------- */

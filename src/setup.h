@@ -79,6 +79,7 @@ extern bool set_writehaof;
 extern bool set_append;
 extern char *set_append_filename;
 extern bool set_warn_surpressions;
+extern bool set_files_by_thread;
 
 extern int set_showhtml;
 extern int set_thrdlevels;

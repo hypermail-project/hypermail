@@ -275,6 +275,42 @@ void fprint_menu(FILE *fp, mindex_t idx, char *archives, char *currentid,
 #endif
 }
 
+/* non-tables version of fprint_menu */
+
+void fprint_menu0(FILE *fp, struct emailinfo *email, int pos)
+{
+    int dlev = (email->subdir != NULL);
+    int num = email->msgnum;
+    int loc_cmp = (pos == PAGE_BOTTOM ? 3 : 4);
+    if (!(set_show_msg_links && set_show_msg_links != loc_cmp))
+	fprintf(fp, "<ul class=\"links\">\n");
+    if (set_show_index_links && set_show_index_links != loc_cmp) {
+        fprintf(fp,"<li><strong>%s %s:</strong> \n",
+		lang[MSG_MESSAGES], lang[MSG_SORTED_BY]);
+        if (show_index[dlev][DATE_INDEX])
+	    fprintf(fp, "<a href=\"%s#%d\">[ %s ]</a>\n",
+		    index_name[dlev][DATE_INDEX], num, lang[MSG_DATE]);
+	if (show_index[dlev][THREAD_INDEX])
+	    fprintf(fp, "<a href=\"%s#%d\">[ %s ]</a>\n",
+		    index_name[dlev][THREAD_INDEX], num, lang[MSG_THREAD]);
+	if (show_index[dlev][SUBJECT_INDEX])
+	    fprintf(fp, "<a href=\"%s#%d\">[ %s ]</a>\n",
+		    index_name[dlev][SUBJECT_INDEX], num, lang[MSG_SUBJECT]);
+	if (show_index[dlev][AUTHOR_INDEX])
+	    fprintf(fp, "<a href=\"%s#%d\">[ %s ]</a>\n",
+		    index_name[dlev][AUTHOR_INDEX], num, lang[MSG_AUTHOR]);
+	if (show_index[dlev][ATTACHMENT_INDEX]) {
+	    fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n",
+		    index_name[dlev][ATTACHMENT_INDEX],
+		    lang[MSG_ATTACHMENT]);
+	}
+    }
+
+    if (set_custom_archives && *set_custom_archives)
+        fprintf(fp,"<li><strong>%s:</strong> %s\n", 
+		lang[MSG_OTHER_MAIL_ARCHIVES], set_custom_archives);
+}
+
 /*----------------------------------------------------------------------------*/
 
 void fprint_summary(FILE *fp, int pos, long first_d, long last_d, int num)
@@ -845,8 +881,11 @@ static char *ConvMsgid(char *line, char *inreply,
     PushString(&buff, inreply);
     PushString(&buff, "</a>");
     tmpline4 = ConvURLsString(c + strlen(inreply), mailid, mailsubject);
-    PushString(&buff, tmpline4);
-    free(tmpline4);
+    if (tmpline4) {
+	PushString(&buff, tmpline4);
+	free(tmpline4);
+    }
+    else if(0) printf("cant ConvURLsString %s | %s.\n", c, inreply);
     RETURN_PUSH(buff);
 }
 
@@ -918,7 +957,7 @@ char *ConvURLsString(char *line, char *mailid, char *mailsubject)
 ** should be broken before, we do so.
 */
 
-void printbody(FILE *fp, struct emailinfo *email, int maybe_reply)
+void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
 {
     int insig, inblank;
     struct body *bp = email->bodylist;
@@ -932,7 +971,12 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply)
     int quote_num;
     int quoted_percent;
     bool replace_quoted;
-    /* if (set_quote_hide_threshold < 100 && !email->is_deleted) */
+
+    if (set_linkquotes || set_showhtml == 2)
+	  /* should be changed to unconditional after tested for a while?
+	     - pcm@rahul.net 1999-09-09 */
+	find_quote_prefix(email->bodylist, is_reply);
+
     if (set_quote_hide_threshold <= 100)
 	quoted_percent = compute_quoted_percent(bp);
     else
@@ -1169,6 +1213,197 @@ print_leading_whitespace(FILE *fp, char *sp)
     return sp;
 }
 
+void
+print_headers(FILE *fp, struct emailinfo *email, int in_thread_file)
+{	/*
+	 * Print the message's author info and date.
+	 */
+	fprintf(fp, "<p class=\"headers\">\n");
+	if (!strcmp(email->name, email->emailaddr)) {
+	    if (use_mailcommand) {
+		char *ptr = makemailcommand(set_mailcommand,
+					    email->emailaddr,
+					    email->msgid, email->subject);
+		fprintf(fp, "<strong>%s:</strong> <a href=\"%s\">", lang[MSG_FROM], ptr ? ptr : "");
+		if (ptr)
+		    free(ptr);
+		fprintf(fp, "<em>%s</em></a><br>\n", email->name);
+	    }
+	    else
+		fprintf(fp, "<em>%s</em><br>\n", email->name);
+	}
+	else {
+	    if (use_mailcommand && strcmp(email->emailaddr,"(no email)")!=0) {
+		char *ptr = makemailcommand(set_mailcommand,
+					    email->emailaddr,
+					    email->msgid, email->subject);
+		fprintf(fp, "<strong>%s:</strong> %s (<a href=\"%s\">",
+			lang[MSG_FROM], email->name, ptr ? ptr : "");
+		if (ptr)
+		    free(ptr);
+		fprintf(fp, "<em>%s</em></a>)<br>\n", email->emailaddr);
+	    }
+	    else
+	    {
+		fprintf(fp,
+			"<strong>%s:</strong> %s (<em>%s</em>)<br>\n",
+			lang[MSG_FROM], email->name, 
+			(strcmp(email->emailaddr,"(no email)")!=0) ? email->emailaddr : "no email");
+	    }
+	}
+	if (in_thread_file)
+	    fprintf(fp, "<strong>%s:</strong> %s<br>\n",
+		    lang[MSG_SUBJECT], email->subject);
+	fprintf(fp, "<strong>%s:</strong> %s\n", lang[MSG_CDATE],
+		getdatestr(email->date));
+	fprintf(fp, "</p>\n");
+}
+
+static char *
+href01(struct emailinfo *email, struct emailinfo *email2, int in_thread_file)
+{
+	static char buffer[256];
+	if (in_thread_file) {
+	    sprintf(buffer, "<a href=\"#%.4d\">", email2->msgnum);
+	    return buffer;
+	}
+	return msg_href(email2, email);
+}
+
+int
+print_links(FILE *fp, struct emailinfo *email, int pos, int in_thread_file)
+{
+	int num = email->msgnum;
+	int subjmatch;
+	struct emailinfo *email2;
+	struct emailinfo *email_next_in_thread = nextinthread(email->msgnum);
+	char *ptr;
+	struct reply *rp;
+	int is_reply = 0;
+	char *href;
+	int loc_cmp = (pos == PAGE_BOTTOM ? 3 : 4);
+	/*
+	 * Should we print message links ?
+	 */
+
+	if (set_show_msg_links && set_show_msg_links != loc_cmp) {
+	    printcomment(fp, "next", "start");
+	    fprintf(fp, "<ul class=\"links\">\n");
+
+	    /*
+	     * Is there a next message?
+	     */
+
+	    email2 = neighborlookup(num, 1);
+	    if (email2) {
+		fprintf(fp, "<li><strong>%s:</strong> ",
+			lang[MSG_NEXT_MESSAGE]);
+
+		ptr = convchars(email2->subject);
+		fprintf(fp, "%s%s: \"%s\"</a>\n",
+			msg_href(email2, email), email2->name, ptr ? ptr : "");
+		if (ptr)
+		    free(ptr);
+	    }
+
+	    /*
+	     * Is there a previous message?
+	     */
+
+	    email2 = neighborlookup(num, -1);
+#if 0
+	    /* pcm removed 2002-08-30, old_reply_to is always NULL */
+	    if (set_linkquotes && old_reply_to && pos == PAGE_BOTTOM
+		&& num - 1 == (get_new_reply_to() == -1 ? old_reply_to->msgnum
+			       : get_new_reply_to()))
+	        email2 = NULL;
+#endif
+	    if (email2) {
+		fprintf(fp, "<li><strong>%s:</strong> ",
+			lang[MSG_PREVIOUS_MESSAGE]);
+		fprintf(fp, "%s%s: \"%s\"</a>\n", msg_href(email2, email),
+			email2->name, ptr = convchars(email2->subject));
+		if (ptr)
+		    free(ptr);
+	    }
+
+	    /*
+	     * Is this message a reply to another?
+	     */
+
+	    if (email->inreplyto[0]) {
+		email2 =
+		    hashreplylookup(email->msgnum, email->inreplyto,
+				    email->subject, &subjmatch);
+		if (email2) {
+		    char *del_msg = (email2->is_deleted ? lang[MSG_DEL_SHORT]
+				     : "");
+		    is_reply = 1;
+		    if (subjmatch)
+			fprintf(fp, "<li><strong>%s:</strong>",
+				lang[MSG_MAYBE_IN_REPLY_TO]);
+		    else
+			fprintf(fp, "<li><strong>%s:</strong>",
+				lang[MSG_IN_REPLY_TO]);
+		    
+		    fprintf(fp, "%s %s%s: \"%s\"</a>\n", del_msg,
+			    href01(email, email2, in_thread_file),
+			    email2->name, ptr = convchars(email2->subject));
+		    if (ptr)
+			free(ptr);
+		}
+	    }
+
+	    /*
+	     * Is there a message next in the thread?
+	     */
+	    printcomment(fp, "nextthread", "start");
+	    if (email_next_in_thread) {
+		fprintf(fp, "<li><strong>%s:</strong> ",
+			lang[MSG_NEXT_IN_THREAD]);
+		fprintf(fp, "%s%s: \"%s\"</a>\n",
+			href01(email, email_next_in_thread, in_thread_file),
+			email_next_in_thread->name,
+			ptr = convchars(email_next_in_thread->subject));
+		if (ptr)
+		    free(ptr);
+		email->initial_next_in_thread = email_next_in_thread->msgnum;
+	    }
+
+	    /*
+	     * Does this message have replies? If so, print them all!
+	     */
+
+	    if (set_showreplies) {
+#ifdef FASTREPLYCODE
+	        for (rp = email->replylist; rp != NULL; rp = rp->next) {
+                    if (hashnumlookup(rp->msgnum, &email2)) {
+#else
+		for (rp = replylist; rp != NULL; rp = rp->next) {
+                    if (rp->frommsgnum == num
+                        && hashnumlookup(rp->msgnum, &email2)) {
+#endif
+		        char *del_msg = (email2->is_deleted
+					 ? lang[MSG_DEL_SHORT] : "");
+			if (rp->maybereply)
+			    fprintf(fp, "<li><strong>%s:</strong>",
+				    lang[MSG_MAYBE_REPLY]);
+			else
+			    fprintf(fp, "<li><strong>%s:</strong>",
+				    lang[MSG_REPLY]);
+			fprintf(fp, "%s %s", del_msg,
+				href01(email, email2, in_thread_file));
+                        fprintf(fp, "%s: \"%s\"</a>\n", email2->name,
+                                ptr = convchars(email2->subject));
+			free(ptr);
+		    }
+		}
+		printcomment(fp, "reply", "end");
+	    }
+	}
+	return is_reply;
+}
+
 static int
 has_new_replies(struct emailinfo *email)
 {
@@ -1240,7 +1475,7 @@ void writearticles(int startnum, int maxnum)
 {
     int num, skip, subjmatch, newfile;
     int is_reply = 0;
-    int maybe_reply = 0;
+    int maybe_reply = 0; /* const, why is this here? pcm 2002-08-30 */
     struct emailinfo *old_reply_to = NULL;
     struct emailinfo *email;
     struct emailinfo *email2;
@@ -1380,45 +1615,7 @@ void writearticles(int startnum, int maxnum)
 			email->msgid, email->subject, PAGE_TOP, email->subdir);
 	}
 
-	/*
-	 * Print the message's author info and date.
-	 */
-	fprintf(fp, "<p class=\"headers\">\n");
-	if (!strcmp(email->name, email->emailaddr)) {
-	    if (use_mailcommand) {
-		ptr = makemailcommand(set_mailcommand,
-				      email->emailaddr,
-				      email->msgid, email->subject);
-		fprintf(fp, "<strong>%s:</strong> <a href=\"%s\">", lang[MSG_FROM], ptr ? ptr : "");
-		if (ptr)
-		    free(ptr);
-		fprintf(fp, "<em>%s</em></a><br>\n", email->name);
-	    }
-	    else
-		fprintf(fp, "<em>%s</em><br>\n", email->name);
-	}
-	else {
-	    if (use_mailcommand && strcmp(email->emailaddr,"(no email)")!=0) {
-		ptr = makemailcommand(set_mailcommand,
-				      email->emailaddr,
-				      email->msgid, email->subject);
-		fprintf(fp, "<strong>%s:</strong> %s (<a href=\"%s\">",
-			lang[MSG_FROM], email->name, ptr ? ptr : "");
-		if (ptr)
-		    free(ptr);
-		fprintf(fp, "<em>%s</em></a>)<br>\n", email->emailaddr);
-	    }
-	    else
-	    {
-		fprintf(fp,
-			"<strong>%s:</strong> %s (<em>%s</em>)<br>\n",
-			lang[MSG_FROM], email->name, 
-			(strcmp(email->emailaddr,"(no email)")!=0) ? email->emailaddr : "no email");
-	    }
-	}
-	fprintf(fp, "<strong>%s:</strong> %s\n", lang[MSG_CDATE],
-		getdatestr(email->date));
-	fprintf(fp, "</p>\n");
+	print_headers(fp, email, FALSE);
 
 	/*
 	 * This is here because it looks better here. The table looks
@@ -1426,148 +1623,10 @@ void writearticles(int startnum, int maxnum)
 	 * printfile() so it could be laid out as the user wants...
 	 */
 
-	/*
-	 * Should we print message links ?
-	 */
-
-	if (set_show_msg_links && set_show_msg_links != 4) {
-	    printcomment(fp, "next", "start");
-	    fprintf(fp, "<ul class=\"links\">\n");
-
-	    /*
-	     * Is there a next message?
-	     */
-
-	    email2 = neighborlookup(num, 1);
-	    if (email2) {
-		fprintf(fp, "<li><strong>%s:</strong> ",
-			lang[MSG_NEXT_MESSAGE]);
-
-		ptr = convchars(email2->subject);
-		fprintf(fp, "%s%s: \"%s\"</a>\n",
-			msg_href(email2, email), email2->name, ptr ? ptr : "");
-		if (ptr)
-		    free(ptr);
-	    }
-
-	    /*
-	     * Is there a previous message?
-	     */
-
-	    email2 = neighborlookup(num, -1);
-	    if (email2) {
-		fprintf(fp, "<li><strong>%s:</strong> ",
-			lang[MSG_PREVIOUS_MESSAGE]);
-		fprintf(fp, "%s%s: \"%s\"</a>\n", msg_href(email2, email),
-			email2->name, ptr = convchars(email2->subject));
-		if (ptr)
-		    free(ptr);
-	    }
-
-	    /*
-	     * Is this message a reply to another?
-	     */
-
-	    maybe_reply = 0;
-	    if (email->inreplyto[0]) {
-		email2 =
-		    hashreplylookup(email->msgnum, email->inreplyto,
-				    email->subject, &subjmatch);
-		if (email2) {
-		    char *del_msg = (email2->is_deleted ? lang[MSG_DEL_SHORT]
-				     : "");
-		    is_reply = 1;
-		    if (subjmatch)
-			fprintf(fp, "<li><strong>%s:</strong>",
-				lang[MSG_MAYBE_IN_REPLY_TO]);
-		    else
-			fprintf(fp, "<li><strong>%s:</strong>",
-				lang[MSG_IN_REPLY_TO]);
-		    fprintf(fp, "%s %s%s: \"%s\"</a>\n", del_msg,
-			    msg_href(email2, email), email2->name,
-			    ptr = convchars(email2->subject));
-		    if (ptr)
-			free(ptr);
-		}
-	    }
-
-	    /*
-	     * Is there a message next in the thread?
-	     */
-	    printcomment(fp, "nextthread", "start");
-	    if (email_next_in_thread) {
-		fprintf(fp, "<li><strong>%s:</strong> ",
-			lang[MSG_NEXT_IN_THREAD]);
-		fprintf(fp, "%s%s: \"%s\"</a>\n",
-			msg_href(email_next_in_thread, email),
-			email_next_in_thread->name,
-			ptr = convchars(email_next_in_thread->subject));
-		if (ptr)
-		    free(ptr);
-		email->initial_next_in_thread = email_next_in_thread->msgnum;
-	    }
-
-	    /*
-	     * Does this message have replies? If so, print them all!
-	     */
-
-	    if (set_showreplies) {
-#ifdef FASTREPLYCODE
-	        for (rp = email->replylist; rp != NULL; rp = rp->next) {
-                    if (hashnumlookup(rp->msgnum, &email2)) {
-#else
-		for (rp = replylist; rp != NULL; rp = rp->next) {
-                    if (rp->frommsgnum == num
-                        && hashnumlookup(rp->msgnum, &email2)) {
-#endif
-		        char *del_msg = (email2->is_deleted
-					 ? lang[MSG_DEL_SHORT] : "");
-			if (rp->maybereply)
-			    fprintf(fp, "<li><strong>%s:</strong>",
-				    lang[MSG_MAYBE_REPLY]);
-			else
-			    fprintf(fp, "<li><strong>%s:</strong>",
-				    lang[MSG_REPLY]);
-			fprintf(fp, "%s %s", del_msg, msg_href(email2, email));
-                        fprintf(fp, "%s: \"%s\"</a>\n", email2->name,
-                                ptr = convchars(email2->subject));
-			free(ptr);
-		    }
-		}
-		printcomment(fp, "reply", "end");
-	    }
-	}
+	is_reply = print_links(fp, email, PAGE_TOP, FALSE);
 
 	if (!set_usetable) {
-            int dlev = (email->subdir != NULL);
-	    if (!(set_show_msg_links && set_show_msg_links != 4))
-		fprintf(fp, "<ul class=\"links\">\n");
-	    if (set_show_index_links && set_show_index_links != 4) {
-	        fprintf(fp,"<li><strong>%s %s:</strong> \n",
-			lang[MSG_MESSAGES], lang[MSG_SORTED_BY]);
-	        if (show_index[dlev][DATE_INDEX])
-		    fprintf(fp, "<a href=\"%s#%d\">[ %s ]</a>\n",
-			    index_name[dlev][DATE_INDEX], num, lang[MSG_DATE]);
-		if (show_index[dlev][THREAD_INDEX])
-		    fprintf(fp, "<a href=\"%s#%d\">[ %s ]</a>\n",
-			    index_name[dlev][THREAD_INDEX], num, lang[MSG_THREAD]);
-		if (show_index[dlev][SUBJECT_INDEX])
-		    fprintf(fp, "<a href=\"%s#%d\">[ %s ]</a>\n",
-			    index_name[dlev][SUBJECT_INDEX], num, lang[MSG_SUBJECT]);
-		if (show_index[dlev][AUTHOR_INDEX])
-		    fprintf(fp, "<a href=\"%s#%d\">[ %s ]</a>\n",
-			    index_name[dlev][AUTHOR_INDEX], num, lang[MSG_AUTHOR]);
-		if (show_index[dlev][ATTACHMENT_INDEX]) {
-		    fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n",
-			    index_name[dlev][ATTACHMENT_INDEX],
-			    lang[MSG_ATTACHMENT]);
-		}
-	    }
-
-	    if (set_custom_archives && *set_custom_archives)
-	        fprintf(fp,"<li><strong>%s:</strong> %s\n", 
-			lang[MSG_OTHER_MAIL_ARCHIVES],
-			set_custom_archives);
+	    fprint_menu0(fp, email, PAGE_TOP);
 
 	    /* JK: moved it here as it looks better */
 	    if (set_mailcommand && set_hmail) {
@@ -1596,103 +1655,18 @@ void writearticles(int startnum, int maxnum)
 	if ((set_show_msg_links && set_show_msg_links != 4) || !set_usetable)
 	    fprintf(fp, "</ul>\n");
 
-	if (set_linkquotes || set_showhtml == 2)
-	  /* should be changed to unconditional after tested for a while?
-	     - pcm@rahul.net 1999-09-09 */
-	    find_quote_prefix(email->bodylist, is_reply);
-
 	/*
 	 * Finally...print the body!
 	 */
 
-	printbody(fp, email, maybe_reply);
+	printbody(fp, email, maybe_reply, is_reply);
 
 	/*
 	 * Should we print out the message links ?
 	 */
 
+	print_links(fp, email, PAGE_BOTTOM, FALSE);
 	if (set_show_msg_links && set_show_msg_links != 3) {
-	  /* JK: removed a <p>\n here */
-	    fprintf(fp, "<ul class=\"links\">\n");
-	    printcomment(fp, "next", "start");
-	    email2 = neighborlookup(num, 1);
-
-	    if (email2 != NULL) {
-		fprintf(fp, "<li><strong>%s:</strong> ",
-			lang[MSG_NEXT_MESSAGE]);
-		fprintf(fp, "%s%s: \"%s\"</a>\n", msg_href(email2, email),
-			email2->name, ptr = convchars(email2->subject));
-		free(ptr);
-	    }
-
-	    email2 = neighborlookup(num, -1);
-	    if (set_linkquotes && old_reply_to
-		&& num - 1 == (get_new_reply_to() == -1 ? old_reply_to->msgnum
-			       : get_new_reply_to()))
-	        email2 = NULL;
-	    if (email2) {
-		fprintf(fp, "<li><strong>%s:</strong> ",
-			lang[MSG_PREVIOUS_MESSAGE]);
-		fprintf(fp, "%s%s: \"%s\"</a>\n", msg_href(email2, email),
-			email2->name, ptr = convchars(email2->subject));
-		free(ptr);
-	    }
-
-	    if (*email->inreplyto) {
-		email2 =
-		    hashreplylookup(email->msgnum, email->inreplyto,
-				    email->subject, &subjmatch);
-		if (email2) {
-		    char *del_msg = (email2->is_deleted ? lang[MSG_DEL_SHORT]
-				     : "");
-		    if (subjmatch)
-			fprintf(fp, "<li><strong>%s:</strong>",
-				lang[MSG_MAYBE_IN_REPLY_TO]);
-		    else
-			fprintf(fp, "<li><strong>%s:</strong>",
-				lang[MSG_IN_REPLY_TO]);
-		    fprintf(fp, "%s %s", del_msg, msg_href(email2, email));
-		    fprintf(fp, "%s: \"%s\"</a>\n", email2->name,
-			    ptr = convchars(email2->subject));
-		    free(ptr);
-		}
-	    }
-	    printcomment(fp, "nextthread", "start");
-	    /* email_next_in_thread = nextinthread(email->msgnum); redundant */
-	    if (email_next_in_thread) {
-		fprintf(fp, "<li><strong>%s:</strong> ",
-			lang[MSG_NEXT_IN_THREAD]);
-		fprintf(fp, "%s", msg_href(email_next_in_thread, email));
-		fprintf(fp, "%s: \"%s\"</a>\n",
-			email_next_in_thread->name,
-			ptr = convchars(email_next_in_thread->subject));
-		if (ptr)
-		    free(ptr);
-	    }
-
-	    if (set_showreplies) {
-		/* FIXME:
-		   This should be cleaned up to use threadprint.c functions */
-
-		for (rp = replylist; rp != NULL; rp = rp->next) {
-                    if (rp->frommsgnum == num
-                        && hashnumlookup(rp->msgnum, &email2)) {
-		        char *del_msg = (email2->is_deleted
-					 ? lang[MSG_DEL_SHORT] : "");
-			if (rp->maybereply)
-			    fprintf(fp, "<li><strong>%s:</strong>",
-				    lang[MSG_MAYBE_REPLY]);
-			else
-			    fprintf(fp, "<li><strong>%s:</strong>",
-				    lang[MSG_REPLY]);
-			fprintf(fp, "%s %s", del_msg, msg_href(email2, email));
-                        fprintf(fp, "%s: \"%s\"</a>\n", email2->name,
-                                ptr = convchars(email2->subject));
-			free(ptr);
-		    }
-		}
-		printcomment(fp, "reply", "end");
-	    }
 	    if (set_usetable)
 	        fprintf(fp, "</ul>\n");
 	}
@@ -1701,36 +1675,7 @@ void writearticles(int startnum, int maxnum)
 	    fprint_menu(fp, NO_INDEX, "", email->msgid, email->subject,
 			PAGE_BOTTOM, email->subdir);
 	} else {
-	      int dlev = (email->subdir != NULL);
-	      if (!(set_show_msg_links && set_show_msg_links != 3))
-		  fprintf(fp, "<ul>\n");
-	      if (set_show_index_links && set_show_index_links != 3) {
-		  fprintf(fp,"<li><strong>%s %s:</strong> \n",
-			  lang[MSG_MESSAGES], lang[MSG_SORTED_BY]);
-		  if (show_index[dlev][DATE_INDEX])
-		      fprintf(fp,"<a href=\"%s#%d\">[ %s ]</a>\n",
-			      index_name[dlev][DATE_INDEX], num, lang[MSG_DATE]);
-		  if (show_index[dlev][THREAD_INDEX])
-		      fprintf(fp,"<a href=\"%s#%d\">[ %s ]</a>\n",
-			      index_name[dlev][THREAD_INDEX], num,
-			      lang[MSG_THREAD]);
-		  if (show_index[dlev][SUBJECT_INDEX])
-		      fprintf(fp,"<a href=\"%s#%d\">[ %s ]</a>\n",
-			      index_name[dlev][SUBJECT_INDEX], num,
-			      lang[MSG_SUBJECT]);
-		  if (show_index[dlev][AUTHOR_INDEX])
-		      fprintf(fp,"<a href=\"%s#%d\">[ %s ]</a>\n",
-			      index_name[dlev][AUTHOR_INDEX], num,
-			      lang[MSG_AUTHOR]);
-		  if (show_index[dlev][ATTACHMENT_INDEX]) {
-		      fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n",
-			      index_name[dlev][ATTACHMENT_INDEX], lang[MSG_ATTACHMENT]);
-		  }
-	      }
-	      if (set_custom_archives && *set_custom_archives)
-		  fprintf(fp,"<li><strong>%s:</strong> %s\n", 
-			  lang[MSG_OTHER_MAIL_ARCHIVES],
-			  set_custom_archives);
+	      fprint_menu0(fp, email, PAGE_BOTTOM);
 	      /* JK: added it here, so that we have symmetry */
 	      if (set_mailcommand && set_hmail) {
 

@@ -7,7 +7,9 @@ int togdbm(void *gp, struct emailinfo *);
 #endif
 
 void printcomment(FILE *, char *, char *);
-void printbody(FILE *, struct emailinfo *, int);
+void print_headers(FILE *, struct emailinfo *, int);
+int print_links(FILE *, struct emailinfo *, int, int);
+void printbody(FILE *, struct emailinfo *, int, int);
 char *print_leading_whitespace(FILE *, char *);
 
 void update_deletions(int);
@@ -28,6 +30,7 @@ void printattachments(FILE *, struct header *, struct emailinfo *);
 int checkreplies(FILE *, int, int level, int thread_file_depth);
 void fprint_menu(FILE *, mindex_t, char *, char *, char *, int,
 		 struct emailsubdir *);
+void fprint_menu0(FILE *fp, struct emailinfo *email, int);
 void fprint_summary(FILE *, int, long, long, int);
 void print_index_header_links(FILE *, mindex_t, long, long, int,
 			      struct emailsubdir *);
