@@ -872,7 +872,7 @@ static void mdecodeQP(FILE *file, char *input, char **result, int *length)
 	    if ('\n' == *input) {
 		if (!fgets(buffer, MAXLINE, file))
 		    break;
-		input = buffer + set_ietf_mbox;
+		input = buffer;
 		continue;
 	    }
 	    else if ('=' == *input) {
@@ -1120,12 +1120,8 @@ int parsemail(char *mbox,	/* file name */
 #endif 
 	line = line_buf + set_ietf_mbox; 
 	if (isinheader) {
-          if (!strncasecmp(line_buf, "From ", 5)) {
-            strcpymax(fromdate, dp = getfromdate(line), DATESTRLEN);
-#if DEBUG_PARSE
-            printf("FROM: found it!\n");
-#endif
-          }
+	    if (!strncasecmp(line_buf, "From ", 5))
+		strcpymax(fromdate, dp = getfromdate(line), DATESTRLEN);
 	    /* check for MIME */
 	    else if (!strncasecmp(line, "MIME-Version:", 13))
 		Mime_B = TRUE;
@@ -1150,9 +1146,6 @@ int parsemail(char *mbox,	/* file name */
 
 		char savealternative;
 
-#if DEBUG_PARSE
-                printf("START OF BODY!\n");
-#endif
 		/* 
 		 * we mark this as a header-line, and we use it to 
 		 * track end-of-header displays 
@@ -1191,6 +1184,12 @@ int parsemail(char *mbox,	/* file name */
 		    else if (!strncasecmp(head->line, "From:", 5)) {
 			getname(head->line, &namep, &emailp);
 			head->parsedheader = TRUE;
+                        if(set_spamprotect) {
+                          emailp=spamify(emailp);
+                          /* we need to "fix" the name as well, as sometimes
+                             the email ends up in the name part */
+                          namep=spamify(namep);
+                        }
 		    }
 		    else if (!strncasecmp(head->line, "Message-Id:", 11)) {
 			msgid = getid(head->line);
@@ -1734,6 +1733,8 @@ int parsemail(char *mbox,	/* file name */
 		hassubject = 0;
 		hasdate = 0;
 
+                alternativeparser = FALSE; /* there is none anymore */
+
 		if (!(num % 10) && set_showprogress && !readone) {
 		    print_progress(num - startnum, NULL, NULL);
 		}
@@ -1873,7 +1874,7 @@ int parsemail(char *mbox,	/* file name */
 		    data = NULL;
 		    break;
 		}
-#if 0
+#if DEBUG_PARSE
 		printf("LINE %s\n", data);
 #endif
 		if (data) {
@@ -1936,7 +1937,7 @@ int parsemail(char *mbox,	/* file name */
 					 (content == CONTENT_HTML ?
 					  BODY_HTMLIZED : 0) | bodyflags);
 			}
-#if 0
+#if DEBUG_PARSE
 			printf("ALIVE?\n");
 #endif
 		    }
