@@ -104,20 +104,6 @@ Installing Hypermail:
 
         - Type "make install". 
 
-Building cgi-bin/mail:
-======================
-
-    A small CGI program, "mail", is included with this source
-    for you to use with Hypermail. To compile and install it:
-
-    1) Edit the Makefile and change the variable "cgidir" to
-       point to the directory that holds your site's CGI programs.
-
-    2) Type "make mail" to compile the mail program.
-
-    3) Type "make mail.install" to install the program in your
-       CGI directory. 
-
 Documentation:
 ==============
 
