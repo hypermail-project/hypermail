@@ -1036,7 +1036,7 @@ char *parseurl(char *input)
 		    urlscan = sscanf(inputp, "%255[^] \033)>\"\'\n[\t\\]", urlbuff);
 	    else
 		    urlscan = sscanf(inputp, "%255[^] )>\"\'\n[\t\\]", urlbuff);
-	    if (urlscan) {
+	    if (urlscan == 1) {
 	        char *r;
 	
 		/* 
