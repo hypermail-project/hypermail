@@ -5,6 +5,7 @@ Peter McCluskey (Mar 31 2001)
   - added isodate, gmtime options.
   - bug fixes to mime decoding and to libcgi/form_ent.c from
     Greg Shenaut <greg@bogslab.ucdavis.edu>
+  - add fixhtime.pl (changes timestamps to match From:)
 
 Peter McCluskey (Mar 30 2001)
   - Reorganized hmrc.html.

@@ -40,6 +40,7 @@ configs/hypermail.rc
 # Contributed utilities
 #
 contrib/canonicalize.pl
+contrib/fixhtime.pl
 contrib/hyperfeed.pl
 contrib/hypetombox.pl
 contrib/cron_hypermail

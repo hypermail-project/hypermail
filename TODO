@@ -26,11 +26,6 @@ General Things:
 
 - Add date/subject/author filters for articles that are read in
 
-- Add the ability to have hypermail store an incoming message in to 
-  a Unix mailbox archive as well as generating the new HTML page.
-
-- Need to profile this to see where time is spent and speed it up.
-
 - Need to create a library of hypermail functions so that other utilities
   can be generated without making things real ugly. (i.e. removal, other
   indexing.)
@@ -67,9 +62,6 @@ Index Issues:
      one author-index in alphabetical order
      one author-index in reversed alphabetical or
      etc.
-
-- Generate an index listing of all stored attachments. Also have links to 
-  the mail that contained them. 
 
 ============
 Attachments:
@@ -112,10 +104,6 @@ Misc. Needs:
 - EURODATE
   Given that these two formats are ambiguous, and many companies have
   people of both sorts, need an alternate, unambigous date format. 
-
-- The ability to split up indices into pages
-  o Limit by # of messages and by hour/day/week/month
-  o Make subfolders?
 
 - Should recognize and parse indented HTML tags better
 
