@@ -626,13 +626,22 @@ static char *translateurl(char *url)
 {
     char *p;
     struct Push buff;
+    unsigned int i;
+    char hexa[5];
+
     INIT_PUSH(buff);
 
     for (p = url; *p; p++) {
 	if (*p == '&')
 	    PushString(&buff, "&amp;");
-	else if (*p == '@' && set_mailcommand)
+	else if (*p == '@' && set_mailcommand) 	/* we need to code @ as such to
+						   avoid a misconvertion */
 	  PushString(&buff, "&#64;");
+	else if ((unsigned char) *p > 127 && set_mailcommand) {
+	  i = (unsigned char) *p & 0xFF;
+	  snprintf (hexa, sizeof (hexa) -1, "%%%02x", i);
+	  PushString (&buff, hexa);
+	}
 	else
 	  PushByte(&buff, *p);
     }
@@ -765,7 +774,9 @@ char *makemailcommand(char *mailcommand, char *email, char *id, char *subject)
 	newcmd2 = replacechar(newcmd, '+', "%2B");
 	free(newcmd);
 
-	newcmd = newcmd2;	/* this is the new string */
+	/* escape the special characters following the URL convention */
+	newcmd = translateurl (newcmd2);
+	free (newcmd2);
 
 	free(tmpsubject);
 

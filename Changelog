@@ -2,6 +2,10 @@ Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+ Jose Kahan (jose@w3.org) (Feb 20, 2003)
+   - makemailcommand wasn't escaping non-ascii characters in the URLS
+     that it generated.
+
  Peter McCluskey (Feb 19, 2003)
    Fix to append option to handle some lines getting discarded in mdecodeQP.
 
