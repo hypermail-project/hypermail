@@ -832,13 +832,19 @@ Format of the attachment links.
 <a name="overwrite"></a>
 <dt><strong>overwrite = [ 0 | 1 ]</strong></dt><dd>
 Set to 1 to make Hypermail overwrite existing archives by default.
+(This defaulted to 1 for most versions 2.0 through 2.1.3, presumably
+to encourage archives that upgraded to have a single style. The default
+was changed back to 0 after 2.1.3).
 <br> 
 <br><i>overwrite = 0</i>
 </dd>
 <a name="increment"></a>
 <dt><strong>increment = [ 0 | 1 ]</strong></dt><dd>
-<br> Define as 1 to read in one article only and update existing archives.
-<br> Define as 0 for it to read and process entire mailboxes.
+<br> Define as 1 to append all input messages to the end of existing archives.
+<br> Define as 0 for it to read a mailbox that corresponds to the entire
+archive. If there are any existing html messages, it will figure out which
+ones at the end of the mailbox are new, and add only those that haven't been
+converted yet.
 <br>
 <br><i>increment = 0</i>
 </dd>

@@ -1,6 +1,27 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Peter McCluskey (Nov 14 2001)
+Peter McCluskey (Nov 19 2001)
+  - Applied patches from William King to conform better to HTML 4.01:
+    * remove noshade from <hr>
+    * change the default DTD
+    * escape &'s, add image/png in test.rc, hmrc.example
+  - Changed the fix*header() routines so that they handle incremental updates
+  sensibly when given a mailbox with multiple messages. In the process, I
+  fixed 2 problems with single-message incremental updates, one which left
+  out the "Next message" link, and one which created a "Reply" link that should
+  have been a "Maybe reply".
+  - Add warning for mbox that starts with different msg than gdbm file if
+   not using -u (overwrite) option.
+  - Change default for overwrite option to off.
+  - Fixed segfault that happened when %m parsed in header but mailto was NULL.
+
+Peter McCluskey (Nov 18 2001)
+  Folder list now sorted chronologically.
+
+Peter McCluskey (Nov 16 2001)
+  Added save_alts and alts_text options.
+
+Peter McCluskey (Nov 15 2001)
   Updated some old documentation, added some security warnings.
 
 Peter McCluskey (Nov 14 2001)

@@ -351,7 +351,11 @@ de - German
 </BLOCKQUOTE>
 <P>
 <DT> <STRONG>HM_INCREMENT boolean_number</STRONG>
-<DD> Define as <STRONG>1</STRONG> to read one article only and append it to existing archives by default.
+<br> Define as <strong>1</strong> to append all input messages to the end of existing archives.
+<br> Define as <strong>0</strong> for it to read a mailbox that corresponds to the entire
+archive. If there are any existing html messages, it will figure out which
+ones at the end of the mailbox are new, and add only those that haven't been
+converted yet.
 <P>
 <a name="append"></a>
 <dt><strong>HM_APPEND boolean_number</strong></dt><dd>
