@@ -29,6 +29,8 @@ on or off.
     <li><a href="#language">language</a> English, German, French, etc.
     <li><a href="#eurodate">eurodate</a> format
     <li><a href="#dateformat">dateformat</a> strftime-style format string
+    <li><a href="#isodate">isodate</a> standard YYYY-MM-DD HH:MM:SS format
+    <li><a href="#gmtime">gmtime</a> GMT/UTC vs local time
     </ul>
   <li><a href="#headers">Headers</a>
     <ul>
@@ -190,6 +192,23 @@ Set this to reflect how you want dates displayed in the index files.
 <br> See strftime(3) for the valid conversion specifications.
 <br>
 <br><i>dateformat = "%D-%r Z"</i> (disabled by default)
+</p><p>
+<a name="isodate"></a>
+<strong>isodate = [ 0 | 1 ]</strong>
+</p><p>
+Set this to On to display article received dates in
+YYYY-MM-DD HH:MM:SS format. If used with the gmtime option, a\
+Z will be inserted between the DD and HH.
+<br>
+<br><i>isodate = 0</i>
+</p><p>
+<a name="gmtime"></a>
+<strong>gmtime = [ 0 | 1 ]</strong>
+</p><p>
+ Set this to On to display article received dates using
+Greenwich Mean Time (UTC) rather than local time.
+<br>
+<br><i>gmtime = 0</i>
 </p><p>
 <h3><a name="headers">Header options</a></h3>
 <a name="label"></a>
