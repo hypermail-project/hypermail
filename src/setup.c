@@ -262,7 +262,7 @@ struct Config cfg[] = {
      "# Otherwise, all non-quoted article lines will word wrap. This\n"
      "# only takes effect if hm_showhtml is 1.\n", FALSE},
 
-    {"showhr", &set_showhr, BTRUE, CFG_SWITCH,
+    {"showhr", &set_showhr, BFALSE, CFG_SWITCH,
      "# Set this to On to place horizontal rules before and after articles.\n"
      "NOTE: THIS OPTION HAS BEEN DEPRECATED BY THE WAY CHANGES. IT WILL BE\n"
      "IGNORED.\n", FALSE},
