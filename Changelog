@@ -1,6 +1,8 @@
 Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (May 22, 2003)
+  - add Italian support from Gabriele Bartolini and Marco Nenciarini.
 
  Peter McCluskey (May 16, 2003)
   - Fixed initialization of prior_subdir when dirs created out of
