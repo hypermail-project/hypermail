@@ -194,6 +194,8 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
 	fprintf(fp, "<meta http-equiv=\"Content-Type\""
 		" content=\"text/html; charset=%s\">\n", charset);
     }
+    fprintf(fp, "<meta name=\"generator\" content=\"%s %s, see %s\">\n",
+                PROGNAME, VERSION, HMURL);
 
     /* 
      * Strip off any trailing whitespace in TITLE so weblint is happy. 
@@ -286,7 +288,7 @@ void print_index_header(FILE *fp, char *label, char *dir, char *subject,
 	fprintf(fp, "<h1 class=\"center\">%s<br>%s</h1>\n", label, subject);
 #if 0 /*@@ JK: removed it */	
 	if (!set_usetable)
-	    fprintf(fp, "<hr nohade>\n");
+	    fprintf(fp, "<hr>\n");
 #endif
     }
 }
