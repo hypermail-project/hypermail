@@ -75,9 +75,11 @@ Usage: hypermail [options]
 
 Options:
   -a URL        : URL to other archives
+  -A            : Maintain an mbox archive
   -b URL        : URL to archive information
   -c file       : Configuration file to read in
   -d dir        : The directory to save HTML files in
+  -g            : Build a GDBM header cache
   -i            : Read messages from standard input
   -l label      : What to name the output archive
   -m mbox       : Mail archive to read in
@@ -92,9 +94,10 @@ Options:
   -v            : Show configuration variables only
   -V            : Show version information and exit
   -x            : Overwrite previous messages
+  -X            : Write haof XML files
   -0 number     : Delete messages
   -1            : Read only one mail from input
-  -L lang       : Specify language to use (de en es sv fi fr is pl)
+  -L lang       : Specify language to use (de en es fi fr is pl pt sv no el gr ru it )
 
 </PRE>
 <P>
@@ -126,7 +129,7 @@ The <STRONG>-d</STRONG> option specifies the directory to put the HTML files and
 <OL>
 <LI>This example reads the articles in <STRONG>wu-ftpd</STRONG> and will save the output in the <STRONG>/wu-ftpd</STRONG> directory.
 <P>
-<LI>This reads the file <STRONG>/var/spool/mail/wu-ftpd</STRONG> from standard input and will save the output in a directory called <STRONG>wu-ftpd</STRONG> in the same directory Hypermail was run from.
+<LI>This reads the file <STRONG>/var/spool/mail/wu-ftpd</STRONG> from standard input and will save the output in a directory called <STRONG>archive</STRONG> in the same directory Hypermail was run from.
 </OL>
 <P>
 Note that Hypermail can only read messages in the UNIX mailbox format! Such archives are typically RFC 2822 mail messages appended to each other that look similar to this:
@@ -363,12 +366,17 @@ de (de_DE) - German
 The directory /usr/share/i18n/locales on many systems has the locale
 codes that are available on that system.
 <P>
-<DT> <STRONG>HM_INCREMENT boolean_number</STRONG>
+<DT> <STRONG>HM_INCREMENT -1, 0, or 1</STRONG>
 <br> Define as <strong>1</strong> to append all input messages to the end of existing archives.
 <br> Define as <strong>0</strong> for it to read a mailbox that corresponds to the entire
 archive. If there are any existing html messages, it will figure out which
 ones at the end of the mailbox are new, and add only those that haven't been
 converted yet.
+<br> Define as <strong>-1</strong> to have hypermail figure out whether the input
+is entirely new messages to be appended or whether it contains
+messages that are already in the archive. A value of -1 cannot be
+used with the mbox_shortened option or with the -i command line
+option or with mbox = NONE.<br>
 <P>
 <a name="append"></a>
 <dt><strong>HM_APPEND boolean_number</strong></dt><dd>

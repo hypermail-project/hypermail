@@ -135,10 +135,10 @@ on or off.
   <ul>
   <li><a href="#input">Message Input</a>
     <ul>
-    <li><a href="#overwrite">overwrite</a> regenerate old messages
     <li><a href="#increment">increment</a> append new message(s) to old archive
     <li><a href="#readone">readone</a> treat input as one message
     <li><a href="#mbox">mbox</a> read messages from this file
+    <li><a href="#mbox_shortened">mbox_shortened</a> allow partial mbox
     <li><a href="#ietf_mbox">ietf_mbox</a> file format
     <li><a href="#discard_dup_msgids">discard_dup_msgids</a>
     <li><a href="#require_msgids">require_msgids</a> discard messages without ids
@@ -153,6 +153,7 @@ on or off.
   <li><a href="#files">Filesystem Output</a>
     <ul>
     <li><a href="#dir">dir</a> where the archive goes
+    <li><a href="#overwrite">overwrite</a> regenerate old messages
     <li><a href="#htmlsuffix">htmlsuffix</a> .html, .htm, etc
     <li><a href="#dirmode">dirmode</a> chmod directories
     <li><a href="#filemode">filemode</a> chmod html files
@@ -927,23 +928,20 @@ alternative file.
 <h2><a name="sysadmin">System administration</a></h2>
 <h3><a name="input">Message input</a></h3>
 
-<a name="overwrite"></a>
-<dt><strong>overwrite = [ 0 | 1 ]</strong></dt><dd>
-Set to 1 to make Hypermail overwrite existing archives by default.
-(This defaulted to 1 for most versions 2.0 through 2.1.3, presumably
-to encourage archives that upgraded to have a single style. The default
-was changed back to 0 after 2.1.3).
-<br> 
-<br><i>overwrite = 0</i>
-</dd>
 <a name="increment"></a>
-<dt><strong>increment = [ 0 | 1 ]</strong></dt><dd>
+<dt><strong>increment = [ -1 | 0 | 1 ]</strong></dt><dd>
 <br> Define as 1 to append all input messages to the end of existing archives.
 <br> Define as 0 for it to read a mailbox that corresponds to the entire
-archive. If there are any existing html messages, it will figure out which
+archive. (See the <a href="#mbox_shortened">mbox_shortened</a> option for
+an exception to the requirement that it be the entire archive).
+If there are any existing html messages, it will figure out which
 ones at the end of the mailbox are new, and add only those that haven't been
 converted yet.
-<br>
+<br> Define as -1 to have hypermail figure out whether the input
+is entirely new messages to be appended or whether it contains
+messages that are already in the archive. A value of -1 cannot be
+used with the mbox_shortened option or with the -i command line
+option or with mbox = NONE.<br>
 <br><i>increment = 0</i>
 </dd>
 
@@ -960,6 +958,20 @@ This is the default mailbox to read messages in from.  Set this
 with a value of NONE to read from standard input as the default.
 <br>
 <br><i>mbox = NONE</i>
+</dd>
+
+<a name="mbox_shortened"></a>
+<p> <dt><strong>mbox_shortened = [ 0 | 1 ]</strong></dt><dd>
+ Set this to 1 to enable use of mbox that has had some of its
+initial messages deleted. Requires usegdbm = 1 and increment = 0.
+The first message in the shortened mbox must have a Message-Id header.
+If <a href="#discard_dup_msgids">discard_dup_msgids</a> is 0, the first message in the shortened mbox
+may not have the same Message-Id as a message that was deleted.
+The mbox may not be altered in any way other than deleting from
+beginning of the mbox or appending new messages to the end (unless
+you rebuild the archive from scratch using a complete mbox).
+<br>
+<br><i>mbox_shortened = 0</i>
 </dd>
 
 <a name="ietf_mbox"></a>
@@ -1053,6 +1065,20 @@ a date from the message (use the <a href="#folder_by_date">folder_by_date</a> op
 have Hypermail use dates from messages).
 <br>
 <br><i>dir = NONE</i>
+</dd>
+
+<a name="overwrite"></a>
+<dt><strong>overwrite = [ 0 | 1 ]</strong></dt><dd>
+Set to 1 to make Hypermail rewrite all messages.
+<br>Set to 0 to rewrite as few messages as possible.
+<br>Rewriting all messages is slower, but if you change the options
+that control the appearance of the messages you may want to rewrite
+all the messages to make the appearance consistent throughout the archive.
+(This defaulted to 1 for most versions 2.0 through 2.1.3, presumably
+to encourage archives that upgraded to have a single style. The default
+was changed back to 0 after 2.1.3).
+<br> 
+<br><i>overwrite = 0</i>
 </dd>
 
 <a name="htmlsuffix"></a>
