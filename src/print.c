@@ -30,7 +30,6 @@
 
 #include "threadprint.h"
 
-#include "mprintf.h"
 #include "proto.h"
 
 #ifdef HAVE_DIRENT_H
