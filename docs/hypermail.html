@@ -95,7 +95,7 @@ Options:
   -x            : Overwrite previous messages
   -0 number     : Delete messages
   -1            : Read only one mail from input
-  -L lang       : Specify language to use (de en es se fi )
+  -L lang       : Specify language to use (de en es sv fi fr is)
 
 </PRE>
 <P>
@@ -335,20 +335,24 @@ option, a Z will be inserted between the DD and HH.
 <P>
 <DT><STRONG>HM_LANGUAGE "language-id"</STRONG>
 <DD> This is a two-letter string specifying the default
-     language  to  use.   Set this the value of the language
+     language  to  use, or a longer string specifying a language
+     and locale. Set this the value of the language
      table you wish  to  use  when  running  and  generating
-     archives.  See also <a href="hmrc.html#iso2022jp">iso2022jp</a>.
+     archives.  See also <a href="hmrc.html#iso2022jp">iso2022jp</a>
+     and <a href="hmrc.html#eurodate">eurodate</a>.
 <BR> 
-<BR> Current supported languages:
+<BR> Current supported languages, with their default locales:
 <BLOCKQUOTE>
-de - German
-<BR>en - English
-<BR>es - Spanish
-<BR>fi - Finnish
-<BR>fr - French
-<BR>is - Icelandic
-<BR>se - Swedish
+de (de_DE) - German         
+<BR>en (en_US) - English    
+<BR>es (es_ES) - Spanish    
+<BR>fi (fi_FI) - Finnish    
+<BR>fr (fr_FR) - French	    
+<BR>is (is_IS) - Icelandic  
+<BR>sv (sv_SE) - Swedish    
 </BLOCKQUOTE>
+The directory /usr/share/i18n/locales on many systems has the locale
+codes that are available on that system.
 <P>
 <DT> <STRONG>HM_INCREMENT boolean_number</STRONG>
 <br> Define as <strong>1</strong> to append all input messages to the end of existing archives.
