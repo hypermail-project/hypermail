@@ -183,6 +183,9 @@ void fprint_menu(FILE *fp, mindex_t idx, char *archives, char *currentid,
     int dlev = (subdir != NULL);
     int i;
     int count_l = 0;
+#if DEBUG_HTML
+    printcomment(fp, "fprint_menu", "begin");
+#endif
     fprintf(fp,
 	    "<div class=\"center\">\n<table border=\"2\" width=\"100%%\">\n<tr>\n");
 
@@ -267,12 +270,18 @@ void fprint_menu(FILE *fp, mindex_t idx, char *archives, char *currentid,
 		lang[MSG_OTHER_MAIL_ARCHIVES]);
 
     fprintf(fp, "</tr>\n</table>\n</div>\n");
+#if DEBUG_HTML
+    printcomment(fp, "fprint_menu", "end");
+#endif
 }
 
 /*----------------------------------------------------------------------------*/
 
 void fprint_summary(FILE *fp, int pos, long first_d, long last_d, int num)
 {
+#if DEBUG_HTML
+    printcomment(fp, "fprint_summary", "begin");
+#endif
     fprintf(fp, "<div class=\"center\">\n");
     fprintf(fp, "<table>\n");
 
@@ -291,6 +300,9 @@ void fprint_summary(FILE *fp, int pos, long first_d, long last_d, int num)
                 lang[MSG_ARCHIVED_ON], getlocaltime());
     }
     fprintf(fp, "</table>\n</div>\n");
+#if DEBUG_HTML
+    printcomment(fp, "fprint_summary", "end");
+#endif
 }
 
 /*----------------------------------------------------------------------------*/
@@ -312,6 +324,10 @@ void print_index_header_links(FILE *fp, mindex_t called_from,
     char *ptr;
     int dlev = (subdir != NULL);
 
+#if DEBUG_HTML
+    printcomment(fp, "index_header_links", "begin");
+#endif
+    fprintf(fp, "<p>\n");
     if (set_mailcommand && set_hmail) {
 	ptr = makemailcommand("mailto:$TO", set_hmail, "", "");
 	fprintf(fp, "<strong><a href=\"%s\">%s</A></strong>\n",
@@ -324,10 +340,10 @@ void print_index_header_links(FILE *fp, mindex_t called_from,
 	fprintf(fp, "<strong><a href=\"#end\">%s</a></strong><br>\n",
 		lang[MSG_MOST_RECENT_MESSAGES]);
 
-    if (called_from != AUTHOR_INDEX && show_index[dlev][AUTHOR_INDEX] ||
-        called_from != DATE_INDEX &&  show_index[dlev][DATE_INDEX] ||
-        called_from != THREAD_INDEX && show_index[dlev][THREAD_INDEX] ||
-        called_from != SUBJECT_INDEX && show_index[dlev][SUBJECT_INDEX])
+    if (called_from != (AUTHOR_INDEX && show_index[dlev][AUTHOR_INDEX]) ||
+        called_from != (DATE_INDEX &&  show_index[dlev][DATE_INDEX]) ||
+        called_from != (THREAD_INDEX && show_index[dlev][THREAD_INDEX]) ||
+        called_from != (SUBJECT_INDEX && show_index[dlev][SUBJECT_INDEX]))
            fprintf(fp, "<strong>%d %s %s:</strong> \n", amountmsgs,
                lang[MSG_ARTICLES], lang[MSG_SORTED_BY]);
 
@@ -394,24 +410,25 @@ void print_index_header_links(FILE *fp, mindex_t called_from,
 	    free(ptr);
     }
 
-
-#if 0 /* JK removed this */
-    fprintf(fp, "<p>\n");
-#endif
-    /* JK: added a <p> */
     if (set_showhr)
-        fprintf(fp, "<hr><p>\n");
+        fprintf(fp, "</p><hr>\n");
+    else
+        fprintf(fp, "</p>\n");
 
     /*
      * Printout the Dates for the Starting and Ending messages 
      * in the archive, along with a count of the messages.
      */
-
+    fprintf(fp, "<p>\n");
     fprintf(fp, "<strong>%s:</strong> <em>%s</em><br>\n",
             lang[MSG_STARTING], getdatestr(startdatenum));
 
     fprintf(fp, "<strong>%s:</strong> <em>%s</em><br>\n",
             lang[MSG_ENDING], getdatestr(enddatenum));
+    fprintf(fp, "</p>\n");
+#if DEBUG_HTML
+    printcomment(fp, "index_header_links", "end");
+#endif
 }
 
 void print_index_footer_links(FILE *fp, mindex_t called_from,
@@ -429,20 +446,26 @@ void print_index_footer_links(FILE *fp, mindex_t called_from,
      char *ptr;
      int dlev = (subdir != NULL);
 
-     fprintf(fp, "<a name=\"end\"><strong>%s:</strong></a> <em>%s</em><br>\n",
+#if DEBUG_HTML
+    printcomment(fp, "index_footer_links", "begin");
+#endif
+    fprintf(fp, "<p>\n");
+    fprintf(fp, "<a name=\"end\"><strong>%s:</strong></a> <em>%s</em><br>\n",
 		lang[MSG_LAST_MESSAGE_DATE], getdatestr(lastdatenum));
 
-     fprintf(fp, "<strong>%s:</strong> <em>%s</em><p>\n",
-             lang[MSG_ARCHIVED_ON], getlocaltime());
+    fprintf(fp, "<strong>%s:</strong> <em>%s</em>\n",
+                lang[MSG_ARCHIVED_ON], getlocaltime());
 
-     if (set_showhr)
-         fprintf(fp, "<hr>\n");
+    if (set_showhr)
+        fprintf(fp, "</p><hr>\n");
+    else
+        fprintf(fp, "</p>\n");
 
-    fprintf(fp, "\n");
-    if (called_from != AUTHOR_INDEX && show_index[dlev][AUTHOR_INDEX] ||
-        called_from != DATE_INDEX &&  show_index[dlev][DATE_INDEX] ||
-        called_from != THREAD_INDEX && show_index[dlev][THREAD_INDEX] ||
-        called_from != SUBJECT_INDEX && show_index[dlev][SUBJECT_INDEX])
+    fprintf(fp, "<p>\n");
+    if (called_from != (AUTHOR_INDEX && show_index[dlev][AUTHOR_INDEX]) ||
+        called_from != (DATE_INDEX &&  show_index[dlev][DATE_INDEX]) ||
+        called_from != (THREAD_INDEX && show_index[dlev][THREAD_INDEX]) ||
+        called_from != (SUBJECT_INDEX && show_index[dlev][SUBJECT_INDEX]))
            fprintf(fp, "<strong>%d %s %s:</strong> \n", amountmsgs,
                lang[MSG_ARTICLES], lang[MSG_SORTED_BY]);
 
@@ -508,7 +531,10 @@ void print_index_footer_links(FILE *fp, mindex_t called_from,
 	if (ptr)
 	    free(ptr);
     }
-    fprintf(fp, "\n\n");
+    fprintf(fp, "</p>\n");
+#if DEBUG_HTML
+    printcomment(fp, "index_footer_links", "end");
+#endif
 }
 
 /*
@@ -565,7 +591,6 @@ void printhtml(FILE *fp, char *line)
 /*
 ** Pretty-prints the dates in the index files.
 */
-
 void printdates(FILE *fp, struct header *hp, int year, int month,
 	       struct emailinfo *subdir_email)
 {
@@ -617,7 +642,6 @@ void printdates(FILE *fp, struct header *hp, int year, int month,
 /*
 ** Pretty-prints the files with attachments in the index files.
 */
-
 void printattachments(FILE *fp, struct header *hp,
 		      struct emailinfo *subdir_email)
 {
@@ -869,11 +893,10 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply)
       printf("\nMessage %d quoted text (%d %%) replaced by links\n",
 	     msgnum,quoted_percent);
 
-    /* JK: added an extra <p> here */
     if (set_showhr)
-	fprintf(fp, "<hr><p>\n");
-
+	fprintf(fp, "<hr>\n");
     printcomment(fp, "body", "start");
+
     if (email->is_deleted && set_delete_level != DELETE_LEAVES_TEXT
 	&& !(email->is_deleted == 2
 	     && set_delete_level == DELETE_LEAVES_EXPIRED_TEXT)) {
@@ -882,6 +905,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply)
 	if (email->is_deleted == 4 || email->is_deleted == 8)
 	    d_index = MSG_FILTERED_OUT;
         fprintf(fp, lang[d_index]);
+	fprintf(fp, "</p>\n");
 	printcomment(fp, "body", "end");
 	if (set_showhr)
 	    fprintf(fp, "<hr>\n");
@@ -893,10 +917,6 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply)
 	pre = TRUE;
     }
 
-#if DEBUG_PRINTBODY
-    else
-	printf("SHOWHTML is ON\n");
-#endif
     if (set_showhtml == 2)
       init_txt2html();
     inquote = 0;
@@ -1071,7 +1091,6 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply)
     else if (set_showhtml == 2)
         end_txt2html(fp);
 
-    fprintf(fp, "<p>");
     printcomment(fp, "body", "end");
     if (set_showhr)
 	fprintf(fp, "<hr>\n");
@@ -1276,16 +1295,12 @@ void writearticles(int startnum, int maxnum)
 	if (set_usetable) {
 	    fprint_menu(fp, NO_INDEX, "",
 			email->msgid, email->subject, PAGE_TOP, email->subdir);
-	    fprintf(fp, "<p>\n");
 	}
 
 	/*
 	 * Print the message's author info and date.
 	 */
-
-#if 0 /* JK: removed it because it's redundant with the H1 header */
-	fprintf(fp, "<strong>Subject: </strong>%s<br>\n", email->subject);
-#endif
+	fprintf(fp, "<p>\n");
 	if (!strcmp(email->name, email->emailaddr)) {
 	    if (use_mailcommand) {
 		ptr = makemailcommand(set_mailcommand,
@@ -1318,8 +1333,9 @@ void writearticles(int startnum, int maxnum)
 			(strcmp(email->emailaddr,"(no email)")!=0) ? email->emailaddr : "no email");
 	    }
 	}
-	fprintf(fp, "<strong>%s:</strong> %s\n<p>\n", lang[MSG_CDATE],
+	fprintf(fp, "<strong>%s:</strong> %s\n", lang[MSG_CDATE],
 		getdatestr(email->date));
+	fprintf(fp, "</p>\n");
 
 	/*
 	 * This is here because it looks better here. The table looks
@@ -1395,9 +1411,7 @@ void writearticles(int startnum, int maxnum)
 	    /*
 	     * Is there a message next in the thread?
 	     */
-
 	    printcomment(fp, "nextthread", "start");
-
 	    if (email_next_in_thread) {
 		fprintf(fp, "<li><strong>%s:</strong> ",
 			lang[MSG_NEXT_IN_THREAD]);
@@ -1516,9 +1530,7 @@ void writearticles(int startnum, int maxnum)
 	if (set_show_msg_links && set_show_msg_links != 3) {
 	  /* JK: removed a <p>\n here */
 	    fprintf(fp, "<ul>\n");
-
 	    printcomment(fp, "next", "start");
-
 	    email2 = neighborlookup(num, 1);
 
 	    if (email2 != NULL) {
@@ -1561,9 +1573,7 @@ void writearticles(int startnum, int maxnum)
 		    free(ptr);
 		}
 	    }
-
 	    printcomment(fp, "nextthread", "start");
-
 	    /* email_next_in_thread = nextinthread(email->msgnum); redundant */
 	    if (email_next_in_thread) {
 		fprintf(fp, "<li><strong>%s:</strong> ",
@@ -1603,10 +1613,10 @@ void writearticles(int startnum, int maxnum)
 	        fprintf(fp, "</ul>\n");
 	}
 
-	if (set_usetable)
+	if (set_usetable) {
 	    fprint_menu(fp, NO_INDEX, "", email->msgid, email->subject,
 			PAGE_BOTTOM, email->subdir);
-	else {
+	} else {
 	      int dlev = (email->subdir != NULL);
 	      if (!(set_show_msg_links && set_show_msg_links != 3))
 		  fprintf(fp, "<ul>\n");
@@ -1795,9 +1805,8 @@ void writedates(int amountmsgs, struct emailinfo *email)
 	fprint_menu(fp, DATE_INDEX, set_archives, "", "", PAGE_TOP,
 		    email ? email->subdir : NULL);
 	fprint_summary(fp, PAGE_TOP, firstdatenum, lastdatenum, amountmsgs);
-	/* JK: added an extra <p> here */
 	if (set_showhr)
-	    fprintf(fp, "<hr><p>\n"); 
+	    fprintf(fp, "<hr>\n"); 
     }
 
     /*
@@ -1813,9 +1822,9 @@ void writedates(int amountmsgs, struct emailinfo *email)
     printdates(fp, datelist, -1, -1, email);
     
     if (set_indextable)
-	fprintf(fp, "</table>\n</div>\n<p>\n");
+	fprintf(fp, "</table>\n</div>\n");
     else
-	fprintf(fp, "</ul>\n<p>\n");
+	fprintf(fp, "</ul>\n");
 
     if (!set_usetable) {
 	/* 
@@ -1892,9 +1901,8 @@ void writeattachments(int amountmsgs, struct emailinfo *email)
     else {
 	fprint_menu(fp, ATTACHMENT_INDEX, set_archives, "", "", PAGE_TOP, NULL);
 	fprint_summary(fp, PAGE_TOP, firstdatenum, lastdatenum, amountmsgs);
-	/* JK: added an extra <p> here */
 	if (set_showhr)
-	    fprintf(fp, "<hr><p>\n"); 
+	    fprintf(fp, "<hr>\n"); 
     }
 
     /*
@@ -1906,12 +1914,12 @@ void writeattachments(int amountmsgs, struct emailinfo *email)
 		"<div class=\"center\">\n<table width=\"80%%\">\n<tr><td><u><strong>%s</strong></u></td><td><u><strong>%s</strong></u></td><td><u><strong>%s</strong></u></td></tr>\n",
 		lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
 	printattachments(fp, datelist, email);
-	fprintf(fp, "</table>\n</div>\n<p>\n");
+	fprintf(fp, "</table>\n</div>\n");
     }
     else {
 	fprintf(fp, "<ul>\n");
 	printattachments(fp, datelist, email);
-	fprintf(fp, "</ul>\n<p>\n");
+	fprintf(fp, "</ul>\n");
     }
 
     if (!set_usetable) {
@@ -1997,9 +2005,8 @@ void writethreads(int amountmsgs, struct emailinfo *email)
 	fprint_menu(fp, THREAD_INDEX, set_archives, "", "", PAGE_TOP,
 		    email ? email->subdir : NULL);
 	fprint_summary(fp, PAGE_TOP, firstdatenum, lastdatenum, amountmsgs);
-	/* JK: added an extra <p> here */
 	if (set_showhr)
-	    fprintf(fp, "<hr><p>\n");
+	    fprintf(fp, "<hr>\n");
     }
 
     if (set_indextable) {
@@ -2007,12 +2014,12 @@ void writethreads(int amountmsgs, struct emailinfo *email)
 		"<div class=\"center\">\n<table>\n<tr><td><u><strong>%s</strong></u></td><td><u><strong>%s</strong></u></td><td><u><strong> %s</strong></u></td></tr>\n",
 		lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
 	print_all_threads(fp, -1, -1, email);
-	fprintf(fp, "</table>\n</div>\n<p>\n");
+	fprintf(fp, "</table>\n</div>\n");
     }
     else {
 	fprintf(fp, "<ul>\n");
 	print_all_threads(fp, -1, -1, email);
-	fprintf(fp, "</ul>\n<p>\n");
+	fprintf(fp, "</ul>\n");
     }
 
     if (!set_usetable) {
@@ -2141,9 +2148,8 @@ void writesubjects(int amountmsgs, struct emailinfo *email)
 	fprint_menu(fp, SUBJECT_INDEX, set_archives, "", "", PAGE_TOP,
 		    email ? email->subdir : NULL);
 	fprint_summary(fp, PAGE_TOP, firstdatenum, lastdatenum, amountmsgs);
-	/* JK: added this <p> here */
 	if (set_showhr)
-	    fprintf(fp, "<hr><p>\n");
+	    fprintf(fp, "<hr>\n");
     }
 
     if (set_indextable) {
@@ -2159,10 +2165,10 @@ void writesubjects(int amountmsgs, struct emailinfo *email)
 	printsubjects(fp, subjectlist, &oldsubject, -1, -1, email);
     }
     if (set_indextable) {
-	fprintf(fp, "</table>\n</div>\n<p>\n");
+	fprintf(fp, "</table>\n</div>\n");
     }
     else {
-	fprintf(fp, "</ul>\n<p>\n");
+	fprintf(fp, "</ul>\n");
     }
 
     /* 
@@ -2291,9 +2297,8 @@ void writeauthors(int amountmsgs, struct emailinfo *email)
 	fprint_menu(fp, AUTHOR_INDEX, set_archives, "", "", PAGE_TOP,
 		    email ? email->subdir : NULL);
 	fprint_summary(fp, PAGE_TOP, firstdatenum, lastdatenum, amountmsgs);
-	/* JK: added the extra <p> here */
 	if (set_showhr)
-	    fprintf(fp, "<hr><p>\n");
+	    fprintf(fp, "<hr>\n");
     }
 
     if (set_indextable) {
@@ -2309,10 +2314,10 @@ void writeauthors(int amountmsgs, struct emailinfo *email)
 	printauthors(fp, authorlist, &prevauthor, -1, -1, email);
     }
     if (set_indextable) {
-	fprintf(fp, "</table>\n</div>\n<p>\n");
+	fprintf(fp, "</table>\n</div>\n");
     }
     else {
-	fprintf(fp, "</ul>\n<p>\n");
+	fprintf(fp, "</ul>\n");
     }
 
     /* 
@@ -2464,10 +2469,10 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
 		}
 
 		if (set_indextable) {
-		    fprintf(fp1, "</table>\n</div>\n<p>\n");
+		    fprintf(fp1, "</table>\n</div>\n");
 		}
 		else {
-		    fprintf(fp1, "</ul>\n<p>\n");
+		    fprintf(fp1, "</ul>\n");
 		}
 
 		/* 
@@ -2576,9 +2581,8 @@ void write_toplevel_indices(int amountmsgs)
 	else {
 	    fprint_menu(fp, FOLDERS_INDEX, set_archives, "", "", PAGE_TOP, NULL);
 	    fprint_summary(fp, PAGE_TOP, firstdatenum, lastdatenum, amountmsgs);
-	    /* JK: added an extra <p> here */
 	    if (set_showhr)
-	        fprintf(fp, "<hr><p>\n"); 
+	        fprintf(fp, "<hr>\n"); 
 	}
 	fprintf(fp, "<table>\n");
     }

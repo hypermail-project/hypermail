@@ -676,4 +676,7 @@ void end_txt2html(FILE *fp)
 	free(unhyphenated_word);
 	unhyphenated_word = NULL;
     }
+#if DEBUG_HTML
+    printcomment(fp, "end_txt2html", "");	
+#endif
 }

@@ -182,9 +182,9 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
     char *rp;
 
     fprintf(fp,
-	    "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n"
+	    "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"\n"
             "                      "
-	    "\"http://www.w3.org/TR/html4/loose.dtd\">\n");
+	    "\"http://www.w3.org/TR/html4/strict.dtd\">\n");
     fprintf(fp, "<html lang=\"%s\">\n", set_language);
     fprintf(fp, "<head>\n");
 
