@@ -498,14 +498,14 @@ int main(int argc, char **argv)
     else
 	use_mailcommand = 1;
 
-#ifndef FNV
-    /* the nonsequential mode won't work unless we compiled the FNV library
+#ifndef HAVE_LIBFNV
+    /* the nonsequential mode won't work unless we compiled the FNV hash library
        (./configure --enable-libfnv) */
     if (set_nonsequential)
       progerr("the nonsequential mode is only available if you enabled the\n compilation"
 	      "of the fnv hash library. Try doing a\n\t./configure --enable-libfnv\n"
 	      "and recompile if you want to use this option.");
-#endif /* FNV */
+#endif /* HAVE_LIBFNV */
 
     /* 
      * A little performance speed up.  The following was being done

@@ -1,6 +1,10 @@
 Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Jose Kahan (jose@w3.org) (September 26, 2002)
+  Cleaned the autoconf files for passing the libnvf compile parameters
+  (what a difference does reading the manual make).
+
  Jose Kahan (jose@w3.org) (September 25, 2002)
   Commited the ~/hypermail/ltmain.sh file and also put it in the
   FILES section. Somehow, without this file, it was impossible to

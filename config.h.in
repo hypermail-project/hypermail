@@ -20,6 +20,9 @@
 
 #undef HAVE_GDBM_H
 
+/* Define if you're using the FNV hash library */
+#undef HAVE_LIBFNV
+
 /* Define if you have the getopt function.  */
 #undef HAVE_GETOPT
 

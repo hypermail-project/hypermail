@@ -76,9 +76,12 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
 #include <string.h>
 #include "fnv.h"
+
+#ifdef HAVE_FCNTL_H
+#include <fcntl.h>
+#endif
 
 #define WIDTH 32	/* bit width of hash */
 

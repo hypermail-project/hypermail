@@ -27,12 +27,11 @@ INSTALL_PROG=@INSTALL@
 #WNOERROR=-Werror
 #WARNINGS=$(WNOERROR) -ansi -pedantic -Wall -Wtraditional -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Dlint
 
-FNV_CFLAGS=@FNV_CFLAGS@
-CFLAGS=@CFLAGS@ @INCLUDES@ -Ipcre @FNV_INCLUDES@ $(FNV_CFLAGS) $(WARNINGS)
+CFLAGS=@CFLAGS@ @INCLUDES@ -Ipcre $(WARNINGS)
 YACC=@YACC@
 NETLIBS=@LIBS@
-LDFLAGS=@LDFLAGS@ -Lpcre @FNV_LDFLAGS@
-MISC_LIBS= -lm -lpcre @FNV_LIBS@
+LDFLAGS=@LDFLAGS@ -Lpcre
+MISC_LIBS= -lm -lpcre
 OPT_LIBS=@EXTRA_LIBS@
 
 INCS=		domains.h hypermail.h lang.h proto.h \
@@ -120,7 +119,7 @@ clean:
 	rm -f .inslog tca.map lint.out
 	rm -f getdate.c
 	@cd pcre; $(MAKE) clean
-	@(if test $(FNV_CFLAGS) = "-DFNV" ; then cd fnv; $(MAKE) clobber; fi)
+	@(if test $(FNV_DEP) != "" ; then cd fnv; $(MAKE) clobber; fi)
 	@cd ../libcgi; $(MAKE) clean
 
 #

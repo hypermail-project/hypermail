@@ -31,9 +31,9 @@
 #ifdef GDBM
 #include "gdbm.h"
 #endif
-#ifdef FNV
+#ifdef HAVE_LIBFNV
 #include "fnv.h"
-#endif
+#endif /* HAVE_LIBFNV */
 
 /*
 ** Does a file exist?
@@ -588,7 +588,7 @@ char *message_name (struct emailinfo *email)
 
   if (set_nonsequential && email->msgid)
     {
-#ifdef FNV
+#ifdef HAVE_LIBFNV
       /* Call the FNV msg hash library */
       Fnv32_t hash_val; 
 
@@ -597,7 +597,7 @@ char *message_name (struct emailinfo *email)
       sprintf (buffer, "%08x", hash_val);
 
       return buffer;
-#endif /* FNV */
+#endif /* HAVE_LIBFNV */
     }
   else
     {

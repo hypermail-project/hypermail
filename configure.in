@@ -10,10 +10,6 @@ EXTRA_LIBS=""
 INCLUDES=""
 GDBM_INCLUDE=""
 GDBM_LIB=""
-FNV_INCLUDE=""
-FNV_CFLAGS=""
-FNV_LDFLAGS=""
-FNV_LIBS=""
 FNV_DEP=""
 SUBDIRS="src/pcre"
 
@@ -143,24 +139,6 @@ AC_ARG_WITH(domainaddr,
     [  --with-domainaddr=YOURDOMAIN	  domain address of local domain ],
     domainaddr=$with_domainaddr,  domainaddr=NONE)
 AC_SUBST(domainaddr)
-
-AC_MSG_CHECKING(whether to enable nonsequential filenames)
-AC_ARG_ENABLE(libfnv,
-[  --enable-libfnv	Used to compute the nonsequential file names [no] ],
-[ AC_MSG_RESULT(yes)
-  SUBDIRS="$SUBDIRS src/fnv"
-  FNV_INCLUDES="-Ifnv" 
-  FNV_CFLAGS="-DFNV" 
-  FNV_LDFLAGS="-Lfnv" 
-  FNV_LIBS="-lfnv" 
-  FNV_DEP="fnv/libfnv.a"
-],AC_MSG_RESULT(no))
-
-AC_SUBST(FNV_INCLUDES)
-AC_SUBST(FNV_CFLAGS)
-AC_SUBST(FNV_LDFLAGS)
-AC_SUBST(FNV_LIBS)
-AC_SUBST(FNV_DEP)
 
 dnl ===========================================================================
 dnl Configure the subdirectories
@@ -337,6 +315,22 @@ if test -n "$GDBM_LIB"; then
     AC_DEFINE(HAVE_GDBM_H)
     EXTRA_LIBS="$EXTRA_LIBS $GDBM_LIB"
 fi
+
+dnl
+dnl The FNV hash library used for the nonsequential filenames
+dnl
+
+AC_MSG_CHECKING(whether the fnv hash library exists)
+AC_ARG_ENABLE(libfnv,
+[  --enable-libfnv	fnv hash library (used for the nonsequential file names) [no] ],
+[ AC_MSG_RESULT(yes)
+  SUBDIRS="$SUBDIRS src/fnv"
+  AC_DEFINE(HAVE_LIBFNV)
+  AC_ADD_INCLUDE(src/fnv)
+  AC_ADD_LIBRARY_WITH_PATH(-lfnv,src/fnv)
+  FNV_DEP="fnv/libfnv.a"
+],AC_MSG_RESULT(no))
+AC_SUBST(FNV_DEP)
 
 
 dnl ===========================================================================

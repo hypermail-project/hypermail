@@ -36,7 +36,7 @@ all:   hypermail support
 
 hypermail:
 	@cd src; $(MAKE) all CC="$(CC)" \
-		CFLAGS="$(CFLAGS) @FNV_INCLUDES@ @FNV_CFLAGS@" \
+		CFLAGS="$(CFLAGS)" \
 		cgidir="$(cgidir)" bindir="$(bindir)" LIBS="$(LIBS)"
 
 support:   
