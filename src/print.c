@@ -866,13 +866,13 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
 	fprintf(fp, "<hr>\n");
     printcomment(fp, "body", "start");
 
-	if (email->is_deleted && set_delete_level != DELETE_LEAVES_TEXT && !(email->is_deleted == 2 && set_delete_level == DELETE_LEAVES_EXPIRED_TEXT)) {
+    if (email->is_deleted && set_delete_level != DELETE_LEAVES_TEXT && !(email->is_deleted == 2 && set_delete_level == DELETE_LEAVES_EXPIRED_TEXT)) {
         int d_index = MSG_DELETED;
-		if (email->is_deleted == 2)
-			d_index = MSG_EXPIRED;
+	if (email->is_deleted == 2)
+		d_index = MSG_EXPIRED;
 	if (email->is_deleted == 4 || email->is_deleted == 8)
 	    d_index = MSG_FILTERED_OUT;
-		fprintf(fp, "%s", lang[d_index]);	/* AUDIT biege: No more warnings about format-bug */
+	fprintf(fp, "%s", lang[d_index]);	/* AUDIT biege: No more warnings about format-bug */
 	fprintf(fp, "</p>\n");
 	printcomment(fp, "body", "end");
 	if (set_showhr)
@@ -1257,19 +1257,51 @@ static int has_new_replies(struct emailinfo *email)
     return 0;
 }
 
+#ifdef GDBM
+static GDBM_FILE gdbm_init(void);
+static GDBM_FILE gdbm_init()
+{
+    char indexname[MAXFILELEN];
+    static GDBM_FILE gp = NULL;
+    if (set_usegdbm) {
+	snprintf(indexname, sizeof(indexname), (set_dir[strlen(set_dir) - 1] == '/')
+			 ? "%s%s" : "%s/%s", set_dir, GDBM_INDEX_NAME);
+
+      /* open the database, creating it if necessary */
+	    
+	if (!(gp = gdbm_open(indexname, 0, GDBM_WRCREAT, 0664, 0))) {
+
+	    if (set_folder_by_date && set_increment && !is_empty_archive()) {
+	        snprintf(errmsg, sizeof(errmsg), "Cannot open or create file \"%s\". Unable to " "do\nincremental updates with the folder_by_date " "option without using that file.", indexname);
+		progerr(errmsg);
+	    }
+	/* couldn't open; unlink it rather than risk running
+	 * with an inconsistent version; it will be recreated if
+	 * necessary */
+
+	    unlink(indexname);
+	}
+    }
+    return gp;
+}
+#endif
+
 /*
  * Perform deletions on old messages when run in incremental mode.
  */
 
 void update_deletions(int num_old)
 {
-    struct hmlist *tlist;
+    struct hashemail *hlist;
     struct reply *rp;
+#ifdef GDBM
+    static GDBM_FILE gp;
+#endif
     int save_ov = set_overwrite;
     set_overwrite = TRUE;
-    for (tlist = set_delete_msgnum; tlist != NULL; tlist = tlist->next) {
+    for (hlist = deletedlist; hlist != NULL; hlist = hlist->next) {
 	struct emailinfo *ep;
-	int num = atoi(tlist->val);
+	int num = hlist->data->msgnum;
 	if (num >= num_old)
 	    continue;		/* new message - already done */
 	if (hashnumlookup(num, &ep)) {
@@ -1293,11 +1325,27 @@ void update_deletions(int num_old)
 		if (rnum < num_old) {
 		    if (!rp->data->bodylist || !rp->data->bodylist->line[0])
 		        parse_old_html(rnum, rp->data, TRUE, FALSE, NULL);
-					writearticles(rnum, rnum + 1);	/* update MSG_IN_REPLY_TO line */
+			writearticles(rnum, rnum + 1);	/* update MSG_IN_REPLY_TO line */
 		}
 	    }
 	}
     }
+#ifdef GDBM
+    if (set_usegdbm) {
+        GDBM_FILE gp = gdbm_init();
+	for (hlist = deletedlist; hlist != NULL; hlist = hlist->next) {
+	    if (gp) {
+	        struct emailinfo *ep;
+		int num = hlist->data->msgnum;
+		if (num >= num_old)
+		    continue;		/* new message - already done */
+		if (hashnumlookup(num, &ep)) {
+		    togdbm((void *)gp, ep);
+		}
+	    }
+	}
+    }
+#endif
     set_overwrite = save_ov;
 }
 
@@ -1324,28 +1372,7 @@ void writearticles(int startnum, int maxnum)
     /* A gdbm hack for avoiding opening all the message files to
      * get the header comments; see parse.c for details thereof. */
 
-    char indexname[MAXFILELEN];
-    static GDBM_FILE gp;
-
-	if (set_usegdbm) {
-		snprintf(indexname, sizeof(indexname), (set_dir[strlen(set_dir) - 1] == '/')
-			 ? "%s%s" : "%s/%s", set_dir, GDBM_INDEX_NAME);
-
-      /* open the database, creating it if necessary */
-	    
-		if (!(gp = gdbm_open(indexname, 0, GDBM_WRCREAT, 0664, 0))) {
-
-	if (set_folder_by_date && set_increment && !is_empty_archive()) {
-				snprintf(errmsg, sizeof(errmsg), "Cannot open or create file \"%s\". Unable to " "do\nincremental updates with the folder_by_date " "option without using that file.", indexname);
-		progerr(errmsg);
-	}
-	/* couldn't open; unlink it rather than risk running
-	 * with an inconsistent version; it will be recreated if
-	 * necessary */
-
-	unlink(indexname);
-      }
-    }
+    GDBM_FILE gp = gdbm_init();
 #endif
 
     num = startnum;
@@ -1379,8 +1406,8 @@ void writearticles(int startnum, int maxnum)
 		unlink(filename);
 	    }
 #ifdef GDBM
-			else if (gp) {
-				togdbm((void *)gp, email);
+	    else if (gp) {
+		togdbm((void *)gp, email);
 	    }
 #endif
 	    ++num;
@@ -1426,10 +1453,10 @@ void writearticles(int startnum, int maxnum)
 	    sprintf(num_buf, "%d", email->is_deleted);
 	    printcomment(fp, "isdeleted", num_buf);
 	}
-		printcomment(fp, "expires", email->exp_time == -1 ? "-1" : secs_to_iso(email->exp_time));
+	printcomment(fp, "expires", email->exp_time == -1 ? "-1" : secs_to_iso(email->exp_time));
 #ifdef GDBM
-		if (gp) {
-			togdbm((void *)gp, email);
+	if (gp) {
+		togdbm((void *)gp, email);
 	}
 #endif
 	if (ptr)
@@ -1575,7 +1602,7 @@ void writearticles(int startnum, int maxnum)
     }
 
 #ifdef GDBM
-	if (gp) {
+    if (gp) {
         datum key;
 	datum content;
 	int nkey = -1;
@@ -2443,15 +2470,15 @@ void write_toplevel_indices(int amountmsgs)
     if (set_reverse_folders)
 	while (sd->next_subdir)
 	    sd = sd->next_subdir;
-	for (; sd != NULL; sd = set_reverse_folders ? sd->prior_subdir : sd->next_subdir) {
+    for (; sd != NULL; sd = set_reverse_folders ? sd->prior_subdir : sd->next_subdir) {
 	int started_line = 0;
 	int empties = 0;
 	if (!datelist->data)
 	    continue;
-		for (j = 0; j <= ATTACHMENT_INDEX; ++j) {
+	for (j = 0; j <= ATTACHMENT_INDEX; ++j) {
 	    if (!show_index[1][j])
 		continue;
-			switch (j) {
+	    switch (j) {
 		case DATE_INDEX:
 		    writedates(sd->count, sd->first_email);
 		    break;
@@ -2468,29 +2495,29 @@ void write_toplevel_indices(int amountmsgs)
 		    writeattachments(sd->count, sd->first_email);
 		    break;
 	    }
-	if (set_writehaof)
-			writehaof(sd->count, sd->first_email);
+	    if (set_writehaof)
+	        writehaof(sd->count, sd->first_email);
 
-			if (!fp)
-				continue;
+	    if (!fp)
+	        continue;
 	    if (!sd->count) {
-				if (started_line)
+	        if (started_line)
 		    fprintf(fp, "<td></td>");
-				else
-					++empties;
+		else
+	            ++empties;
 	    }
 	    else {
-		if (!started_line) {
-					fprintf(fp, "<tr><td>%s</td><td>%d %s</td>", sd->description, sd->count, lang[MSG_ARTICLES]);
-					while (empties--)
-			fprintf(fp, "<td></td>");
+	        if (!started_line) {
+		    fprintf(fp, "<tr><td>%s</td><td>%d %s</td>", sd->description, sd->count, lang[MSG_ARTICLES]);
+		    while (empties--)
+		        fprintf(fp, "<td></td>");
 		    started_line = 1;
 		}
-				fprintf(fp, "<td><a href=\"%s%s\">%s</a></td>", sd->subdir, index_name[1][j], indextypename[j]);
+		fprintf(fp, "<td><a href=\"%s%s\">%s</a></td>", sd->subdir, index_name[1][j], indextypename[j]);
 	    }
 	}
-		if (started_line && fp)
-			fprintf(fp, "</tr>\n");
+	if (started_line && fp)
+	    fprintf(fp, "</tr>\n");
     }
     if (fp) {
 		fprintf(fp, "</table>\n");

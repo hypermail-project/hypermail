@@ -574,7 +574,7 @@ int main(int argc, char **argv)
 
 	writearticles(amount_old, max_msgnum + 1);
 
-	if (set_delete_msgnum)
+	if (deletedlist)
 	    update_deletions(amount_old);
 
 	if (set_show_msg_links) {
