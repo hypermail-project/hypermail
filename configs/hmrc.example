@@ -775,6 +775,68 @@ show_index_links = 1
 
 #filter_require_full_body = 
 
+# save_alts = [ 0 | 1 | 2 ]
+#
+# This controls what happens to alternatives (other than the prefered
+# alternative) for multipart/alternative messages.
+#  0 - discard non-prefered alternatives
+#  1 - show all alternatives inline
+#  2 - put non-prefered alternatives in a separate file.
+#
+#save_alts = 0
+
+# alts_text = descriptive text
+#
+#  If save_alts is 1, this text is put between the alternatives.
+# If save_alts is 2, this text is used to describe the link to each
+# alternative file.
+
+# the default if save_alts = 2:
+#alts_text = "alternate version of message" 
+
+# the default if save_alts = 1:
+#alts_text = <hr>
+
+# warn_surpressions = [ 0 | 1 ]
+#
+#  Set this to 1 to get warnings (on stdout) about messages that
+# are not converted because of they are missing a msgid (if
+# require_msgids is On) or because one of the following options
+# surpressed it: deleted expires delete_msgnum filter_out
+# filter_require filter_out_full_body filter_require_full_body.
+
+# warn_surpressions = 1
+
+# unsafe_chars = list of chars to prohibit
+#  Any characters listed in this string are removed from user-specified
+# attachment filenames. Those characters will be replaced by a "_"
+# (which means that specifying "_" here won't have any effect).
+# Note that many characters (including / and \) are removed by the
+# safe_filename in parse.c regardless of what this option says. There
+# might be some security problems that can be prevented if you specify
+# "." here (e.g. if a web server is configured to enable server side
+# includes on filenames ending in something other than .shtml), but
+# that will prevent browsers from recognizing many file types.
+
+#unsafe_chars = "."
+
+# files_by_thread = [ 0 | 1 ]
+#
+#   Set this to 1 to generate (in addition to the usual files),
+# a file for each thread that contains all the messages in that
+# thread. The first line in each thread of the thread index page
+# links to this file instead of to a single message.
+
+#files_by_thread = 0
+
+# href_detection = [ 0 | 1 ]
+#
+#  Set this to On to assume that any string on the body of the message
+# that says <A HREF=" ... </A> is a URL, together with its markup
+# and treat it as such.
+
+#href_detection = 0
+
 # mbox_shortened = [ 0 | 1 ]
 #
 #  Set this to 1 to enable use of mbox that has had some of its
@@ -788,3 +850,21 @@ show_index_links = 1
 
 #mbox_shortened = 0
 
+# report_new_folder = [ 0 | 1 ]
+#
+#  Set this to On to have it print (on stdout) the names of any
+# new directories created pursuant to the folder_by_date or
+# msgsperfolder option, or the initial creation of the archive.
+# It will print the full path if that is what you use to specify
+# the archive directory. Does not print anything when attachment
+# or metadata directories are created.
+
+#report_new_folder = 0
+
+# report_new_file = [ 0 | 1 ]
+#
+#  Set this to On to have it print (on stdout) the names of any
+# new files created for new messages. It will print the full path
+# if that is what you use to specify the archive directory.
+
+#report_new_file = 0
