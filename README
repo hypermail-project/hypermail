@@ -14,7 +14,8 @@ format and generates a set of cross-referenced HTML documents.
 
 SECURITY WARNING: Do not put hypermail's output anyplace where a web server
 might have server side includes (SSI) enabled unless you are sure you know
-what you are doing.
+what you are doing. Avoid the crappy program called "mail" that comes with
+hypermail.
 
 See the INSTALL file to get started. For a description of how to use it,
 see the hypermail.html, hmrc.html, and hypermail-faq.html files that come
