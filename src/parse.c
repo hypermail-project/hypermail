@@ -2468,7 +2468,14 @@ static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
 			"set_folder_by_date error old msg %d num_from_gdbm %d",
 			first_read_body, num_from_gdbm);
 	    else
+#ifdef GDBM
 	        sprintf(errmsg, "folder_by_date requires usegdbm option");
+#else
+	        sprintf(errmsg, "folder_by_date requires usegdbm option"
+			". gdbm support has not been compiled into this"
+			" copy of hypermail. You probably need to install"
+			"gdbm and rerun configure.");
+#endif
 	    progerr(errmsg);
 	}
 	subdir = e0->subdir;

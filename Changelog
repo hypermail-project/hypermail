@@ -1,5 +1,12 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Peter McCluskey (Apr 3 2001)
+  - changed htmlfilename, articlehtmlfilename to allocate mem dynamically.
+  - redid config section of hypermail.html to describe some of the most
+    important options and refer to hmrc.html for a full description.
+    Changed style of hmrc.html, added folder_by_date mention to
+    hypermail-faq.html.
+
 Peter McCluskey (Mar 31 2001)
   - fixed core dump with showhtml=2 created by yesterday's checkin.
   - added isodate, gmtime options.

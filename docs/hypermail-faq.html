@@ -117,8 +117,16 @@ It and past versions are also available via FTP from
 others doing.  Is there a description somewhere of a procedure to follow,
 or will I just have to think it through?</EM>
 <P>
-If you upgrade to 2.0bx you will find things much stabler than
-1.02 and has new features you might find useful. In it is a directory
+If you are using version 2.1.0 or later and either have gdbm or don't
+do incremental updates, see the <a href="hmrc.html#folder_by_date">folder_by_date</a>
+option. The simple way to use this is to add these to your .hmrc:
+<blockquote>
+folder_by_date="%y%m"
+<br>usegdbm = 1
+</blockquote>
+and regenerate your archive from its mbox file.
+<p>
+An older alternative is a set of scripts in a directory
 named <A HREF="source/archive/">archive/</A> that has tools to do just what 
 you want to do.
 <P>

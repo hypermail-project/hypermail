@@ -275,28 +275,56 @@ In the configuration file, variables must be in lowercase and separated by their
 </PRE>
 While the example uses quotes (<STRONG>"</STRONG>), they is not required when used in the configuration file.
 <P>
-Below is a list of configuration variables that can be defined. Boolean numbers can have the value of 0 or 1.
+Below is a list of the more important configuration variables.
+For a complete list, see <a href="hmrc.html">hmrc.html</a>.
 <P>
 <DL>
-<DT><STRONG>HM_CONFIGFILE "filename"</STRONG>
-<DD>This is the default configuration file to read settings in from. This 
-     can only be specified as an environment variable. If the first character 
-     is "~", Hypermail will look for the file under the current user's home 
-     directory.
+<DT><STRONG>HM_LABEL "label name"</STRONG>
+<DD> Define this as the default label to put in archives.
+<P>
+<DT> <STRONG>HM_ARCHIVES "URL"</STRONG>
+<DD> This will create a link in the archived index pages to the specified 
+     URL. Define as <STRONG>"NONE"</STRONG> to omit such a link.
+ See also <a href="hmrc.html#custom_archives">custom_archives</a>.
+<P>
+<DT> <STRONG>HM_HMAIL "list submission address"</STRONG>
+<DD> This is the email address used to send a new message to a hypermail archive.  "NONE" means don't use it.  Since this is different for each hypermail archive, you should probably leave it set to "NONE" here, and let it be specified at runtime by command-line parameters in the list specific configfile.
+<br>See also <a href="hmrc.html#newmsg_command">newmsg_command</a>
+and  <a href="hmrc.html#replymsg_command">replymsg_command</a>.
+<P>
+<DT> <STRONG>HM_DIR "directory"</STRONG>
+<DD> This is the default directory that Hypermail will look for when creating and updating archives. If defined as <STRONG>"NONE"</STRONG>, the directory name will be the same name as the mailbox read in.
 <P>
 <DT><STRONG>HM_MBOX "filename"</STRONG>
 <DD> This is the default mailbox to read messages in from. Define this with 
      a value of <STRONG>"NONE"</STRONG> to read from standard input as the 
      default.
 <P>
-<DT><STRONG>HM_LABEL "label name"</STRONG>
-<DD> Define this as the default label to put in archives.
+<dt><strong>HM_STRIPSUBJECT "text"</strong></dt><dd>
+ A string to be stripped from all subject lines. Helps
+unclutter  mailing  lists  which  add  tags  to subject lines.
+</dd>
 <P>
-<DT><STRONG>HM_HTMLSUFFIX "suffix"</STRONG>
-<DD> Use this to specify the html file suffix (html, htm, shtml, ..) to 
-     be used when Hypermail generates the html files. This is dependent 
-     on local needs. Do not put a '.' in the value. It would result in 
-     "file..html", probably not what you want.
+<a name="folder_by_date"></a>
+<dt><strong>HM_FOLDER_BY_DATE = "strftime-date-format"</strong></dt><dd>
+This string causes the messages to be put in subdirectories
+by date. The string will be passed to strftime(3) to generate
+subdirectory names based on message dates. Suggested values are
+&quot;%y%m&quot; or &quot;%b%y&quot; for monthly subdirectories, &quot;%Y&quot; for
+yearly, &quot;%G/%V&quot; for weekly. Do not alter this for an existing
+archive without removing the old html files. If you use this
+and update the archive incrementally (e.g. with -u), you must
+use the <a href="hmrc.html#usegdbm">usegdbm</a> option.
+<br>See also <a href="hmrc.html#monthly_index">monthly_index</a>.
+</dd>
+<P>
+<a name="isodate"></a>
+<dt><strong>HM_ISODATE boolean_number</strong></dt><dd>
+Set this to On to display article received dates in
+YYYY-MM-DD HH:MM:SS format. If used with the <a href="hmrc.html#gmtime">gmtime</a>
+option, a Z will be inserted between the DD and HH.
+<br>See also <a href="hmrc.html#eurodate">eurodate</a> and <a href="hmrc.html#dateformat">dateformat</a>.
+</dd>
 <P>
 <DT><STRONG>HM_LANGUAGE "language-id"</STRONG>
 <DD> This is a two-letter string specifying the default
@@ -315,15 +343,62 @@ de - German
 <BR>se - Swedish
 </BLOCKQUOTE>
 <P>
-<DT><STRONG> HM_USELOCK [ 0 | 1 ]</STRONG> 
-<DD> Controls whether to use hypermail's built-in locking mechanism. 
-     By default, this option is set to <STRONG>1</STRONG>. Set it to 
-     <STRONG>0</STRONG> if you have an external locking mechanism,
-     like, for example, when using procmail or smartlist.
+<DT> <STRONG>HM_INCREMENT boolean_number</STRONG>
+<DD> Define as <STRONG>1</STRONG> to read one article only and append it to existing archives by default.
 <P>
-<DT><STRONG>HM_LOCKTIME "number-of-seconds"</STRONG>
-<DD>The number of seconds that a lock should be honored when processing
-    inbound messages before it is overridden.
+<a name="append"></a>
+<dt><strong>HM_APPEND boolean_number</strong></dt><dd>
+Set this to On to maintain a parallel mbox archive. The file
+name defaults to mbox in the directory specified by -d or dir.
+<br>See also <a href="hmrc.html#append_filename">append_filename</a>.
+</dd>
+<P>
+<DT> <STRONG>HM_SHOWHTML 0, 1, or 2</STRONG>
+<DD> 
+Define as <STRONG>1</STRONG> to show the articles in a proportionally-spaced
+font rather than a fixed-width (monospace) font. Setting this 
+option to 1 also tells Hypermail to attempt to italicize quoted 
+passages in articles.
+<P>
+Define as <STRONG>2</STRONG> for more complex conversion to html
+similar to that in <a href="http://www.cs.wustl.edu/~seth/txt2html/">txt2html.pl</a>.
+Showhtml = 2 will normally produce nicer looking results than
+showhtml = 1, and showhtml = 0 will look pretty dull, but
+1 and 2 run risks of altering the appearance in undesired ways.
+<P>
+<DT> <STRONG>HM_LINKQUOTES boolean_number</STRONG>
+<DD> Set this to On to create fine-grained links from quoted
+text to the text where the quote originated. It also improves
+the threads index file by more accurately matching messages
+with replies. Note that this may be rather cpu intensive (see
+the <a href="hmrc.html#searchbackmsgnum">searchbackmsgnum</a> option to alter the performance).
+<P>
+<DT> <STRONG>HM_ABOUT "URL"</STRONG>
+<DD> This will create a link in the archived index pages to the specified URL. Define as <STRONG>"NONE"</STRONG> to omit such a link.
+<P>
+<DT> <STRONG>HM_MAILTO address</STRONG>
+<DD> The address of the contact point that is put in the HTML header line
+<DL>
+<DD><STRONG>&lt;LINK REV=made HREF=mailto:MAILTO&gt;</STRONG>
+</DL>
+     The &lt;LINK...&gt; header can be  disabled  by  default  by setting HM_MAILTO to "NONE".
+<P>
+<DT> <STRONG>HM_USETABLE boolean_number</STRONG>
+<DD> Defining  this will cause Hypermail to generate an index menu in HTML table format at the top and bottom of each page.
+<P>
+<DT><STRONG>HM_INDEXTABLE boolean_number</STRONG>
+<DD>Setting this variable to 1 will tell Hypermail to  generate  
+    a message index Subject/Author/Date listings using a table 
+    format. Set to 0 if you want the standard Hypermail index 
+    page look and feel.
+<P>
+<DT> <STRONG>HM_DOMAINADDR "domainname"</STRONG>
+<DD>Set this to the domainname you want added to a mail address appearing
+in the RFC822 field which lack a hostname. When the list resides on the 
+same host as the user sending the message, it is often not required of
+the MTA to domain-ize these addresses for delivery.  In such cases, 
+Hypermail will add the DOMAINADDR to the email address. If defined as
+NONE, this feature is turned off.
 <P>
 <DT><STRONG>HM_USEMETA  [ 0 | 1 ]</STRONG>
 <DD>This option allows you to use metadata to store the content type
@@ -339,280 +414,22 @@ de - German
     convention is directly compatible with the Apache server handling of 
     metadata.
 <P>
-<DT> <STRONG>HM_ARCHIVES "URL"</STRONG>
-<DD> This will create a link in the archived index pages to the specified 
-     URL. Define as <STRONG>"NONE"</STRONG> to omit such a link.
-<P>
-<DT> <STRONG>HM_ABOUT "URL"</STRONG>
-<DD> This will create a link in the archived index pages to the specified URL. Define as <STRONG>"NONE"</STRONG> to omit such a link.
-<P>
-<DT> <STRONG>HM_DIR "directory"</STRONG>
-<DD> This is the default directory that Hypermail will look for when creating and updating archives. If defined as <STRONG>"NONE"</STRONG>, the directory name will be the same name as the mailbox read in.
-<P>
-<DT> <STRONG>HM_DEFAULTINDEX "type"</STRONG>
-<DD> This is the index that is intended to be the one that users see first when entering the archive. Possible values are <STRONG>"date"</STRONG>, <STRONG>"thread"</STRONG>, <STRONG>"subject"</STRONG>, and <STRONG>"author"</STRONG>.
-<P>
-<DT> <STRONG>HM_AVOID_INDICES "list of index files to avoid generating" </STRONG>
-<DD> This is a list of index files to not generate.
-Possible values are <STRONG>"date"</STRONG>, <STRONG>"thread"</STRONG>, <STRONG>"subject"</STRONG>, and <STRONG>"author"</STRONG>.
-They can be listed individually on multiple lines or comma or space 
-separated on a single line.
-<P>
 <DT> <STRONG>HM_REVERSE boolean_number</STRONG>
 <DD> Defining this variable as <STRONG>1</STRONG> will reverse-sort the article entries in the date and thread index files by the date they were received. That is, the most recent messages will appear at the top of the index rather than the other way around.
 <P>
-<DT> <STRONG>HM_USETABLE boolean_number</STRONG>
-<DD> Defining  this will cause Hypermail to generate an index menu in HTML table format at the top and bottom of each page.
-<P>
-<DT><STRONG>HM_INDEXTABLE boolean_number</STRONG>
-<DD>Setting this variable to 1 will tell Hypermail to  generate  
-    a message index Subject/Author/Date listings using a table 
-    format. Set to 0 if you want the standard Hypermail index 
-    page look and feel.
-<P>
-<DT> <STRONG>HM_PROGRESS [ 0 | 1 | 2 ]</STRONG>
-<DD> Define as <STRONG>1</STRONG> or <STRONG>2</STRONG> to always show a progress report as Hypermail works. Defined as 2 shows more information about the
-attachment files created.
-<P>
-<DT><STRONG>HM_ATTACHMENTLINK "attachment-link-format"</STRONG>
-<DD><BR>Format of the attachment links.
-<BLOCKQUOTE>
-%p - full path to the attachment<BR>
-%f - file name part only<BR>
-%d - directory name only<BR>
-%n - message number<BR>
-%c - content type string
-</BLOCKQUOTE>
-<P>
-<DT> <STRONG>HM_SHOW_MSG_LINKS boolean_number</STRONG>
-<DD> Define as 1 to put the individual message links at  the top of the individual message pages.  Define as 0 to produce pages without the Next, Previous, Reply, In-reply-to, etc. links.
-<P>
-<DT> <STRONG>HM_SHOWHEADERS boolean_number</STRONG>
-<DD> Define this as <STRONG>1</STRONG> to show the article header lines in the archived HTML files. These lines typically include the "To:", "From:", and "Subject:" information found in most email messages.
-<P>
-<DT> <STRONG>HM_SHOWREPLIES boolean_number</STRONG>
-<DD> Define as <STRONG>1</STRONG> to show all replies to a message as links in article files.
-<P>
-<DT> <STRONG>HM_SHOWHTML 0, 1, or 2</STRONG>
-<DD> 
-Define as <STRONG>1</STRONG> to show the articles in a proportionally-spaced
-font rather than a fixed-width (monospace) font. Setting this 
-option to 1 also tells Hypermail to attempt to italicize quoted 
-passages in articles.
-<P>
-Define as <STRONG>2</STRONG> for more complex conversion to html
-similar to that in <a href="http://www.cs.wustl.edu/~seth/txt2html/">txt2html.pl</a>.
-Showhtml = 2 will normally produce nicer looking results than
-showhtml = 1, and showhtml = 0 will look pretty dull, but
-1 and 2 run risks of altering the appearance in undesired ways.
-<P>
-<DT> <STRONG>HM_SHOWBR boolean_number</STRONG>
-<DD> Define as <STRONG>1</STRONG> to place <STRONG>&lt;br&gt;</STRONG> tags at the end of article lines. Otherwise, all non-quoted article lines will word wrap. This
-only takes effect if <STRONG>HM_SHOWHTML</STRONG> is defined.
-<P>
-<DT> <STRONG>HM_IQUOTES boolean_number</STRONG>
-<DD> Define as <STRONG>1</STRONG> to italicize quoted lines.
-<P>
-<DT> <STRONG>HM_SHOWHR boolean_number</STRONG>
-<DD> Define as <STRONG>1</STRONG> to place horizontal rules before and after articles.
-<P>
-<DT> <STRONG>HM_OVERWRITE boolean_number</STRONG>
-<DD> Define as <STRONG>1</STRONG> to make Hypermail overwrite existing archives by default.
-<P>
-<DT> <STRONG>HM_READONE boolean_number</STRONG>
-<DD> Set this to 1 to specify there is only one message in the input.
-<P>
-<DT> <STRONG>HM_INCREMENT boolean_number</STRONG>
-<DD> Define as <STRONG>1</STRONG> to read one article only and append it to existing archives by default.
-<P>
-<DT> <STRONG>HM_DISCARD_DUP_MSGIDS boolean_number</STRONG>
-<DD> Set this to 0 to accept messages with a Message-ID matching that 
-     of a message already in this archive. By default such messages 
-     are discarded.
-<P>
-<DT><STRONG>HM_REQUIRE_MSGIDS boolean_number</STRONG>
-<DD> Set this to 0 to accept messages without a Message-ID header.
-     Set this to 1 to discard messages without a Message-ID header.
-     By default such messages are discarded.
-<P>
-<DT> <STRONG>HM_DATEFORMAT strftime-date-format</STRONG>
-<DD> Format used in strftime(3) call for  displaying  dates.
-     See strftime(3) for the valid conversion specifications.
-<P>
-<DT> <STRONG>HM_THRDLEVELS number</STRONG>
-<DD> This specifies the number of thread levels to outline in the thread index. For instance, if <STRONG>HM_THRDLEVELS</STRONG> is <STRONG>2</STRONG>, replies to messages will be indented once in the index, but replies to replies, etc., will only be indented once as well.
-<P>
-<DT> <STRONG>HM_EURODATE boolean_number</STRONG>
-<DD> Define as <STRONG>1</STRONG> to display article received dates with days before months instead of months before days.
-<P>
-<DT> <STRONG>HM_DIRMODE octal_number</STRONG>
-<DD> This is an octal number representing the permissions that new directories are set to when they are created. If the archives will be made publically available, it's a good idea to define this as <STRONG>0755</STRONG>. If files will be updated incrementally with sendmail, you should make sure the owner of the archives is a sendmail trusted user. See sendmail documentation for more information.
-<P>
-<DT> <STRONG>HM_FILEMODE octal_number</STRONG>
-<DD> This is an octal number representing the file permissions that new files are set to when they are created. If the archives will be made publically available, it's a good idea to define this as <STRONG>0644</STRONG>. If files will be updated incrementally with sendmail, you should make sure the owner of the archives is a sendmail trusted user. See sendmail documentation for more information.
-<P>
-<DT> <STRONG>HM_MAILCOMMAND "command"</STRONG>
-<DD> This specifies the mail command to use when converting email addresses to links. Variables can be used in constructing the command string:
-<P>
-<UL>
-<LI><STRONG>$TO</STRONG> represents the address to send mail to,
-<LI><STRONG>$SUBJECT</STRONG> represents the subject that is being replied to, and
-<LI><STRONG>$ID</STRONG> represents the message ID of the article that is being replied to.
-</UL>
-<P>
-If defined as <STRONG>"NONE"</STRONG>, email addresses will not be converted to links in articles. A possible command one could use is <STRONG>"mailto:$TO"</STRONG>,
-but this could easily be changed to specify a CGI program such as <STRONG>"/cgi-bin/mail?to=$TO"</STRONG>. A CGI mail program is included with the source which can be used for this purpose.
-<P>
-<DT> <STRONG>HM_MAILTO address</STRONG>
-<DD> The address of the contact point that is put in the HTML header line
-<DL>
-<DD><STRONG>&lt;LINK REV=made HREF=mailto:MAILTO&gt;</STRONG>
-</DL>
-     The &lt;LINK...&gt; header can be  disabled  by  default  by setting HM_MAILTO to "NONE".
-<P>
-<DT> <STRONG>HM_DOMAINADDR "domainname"</STRONG>
-<DD>Set this to the domainname you want added to a mail address appearing
-in the RFC822 field which lack a hostname. When the list resides on the 
-same host as the user sending the message, it is often not required of
-the MTA to domain-ize these addresses for delivery.  In such cases, 
-Hypermail will add the DOMAINADDR to the email address. If defined as
-NONE, this feature is turned off.
-<P>
-<DT> <STRONG>HM_IHTMLHEADERFILE "path"</STRONG>
-<DD> Define path as the path to a file containing valid HTML formatting statements that you wish to included at the top of every index page. Hypermail will print this file as the header of the index so make sure it contains <STRONG>&lt;HTML&gt;, &lt;HEAD&gt;, and &lt;BODY&gt;</STRONG> and other statements that suit your local customized needs.
-<P>
-<DT> <STRONG>HM_IHTMLFOOTERFILE "path"</STRONG>
-<DD> Define path as the path to a file containing valid HTML formatting statements that you wish to included at the bottom of every index page. Hypermail will print this file as the trailer of the index so make sure it contains at a minimum a <STRONG>&lt;/BODY&gt; and &lt;/HTML&gt;</STRONG> statement.
-<P>
 <DT> <STRONG>HM_MHTMLHEADERFILE "path"</STRONG>
 <DD> Define path as the path to a file containing valid HTML formatting statements that you wish to included at the top of every message page. Hypermail will print this file as the header of the message so make sure it contains <STRONG>&lt;HTML&gt;, &lt;HEAD&gt;, and &lt;BODY&gt; </STRONG> and other statements that suit your local customized needs.
+<br>
+See also <a href="hmrc.html#ihtmlheaderfile">ihtmlheaderfile</a>,
+<a href="hmrc.html#ihtmlfooterfile">ihtmlfooterfile</a>, and
+<a href="hmrc.html#mhtmlfooterfile">mhtmlfooterfile</a>.
 <P>
-<DT> <STRONG>HM_MHTMLFOOTERFILE "path"</STRONG>
-<DD> Define path as the path to a file containing valid HTML formatting statements that you wish to included at the bottom of every message page. Hypermail will print this file as the trailer of the message so make sure it contains at a minimum a <STRONG>&lt;/BODY&gt; and &lt;/HTML&gt; </STRONG> statement.
+<DT><STRONG>HM_CONFIGFILE "filename"</STRONG>
+<DD>This is the default configuration file to read settings in from. This 
+     can only be specified as an environment variable. If the first character 
+     is "~", Hypermail will look for the file under the current user's home 
+     directory.
 <P>
-<DT> <STRONG>HM_HMAIL "list submission address"</STRONG>
-<DD> This is the email address used to send a new message to a hypermail archive.  "NONE" means don't use it.  Since this is different for each hypermail archive, you should probably leave it set to "NONE" here, and let it be specified at runtime by command-line parameters in the list specific configfile.
-<P>
-<DT> <STRONG>HM_BODY "HTML &lt;BODY&gt; statement"</STRONG>
-<DD> This is the &lt;BODY&gt; line to use when generating the HTML pages.
-Define as "NONE" to use the builtin &lt;BODY&gt; line by default.
-<P>
-<DT> <STRONG>HM_SHOW_HEADERS "list of RFC 822 Headers to display"</STRONG>
-<DD> Define the list of headers to be displayed if the variable HM_SHOWHEADERS
-is set to 1 (ON). If  it contains the special character ``*'' hypermail will 
-display all header lines.  This is a comma or space separated all on a single 
-line such as
-<BLOCKQUOTE>
-show_headers = From,Subject,Date,Message-ID
-</BLOCKQUOTE>
-or they can be listed individually or any combination of.
-<BLOCKQUOTE>
-show_headers = From
-<BR>show_headers = Subject
-<BR>show_headers = Date
-<BR>show_headers = Message-ID
-</BLOCKQUOTE>
- 
-<DT> <STRONG>HM_INLINE_TYPES "indicate which data types should be inlined"</STRONG>
-<DD>This is the list of MIME types that you want inlined as opposed to
-simply linked into the message. They can be listed individually on
-multiple lines or comma or space separated on a single line.
-<BLOCKQUOTE>
-inline_types = image/gif image/jpeg
-</BLOCKQUOTE>
-or
-<BLOCKQUOTE>
-inline_types = image/gif
-<BR>inline_types = image/jpeg
-</BLOCKQUOTE>
- 
-<DT><STRONG>HM_IGNORE_TYPES "indicate which types of attachments to ignore"</STRONG>
-<DD>This is the list of MIME attachment types that you do not want to
-do anything with. They are quietly ignored.  They can be listed
-individually on multiple lines or comma or space separated on a
-single line.
-<BLOCKQUOTE>
-ignore_types = text/x-vcard application/x-msdownload
-</BLOCKQUOTE>
-or
-<BLOCKQUOTE>
-ignore_types = text/x-vcard
-<BR>ignore_types = application/x-msdownload
-</BLOCKQUOTE>
-
-<P>
-<DT> <STRONG>HM_TEXT_TYPES "list of types to be the same as text/plain"</STRONG>
-<DD> This is a list of MIME types that you want hypermail to treat
-exactly as if they were text/plain. They can be listed individually 
-on multiple lines or comma or space separated on a single line.
-
-<BLOCKQUOTE>
-text_types = text, text/plain, message/rfc822
-</BLOCKQUOTE>
-<P>
-
-<DT> <STRONG>HM_PREFERED_TYPES "multipart/mixed types to present"</STRONG>
-<DD> When mails using multipart/mixed types are scanned, this list of
-     MIME types defines which part you want presented in the result.
-<BLOCKQUOTE>
-prefered_types = text/plain, text/html
-</BLOCKQUOTE>
-
-<DT> <STRONG>HM_LINKQUOTES boolean_number</STRONG>
-<DD> Set this to On to create fine-grained links from quoted
-text to the text where the quote originated. It also improves
-the threads index file by more accurately matching messages
-with replies. Note that this may be rather cpu intensive (see
-the searchbackmsgnum option to alter the performance).
-
-<DT> <STRONG>HM_SEARCHBACKMSGNUM postive integer</STRONG>
-<DD> If the linkquotes option is on and an incremental update is being
-done (-u option), this controls the tradeoff between speed and
-the reliability of finding the right source for quoted text.
-Try to set it to the largest number of messages between a
-message and the final direct reply to that message.
-
-<DT> <STRONG>HM_LINK_TO_REPLIES "text used to indicate links to replies"</STRONG>
-<DD> If the linkquotes option is on, specifying a string here
-causes it to generate links from original quoted text the
-location(s) in replies which quote them. The string
-is used to display the link.
-
-<DT> <STRONG>HM_QUOTE_HIDE_THRESHOLD percent (integer)</STRONG>
-<DD> If the linkquotes option is on, setting this to an
-integer less than 100 will cause it to replace quoted
-text with one-line links if the percent of lines in the
-message body (exluding the signature) consisting of
-quoted text exceeds the number indicated by this option.
-
-<DT> <STRONG>HM_QUOTE_LINK_STRING "text to appear in place of quoted text"</STRONG>
-<DD> If the quote_hide_threshold option is being used, the
-quote_link_string will be used if available to display the
-link that replaces the quoted text. If no string is specified
-here, the first line of each section of quoted text will used.
-
-<DT> <STRONG>HM_MONTHLY_INDEX = boolean_number</STRONG>
-<DD> Set this to On to create additional index files broken up
-by month. A summary.html file will provide links to all the
-monthly indices.
-
-<DT> <STRONG>HM_YEARLY_INDEX = boolean_number</STRONG>
-<DD> Set this to On to create additional index files broken up
-by year. A summary.html file will provide links to all the
-yearly indices.
-
-<DT> <STRONG>HM_THREAD_FILE_DEPTH = 0 or 1</STRONG>
-<DD> If nonzero, break the threads index file into multiple files,
-with the initial message of each thread in the main index file
-along with links to files containing the replies. Setting this
-to 1 creates one file for each thread that has replies, and is
-recommended for archives with over a few hundred messages.
-Setting this greater than 1 will produce multiple levels of files
-for each thread whose replies are nested by more than 1 level,
-but that is rarely useful. This option is currently disabled
-if the indextable option is turned on, and probably needs to
-be less than thrdlevels.
-
 </DL>
 <P>
 
