@@ -53,6 +53,7 @@ bool set_usegdbm;
 #endif
 bool set_append;
 char *set_append_filename;
+bool set_warn_surpressions;
 
 int set_showhtml;
 int set_thrdlevels;
@@ -182,7 +183,7 @@ struct Config cfg[] = {
      "# msgsperfolder option. Valid types are date, thread, author, \n"
      "# subject, folders, and attachment.\n"},
 
-    {"overwrite", &set_overwrite, BTRUE, CFG_SWITCH,
+    {"overwrite", &set_overwrite, BFALSE, CFG_SWITCH,
      "# Set this to On to make Hypermail overwrite existing archives.\n"},
 
     {"inlinehtml", &set_inlinehtml, BTRUE, CFG_SWITCH,
