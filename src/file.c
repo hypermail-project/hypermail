@@ -361,7 +361,6 @@ int find_max_msgnum()
     }
     closedir(dir);
     free(s_dir);
-    max_msgnum = max_num;
     return max_num;
 }
 

@@ -2512,8 +2512,7 @@ int parsemail(char *mbox,	/* file name */
     crossindex();
     threadlist = NULL;
     printedthreadlist = NULL;
-    if (!set_linkquotes)	/* postpone until later if set_linkquotes */
-	crossindexthread1(datelist);
+    crossindexthread1(datelist);
 #if DEBUG_THREAD
     {
 	struct reply *r;
@@ -2798,6 +2797,8 @@ static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
     struct reply *replylist_tmp = NULL;
     int first_read_body = 0;
 
+    if (max_num > max_msgnum)
+	max_msgnum = max_num;
     if (set_searchbackmsgnum) {
 	first_read_body = max_num - set_searchbackmsgnum;
 	if (first_read_body < 0)
@@ -3395,6 +3396,8 @@ void fixthreadheader(char *dir, int num, int max_update)
 		    fprintf(fp, "%s: \"%s\"</a>\n",
 			    name, ptr = convchars(subject));
 		    free(ptr);
+		    if (bp->next && strstr(bp->next->line, lang[MSG_NEXT_IN_THREAD]))
+		        bp = bp->next; /* skip old copy of this line */
 		}
 	    }
 	    bp = bp->next;

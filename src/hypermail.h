@@ -235,6 +235,8 @@ struct emailinfo {
 #define PRINT_THREAD 1		/* set if already used in the thread output */
 #define USED_THREAD  2		/* set if already stored in threadlist */
 
+    int initial_next_in_thread;	/* msgnum written as next during normal print*/
+
     struct body *bodylist;
 #ifdef FASTREPLYCODE
     struct reply *replylist;    /* list all possible direct replies to this */

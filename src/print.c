@@ -1109,6 +1109,22 @@ print_leading_whitespace(FILE *fp, char *sp)
     return sp;
 }
 
+static int
+has_new_replies(struct emailinfo *email)
+{
+    struct reply *rp;
+    static int max_old_msgnum = -2;
+    if (max_old_msgnum == -2)
+	max_old_msgnum = find_max_msgnum();
+    if (email->msgnum == max_old_msgnum)
+	return 1;  /* next msg needs to be linked, even if no new reply */
+    for (rp = email->replylist; rp != NULL; rp = rp->next) {
+	if (rp->frommsgnum == email->msgnum && rp->msgnum > max_old_msgnum)
+	    return 1;
+    }
+    return 0;
+}
+
 /*
  * Perform deletions on old messages when run in incremental mode.
  */
@@ -1148,6 +1164,7 @@ void update_deletions(int num_old)
     }
     set_overwrite = save_ov;
 }
+
 /*
 ** Printing...the other main part of this program!
 ** This writes out the articles, beginning with the number startnum.
@@ -1239,7 +1256,7 @@ void writearticles(int startnum, int maxnum)
 	    free(filename);
 	    continue;
 	}
-	else if (!newfile && !set_overwrite
+	else if (!newfile && !set_overwrite && !has_new_replies(email)
 		 && !(email->is_deleted && set_delete_msgnum)) {
 	    skip = 1;		/* is this really necessary with continue ??? */
 	    num++;
@@ -1421,6 +1438,7 @@ void writearticles(int startnum, int maxnum)
 			ptr = convchars(email_next_in_thread->subject));
 		if (ptr)
 		    free(ptr);
+		email->initial_next_in_thread = email_next_in_thread->msgnum;
 	    }
 
 	    /*

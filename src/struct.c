@@ -264,6 +264,7 @@ struct emailinfo *addhash(int num, char *date, char *name,
     e->is_deleted = 0;
     e->exp_time = -1;
     e->bodylist = sp;
+    e->initial_next_in_thread = -1;
 
     /* Added by Daniel 1999-03-19, we need this hash later to find the mail
        we replied to */

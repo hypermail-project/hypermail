@@ -577,7 +577,7 @@ int main(int argc, char **argv)
 
 	if (set_show_msg_links) {
 	    fixnextheader(set_dir, amount_old, -1);
-	    for (i = amount_old; i < amount_new; ++i) {
+	    for (i = amount_old; i <= max_msgnum; ++i) {
 		if (set_showreplies)
 		    fixreplyheader(set_dir, i, 0, amount_old);
 		fixthreadheader(set_dir, i, amount_old);
@@ -601,8 +601,25 @@ int main(int argc, char **argv)
     if (amount_new) {		/* Always write the index files */
 	if (set_linkquotes) {
 	    threadlist = NULL;
+	    threadlist_end = NULL;
 	    printedthreadlist = NULL;
+	    for (i = 0; i <= max_msgnum; ++i) {
+	        struct emailinfo *ep;
+		if (hashnumlookup(i, &ep)) {
+		    ep->flags &= ~USED_THREAD;
+		    ep->isreply = 0;
+		}
+		threadlist_by_msgnum[i] = NULL;
+	    } /* redo threading with more complete info than in 1st pass */
 	    crossindexthread1(datelist);
+	    for (i = 0; i <= max_msgnum; ++i) {
+	        struct emailinfo *ep, *etmp;
+		hashnumlookup(i, &ep);
+		etmp = nextinthread(i);
+		if (etmp && ep->initial_next_in_thread != etmp->msgnum)
+		    fixthreadheader(set_dir, etmp->msgnum, amount_new);
+		/* if (ep->flags & THREADING_ALTERED) */
+	    }
 	}
 	count_deleted(max_msgnum + 1);
 	if (show_index[0][DATE_INDEX])
