@@ -60,6 +60,10 @@ contrib/fixhtime.pl
 contrib/hyperfeed.pl
 contrib/hypetombox.pl
 contrib/ls2mail
+contrib/mailbox_date_trimmer/README.html
+contrib/mailbox_date_trimmer/README.mailbox_reader
+contrib/mailbox_date_trimmer/mailbox_date_trimmer.py
+contrib/mailbox_date_trimmer/mailbox_reader.py
 contrib/msg2hypermailarchive.py
 contrib/runtest
 # 
