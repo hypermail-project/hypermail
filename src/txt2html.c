@@ -578,7 +578,7 @@ void txt2html(FILE *fp, struct emailinfo *email, const struct body *bp, bool rep
 	}
 	if (!set_linkquotes) {
 	    fprintf(fp, "<i class=\"%s\">", find_quote_class(line));
-	    ConvURLs(fp, chomp(line), email->msgid, email->subject);
+	    ConvURLs(fp, chomp(line), email->msgid, email->subject, email->charset);
 	    fprintf(fp, "</i><br>\n");
 	}
 		else if (handle_quoted_text(fp, email, bp, line, inquote, quote_num, replace_quoted, maybe_reply)) {
@@ -595,7 +595,7 @@ void txt2html(FILE *fp, struct emailinfo *email, const struct body *bp, bool rep
 	    sp = line;
 	else
 	    sp = print_leading_whitespace(fp, line);
-	ConvURLs(fp, chomp(sp), email->msgid, email->subject);
+	ConvURLs(fp, chomp(sp), email->msgid, email->subject, email->charset);
 	fprintf(fp, "\n");
     }
     if (is_caps_line)

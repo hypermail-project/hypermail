@@ -59,6 +59,7 @@ char *set_append_filename;
 bool set_nonsequential;
 bool set_warn_surpressions;
 bool set_files_by_thread;
+bool set_href_detection;
 
 int set_showhtml;
 int set_thrdlevels;
@@ -673,6 +674,11 @@ struct Config cfg[] = {
      "# Set this to On to generate (in addition to the usual files),\n"
      "# a file for each thread that contains all the messages in that\n"
      "# thread.\n", FALSE},
+
+    {"href_detection", &set_href_detection, BTRUE, CFG_SWITCH,
+     "# Set this to On to assume that any string on the body of the message\n"
+     "# that says <A HREF=\"     </A> is a URL, together with its markup\n"
+     "and treat it as such.", TRUE},
 };
 
 /* ---------------------------------------------------------------- */

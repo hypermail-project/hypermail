@@ -74,7 +74,7 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 	    case 'A':		/* %e - email address of message author */
 		if (email && name) {
 		    fprintf(fp,
-			    "<meta name=\"Author\" content=\"%s (%s)\">",
+			    "<meta name=\"Author\" content=\"%s (%s)\" />",
 			    name, email);
 		}
 		continue;
@@ -98,7 +98,7 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 		if (charset && *charset) {
 		    /* only output this if we have a charset */
 		    fprintf(fp, "<meta http-equiv=\"Content-Type\""
-			    " content=\"text/html; charset=%s\">\n",
+			    " content=\"text/html; charset=%s\" />\n",
 			    charset);
 		}
 		continue;
@@ -106,7 +106,7 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 	    case 'D':		/* %D - date of message */
 		if (date) {
 		    fprintf(fp,
-			    "<meta name=\"Date\" content=\"%s\">",
+			    "<meta name=\"Date\" content=\"%s\" />",
 			    date);
 		}
 		continue;
@@ -151,13 +151,13 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 		    putc(*cp, fp);
 		continue;
 	    case 's':		/* %s - Subject of message or Index Title */
-		for (ptr = cp = convchars(subject); *cp; cp++)
+		for (ptr = cp = convchars(subject, charset); *cp; cp++)
 		    putc(*cp, fp);
 		free(ptr);
 		continue;
 	    case 'S':		/* %s - Subject of message or Index Title */
-		fprintf(fp, "<meta name=\"Subject\" content=\"%s\">",
-			cp = convchars(subject));
+		fprintf(fp, "<meta name=\"Subject\" content=\"%s\" />",
+			cp = convchars(subject, charset));
 		free(cp);
 		continue;
 	    case 't':
@@ -199,10 +199,17 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
     char *title;
     char *rp;
 
+    /* @@ JK: Don't know what to do with US-ASCII. If there's no charset,
+       assume the default one is ISO-8859-1 */
+    if (charset && *charset)
+      rp = charset;
+    else
+      rp = "ISO-8859-1";
     fprintf(fp,
-	    "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"\n"
-            "                      "
-	    "\"http://www.w3.org/TR/html4/strict.dtd\">\n");
+	    "<?xml version=\"1.0\" encoding=\"%s\"?>\n"
+	    "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n"
+	    "    \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n",
+	    rp);
     fprintf(fp, "<html lang=\"%s\">\n", set_language);
     fprintf(fp, "<head>\n");
 
@@ -210,16 +217,16 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
 	/* charset info "as early as possible within the HEAD of the document"
 	 */
 	fprintf(fp, "<meta http-equiv=\"Content-Type\""
-		" content=\"text/html; charset=%s\">\n", charset);
+		" content=\"text/html; charset=%s\" />\n", charset);
     }
-    fprintf(fp, "<meta name=\"generator\" content=\"%s %s, see %s\">\n",
+    fprintf(fp, "<meta name=\"generator\" content=\"%s %s, see %s\" />\n",
                 PROGNAME, VERSION, HMURL);
 
     /* 
      * Strip off any trailing whitespace in TITLE so weblint is happy. 
      */
 
-    trio_asprintf(&title, "%s: %s", label, rp = convchars(subject));
+    trio_asprintf(&title, "%s: %s", label, rp = convchars(subject, charset));
     free(rp);
 
     rp = title + (strlen(title) - 1);
@@ -238,21 +245,21 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
     free(title);
 
     if (name && email)
-	fprintf(fp, "<meta name=\"Author\" content=\"%s (%s)\">\n",name,email);
-    fprintf(fp, "<meta name=\"Subject\" content=\"%s\">\n", rp =
-	    convchars(subject));
-	fprintf(fp, "<meta name=\"Date\" content=\"%s\">\n",date);
+	fprintf(fp, "<meta name=\"Author\" content=\"%s (%s)\" />\n",name,email);
+    fprintf(fp, "<meta name=\"Subject\" content=\"%s\" />\n", rp =
+	    convchars(subject, charset));
+	fprintf(fp, "<meta name=\"Date\" content=\"%s\" />\n",date);
     free(rp);
     if (use_mailto)
-	fprintf(fp, "<link rev=\"made\" href=\"mailto:%s\">\n", set_mailto);
+	fprintf(fp, "<link rev=\"made\" href=\"mailto:%s\" />\n", set_mailto);
 
     /* print the css url according to the type of header */
     if (index_header && set_icss_url && *set_icss_url) {
-      fprintf(fp, "<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">\n",
+      fprintf(fp, "<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\" />\n",
               set_icss_url);
 
     } else if (!index_header && set_mcss_url && *set_mcss_url) {
-      fprintf(fp, "<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">\n",
+      fprintf(fp, "<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\" />\n",
               set_mcss_url);
 
     } else {
@@ -293,15 +300,15 @@ void print_msg_header(FILE *fp, char *label, char *subject,
 			  charset, secs_to_iso_meta(date), filename);
 #if 0 /* JK modified this */       
 	fprintf(fp, "<h1 class=\"center\">%s</h1>\n",
-		ptr = convchars(subject));
+		ptr = convchars(subject, charset));
 	free(ptr);
 #endif
 	fprintf(fp, "<h1>%s</h1>\n",
-		ptr = convchars(subject));
+		ptr = convchars(subject, charset));
 	free(ptr);
 #if 0 /* JK: and removed this as it looked a bit strange */
 	if (!set_usetable)
-	    fprintf(fp, "<hr>\n<p>\n");
+	    fprintf(fp, "<hr />\n<p />\n");
 #endif
     }
 }
@@ -318,10 +325,10 @@ void print_index_header(FILE *fp, char *label, char *dir, char *subject,
 		  NULL, NULL, NULL, filename);
     else {
 	print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL, NULL);
-	fprintf(fp, "<h1 class=\"center\">%s<br>%s</h1>\n", label, subject);
+	fprintf(fp, "<h1 class=\"center\">%s<br />%s</h1>\n", label, subject);
 #if 0 /*@@ JK: removed it */	
 	if (!set_usetable)
-	    fprintf(fp, "<hr>\n");
+	    fprintf(fp, "<hr />\n");
 #endif
     }
 }
@@ -340,7 +347,7 @@ void printfooter(FILE *fp, char *htmlfooter, char *label, char *dir,
 		  dir, NULL, NULL, NULL, NULL, NULL, filename);
     else {
 	if (set_showhr && !set_usetable)
-	    fprintf(fp, "<hr>\n");
+	    fprintf(fp, "<hr />\n");
 	fprintf(fp, "<p><small><em>\n");
 	fprintf(fp, "%s ", lang[MSG_ARCHIVE_GENERATED_BY]);
 	fprintf(fp, "<a href=\"%s\">%s %s</a> \n", HMURL, PROGNAME, VERSION);

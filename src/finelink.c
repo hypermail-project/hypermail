@@ -308,7 +308,7 @@ static char *url_replying_to(struct emailinfo *email, char *line1,	/* first line
 	    char *tptr = (char *)emalloc(p - line2 + 1 + strlen(p + 3));	/* AUDIT biege: IOF unlikely */
 	    strncpy(tptr, line2, p - line2);
 	    strcpy(tptr + (p - line2), p + 3);
-	    parsed = ConvURLsString(tptr, email->msgid, email->subject);
+	    parsed = ConvURLsString(tptr, email->msgid, email->subject, email->charset);
 	    free(tptr);
 	    tptr = stripwhitespace(parsed ? parsed : "");
 	    if (parsed)
@@ -351,7 +351,7 @@ static char *url_replying_to(struct emailinfo *email, char *line1,	/* first line
     }
     if (match_info.msgnum >= 0) {
 		char *parsed = ConvURLsString(match_info.last_matched_string, email->msgid,
-			   email->subject);
+			   email->subject, email->charset);
 	if (parsed) {
 	    char *parsed2 = stripwhitespace(parsed);
 	    free(parsed);
@@ -394,7 +394,7 @@ int handle_quoted_text(FILE *fp, struct emailinfo *email, const struct body *bp,
     const struct body *last_quoted_line = bp;
     int count_quoted_lines = 0;
     char *fmt2;
-    char *cvtd_line = ConvURLsString(unquote(line), email->msgid, email->subject);
+    char *cvtd_line = ConvURLsString(unquote(line), email->msgid, email->subject, email->charset);
     char *buffer1;
 	trio_asprintf(&fmt2, set_iquotes ? "<em class=\"%s\">%%s</em><br>" : "<span class=\"%s\">%%s</span><br>", find_quote_class(line));
     trio_asprintf(&buffer1, fmt2, cvtd_line ? cvtd_line : "");
@@ -407,7 +407,7 @@ int handle_quoted_text(FILE *fp, struct emailinfo *email, const struct body *bp,
     }
     cvtd_line = unquote_and_strip(line);
     if (strlen(cvtd_line) < 5 && (!replace_quoted || !inquote)) {
-	char *parsed = ConvURLsString(line, email->msgid, email->subject);
+	char *parsed = ConvURLsString(line, email->msgid, email->subject, email->charset);
 	if (parsed) {
 	    fprintf(fp, fmt2, parsed);
 	    free(parsed);
@@ -431,11 +431,11 @@ int handle_quoted_text(FILE *fp, struct emailinfo *email, const struct body *bp,
 	}
 	if (set_link_to_replies)
 	    fprintf(fp, "<a name=\"qlink%d\"></a>", quote_num);
-	p2 = ConvURLsString(part2, email->msgid, email->subject);
+	p2 = ConvURLsString(part2, email->msgid, email->subject, email->charset);
 	if (replacing)
 	    fprintf(fp, fmt1, url1, set_quote_link_string, p2 ? p2 : "");
 	else {
-	    char *tmpptr = convchars(tmpline);
+	    char *tmpptr = convchars(tmpline, email->charset);
 	    if (tmpptr) {
 		fprintf(fp, fmt1, url1, tmpptr, p2 ? p2 : "");
 		free(tmpptr);
@@ -451,7 +451,7 @@ int handle_quoted_text(FILE *fp, struct emailinfo *email, const struct body *bp,
 	return 1;
     }
     else if (!replace_quoted || !inquote) {
-	char *parsed = ConvURLsString(bp->line, email->msgid, email->subject);
+	char *parsed = ConvURLsString(bp->line, email->msgid, email->subject, email->charset);
 	if (parsed) {
 	    fprintf(fp, quoting_msgnum >= 0 ? fmt2 : "%s<br>\n", parsed);
 	    free(parsed);
@@ -538,7 +538,7 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
 	    in_body = 1;
 	if (!in_body) {
 	    if (!strcmp(buffer, "<!-- nextthread=\"start\" -->\n")) {
-		char *tmpptr = convchars(ep2->subject);
+		char *tmpptr = convchars(ep2->subject, ep2->charset);
 		if (tmpptr) {
 		    char *path = get_path(ep, ep2);
                     fprintf(fp2, "<li> <strong>%s:</strong> " "<a href=\"%s%.4d.%s\">%s: \"%s\"</a>\n", lang[MSG_IN_REPLY_TO], path, new_reply_to, set_htmlsuffix, ep2->name, tmpptr ? tmpptr : "");

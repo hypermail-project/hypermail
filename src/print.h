@@ -27,7 +27,7 @@ void printsubjects(FILE *, struct header *, char **, int, int,
 		   struct emailinfo *);
 void printauthors(FILE *, struct header *, char **, int, int,
 		  struct emailinfo *);
-void printattachments(FILE *, struct header *, struct emailinfo *);
+int printattachments(FILE *, struct header *, struct emailinfo *);
 
 int checkreplies(FILE *, int, int level, int thread_file_depth);
 void fprint_menu(FILE *, mindex_t, char *, char *, char *, int,
@@ -40,8 +40,8 @@ void print_index_footer_links(FILE *, mindex_t, long, int,
 			      struct emailsubdir *);
 void printhtml(FILE *, char *);
 int showheader(char *);
-void ConvURLs(FILE *, char *, char *, char *);
-char *ConvURLsString(char *, char *, char *);
+void ConvURLs(FILE *, char *, char *, char *, char *);
+char *ConvURLsString(char *, char *, char *, char *);
 void write_summary_indices(int);
 void write_toplevel_indices(int);
 struct emailinfo *nextinthread(int);

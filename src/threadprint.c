@@ -98,7 +98,7 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 	    num_replies[level] = 0;
 	    if ((level < set_thrdlevels) && !set_indextable) {
 		if (level > thread_file_depth) {
-		    fprintf(fp, "<ul>\n");
+		    fprintf(fp, "<li><ul>\n");
 		}
 		else if (level < MAXSTACK) {
 		    char *filename;
@@ -158,7 +158,7 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 		if (!set_indextable) {
 		    while (level < newlevel) {
 			if (level < set_thrdlevels) {
-			    fprintf(fp, "<ul>\n");
+			    fprintf(fp, "<li><ul>\n");
 			}
 			level++;
 		    }
@@ -224,7 +224,7 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
     char *href = NULL;
     char buffer[256];
 
-    subj = convchars(email->subject);
+    subj = convchars(email->subject, email->charset);
 
     if (set_files_by_thread) {
 	int maybe_reply = 0;
@@ -256,7 +256,7 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
     }
     else {
 	fprintf(fp, "<li>%s<strong>%s</strong></a> "
-		"<a name=\"%d\"><em>%s <small>(%s)</small></em></a>\n", href,
+		"<a name=\"%d\"><em>%s <small>(%s)</small></em></a></li>\n", href,
 		subj, email->msgnum, email->name, getdatestr(email->date));
     }
     free(subj);
@@ -317,12 +317,12 @@ static int finish_thread_levels(FILE **fp, int level, int newlevel,
 	    num_replies[level - 1] += num_replies[level];
 	    if (level < set_thrdlevels) {
 		if (level > thread_file_depth) {
-		    fprintf(*fp, "</ul>\n");
+		    fprintf(*fp, "</ul></li>\n");
 		}
 		else if (level < MAXSTACK) {
 		    char *filename = htmlfilename(filename_stack[level],
 						  subdir_email, "");
-		    fprintf(*fp, "</ul>");
+		    fprintf(*fp, "</ul></li>");
 		    printfooter(*fp, ihtmlfooterfile, set_label, set_dir,
 				subject_stack[level], filename);
 		    fclose(*fp);

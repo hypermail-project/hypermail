@@ -145,6 +145,7 @@ src/txt2html.c
 src/txt2html.h
 src/uudecode.c
 src/uudecode.h
+src/uconvert.h
 #
 # Source to pcre supporting library 
 #
@@ -221,7 +222,6 @@ src/fnv/fnv64.c
 src/fnv/hash_32.c
 src/fnv/hash_64.c
 src/fnv/have_ulong64.c
-src/fnv/configure.scan
 src/fnv/aclocal.m4
 src/fnv/configure
 src/fnv/config.guess

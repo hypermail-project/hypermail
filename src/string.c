@@ -26,7 +26,7 @@
 #include "hypermail.h"
 #include "setup.h"
 #include "parse.h"
-
+#include "uconvert.h"
 
 /*
 ** Push byte onto a buffer realloc the buffer if needed.
@@ -489,16 +489,47 @@ int isquote(const char *line)
 }
 
 /*
+** A ripoff from convchars, for a special case.
+** Converts - to &ndash;. Used for storing strings
+** in XML comments.
+**
+** Returns an ALLOCATED string!
+*/
+char *convdash (char *line)
+{
+    struct Push buff;
+
+    INIT_PUSH(buff);		/* init macro */
+
+    /* avoid strlen() for speed */
+
+    for (; *line; line++) {
+
+      if (*line == '-')
+	PushString(&buff, "&ndash;");
+      else
+	PushByte(&buff, *line);
+    }
+    RETURN_PUSH(buff);
+} /* end convdash() */
+
+/*
 ** Converts <, >, and & to &lt;, &gt; and &amp;.
 ** It was ugly. Now its better. And probably faster.
 **
 ** Returns an ALLOCATED string!
 */
 
-char *convchars(char *line)
+char *convchars(char *line, char *charset)
 {
     struct Push buff;
     int in_ascii = TRUE, esclen = 0;
+    bool is_iso_8859_1;
+
+    if (charset && !strcasecmp ("iso-8859-1", charset))
+      is_iso_8859_1 = TRUE;
+    else
+      is_iso_8859_1 = FALSE;
 
     INIT_PUSH(buff);		/* init macro */
 
@@ -516,6 +547,20 @@ char *convchars(char *line)
 			line--;
 			continue;
 		}
+	}
+
+	/* @@ JK : try to convert from the WinLatin1 code */
+	if (is_iso_8859_1
+	    && (unsigned char) (*line) >= 0x80 && (unsigned char) (*line) <= 0x9f) {
+	  char *unicode_entity;
+	  trio_asprintf (&unicode_entity, 
+			 "&#x%x;", WIN1252CP[(unsigned char) (*line) - WIN1252CP_length]);
+
+	  if (unicode_entity) {
+	    PushString(&buff, (const char *) unicode_entity);
+	    free (unicode_entity);
+	  }
+	  continue;
 	}
 
 	switch (*line) {
@@ -539,12 +584,40 @@ char *convchars(char *line)
 } /* end convchars() */
 
 /*
+** Converts from an Unicode entity to the equivalent winlatin charset
+*/
+static bool unconvwinlatin1 (char *entity, char *conv_char)
+{
+  int i;
+  int value = 0;
+
+  if (!entity || *entity == '\0' || *entity != '#')
+    return FALSE;
+
+  if (sscanf (entity, "#x%x;", &value) != 1 || value == 0)
+    return FALSE;
+
+  for (i = 0; i <  WIN1252CP_length; i++) {
+    if (WIN1252CP[i] == value)
+      break;
+  }
+
+  if (i == WIN1252CP_length)
+    return FALSE;
+
+  *conv_char =  (char) (i + 0x80);
+
+  return TRUE;
+} /* end unconvwinlatin1 */
+
+/*
 ** Just the opposite of convchars().
 ** Completely rewritten 17th Nov 1998 by Daniel.
 */
 
 char *unconvchars(char *line)
 {
+    char conv_char;
     struct Push buff;
     INIT_PUSH(buff);
 
@@ -570,11 +643,16 @@ char *unconvchars(char *line)
 		PushByte(&buff, '@');
 		line += 4;
 	    }
+	    else if (!strncmp("ndash;", line + 1, 6)) {
+	        PushByte(&buff, '-');
+		line += 6;
+	    }
+	    else if (unconvwinlatin1 (line + 1, &conv_char)) {
+		PushByte(&buff, conv_char);
+	    }
 	    else
-		PushByte(&buff, *line);
+	        PushByte(&buff, *line);
 	}
-	else
-	    PushByte(&buff, *line);
     }
     RETURN_PUSH(buff);
 }
@@ -642,8 +720,17 @@ static char *translateurl(char *url)
 	  snprintf (hexa, sizeof (hexa) -1, "%%%02x", i);
 	  PushString (&buff, hexa);
 	}
-	else
-	  PushByte(&buff, *p);
+	else {
+	  /* JK: reaching this point means that we didn't need to do any of the
+	     special conversions for URLs, but we still need to make
+	     sure that it's a valid character. */
+	  char s[2] = "a";
+	  char *ptr;
+	  s[0] = *p;
+	  ptr = convchars (s, NULL);
+	  PushString (&buff, ptr);
+	  free (ptr);
+	}
     }
     RETURN_PUSH(buff);
 }
@@ -747,7 +834,7 @@ char *makemailcommand(char *mailcommand, char *email, char *id, char *subject)
     else
 	hasre = 0;
 
-    convsubj = convchars(subject);
+    convsubj = convchars(subject, NULL);
 
     /* remade to deal with any-length strings */
     /* tmpsubject = maprintf("%s%s", (hasre) ? "" : "Re: ", (convsubj) ? convsubj : ""); */
@@ -947,7 +1034,7 @@ static char *url[] = {
     NULL
 };
 
-char *parseurl(char *input)
+char *parseurl(char *input, char *charset)
 {
     struct Push buff;		/* output buffer */
     char urlbuff[256];
@@ -967,7 +1054,7 @@ char *parseurl(char *input)
 	 * have any; it will be a big win for average input if we follow
 	 * this trivial heuristic. 
 	 */
-	return convchars(input);
+	return convchars(input, charset);
     }
     INIT_PUSH(buff);
 

@@ -1,6 +1,21 @@
 Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Jose Kahan (Apr 10, 2003)
+   - Converted hypermail to XHTML. The only remaining issue concerns
+     charsets. Some mail clients don't specify a correct charset or
+     specify a charset and include characters belonging to other
+     charset spaces. The solution to detect and convert the
+     foreign charset into a Unicode entity or, for the adventurous
+     hacker, convert hypermail's output to UTF-8. For the moment, only
+     the former is implemented partially;  there is only one a winlatin1
+     (Windows CP 1252) to Unicode convertion/detection being done.
+     See string.c:convchars, unconvwinlatin1, and uconvert.h for more 
+     details.
+     The best solution will be to move to UTF-8, but this has to be planned.
+     If you have a charset issue, your XHTML document will be invalid.
+     As XHTML is backwards compatible with HTML, you can avoid this problem
+     by continuing to use the text/html MIME type.
 
  Kent Landfield (Mar 20, 2003)
    - Added Splint (www.splint.org) support to src/Makefile.in

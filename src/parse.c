@@ -1675,7 +1675,7 @@ int parsemail(char *mbox,	/* file name */
 			     * be used.
 			     */
 			    bp = addbody(bp, &lp,
-					 "<p><strong>attached mail follows:</strong><hr>",
+					 "<p><strong>attached mail follows:</strong></p><hr />",
 					 BODY_HTMLIZED | bodyflags);
 			    bodyflags |= BODY_ATTACHED;
 			    /* @@ should it be 1 or 2 ?? should we use another method? */
@@ -1970,6 +1970,10 @@ int parsemail(char *mbox,	/* file name */
 		    inreply = oneunre(subject);
 
 		if (append_bp && append_bp != bp) {
+		   /* if we had attachments, close the structure */
+		    append_bp = 
+		      addbody(append_bp, &append_lp, "</div>\n",
+			      BODY_HTMLIZED | bodyflags);
 		    bp = append_body(bp, &lp, append_bp);
 		    append_bp = append_lp = NULL;
 		}
@@ -2163,7 +2167,7 @@ int parsemail(char *mbox,	/* file name */
 				if (alternativeparser && set_save_alts == 1) {
 				    bp = addbody(bp, &lp,
 						 set_alts_text ? set_alts_text
-						 : "<hr>",
+						 : "<hr />",
 						 BODY_HTMLIZED | bodyflags);
 				}
 			    }
@@ -2441,7 +2445,7 @@ int parsemail(char *mbox,	/* file name */
 
 				    if (description && description[0] != '\0'
                                         && hasblack(description))
-                                            desc = convchars(description);
+                                            desc = convchars(description, charset);
 				    else if (inline_force ||
 					     inlinecontent(type))
 				        desc =
@@ -2469,8 +2473,8 @@ int parsemail(char *mbox,	/* file name */
 					   as-is, we make a <img> tag instead of <a href>! */
 
 					trio_snprintf(buffer, sizeof(buffer),
-						 "%s<img src=\"%s%s%c%s\" alt=\"%s\">\n",
-						 (set_showhr ? "<hr>\n" :
+						 "%s<img src=\"%s%s%c%s\" alt=\"%s\" />\n",
+						 (set_showhr ? "<hr />\n" :
 						  ""),
 						 subdir ? subdir->rel_path_to_top : "",
 						 &att_dir[strlen(dir) + 1],
@@ -2488,8 +2492,8 @@ int parsemail(char *mbox,	/* file name */
 					    NULL) *sp = '\0';
 
 					trio_snprintf(buffer, sizeof(buffer),
-						 "%s<ul>\n<li>%s %s: <a href=\"%s%s\">%s</a>\n</ul>\n",
-						 (set_showhr ? "<hr>\n" :
+						 "%s<ul>\n<li>%s %s: <a href=\"%s%s\">%s</a></li>\n</ul>\n",
+						 (set_showhr ? "<hr />\n" :
 						  ""), type,
 						 lang[MSG_ATTACHMENT],
 						 subdir ? subdir->rel_path_to_top : "",
@@ -2499,6 +2503,12 @@ int parsemail(char *mbox,	/* file name */
 				    }
 
 				    /* Print attachment comment before attachment */
+				    /* add a DIV to store all this info first */
+				    if (!append_bp)
+				      append_bp = 
+					addbody(append_bp, &append_lp, "<div>\n",
+						BODY_HTMLIZED | bodyflags);
+
 				    append_bp =
 					addbody(append_bp, &append_lp, buffer,
 						BODY_HTMLIZED | bodyflags);
@@ -2552,6 +2562,10 @@ int parsemail(char *mbox,	/* file name */
 	    inreply = oneunre(subject);
 
 	if (append_bp && append_bp != bp) {
+	  /* close the DIV */
+	  append_bp = 
+	    addbody(append_bp, &append_lp, "</div>\n",
+		    BODY_HTMLIZED | bodyflags);
 	    bp = append_body(bp, &lp, append_bp);
 	    append_bp = append_lp = NULL;
 	}
@@ -3353,11 +3367,11 @@ void fixnextheader(char *dir, int num, int direction)
     dp = NULL;
     ul = 0;
 
-    if ((e3 = neighborlookup(num, direction)) != NULL)
+    if ((e3 = neighborlookup(num, direction)) != NULL 
+	&& (email = neighborlookup(num-1, 1)) != NULL)
 	filename = articlehtmlfilename(e3);
     else
 	return;
-
     bp = NULL;
     fp = fopen(filename, "r");
     if (fp) {
@@ -3373,26 +3387,32 @@ void fixnextheader(char *dir, int num, int direction)
     fp = fopen(filename, "w+");
     if (fp) {
 	while (bp) {
+	    if (!strncmp(bp->line, "<!-- emptylink=", 15)) {
+	      /* JK: just skip this line and the following which is just our
+	       empty marker. */
+	      bp = bp->next;
+	      bp = bp->next;
+	      continue;
+	    }
 	    fprintf(fp, "%s", bp->line);
-	    if (!strncmp(bp->line, "<!-- next=", 10)) {
-		email = neighborlookup(num-1, 1);
-		if (email != NULL) {
-		    dp = bp->next;
-		    if (!strncmp(dp->line, "<ul", 3)) {
-			fprintf(fp, "%s", dp->line);
-			ul = 1;
-		    }
-		    fprintf(fp, "<li><strong>%s:</strong> ",
-			    lang[MSG_NEXT_MESSAGE]);
-		    fprintf(fp, "%s%s: \"%s\"</a>\n", msg_href(email, e3),
-			    email->name, ptr = convchars(email->subject));
-		    free(ptr);
 
-		    if (ul) {
-			bp = dp;
-			ul = 0;
-		    }
-		}
+	    if (!strncmp(bp->line, "<!-- next=", 10)) {
+	      dp = bp->next;
+	      if (!strncmp(dp->line, "<ul", 3)) {
+		fprintf(fp, "%s", dp->line);
+		ul = 1;
+	      }
+	      fprintf(fp, "<li><strong>%s:</strong> ",
+		      lang[MSG_NEXT_MESSAGE]);
+	      fprintf(fp, "%s%s: \"%s\"</a></li>\n", msg_href(email, e3),
+		      email->name, ptr = convchars(email->subject, email->charset));
+	      free(ptr);
+	      
+	      if (ul) {
+		bp = dp;
+		ul = 0;
+	      }
+	      
 	    }
 	    bp = bp->next;
 	}
@@ -3444,14 +3464,14 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 
     if (remove_maybes || set_linkquotes) {
         snprintf(current_maybe_pattern, sizeof(current_maybe_pattern), 
-                "<LI><STRONG>%s:</STRONG> <A HREF=", lang[MSG_MAYBE_REPLY]);
+                "<li><strong>%s:</strong> <a href=", lang[MSG_MAYBE_REPLY]);
         snprintf(current_reply_pattern, sizeof(current_reply_pattern), 
-                "<LI><STRONG>%s:</STRONG> <A HREF=", lang[MSG_REPLY]);
+                "<li><strong>%s:</strong> <a href=", lang[MSG_REPLY]);
         snprintf(current_nextinthread_pattern, 
                 sizeof(current_nextinthread_pattern), 
-                "<LI><STRONG>%s:</STRONG> <A HREF=", lang[MSG_NEXT_IN_THREAD]);
+                "<li><strong>%s:</strong> <a href=", lang[MSG_NEXT_IN_THREAD]);
         snprintf(current_next_pattern, sizeof(current_next_pattern), 
-                "<LI><STRONG>%s:</STRONG> <A HREF=", lang[MSG_NEXT_MESSAGE]);
+                "<li><strong>%s:</strong> <a href=", lang[MSG_NEXT_MESSAGE]);
     }
     if (set_linkquotes) {
       struct reply *rp;
@@ -3519,12 +3539,19 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
     fp = fopen(filename, "w+");
     if (fp) {
 	while (bp) {
+	    if (!strncmp(bp->line, "<!-- emptylink=", 15)) {
+	      /* JK: just skip this line and the following which is just our
+	       empty marker. */
+	      bp = bp->next;
+	      bp = bp->next;
+	      continue;
+	    }
 	    if (!strncmp(bp->line, "<!-- reply", 10)) {
 	        char *del_msg = (email2->is_deleted ? lang[MSG_DEL_SHORT] : "");
 		char *ptr1;
-		ptr = convchars(email->subject);
+		ptr = convchars(email->subject, email->charset);
 		trio_asprintf(&ptr1,
-			      "<li><strong>%s:</strong>%s %s%s: \"%s\"</a>\n",
+			      "<li><strong>%s:</strong>%s %s%s: \"%s\"</a></li>\n",
 			      lang[subjmatch ? MSG_MAYBE_REPLY : MSG_REPLY],
 			      del_msg, msg_href(email, email2),
 			      email->name, ptr);
@@ -3609,6 +3636,13 @@ void fixthreadheader(char *dir, int num, int max_update)
 
     if ((fp = fopen(filename, "w+")) != NULL) {
 	while (bp != NULL) {
+	   if (!strncmp(bp->line, "<!-- emptylink=", 15)) {
+	      /* JK: just skip this line and the following which is just our
+	       empty marker. */
+	      bp = bp->next;
+	      bp = bp->next;
+	      continue;
+	    }
 	    fprintf(fp, "%s", bp->line);
 	    if (!strncmp(bp->line, "<!-- nextthr", 12)) {
 		struct emailinfo *e3;
@@ -3616,8 +3650,8 @@ void fixthreadheader(char *dir, int num, int max_update)
 		    fprintf(fp, "<li><strong>%s:</strong> ",
 			    lang[MSG_NEXT_IN_THREAD]);
 		    fprintf(fp, "%s", msg_href(e3, rp->data));
-		    fprintf(fp, "%s: \"%s\"</a>\n",
-			    name, ptr = convchars(subject));
+		    fprintf(fp, "%s: \"%s\"</a></li>\n",
+			    name, ptr = convchars(subject, NULL));
 		    free(ptr);
 		    if (bp->next && strstr(bp->next->line, lang[MSG_NEXT_IN_THREAD]))
 		        bp = bp->next; /* skip old copy of this line */

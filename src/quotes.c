@@ -63,17 +63,17 @@ char *remove_hypermail_tags(char *line)
     else if (!strncasecmp(line, "<i>", 3)) {
 	buffer = strsav(line);
 	memmove(buffer, buffer + 3, strlen(buffer + 3) + 1);
-	if ((p = strcasestr(buffer, "</i><br>\n")) != NULL) {
+	if ((p = strcasestr(buffer, "</i><br />\n")) != NULL) {
 	    strcpy(p, "\n");
 	}
     }
-    else if (!strcasecmp(line, "<br>\n"))
+    else if (!strcasecmp(line, "<br />\n"))
 	return NULL;
-    else if ((cp = strcasestr(line, "<br>\n")) != NULL) {
+    else if ((cp = strcasestr(line, "<br />\n")) != NULL) {
 	buffer = strsav(line);
-	strcpy(strcasestr(buffer, "<br>\n"), "\n");
+	strcpy(strcasestr(buffer, "<br />\n"), "\n");
     }
-    else if (!strcasecmp(line, "<hr>\n"))
+    else if (!strcasecmp(line, "<hr />\n"))
 	return
 	    strsav("------------------------------------------------------------------------");
     else if (!strcasecmp(line, "<pre>\n"))
