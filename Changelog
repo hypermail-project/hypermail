@@ -6,6 +6,15 @@ HYPERMAIL VERSION pre-2.1.9:
 ============================
 
  Jose Kahan (Aug  13, 2003)
+  - Add the <title> WAI enhancement that I had forgotten to do for messages.
+    The new format is: [subject] from [author] on [date] ([mailing list label]).
+    I also removed the 64 characters maximum limit check we had on the title.
+    The reason is that this is not part of the HTML specification, but rather
+    a writing style. Dominique says we shouldn't be so strict in this case. In
+    addition, just adding a \0 after 64 characters could break entity names and
+    generate invalid HTML.
+
+ Jose Kahan (Aug  13, 2003)
   - The mailcommand option didn't work when applied to a paragraph that had
     a previously converted href string that includes the '@' char. I added
     a quick hack to ConvURlsString to avoid doing the mailto: convertion if an href

@@ -224,6 +224,9 @@ struct language_entry {
 #define MSG_LTITLE_LISTED_BY_ATTACHMENT          159
 #define MSG_PERIOD                               160
 #define MSG_TO                                   161
+#define MSG_FROM_TITLE                           162
+#define MSG_ON_TITLE                             163
+
 #ifdef MAIN_FILE
 
 /*
@@ -409,6 +412,8 @@ char *de[] = {       /* German */
   "nach Anhängen", /* by attachment - HTML */
   "Zeitraum", /* period - HTML */
   " bis ", /* to - HTML */
+  "from", /* from - HTML */
+  "on", /* on - HTML */
   NULL,                              /* End Of Message Table - NOWHERE*/
 };
 
@@ -581,6 +586,8 @@ char *pl[] = {                      /* English */
   "by attachment", /* by attachment - HTML */
   "period", /* period - HTML */
   " to ", /* to - HTML */
+  "from", /* from - HTML */
+  "on", /* on - HTML */
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -754,6 +761,8 @@ char *en[] = {       /* English */
   "by attachment", /* by attachment - HTML */
   "period", /* period - HTML */
   " to ", /* to - HTML */
+  "from", /* from - HTML */
+  "on", /* on - HTML */
   NULL,                         /* End Of Message Table      - NOWHERE*/
 };
 
@@ -937,6 +946,8 @@ char *es[] = {       /* Espanol/Spanish */
   "by attachment", /* by attachment - HTML */
   "period", /* period - HTML */
   " to ", /* to - HTML */
+  "from", /* from - HTML */
+  "on", /* on - HTML */
   NULL,                               /* End Of Message Table */
 };
 
@@ -1108,6 +1119,8 @@ char *fi[] = {       /* Finnish */
   "by attachment", /* by attachment - HTML */
   "period", /* period - HTML */
   " to ", /* to - HTML */
+  "from", /* from - HTML */
+  "on", /* on - HTML */
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1282,6 +1295,8 @@ char *it[] = {       /* Italian */
   "by attachment", /* by attachment - HTML */
   "period", /* period - HTML */
   " to ", /* to - HTML */
+  "from", /* from - HTML */
+  "on", /* on - HTML */
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1455,6 +1470,8 @@ char *fr[] = {       /* French */
   "by attachment", /* by attachment - HTML */
   "period", /* period - HTML */
   " to ", /* to - HTML */
+  "from", /* from - HTML */
+  "on", /* on - HTML */
   NULL,                                    /* End Of Message Table  - NOWHERE*/
 };
 
@@ -1630,6 +1647,8 @@ char *is[] = {       /* Icelandic */
   "by attachment", /* by attachment - HTML */
   "period", /* period - HTML */
   " to ", /* to - HTML */
+  "from", /* from - HTML */
+  "on", /* on - HTML */
   NULL,                               /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1808,6 +1827,8 @@ char *sv[] = {
   "by attachment", /* by attachment - HTML */
   "period", /* period - HTML */
   " to ", /* to - HTML */
+  "from", /* from - HTML */
+  "on", /* on - HTML */
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 
@@ -1986,6 +2007,8 @@ char *no[] = {
   "by attachment", /* by attachment - HTML */
   "period", /* period - HTML */
   " to ", /* to - HTML */
+  "from", /* from - HTML */
+  "on", /* on - HTML */
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 
@@ -2165,6 +2188,8 @@ char *gr[] = {       /* Greek */
   "by attachment", /* by attachment - HTML */
   "period", /* period - HTML */
   " to ", /* to - HTML */
+  "from", /* from - HTML */
+  "on", /* on - HTML */
   NULL,                           	/* End Of Message Table - NOWHERE*/
 };
 
@@ -2336,6 +2361,8 @@ char *ru[] = {     /* Russian */
   "by attachment", /* by attachment - HTML */
   "period", /* period - HTML */
   " to ", /* to - HTML */
+  "from", /* from - HTML */
+  "on", /* on - HTML */
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 

@@ -198,6 +198,7 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
 {
     char *title;
     char *rp;
+    char *rp2;
 
     /* @@ JK: Don't know what to do with US-ASCII. If there's no charset,
        assume the default one is ISO-8859-1 */
@@ -226,7 +227,18 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
      * Strip off any trailing whitespace in TITLE so weblint is happy. 
      */
 
-    trio_asprintf(&title, "%s: %s", label, rp = convchars(subject, charset));
+    /* trio_asprintf(&title, "%s: %s", label, rp = convchars(subject, charset)); */
+    rp = convchars(subject, charset);
+    
+    if (name && date) {
+      /* assume that this is the title of a message and not the title of an index */
+      rp2 = convchars(name, charset);
+      trio_asprintf(&title, "%s %s %s %s %s (%s)", rp,
+		    lang[MSG_FROM_TITLE], name, lang[MSG_ON_TITLE], date, label);
+      free(rp2);
+    }
+    else
+      trio_asprintf(&title, "%s: %s", label, rp);
     free(rp);
 
     rp = title + (strlen(title) - 1);
@@ -236,10 +248,19 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
     /* 
      * Assure the title meets HTML recommendations of no longer 
      * than 64 characters. Truncate it if needed.
+     *
+     * JK 13/Aug/2003: This more a style suggestion given in:
+     * http://www.w3.org/Provider/Style/TITLE.html
+     * As the title is truncated regardless of its contents, it can
+     * generate invalid HTML if the cut happens in the middle
+     * of an entity. Dom suggested not enforcing this rule of
+     * thumb so strictly in this case, so I commented it out.
      */
 
-    if (strlen(title) > 64)
-        *(title+64) = '\0';
+    /*
+      if (strlen(title) > 64)
+      *(title+64) = '\0';
+      */
 
     fprintf(fp, "<title>%s</title>\n", title);
     free(title);
