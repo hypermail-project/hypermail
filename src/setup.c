@@ -685,7 +685,10 @@ void PreConfig(void)
 	case CFG_SWITCH:
 	case CFG_INTEGER:
 	case CFG_OCTAL:
-	    *(int *)cfg[i].value = (int)defval;
+	    if (defval == cfg[i].def)
+	        *(int *)cfg[i].value = (int)defval;
+	    else
+	        *(int *)cfg[i].value = atoi(defval);
 	    break;
 	case CFG_LIST:
 	    if (defval) {
