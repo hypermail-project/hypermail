@@ -554,16 +554,12 @@ txt2html(FILE *fp, struct emailinfo *email, const struct body *bp,
     }
 
     if (!in_pre_block && !islist && endpreformat_trigger_lines != 0
-	&& !isquote(line) && !was_hrule && (preformat_trigger_lines == 0
-					    || is_sig_start(line) ||
-					    find_repetition(bp)
-					    || has_many_carets(line) ||
-					    has_many_carets(next_line)
-					    || (is_preformatted(line) &&
-						(preformat_trigger_lines ==
-						 1 ||
-						 is_preformatted
-						 (next_line))))) {
+	&& !isquote(line) && !was_hrule
+	&& (preformat_trigger_lines == 0 || is_sig_start(line) ||
+	    find_repetition(bp) || has_many_carets(line) ||
+	    has_many_carets(next_line) || (is_preformatted(line) &&
+					   (preformat_trigger_lines == 1 ||
+					    is_preformatted(next_line))))) {
 	fprintf(fp, "<pre>\n");
 	in_pre_block = find_repetition(bp);	/* set #lines from find_vertical_repeats */
 	if (!in_pre_block)

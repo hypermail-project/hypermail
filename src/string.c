@@ -80,11 +80,14 @@ char *PushString(struct Push *push, const char *append)
 {				/* string to append */
     char *string = NULL;
 
+#if 0
+    return PushNString(push, append, strlen(append));
+#else
     while (*append) {		/* continue until zero termination */
 	string = PushByte(push, *append);
 	append++;		/* get next character */
     }
-
+#endif
     return string;		/* this is the new buffer */
 }
 
@@ -97,11 +100,48 @@ char *PushNString(struct Push *push, const char *append,/* string to append */
 		  int size)
 {				/* maximum number of bytes to copy */
     char *string = NULL;
+#if 1
+    if (!push)
+	return NULL;		/* this is a sever error */
+    if (!push->string) {
+	push->string = (char *)malloc(PUSH_DEFAULT + size);
+	if (!push->string)
+	    return NULL;	/* error again */
+	push->alloc = PUSH_DEFAULT + size;
+	push->len = 0;
+#ifdef DEBUG_PUSH
+	fprintf(stderr, "PUSH: INIT at index 0 alloc %d\n", PUSH_DEFAULT);
+#endif
+    }
+    else if ((push->len + size + 1) >= push->alloc) {
+	char *newptr;
+	push->alloc = 2*push->alloc + size;	/* enlarge the alloc size */
+	newptr = (char *)realloc(push->string, push->alloc);	/* double the size */
+	if (!newptr) {
+	    return push->string;	/* live on the old one! */
+	}
+	push->string = newptr;	/* use the new buffer */
+#ifdef DEBUG_PUSH
+	fprintf(stderr,
+		"PUSH: REALLOC at index %d to alloc %d\n", push->len,
+		push->alloc);
+#endif
+    }
+#ifdef DEBUG_PUSH
+    fprintf(stderr, "PUSH: WRITE '%s' at index %d\n", append, push->len);
+#endif
+    strncpy(push->string + push->len, append, size);
+    push->len += size;
+    push->string[push->len] = 0;
 
+    string = push->string;	/* current buffer */
+
+#else
     while (*append && size--) {	/* continue until zero termination */
 	string = PushByte(push, *append);
 	append++;		/* get next character */
     }
+#endif
 
     return string;		/* this is the new buffer */
 }
@@ -161,6 +201,96 @@ void strcpymax(char *dest, const char *src, int n)
 ** strcasestr() - case insensitive strstr()
 */
 
+#if 1
+
+/* Stolen-- stolen!-- from glibc 2.1. Please don't sue me. */
+
+char *strcasestr (char *phaystack, const char *pneedle)
+{
+  register unsigned char *haystack;
+  register const unsigned char *needle;
+  register unsigned b, c;
+
+  haystack = (unsigned char *) phaystack;
+  needle = (const unsigned char *) pneedle;
+
+  b = _tolower (*needle);
+  if (b != '\0')
+    {
+      haystack--;				/* possible ANSI violation */
+      do
+	{
+	  c = *++haystack;
+	  if (c == '\0')
+	    goto ret0;
+	}
+      while (_tolower (c) != b);
+
+      c = _tolower (*++needle);
+      if (c == '\0')
+	goto foundneedle;
+      ++needle;
+      goto jin;
+
+      for (;;)
+        {
+          register unsigned a;
+	  register unsigned char *rhaystack;
+	  register const unsigned char *rneedle;
+
+	  do
+	    {
+	      a = *++haystack;
+	      if (a == '\0')
+		goto ret0;
+	      if (_tolower (a) == b)
+		break;
+	      a = *++haystack;
+	      if (a == '\0')
+		goto ret0;
+shloop:	    }
+          while (_tolower (a) != b);
+
+jin:	  a = *++haystack;
+	  if (a == '\0')
+	    goto ret0;
+
+	  if (_tolower (a) != c)
+	    goto shloop;
+
+	  rhaystack = haystack-- + 1;
+	  rneedle = needle;
+	  a = _tolower (*rneedle);
+
+	  if (_tolower (*rhaystack) == a)
+	    do
+	      {
+		if (a == '\0')
+		  goto foundneedle;
+		++rhaystack;
+		a = _tolower (*++needle);
+		if (_tolower (*rhaystack) != a)
+		  break;
+		if (a == '\0')
+		  goto foundneedle;
+		++rhaystack;
+		a = _tolower (*++needle);
+	      }
+	    while (_tolower (*rhaystack) == a);
+
+	  needle = rneedle;		/* took the register-poor approach */
+
+	  if (a == '\0')
+	    break;
+        }
+    }
+foundneedle:
+  return (char*) haystack;
+ret0:
+  return 0;
+}
+
+#else
 char *strcasestr(char *haystack, const char *needle)
 {
     int nlen = strlen(needle);
@@ -178,7 +308,7 @@ char *strcasestr(char *haystack, const char *needle)
     }
     return NULL;
 }
-
+#endif
 
 /*
 ** Strips the timezone information from long date strings, so more correct
@@ -701,7 +831,7 @@ char *parseemail(char *input,	/* string to parse */
 	    /* check left side */
 	    while (backoff) {
 		if (sscanf
-		    (email, "%1[" VALID_IN_EMAIL_USERNAME "]", content)) {
+		    (email, "%1[" VALID_IN_EMAIL_USERNAME "]", content) == 1) {
 		    email--;
 		    backoff--;
 		}
@@ -712,7 +842,7 @@ char *parseemail(char *input,	/* string to parse */
 		email++;
 		if (sscanf
 		    (ptr + 1, "%255[" VALID_IN_EMAIL_DOMAINNAME "]",
-		     mailbuff)) {
+		     mailbuff) == 1) {
 
 		    /* a valid mail right-end */
 		    if (lastpos < email) {

@@ -559,7 +559,6 @@ int main(int argc, char **argv)
 
 	if (set_delete_msgnum)
 	    update_deletions(amount_old);
-	amount_new -= count_deleted(amount_old);
 
 	if (set_show_msg_links) {
 	    fixnextheader(set_dir, amount_old, -1);
@@ -585,6 +584,7 @@ int main(int argc, char **argv)
 	    printedthreadlist = NULL;
 	    crossindexthread1(datelist);
 	}
+	count_deleted(max_msgnum + 1);
 	if (show_index[0][DATE_INDEX])
 	    writedates(amount_new, NULL);
 	if (show_index[0][THREAD_INDEX])

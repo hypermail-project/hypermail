@@ -10,6 +10,7 @@ void printcomment(FILE *, char *, char *);
 void printbody(FILE *, struct emailinfo *, int);
 char *print_leading_whitespace(FILE *, char *);
 
+void update_deletions(int);
 void writearticles(int, int);
 void writedates(int, struct emailinfo *);
 void writesubjects(int, struct emailinfo *);

@@ -752,7 +752,7 @@ struct reply *addreply2(struct reply *rp, struct emailinfo *from_email,
 			struct emailinfo *email, int maybereply,
 			struct reply **last_node) {
 #ifdef FASTREPLYCODE
-    struct reply *tempnode, *tempnode2;
+    struct reply *tempnode;
     for (tempnode = rp; tempnode != NULL; tempnode = tempnode->next) {
 	if (tempnode->msgnum == email->msgnum) { /* duplicate? */
 	    if (tempnode->maybereply)
@@ -891,7 +891,7 @@ struct emailsubdir *new_subdir(char *subdir, struct emailsubdir *last_subdir,
 {
     struct emailsubdir *sd = folders;
     struct emailsubdir *new_sd;
-    int i, count;
+    int count;
     char *p;
 
     while (sd) {

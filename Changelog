@@ -1,5 +1,14 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Peter McCluskey (Apr 10 2001)
+  - Add check for *html deleted, gdbm index still present.
+  - fix count of messages.
+  - sped up linkquotes 2.5x by better mallocs
+  - replaced strcasestr with faster one from glibc via Scott Rose
+  - PushNString, PushString speedups
+  - fixed bug in parseemail (faulty sscanf return value check) that
+    added bogus strings in odd mailto's.
+
 Peter McCluskey (Apr 9 2001)
   - add new options: deleted, expires, delete_msgnum, delete_level
   - togdbm args: fix misuse of secs_to_iso which made

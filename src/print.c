@@ -69,7 +69,6 @@ int togdbm(void *gp, struct emailinfo *ep)
   char *isofromdate = strsav(secs_to_iso(ep->fromdate));
   char *exp_time_str = strsav(ep->exp_time == -1 ? ""
 			      : secs_to_iso(ep->exp_time));
-  long exp_time = ep->exp_time;
   char is_deleted_str[32];
   msnprintf(is_deleted_str, sizeof(is_deleted_str), "%d", ep->is_deleted);
 
@@ -842,7 +841,6 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply)
     char *id = email->msgid;
     char *subject = email->subject;
     int msgnum = email->msgnum;
-    char *dir = set_dir;
     char *inreply = email->inreplyto;
 #ifdef REMOVED_19991103
     int inhtml;
@@ -919,7 +917,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply)
 		}
 		inheader = TRUE;
 	    }
-	    if (sscanf(bp->line, "%127[^:]", head) &&
+	    if (sscanf(bp->line, "%127[^:]", head) == 1 &&
 		set_show_headers && !showheader(head)) {
 		/* the show header keyword has been used, then we skip all those
 		   that aren't mentioned! */
@@ -1174,7 +1172,7 @@ void writearticles(int startnum, int maxnum)
     struct emailinfo *email2;
     struct emailinfo *email_next_in_thread;
 
-    struct body *bp, *status;
+    struct body *bp;
     struct reply *rp;
     FILE *fp;
     char *ptr;

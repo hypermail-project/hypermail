@@ -27,6 +27,7 @@
 #include "search.h"
 #include "getname.h"
 #include "parse.h"
+#include "print.h"
 
 #ifdef GDBM
 #include "gdbm.h"
@@ -2872,6 +2873,18 @@ static int loadoldheadersfromGDBMindex(char *dir)
 	      emp->is_deleted = is_deleted;
 	      if (insert_in_lists(emp))
 		  ++num_added;
+	      if (num == max_num) {
+		  char *filename = articlehtmlfilename(emp);
+		  if (!isfile(filename)) {
+		      snprintf(errmsg, sizeof(errmsg),
+			       "%s \"%s\". If you deleted files,"
+			       " you need to delete the gdbm file %s as well.",
+			       lang[MSG_CANNOT_OPEN_MAIL_ARCHIVE],
+			       filename, indexname);
+		      progerr(errmsg);
+		  }
+		  free(filename);
+	      }
 	  }
 	  free(subject);
 	  free(inreply);
@@ -2909,22 +2922,18 @@ static int loadoldheadersfromGDBMindex(char *dir)
 	/* Can create new; now, populate it */
 
 	for (num = 0; hashnumlookup(num, &emp); num++) {
-	  togdbm((void *) gp, num, emp->name, emp->emailaddr, emp->datestr, 
-		 emp->msgid, emp->subject, emp->inreplyto, emp->fromdatestr, 
-		 emp->charset, NULL, NULL);
+	    togdbm((void *) gp, emp);
 	}
 	gdbm_close(gp);
 
       } /* end case of could not read gdbm index */
 
       free(indexname);
-#if 0				/* ?? */
       if(bp) {
         if (bp->line) 
 	  free(bp->line);
         free(bp);
       }
-#endif
 
       return num_added;
 

@@ -302,8 +302,6 @@ static int addb(const char *token, struct body *bp)
 }
 
 static int bi_times_entered;
-static int bi_loops_done;
-static int bi_added;
 
 
 static void
@@ -331,7 +329,6 @@ add_bigram(BIGRAM_TYPE b1, BIGRAM_TYPE b2, struct body *bp, char *ptr)
     }
     ++bi_times_entered;
     while (1) {
-	++bi_loops_done;
 	p = *pp;
 	if (!p) {
 	    *pp = p = next_bigram++;
@@ -342,16 +339,10 @@ add_bigram(BIGRAM_TYPE b1, BIGRAM_TYPE b2, struct body *bp, char *ptr)
 	    p->list.offset = ptr - bp->line;
 	    p->list.bp = bp;
 	    p->list.next = NULL;
-#if 0
-	    p->msgnum = msgnum;
-#endif
-	    ++bi_added;
 	    return;
 	}
 	r = p->bigram1 - b1;
-	if (!r)
-	    r = p->bigram2 - b2;
-	if (!r) {
+	if (!r && !(r = p->bigram2 - b2)) {
 	    struct bigram_list *old = p->list.next;
 	    p->list.next = (struct bigram_list *)next_bigram++;
 	    p->list.next->next = old;
@@ -359,21 +350,6 @@ add_bigram(BIGRAM_TYPE b1, BIGRAM_TYPE b2, struct body *bp, char *ptr)
 	    p->list.next->bp = p->list.bp;
 	    p->list.offset = ptr - bp->line;
 	    p->list.bp = bp;
-	    ++bi_added;
-#if 0
-	    struct bigram_tree_entry *old = p;
-	    struct bigram_tree_entry *old_right = p->right;
-	    p->right = NULL;
-	    *pp = p = next_bigram++;
-	    p->left = old;
-	    p->right = old_right;
-	    tree_alloc += sizeof(struct bigram_tree_entry);
-	    p->bigram1 = b1;
-	    p->bigram2 = b2;
-	    p->index = bigram_index;
-	    p->msgnum = msgnum;
-	    ++bi_added;
-#endif
 	    return;
 	}
 	if (r < 0)
@@ -533,9 +509,8 @@ static void add_bigrams(struct body *bp, int msgnum)
     }
     if (0 && b_times_entered && bi_times_entered)
 	printf
-	    ("avg b %d avg bi %d (%d) msgnum %d %d allocated %d elapsed %ld\n",
-	     b_loops_done / b_times_entered,
-	     bi_loops_done / bi_times_entered, bi_added, msgnum,
+	    ("avg b %d msgnum %d %d allocated %d elapsed %ld\n",
+	     b_loops_done / b_times_entered, msgnum,
 	     tree_alloc / 1024, time(NULL) - start_time, next_itoken);
 }
 
@@ -676,6 +651,7 @@ check_match(struct bigram_list *bigram, struct body *bp, char *ptr,
 	    const char *match_start_ptr, const char *exact_line)
 {
     int match_len = 1;
+    int alloc_len = 0;
     int match_len_bytes;
     struct body *bp2 = bp;
     struct body *bp3 = NULL;
@@ -693,7 +669,7 @@ check_match(struct bigram_list *bigram, struct body *bp, char *ptr,
 	while (1) {
 	    bp2 = tokenize_body(bp2, token2, &ptr2, &b2_index, TRUE);
 	    bp3 = tokenize_body(bp3, token3, &ptr3, &b_index, TRUE);
-	    if (max_msgnum == -1)
+	    if (0)
 		printf("compare_match: %d %s, %20.20s\n", match_len,
 		       token3, ptr3);
 	    if (!bp2 || !bp3)
@@ -716,7 +692,7 @@ check_match(struct bigram_list *bigram, struct body *bp, char *ptr,
 	    }
 	    ++match_len_bytes;
 	}
-	if (max_msgnum == -1)
+	if (0)
 	    printf("compare_match: %d %d msgnum %d\n", match_len,
 		   match_info->match_len_tokens, msgnum);
 	if (match_len > match_info->match_len_tokens ||
@@ -730,28 +706,24 @@ check_match(struct bigram_list *bigram, struct body *bp, char *ptr,
 	    match_info->stop_match = ptr3;
 	    if (match_info->last_matched_string)
 		free(match_info->last_matched_string);
-	    match_info->last_matched_string =
-		(char *)emalloc(strlen(bigram->bp->line) + 2);
+	    match_len = strlen(bigram->bp->line);
+	    alloc_len = match_len + 1000;
+	    match_info->last_matched_string = (char *)emalloc(alloc_len);
 	    strcpy(match_info->last_matched_string, bigram->bp->line);
-	    match_len = strlen(match_info->last_matched_string);
 	    if (!strchr(match_info->last_matched_string, '\n')) {
 		strcat(match_info->last_matched_string + match_len, "\n");
 		++match_len;
 	    }
 	    for (bp3 = bigram->bp->next; bp3; bp3 = bp3->next) {
 		char *p = match_info->last_matched_string;
-		match_info->last_matched_string =
-		    (char *)emalloc(strlen(p) + strlen(bp3->line) + 2);
-		strcpy(match_info->last_matched_string, p);
-		free(p);
-		strcat(match_info->last_matched_string + match_len,
-		       bp3->line);
-		match_len += strlen(bp3->line);
-		if (!strchr(bp3->line, '\n')) {
-		    strcat(match_info->last_matched_string + match_len,
-			   "\n");
-		    ++match_len;
-		}
+		int add_len = strlen(bp3->line);
+		if (match_len + add_len + 2 > alloc_len)
+		    match_info->last_matched_string =
+		        (char *)realloc(p, alloc_len *= 2);
+		strcat(match_info->last_matched_string + match_len, bp3->line);
+		match_len += add_len;
+		if (add_len > 0 && bp3->line[add_len-1] != '\n')
+		    strcat(match_info->last_matched_string + match_len++,"\n");
 	    }
 	    if (0)
 		printf("%d +++ %s; %s\nbp->line %s\n", bigram->bp->msgnum,

@@ -365,7 +365,8 @@ static char *url_replying_to(struct emailinfo *email,
 	for (i = 1; i < count_quoted_lines && (bp = bp->next); ++i) {
 	    char *stripped = unquote_and_strip(bp->line);
 	    PushByte(&full_line, '\n');
-	    PushString(&full_line, stripwhitespace(stripped));
+	    PushString(&full_line, p = stripwhitespace(stripped));
+	    free(p);
 	    free(stripped);
 	    PushString(&exact_line, unquote(bp->line));
 	}
