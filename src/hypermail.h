@@ -80,9 +80,7 @@
 /*
 * this redefines the standard *printf() to use ours 
 */
-#define _MPRINTF_REPLACE
-#include "mprintf.h"
-
+#define TRIO_REPLACE_STDIO
 #include "trio.h"
 
 #ifndef NO_FASTREPLYCODE
