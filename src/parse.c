@@ -78,6 +78,12 @@ static int hasblack(char *p)
 
 int ignorecontent(char *type)
 {
+    if (inlist(set_ignore_types, "$NONPLAIN") && !textcontent(type)
+	&& strncasecmp(type, "multipart/", 10))
+      return 1;
+    if (inlist(set_ignore_types, "$BINARY") && !textcontent(type)
+	&& strcasecmp(type, "text/html") && strncasecmp(type, "multipart/", 10))
+      return 1;
     return (inlist(set_ignore_types, type));
 }
 
@@ -244,6 +250,7 @@ void print_progress(int num, char *msg, char *filename)
     fflush(stdout);
 }
 
+#if 0
 char *tmpname(char *dir, char *pfx)
 {
     char *f, *name;
@@ -260,6 +267,7 @@ char *tmpname(char *dir, char *pfx)
     free(name);
     return (NULL);
 }
+#endif
 
 char *safe_filename(char *name)
 {
@@ -275,9 +283,10 @@ char *safe_filename(char *name)
 
     for (sp = name, np = name; *np && *np != '\n';) {
 	/* if valid character then store it */
-	if ((*np >= 'a' && *np <= 'z') || (*np >= '0' && *np <= '9') ||
-	    (*np >= 'A' && *np <= 'Z') || (*np == '-') || (*np == '.') ||
-	    (*np == ':') || (*np == '_')) {
+	if (((*np >= 'a' && *np <= 'z') || (*np >= '0' && *np <= '9') ||
+	     (*np >= 'A' && *np <= 'Z') || (*np == '-') || (*np == '.') ||
+	     (*np == ':') || (*np == '_'))
+	    && !(set_unsafe_chars && strchr(set_unsafe_chars, *np))) {
 	    *sp = *np;
 	}
 	else	/* Need to replace the character with a safe one */
@@ -1039,8 +1048,9 @@ static void write_txt_file(struct emailinfo *emp, struct Push *raw_text_buf)
     char tmp_buf[32];
     sprintf(tmp_buf, "%.4d", emp->msgnum);
     txt_filename = htmlfilename(tmp_buf, emp, set_txtsuffix);
-    if ((!emp->is_deleted || (emp->is_deleted == 1 && set_delete_level > 2)
-	 || (emp->is_deleted == 2 && set_delete_level == 2))
+    if ((!emp->is_deleted
+	 || (emp->is_deleted == FILTERED_DELETE && set_delete_level > 2)
+	 || (emp->is_deleted == FILTERED_EXPIRE && set_delete_level == 2))
 	&& (set_overwrite || !isfile(txt_filename))) {
         FILE *fp = fopen(txt_filename, "w");
 	if (fp) {
@@ -1241,7 +1251,7 @@ int parsemail(char *mbox,	/* file name */
 	line = line_buf + set_ietf_mbox; 
 	if (!is_deleted &&
 	    inlist_regex_pos(set_filter_out_full_body, line) != -1) {
-	    is_deleted = 4;
+	    is_deleted = FILTERED_OUT;
 	}
 	pos = inlist_regex_pos(set_filter_require_full_body, line);
 	if (pos != -1 && pos < require_filter_full_len) {
@@ -1311,7 +1321,7 @@ int parsemail(char *mbox,	/* file name */
 		    if (inlist(set_deleted, head_name)) {
 		        char *val = getsubject(head->line); /* revisit me */
 			if (!strcasecmp(val, "yes"))
-			    is_deleted = 1;
+			    is_deleted = FILTERED_DELETE;
 			free(val);
 		    }
 
@@ -1319,13 +1329,13 @@ int parsemail(char *mbox,	/* file name */
 		        char *val = getmaildate(head->line);
 			exp_time = convtoyearsecs(val);
 			if (exp_time != -1 && exp_time < time(NULL))
-			    is_deleted = 2;
+			    is_deleted = FILTERED_EXPIRE;
 			free(val);
 		    }
 
 		    if (!is_deleted &&
 			inlist_regex_pos(set_filter_out, head->line) != -1) {
-		        is_deleted = 4;
+		        is_deleted = FILTERED_OUT;
 		    }
 
 		    pos = inlist_regex_pos(set_filter_require, head->line);
@@ -1410,27 +1420,33 @@ int parsemail(char *mbox,	/* file name */
 			    && (content != CONTENT_IGNORE)) {
 			    /* signal we want to attach, rather than embeed this MIME 
 			       attachment */
-			    attach_force = TRUE;
-
-			    /* make sure it is binary */
-			    content = CONTENT_BINARY;
-
-			    /* see if there's a file name to use: */
-			    fname = strcasestr(ptr, "filename=");
-			    if (fname) {
-                                np = fname+9;
-                                if (*np == '"')
-                                     np++;
-                                for (jp = attachname; np && *np != '\n' && *np != '"';) {
-                                     *jp++ = *np++;
-                                }
-                                *jp = '\0';
-				safe_filename(attachname);
-			    }
+			    if (inlist(set_ignore_types, "$NONPLAIN")
+				|| inlist(set_ignore_types, "$BINARY"))
+			        content = CONTENT_IGNORE;
 			    else {
-				attachname[0] = '\0';	/* just clear it */
+				attach_force = TRUE;
+
+				/* make sure it is binary */
+				content = CONTENT_BINARY;
+
+				/* see if there's a file name to use: */
+				fname = strcasestr(ptr, "filename=");
+				if (fname) {
+                                    np = fname+9;
+				    if (*np == '"')
+                                	np++;
+				    for (jp = attachname; np && *np != '\n'
+					   && *np != '"';) {
+                                	*jp++ = *np++;
+				    }
+				    *jp = '\0';
+				    safe_filename(attachname);
+				}
+				else {
+				    attachname[0] = '\0';  /* just clear it */
+				}
+				file_created = MAKE_FILE; /* please make one */
 			    }
-			    file_created = MAKE_FILE;	/* please make one */
 			}
 #if 0
 /*
@@ -2543,7 +2559,6 @@ int parsemail(char *mbox,	/* file name */
 
     return num_added;			/* amount of mails read */
 }
-
 
 int parse_old_html(int num, struct emailinfo *ep, int parse_body,
 		   int do_insert, struct reply **replylist_tmp)

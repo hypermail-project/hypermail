@@ -162,9 +162,9 @@ struct emailinfo *addhash(int num, char *date, char *name,
     if (!msgid) {
 	/* SEVERE ERROR, all mails MUST have a Message-ID, ignore it! */
 	if (set_require_msgids) {
-	    printf
-		("Message-ID is missing, ignoring message with subject '%s'.\n",
-		 subject ? subject : "<unknown>");
+	    if (set_warn_surpressions)
+	        printf("Message-ID is missing, ignoring message with subject '%s'.\n",
+		       subject ? subject : "<unknown>");
 	    return NULL;
 	}
 	else {
@@ -315,12 +315,12 @@ int insert_in_lists(struct emailinfo *emp, const bool *require_filter, int rlen)
 	        if(emp->subdir)
 		    --emp->subdir->count;
 	    }
-	    emp->is_deleted = 1;
+	    emp->is_deleted = FILTERED_DELETE;
 	}
     }
     for(i = 0; i < rlen; ++i) {
 	if (!require_filter[i]) {
-	    emp->is_deleted = 8;
+	    emp->is_deleted = FILTERED_REQUIRED;
 	}
     }
 
@@ -330,6 +330,18 @@ int insert_in_lists(struct emailinfo *emp, const bool *require_filter, int rlen)
 	h->data = emp;
 	h->next = deletedlist;
 	deletedlist = h;
+	if (set_warn_surpressions && require_filter) {
+	    const char *option = "??";
+	    switch(emp->is_deleted)
+	    {
+	    case FILTERED_DELETE:   option = "deleted or delete_msgnum"; break;
+	    case FILTERED_EXPIRE:   option = "expires"; break;
+	    case FILTERED_OUT:      option = "filter_out or filter_out_full_body"; break;
+	    case FILTERED_REQUIRED: option = "filter_require or filter_require_full_body"; break;
+	    }
+	    printf("message %d deleted under option %s. msgid: %s\n",
+		   emp->msgnum+1, option, emp->msgid);
+	}
     }
     else {
         authorlist = addheader(authorlist, emp, 1, 0);

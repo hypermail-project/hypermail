@@ -131,14 +131,6 @@
 #define SECSPERDAY     86400
 #define IS_LEAP(y) (y > 1752 && (y % 4 == 0 && (y % 100 != 0 || y % 400 == 0)))
 
-#if 0				/* replaced with mindex_t */
-#define FROM_AUTHOR  0
-#define FROM_DATE    1
-#define FROM_THREAD  2
-#define FROM_SUBJECT 3
-#define FROM_ATTACHMENT 4
-#endif
-
 #define PAGE_TOP     1
 #define PAGE_BOTTOM  2
 
@@ -146,6 +138,12 @@ typedef enum { DATE_INDEX, THREAD_INDEX, SUBJECT_INDEX, AUTHOR_INDEX,
     ATTACHMENT_INDEX, FOLDERS_INDEX, NO_INDEX
 } mindex_t;
 
+typedef enum {
+  FILTERED_DELETE = 1,
+  FILTERED_EXPIRE = 2,
+  FILTERED_OUT = 4,
+  FILTERED_REQUIRED = 8
+} filtered_reason_t;
 /* 
  * Path separator for attachment file path generation
  */

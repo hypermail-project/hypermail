@@ -78,6 +78,7 @@ extern bool set_usegdbm;
 #endif
 extern bool set_append;
 extern char *set_append_filename;
+extern bool set_warn_surpressions;
 
 extern int set_showhtml;
 extern int set_thrdlevels;
@@ -128,6 +129,7 @@ extern char *set_mhtmlheader;
 extern char *set_mhtmlfooter;
 
 extern char *set_attachmentlink;
+extern char *set_unsafe_chars;
 extern bool set_linkquotes;
 
 extern char *set_folder_by_date;

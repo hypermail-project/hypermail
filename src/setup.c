@@ -105,6 +105,7 @@ char *set_ihtmlfooter;
 char *set_mhtmlheader;
 char *set_mhtmlfooter;
 char *set_attachmentlink;
+char *set_unsafe_chars;
 
 char *set_folder_by_date;
 char *set_latest_folder;
@@ -188,7 +189,10 @@ struct Config cfg[] = {
 
     {"inlinehtml", &set_inlinehtml, BTRUE, CFG_SWITCH,
      "# Define to On to make text/html parts to get inlined with the mails.\n"
-     "# If set to Off, HTML-parts will be stored as separate files.\n"},
+     "# If set to Off, HTML-parts will be stored as separate files.\n"
+     "# A \"Content-Disposition: attachment;\" line in the mail will\n"
+     "# cause an HTML-part to be stored as a separate file even if this\n"
+     "# option is On.\n"},
 
     {"increment", &set_increment, BFALSE, CFG_SWITCH,
      "# Set this to On to append the input to existing archive.\n"},
@@ -374,11 +378,15 @@ struct Config cfg[] = {
 
     {"prefered_types", &set_prefered_types, NULL, CFG_LIST,
      "# When mails using multipart/mixed types are scanned, this list of\n"
-     "# MIME types defines which part you want presented in the result.\n"},
+     "# MIME types defines which part you want presented in the result.\n"
+     "# See the save_alts option for how non prefered types are treated.\n"},
 
     {"ignore_types", &set_ignore_types, NULL, CFG_LIST,
-     "# This is the list of MIME attachment types that  you  do\n"
-     "# not want to do anything with.\n"},
+     "# This is the list of MIME attachment types that you do not want\n"
+     "# to do anything with. Two special types may be used here:\n"
+     "# $BINARY - ignore all types that would be stored as separate files.\n"
+     "# $NONPLAIN - ignore all types not treated as text/plain, and all $BINARY types.\n"
+     "# Note: the behavior of these may be affected by the inlinehtml option.\n"},
 
     {"show_headers", &set_show_headers, NULL, CFG_LIST,
      "# This is the list of headers to be displayed if 'showheaders'\n"
@@ -586,6 +594,23 @@ struct Config cfg[] = {
      "# If save_alts is 2, this text is used to describe the link to each\n"
      "# alternative file.\n"},
 
+    {"warn_surpressions", &set_warn_surpressions, BTRUE, CFG_SWITCH,
+     "# Set this to On to get warnings (on stdout) about messages that\n"
+     "# are not converted because of they are missing a msgid (if\n"
+     "# require_msgids is On) or because one of the following options\n"
+     "# surpressed it: deleted expires delete_msgnum filter_out\n"
+     "# filter_require filter_out_full_body filter_require_full_body.\n"},
+
+    {"unsafe_chars", &set_unsafe_chars, NULL, CFG_STRING,
+     "# Any characters listed in this string are removed from user-specified\n"
+     "# attachment filenames. Those characters will be replaced by a \"_\"\n"
+     "# (which means that specifying \"_\" here won't have any effect).\n"
+     "# Note that many characters (including / and \\) are removed by the\n"
+     "# safe_filename in parse.c regardless of what this option says. There\n"
+     "# might be some security problems that can be prevented if you specify\n"
+     "# \".\" here (e.g. if a web server is configured to enable server side\n"
+     "# includes on filenames ending in something other than .shtml), but\n"
+     "# that will prevent browsers from recognizing many file types.\n"},
 };
 
 /* ---------------------------------------------------------------- */
