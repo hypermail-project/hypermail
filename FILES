@@ -112,7 +112,6 @@ src/lang.c
 src/lang.h
 src/lock.c
 src/mail.c
-src/mail.h
 src/mem.c
 src/parse.c
 src/parse.h

@@ -155,7 +155,7 @@ lang.o: lang.c hypermail.h ../config.h ../patchlevel.h trio.h proto.h \
   lang.h
 lock.o: lock.c hypermail.h ../config.h ../patchlevel.h trio.h proto.h \
   lang.h setup.h
-mail.o: mail.c mail.h ../libcgi/cgi.h ../config.h
+mail.o: mail.c ../libcgi/cgi.h ../config.h
 mem.o: mem.c hypermail.h ../config.h ../patchlevel.h trio.h proto.h \
   lang.h
 printfile.o: printfile.c hypermail.h ../config.h ../patchlevel.h trio.h \
