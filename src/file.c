@@ -587,8 +587,8 @@ char *message_name (struct emailinfo *email)
   static char buffer[8 + sizeof (time_t) * 2 + 1];
 
   if (set_nonsequential && email->msgid)
-    {
 #ifdef HAVE_LIBFNV
+    {
       /* Call the FNV msg hash library */
       Fnv32_t hash_val; 
 
@@ -600,9 +600,9 @@ char *message_name (struct emailinfo *email)
       sprintf (buffer, "%08x%08x", hash_val, email->fromdate);
 
       return buffer;
-#endif /* HAVE_LIBFNV */
     }
   else
+#endif /* HAVE_LIBFNV */
     {
       sprintf (buffer, "%.4d", email->msgnum);
       return buffer;
