@@ -1967,6 +1967,10 @@ int parsemail(char *mbox,	/* file name */
 		        ++num_added;
 		    num++;
 		}
+		else if (att_dir != NULL) {
+		    emptydir(att_dir);
+		    rmdir(att_dir);
+		}
 		for (pos = 0; pos < require_filter_len; ++pos)
 		    require_filter[pos] = FALSE;
 		for (pos = 0; pos < require_filter_full_len; ++pos)
