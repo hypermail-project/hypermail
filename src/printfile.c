@@ -185,7 +185,7 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
 	    "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n"
             "                      "
 	    "\"http://www.w3.org/TR/html4/loose.dtd\">\n");
-    fprintf(fp, "<html>\n");
+    fprintf(fp, "<html lang=\"%s\">\n", set_language);
     fprintf(fp, "<head>\n");
 
     if (charset && *charset) {
@@ -311,7 +311,7 @@ void printfooter(FILE *fp, char *htmlfooter, char *label, char *dir,
 	fprintf(fp, "<p>\n<small>\n<em>\n");
 	fprintf(fp, "%s ", lang[MSG_ARCHIVE_GENERATED_BY]);
 	fprintf(fp, "<a href=\"%s\">%s %s</a> \n", HMURL, PROGNAME, VERSION);
-	fprintf(fp, ": <em>%s</em>\n", getlocaltime());
+	fprintf(fp, ": %s\n", getlocaltime());
 	fprintf(fp, "</em>\n</small>\n");
 	fprintf(fp, "</body>\n</html>\n");
     }
