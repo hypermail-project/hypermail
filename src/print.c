@@ -1018,6 +1018,9 @@ void printheaders (FILE *fp, struct emailinfo *email)
     
     if (set_show_headers) {
       while (bp != NULL && bp->header) {
+        if ((bp->line)[0] == '\n') {   /* don't try to convert newline */
+          break;
+        }
 
 	if (sscanf(bp->line, "%127[^:]", head) == 1 && showheader(head)) {
 	  /* this is a header we want to show */

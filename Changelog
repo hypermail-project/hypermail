@@ -5,6 +5,11 @@ Version Changes for Hypermail
 HYPERMAIL VERSION pre-2.1.9:
 ============================
 
+ Kent Landfield (Jul 14, 2003)
+   - When show_headers was used in print.c, the newline was not recognized
+     early enough in printheaders. A check was added to assure the newline 
+     was recognized properly.
+
  Kent Landfield (Jul 10, 2003)
   - Small typo in print.c corrected.
        fprintf(fp, "%s ^lt;<em>%s</em>&gt;"...
