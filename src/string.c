@@ -820,7 +820,11 @@ char *parseemail(char *input,	/* string to parse */
 		else
 		    break;
 	    }
-	    if (email != ptr - 1) {	/* bigger chance this is an address */
+	    if (backoff > 2 && email[0] == '/' && email[-1] == '/'
+		&& email[-2] == ':') {
+	        ;		/* part of a url such as ftp://user@host.com */
+	    }
+	    else if (email != ptr - 1) { /* bigger chance this is an address */
 		email++;
 		if (sscanf
 		    (ptr + 1, "%255[" VALID_IN_EMAIL_DOMAINNAME "]",
