@@ -50,13 +50,13 @@ Building Hypermail:
 
     1) Type "./configure". This creates the makefiles and the
        config.h file needed to build the software.
-       If it has trouble finding gdbm, you may want to disable that with:
-        ./configure  --without-gdbm
-       (Note that without gdbm, you can't do incremental updates using the
-       folder_by_date option).
 
-    2) Type "make". This will build the software. You can test
-       it locally and when you are ready to install it ...
+    2) Type "make". This will build the software.
+       If it has trouble finding gdbm (e.g. if it fails with a message such as
+       "cannot open -lgdbm", you may need to disable gdbm with:
+        ./configure  --without-gdbm
+       and type "make clean" and then "make" again. (Note that without gdbm,
+       you can't do incremental updates using the folder_by_date option).
 
  On some systems you may need to add "-R/usr/local/lib -L/usr/local/lib"
 to the CFLAGS variable in the Makefiles, or alter your LD_LIBRARY_PATH
