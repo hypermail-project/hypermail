@@ -75,6 +75,7 @@ char *set_replymsg_command;
 char *set_mailto;
 char *set_hmail;
 char *set_domainaddr;
+static char *set_htmlbody;
 
 char *set_icss_url;
 char *set_mcss_url;
@@ -353,6 +354,9 @@ struct Config cfg[] = {
     {"domainaddr", &set_domainaddr, DOMAINADDR, CFG_STRING,
      "# Set this to the domainname you want added to a mail address\n"
      "# appearing in the RFC822 field which lack a hostname.\n"},
+
+    {"body", &set_htmlbody, NULL, CFG_STRING,
+     "# This obsolete entry kept around to help warn users with old config files.\n"},
 
     {"icss_url", &set_icss_url, NULL, CFG_STRING,
      "# Specifies a URL to an external CSS stylesheet for the index pages.\n"
@@ -786,6 +790,9 @@ void PostConfig(void)
 	for (i = 0; i <= ATTACHMENT_INDEX; ++i)
 	    show_index[0][i] = show_index[1][i];
     }
+    if (set_htmlbody != NULL)
+	printf("Warning: the body option has been disabled. See the\n"
+	       "INSTALL file for instructions on replacing it with a style sheet.\n");
 }
 
 int ConfigAddItem(char *cfg_line)
