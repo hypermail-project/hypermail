@@ -1,6 +1,10 @@
 Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (Mar 18, 2003)
+   Fixed overwrite = 0 to avoid rewrite of many files involved in replies
+  with folder_by_date option.
+
  Peter McCluskey (Mar 14, 2003)
    Fixed two bugs with deleting messages with the incremental mode. One bug
   meant that the message body was only rewritten or removed with the

@@ -307,6 +307,11 @@ int find_max_msgnum()
     dir = opendir(s_dir);
     if (dir == NULL)
 	return -1;
+#ifdef GDBM
+    if (set_folder_by_date && set_usegdbm) {
+	return loadoldheadersfromGDBMindex(set_dir, 1);
+    }
+#endif
     if (set_msgsperfolder) {
         int max_folder = -1;
 	char *tmpptr;

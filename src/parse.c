@@ -3123,14 +3123,15 @@ static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
 */
 #ifdef GDBM
 
-static int loadoldheadersfromGDBMindex(char *dir)
+int loadoldheadersfromGDBMindex(char *dir, int get_count_only)
 {
       char *indexname;
       GDBM_FILE gp;
       int num;
       int num_added = 0;
 
-      authorlist = subjectlist = datelist = NULL;
+      if (!get_count_only)
+	authorlist = subjectlist = datelist = NULL;
 
       /* Use gdbm performance hack: instead of opening each and
        * every .html file to get the comment information, get it
@@ -3168,6 +3169,10 @@ static int loadoldheadersfromGDBMindex(char *dir)
 	    max_num = -1;
 	else
 	    max_num = atoi(content.dptr);
+	if (get_count_only) {
+	    gdbm_close(gp);
+	    return max_num;
+	}
 
 	for(num = 0; max_num == -1 || num <= max_num; num++) {
 	  char *dp, *dp_end;
@@ -3270,6 +3275,8 @@ static int loadoldheadersfromGDBMindex(char *dir)
       else { 
 	struct emailinfo *emp;
 
+	if (get_count_only)
+	    return 0;
 	/* can't read?  create. */
 
 	if (set_showprogress)
@@ -3315,7 +3322,7 @@ int loadoldheaders(char *dir)
     printf("%s...\n", lang[MSG_READING_OLD_HEADERS]);
 #ifdef GDBM
   if(set_usegdbm)
-    num = loadoldheadersfromGDBMindex(dir);
+    num = loadoldheadersfromGDBMindex(dir, 0);
   else
 #endif
     num = loadoldheadersfrommessages(dir, -1);
