@@ -7,9 +7,11 @@ Version Changes for Hypermail
     than 0000. It will now start with 0000 as before
     For those people who had this problem and don't want to break any links to their
     archives when rebuilding them, there's a new configuration option allowing you
-    to tell from which number you want to start your archive: setmsgnum. You should
+    to tell from which number you want to start your archive: startmsgnum. You should
     only set it up once and not modify it for an existing archive or your links may 
     break.
+    A warning message appeared systematically because the showhr, which is now deprecated,
+    was turned on by default.
 
  Peter McCluskey (May 22, 2003)
   - add Italian support from Gabriele Bartolini and Marco Nenciarini.
