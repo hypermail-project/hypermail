@@ -588,7 +588,7 @@ struct emailsubdir *msg_subdir(int msgnum, time_t date)
     static struct emailsubdir *last_subdir;
     char s[DATESTRLEN];
     char desc_buf[DATESTRLEN];
-    char *desc;
+    char *desc = NULL;
     char *fmt = set_describe_folder;
     if (set_msgsperfolder > 0) {
 	int subdir_no = msgnum / set_msgsperfolder;
@@ -612,6 +612,8 @@ struct emailsubdir *msg_subdir(int msgnum, time_t date)
     if (!last_subdir || strcmp(s, last_subdir->subdir)) {
 	last_subdir = new_subdir(s, last_subdir, desc, date);
     }
+    if (desc)
+      free(desc);
     return last_subdir;
 }
 

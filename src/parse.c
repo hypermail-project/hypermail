@@ -930,7 +930,8 @@ static char * mdecodeQP(FILE *file, char *input, char **result, int *length,
 			FILE *fpo)
 {
     int outcount = 0;
-    char *buffer = input;
+    char i_buffer[MAXLINE];
+    char *buffer;
     unsigned char inchar;
     char *output;
     struct Push pbuf;
@@ -958,8 +959,9 @@ static char * mdecodeQP(FILE *file, char *input, char **result, int *length,
 	if ('=' == inchar) {
 	    int value;
 	    if ('\n' == *input) {
-		if (!fgets(buffer, MAXLINE, file))
+		if (!fgets(i_buffer, MAXLINE, file))
 		    break;
+		buffer = i_buffer + set_ietf_mbox;
 		if (set_append) {
 		  if(fputs(buffer, fpo) < 0) {
 		    progerr("Can't write to \"mbox\""); /* revisit me */
@@ -2212,7 +2214,7 @@ int parsemail(char *mbox,	/* file name */
 			char *p2 = mdecodeQP(fp, line, &data, &datalen, fpo);
 			if (p2) {
 			    if (set_txtsuffix) {
-			        PushString(&raw_text_buf, line_buf);
+			        PushString(&raw_text_buf, line);
 				line_buf[0] = 0;
 				PushString(&raw_text_buf, p2);
 			    }
