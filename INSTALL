@@ -56,6 +56,8 @@ Building Hypermail:
 
     1) Type "./configure". This creates the makefiles and the
        config.h file needed to build the software.
+       If you want to install Hypermail somewhere other than in /usr/local,
+       run something like this instead: ./configure --prefix=$HOME
 
     2) Type "make". This will build the software.
        If it has trouble finding gdbm (e.g. if it fails with a message such as
@@ -112,22 +114,24 @@ Testing Hypermail:
 Installing Hypermail:
 =====================
 
-    Now that you are ready to install Hypermail, 
+    You may need to login as root for this step.
+    To install just the Hypermail programs:
 
         - chdir to the src/ directory
 
-        - Type "make install". 
+        - Type "make install". (Or, if you prefer, just copy "hypermail" to
+       wherever you want it).
 
-Documentation:
-==============
+    If you want a full install of Hypermail and its documentation, do
 
-    To install the HTML documentation:
+       make install
 
-    1) Edit the Makefile and change "htmldir" to point to the
-       directory in which you want the documentation.
-
-    2) Type "make html.install". You should be able to view the
-       HTML documentation using any World-Wide Web browser. 
+    in the main Hypermail directory (the one where you did ./configure).
+    If it fails with something like:
+        mkdir: "/usr/local/apache/htdocs/hypermail": Permission denied
+    then you may need to rerun ./configure giving it the directory in
+    which you want to install html documentation files using this option:
+     --with-htmldir=/var/www/htdocs
 
 Upgrading:
 ==============
