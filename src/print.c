@@ -376,9 +376,10 @@ void print_index_header_links(FILE *fp, mindex_t called_from, long startdatenum,
 	|| (called_from != SUBJECT_INDEX && show_index[dlev][SUBJECT_INDEX])) {
       fprintf(fp, "<li><dfn><a href=\"#first\" title=\"jump to messages list\" "
 	      "tabindex=\"1\">%d %s</a></dfn>:"
-	      " <dfn>%s</dfn> %s, <dfn>%s</dfn> %s</li>\n", 
+	      " <dfn>%s</dfn> %s,",
 	      amountmsgs, lang[MSG_ARTICLES],
-	      lang[MSG_STARTING], getdatestr(startdatenum),
+	      lang[MSG_STARTING], getdatestr(startdatenum));
+      fprintf(fp, " <dfn>%s</dfn> %s</li>\n",
 	      lang[MSG_ENDING], getdatestr(enddatenum));
 
       if (!set_reverse && (called_from != AUTHOR_INDEX && called_from != SUBJECT_INDEX))
