@@ -36,6 +36,7 @@ little here.  That will change shortly.
 <LI><A HREF="#18">How can I have multiple mailboxes produce one archive?</A>
 <LI><A HREF="#19">I have received an email with attachment that needs octet-stream. What should I do?</A>
 <LI><A HREF="#20">Why is Hypermail ignoring some messages?</A>
+<LI><A HREF="#21">Bogus dates are causing some emails to be put in a strange folder. Is there an easy way around this?</A>
 </OL>
 
 <P ALIGN=CENTER><IMG SRC="hr.yellow.png" WIDTH=400 HEIGHT=2 ALT="----"></P>
@@ -484,6 +485,16 @@ deleted = "X-Hypermail-Deleted"
 </blockquote>
 
 <P ALIGN=CENTER><IMG SRC="hr.yellow.png" WIDTH=400 HEIGHT=2 ALT="----"></P>
+<H3><A HREF="#" NAME="21">Bogus dates are causing some emails to be put in a strange folder. Is there an easy way around this?</A></H3>
+<p>
+If the bad dates were caused by a computer with the date set absurdly, try
+running <a href="http://gradha.sdf-eu.org/program/mailbox_date_trimmer.en.html">
+mailbox_date_trimmer.py</a>, available in the Hypermail's contrib directory.
+<p>
+If the bad dates are in a format that Hypermail doesn't understand, then
+you will probably need to edit them manually.
+
+<P ALIGN=CENTER><IMG SRC="hr.yellow.png" WIDTH=400 HEIGHT=2 ALT="----"></P>
 <BR>
 <DIV ALIGN=CENTER>
 <ADDRESS>
@@ -492,7 +503,7 @@ Do you have a Hypermail related question you'd like to see listed here ?
 If so send mail to the Hypermail mailing list
 <A HREF="mailto:hypermail@hypermail-project.org">hypermail@hypermail-project.org</A> 
 &nbsp;&nbsp;(preferably with the answers).
-You mat subscribe to the list by sending a message with the word
+You may subscribe to the list by sending a message with the word
 "subscribe" in the Subject: field to hypermail-request@hypermail-project.org.
 </STRONG>
 </ADDRESS>
@@ -500,4 +511,3 @@ You mat subscribe to the list by sending a message with the word
 <P>&nbsp;</P>
 </BODY>
 </HTML>
-

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.3.0: http://docutils.sourceforge.net/" />
+<title>mailbox_date_trimmer</title>
+<link rel="stylesheet" href="default.css" type="text/css" />
+</head>
+<body>
+<div class="document" id="mailbox-date-trimmer">
+<h1 class="title">mailbox_date_trimmer</h1>
+<div class="section" id="scenario-description">
+<h1><a name="scenario-description">Scenario description</a></h1>
+<p>You are a mailing list administrator, or you are somebody who keeps
+mailing list archives for a user group, or you just have a fetish
+for email archives. Now, don't you always wonder why after running
+<a class="reference" href="http://www.hypermail.org/">Hypermail</a> or <a class="reference" href="http://www.mhonarc.org/">MHonArc</a> on your archives you always have some emails
+which date back to 1980 or far away in the future like 2011, even
+though you started collecting emails in the year 2000 and it's still
+this very same year?  While there are many answers to this question,
+there is a very easy way to fix many, if not all, of these messages,
+which results in a much more consistent email archive without broken
+discussion threads.</p>
+</div>
+<div class="section" id="how-does-it-work">
+<h1><a name="how-does-it-work">How does it work?</a></h1>
+<p>Mailing lists with some activity register at least some messages
+every month, and luckily most of these emails have correct
+dates. This program iterates through the email archive of your
+choice (in Unix mailbox format) checking the date header of each
+email and comparing it to the date of the previous email. If the
+difference in time is greater than a month, the current email's
+date is considered invalid.</p>
+<p>When an email is sent to a mailing list, it is very likely that it
+<em>hops</em> through some computers before it reaches its audience. The
+good thing about this is that each <em>hop</em> adds to the email's
+headers a timestamp. People running email servers connected day
+and night to the internet usually set them up correctly (or face
+the consequences), so it is very unlikely that one of these added
+timestamps is incorrect.  Also, email delivery tends to be pretty
+quick from one of these servers to another, with delays not bigger
+than minutes or even seconds in most circunstances.</p>
+<p>So when the current email's date is considered invalid,
+mailbox_date_trimmer finds all the date timestamps in the headers,
+and reading them in reverse order (servers add their headers to
+the beginning of the email) picks the first one whose difference
+to the previous email is smaller than one month (usually the first
+choice 99% of the time).</p>
+<p>In the broken cases where an email doesn't have ANY header at all,
+mailbox_date_trimmer adds to this email the time of the previos
+email plus one second. In the cases where the closest match doesn't
+fall in the expected one month timeframe, mailbox_date_trimmer gives
+up and doesn't add any header at all. The latter could happen with
+legitimate emails which you moved incorrectly to a folder, or you
+unsubscribed for holidays and resubscribed much later, etc.</p>
+<p>If your mailbox contains messages which fall into this category,
+tough luck, you will have to weed them out manually.  For most of
+the other people in the world, rejoice, your calvary has come to
+an end, you can finally enjoy email archives with consistent dates.</p>
+</div>
+<div class="section" id="software-requisites">
+<h1><a name="software-requisites">Software requisites</a></h1>
+<p>This software requires Python (<a class="reference" href="http://www.python.org">http://www.python.org</a>). It is known
+to work with versions 1.5.2 or 2.2.3. You also need my mailbox_reader
+module, which you should be able to get from:</p>
+<blockquote>
+<ul class="simple">
+<li><a class="reference" href="http://gradha.sdf-eu.org/program/mailbox_reader.en.html">http://gradha.sdf-eu.org/program/mailbox_reader.en.html</a></li>
+<li><a class="reference" href="http://www.vex.net/parnassus/">http://www.vex.net/parnassus/</a></li>
+<li><a class="reference" href="http://freshmeat.net/">http://freshmeat.net/</a></li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="usage">
+<h1><a name="usage">Usage</a></h1>
+<p>mailbox_date_trimmer is a commandline tool with pretty few options.
+Running mailbox_date_trimmer with the <tt class="literal"><span class="pre">-h</span></tt> or <tt class="literal"><span class="pre">--help</span></tt> arguments
+should bring up a help screen showing you how to use the program
+and with what switches.  This program can read mailboxes from the
+hard disk or through standard input. It can also write new mailboxes
+or dump everything through standard output. The former means that
+if you run the program without arguments it will sit there idle
+waiting for your input, just like the grep command.</p>
+<p>You can run the program like a filter inside a more complex command
+chain.  It consumes/produces data one email at a time, so you can
+feed it gigabytes of data and it should not run out of memory unless
+you have emails which don't fit in your available free memory,
+or you have another heavy weight process consuming all your memory.</p>
+<p>Note that while I have run this over all my personal mailing list
+archives, and the program is written in such a way that it should
+never do stupid things, hey, I'm a stupid human, and the computer
+just followed my instructions. So better make a safe backup of
+your mail archives before you use this software on them. Anyway,
+it has worked correctly with about 500MB of mail archives, which
+is all I have been able to get from internet and friends.</p>
+</div>
+<div class="section" id="checking-the-generated-output">
+<h1><a name="checking-the-generated-output">Checking the generated output</a></h1>
+<p>In order to verify that mailbox_date_trimmer didn't break anything
+seriously, the first thing you should do is inspect the generated
+mail archive and count the number of emails, it should equal the
+number of emails in your original mailbox. If this is not the case,
+I'm sorry, I must have done something terrible. Drop me an email.</p>
+<p>The second thing you can do is go one email after another checking
+what dates were modified. When mailbox_date_trimmer modifies the
+date of an email, if the verbose switch has been used, the original
+date is stored in the header <tt class="literal"><span class="pre">X-DT</span></tt>. The reason of the change
+is stored in the header <tt class="literal"><span class="pre">X-pi</span></tt>. You can therefore extract all
+modified messages with the following command, if you have grepmail
+available on your machine:</p>
+<pre class="literal-block">
+grepmail -h X-pi mailbox &gt; changed
+</pre>
+<p>Now you can open this new mailbox and see easier which messages
+where modified. Don't you like these extra headers? Well, currently
+you have to grep them out yourself.</p>
+<p>You will notice that most of the dates the program generates are
+not accurate. I didn't bother to parse timezones, an error of some
+hours is irrelevant when the acceptation time frame is one month
+in both directions.  Also, time operations are done using the local
+time of your machine, should be using UTC.</p>
+<p>However, little differences in time didn't cause me any problems
+at all. You are welcome to send me patches in unified diff format
+to improve this or any other aspect of the program. The current
+version satisfied all my neccesities, so it is quite unlikely that
+I will actively improve this software (no itch to scratch).</p>
+</div>
+<div class="section" id="contact-information">
+<h1><a name="contact-information">Contact information</a></h1>
+<p>You should be able to get me through <a class="reference" href="mailto:gradha&#64;users.sourceforge.net">gradha&#64;users.sourceforge.net</a>. If
+this fails, try going to my web page (currently at
+<a class="reference" href="http://gradha.sdf-eu.org/">http://gradha.sdf-eu.org/</a>), my current email address is stamped at
+the bottom of most pages. If that URL fails, you could try Googling
+by &quot;Grzegorz Adam Hankiewicz&quot; (don't forget the quotes). Am I
+narcissistic or what? As if you ever wanted to know that much...</p>
+</div>
+<div class="section" id="license">
+<h1><a name="license">License</a></h1>
+<p>This software is covered under the <a class="reference" href="http://www.gnu.org/licenses/licenses.html#GPL">GPL</a>. See the full license text
+in the provided LICENSE file.</p>
+</div>
+</div>
+</body>
+</html>
