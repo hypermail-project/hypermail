@@ -204,7 +204,7 @@ struct emailinfo *addhash(int num, char *date, char *name, char *email, char *ms
 	newmsgid = emalloc(MSGDSTRLEN);
 	do {
 	    msgid_dup = 0;
-			sprintf(newmsgid, "%d.%4.4d@hypermail.dummy", time(NULL), freedummy);
+	    sprintf(newmsgid, "%d.%4.4d@hypermail.dummy", time(NULL), freedummy);
 	    h = (struct hashemail *)etable[hash(newmsgid)];
 	    while (h) {
 		if (!strcmp(h->data->msgid, newmsgid)) {
@@ -609,7 +609,7 @@ struct body *hashnumlookup(int num, struct emailinfo **emailp)
 }
 
 /*
- * returns info about the message associated with the given msgid.
+ * returns info about the first message associated with the given msgid.
  */
 
 struct emailinfo *hashlookupbymsgid(char *msgid)

@@ -2026,7 +2026,8 @@ msgid);
 		emp = NULL;
 		if (set_mbox_shortened) {
 		    if (hashnumlookup(num, &emp)) {
-		        if(strcmp(msgid, emp->msgid)) {
+			if(strcmp(msgid, emp->msgid)
+			   && !strstr(emp->msgid, "hypermail.dummy")) {
 			    snprintf(errmsg, sizeof(errmsg),
 				     "msgid mismatch %s %s", msgid, emp->msgid);
 			    progerr(errmsg);

@@ -743,7 +743,9 @@ struct Config cfg[] = {
     {"mbox_shortened", &set_mbox_shortened, BFALSE, CFG_SWITCH,
      "# Set this to On to enable use of mbox that has had some of its\n"
      "# initial messages deleted. Requires usegdbm = 1 and increment = 0.\n"
-     "# The first message in the mbox must have a Message-ID header.\n"
+     "# The first message in the shortened mbox must have a Message-Id header.\n"
+     "# If discard_dup_msgids is 0, the first message in the shortened mbox\n"
+     "# may not have the same Message-Id as a message that was deleted.\n"
      "# The mbox may not be altered in any way other than deleting from\n"
      "# beginning of the mbox or appending new messages to the end (unless\n"
      "# you rebuild the archive from scratch using a complete mbox).\n", FALSE},
