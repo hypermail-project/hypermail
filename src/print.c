@@ -125,7 +125,7 @@ void fprint_menu(FILE *fp, mindex_t idx, char *archives,
 
     if (archives && *archives)
 	fprintf(fp, "<th><a href=\"%s\">%s</a></th>\n", archives,
-		lang[MSG_OTHER_GROUPS]);
+		lang[MSG_OTHER_MAIL_ARCHIVES]);
 
     fprintf(fp, "</tr>\n</table>\n</div>\n");
 }
@@ -141,9 +141,9 @@ void fprint_summary(FILE *fp, int pos, long first_d, long last_d, int num)
         fprintf(fp, "<tr>\n<th colspan=\"4\">%d %s</th>\n</tr>\n",
 	    num, lang[MSG_MESSAGES]);
         fprintf(fp, "<tr>\n  <th>%s:</th><td><em>%s</em></td>\n",
-	        getdatestr(first_d), lang[MSG_STARTING]);
+	        lang[MSG_STARTING], getdatestr(first_d));
         fprintf(fp, "  <th>%s:</th><td><em>%s</em></td>\n</tr>\n",
-	        getdatestr(last_d), lang[MSG_ENDING]);
+	        lang[MSG_ENDING], getdatestr(last_d));
     }
     else { /* bottom of page */
        fprintf(fp,"<tr><th><a name=\"end\">%s: </a></th><td><em>%s</em></td>\n",
