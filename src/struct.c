@@ -974,6 +974,8 @@ struct emailsubdir *new_subdir(char *subdir, struct emailsubdir *last_subdir, ch
 	new_sd->next_subdir = insert_point->next_subdir;
 	insert_point->next_subdir = new_sd;
 	new_sd->prior_subdir = insert_point;
+	if (new_sd->next_subdir)
+	    new_sd->next_subdir->prior_subdir = new_sd;
     }
     new_sd->first_email = NULL;
     new_sd->last_email = NULL;

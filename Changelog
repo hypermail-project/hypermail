@@ -1,6 +1,10 @@
 Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (Mar 7, 2003)
+   Fixed problem with reverse_folders option that caused the index file
+  to leave out folders when there were some unusual mismatches between the
+  2 dates in one message.
 
  Kent Landfield (Feb 28, 2003)
    - changed wait.h sys/wait.h for portability in msg2archive
@@ -12,6 +16,9 @@ Version Changes for Hypermail
  Kent Landfield (Feb 20, 2003)
    - added wait.h to msg2archive that was needed for s_popen()
    - removed unused variable in finelink.c
+
+ Peter McCluskey (Feb 20, 2003)
+   Made version 2.1.7 tar file.
 
  Jose Kahan (jose@w3.org) (Feb 20, 2003)
    - makemailcommand wasn't escaping non-ascii characters in the URLS
