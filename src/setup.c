@@ -233,7 +233,10 @@ struct Config cfg[] = {
     {"mailcommand", &set_mailcommand, MAILCOMMAND, CFG_STRING,
      "# This specifies the mail command to use when  converting\n"
      "# email  addresses to links. The variables $TO, $SUBJECT,\n"
-     "# and $ID can be used in constructing the command string.\n"},
+     "# and $ID can be used in constructing the command string.\n"
+     "# If a bodymailcommand string is specified, mailcommand\n"
+     "# only affects the New Message and Reply To fields; otherwise\n"
+     "# it also affects the fields that bodymailcommand affects\n"},
 
     {"mailto", &set_mailto, NULL, CFG_STRING,
      "# The address of the contact point that is put in the HTML header\n"
