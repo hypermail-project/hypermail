@@ -9,7 +9,7 @@ prefix=@prefix@
 mandir=@mandir@
 
 # This is where the HTML documentation goes
-htmldir=@htmldir@/docs
+htmldir=@htmldir@
 imagedir=@htmldir@/images
 
 # Installation program 
@@ -21,9 +21,12 @@ uninstall:
 	rm -f $(mandir)/man1/hypermail.1
 	rm -f $(mandir)/man4/hmrc.4
 	(if [ -d $(htmldir) ]; then \
-		rm -f $(imagedir)/hr.yellow.gif; \
-		rm -f $(imagedir)/hypermail.gif; \
+		rm -f $(imagedir)/hr.yellow.png; \
+		rm -f $(imagedir)/hypermail.png; \
+		rm -f $(imagedir)/stars.png; \
+		rm -f $(htmldir)/archive_search.html; \
 		rm -f $(htmldir)/hypermail.html; \
+		rm -f $(htmldir)/hypermail-faq.html; \
 		rm -f $(htmldir)/customizing.html; \
 		rm -f $(htmldir)/hmrc.html; \
 		rmdir $(htmldir); \
@@ -41,9 +44,12 @@ install.man:
 install.html:
 	@(if [ ! -d $(htmldir) ]; then mkdir -p $(htmldir); fi)
 	@(if [ ! -d $(imagedir) ]; then mkdir -p $(imagedir); fi)
-	$(INSTALL_PROG) -c -m 0644 hr.yellow.gif $(imagedir)
-	$(INSTALL_PROG) -c -m 0644 hypermail.gif $(imagedir)
+	$(INSTALL_PROG) -c -m 0644 hr.yellow.png $(imagedir)
+	$(INSTALL_PROG) -c -m 0644 hypermail.png $(imagedir)
+	$(INSTALL_PROG) -c -m 0644 stars.png $(imagedir)
+	$(INSTALL_PROG) -c -m 0644 archive_search.html $(htmldir)
 	$(INSTALL_PROG) -c -m 0644 hypermail.html $(htmldir)
+	$(INSTALL_PROG) -c -m 0644 hypermail-faq.html $(htmldir)
 	$(INSTALL_PROG) -c -m 0644 customizing.html $(htmldir)
 	$(INSTALL_PROG) -c -m 0644 hmrc.html $(htmldir)
 
