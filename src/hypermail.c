@@ -323,6 +323,9 @@ int main(int argc, char **argv)
 	case 'M':
 	    set_usemeta = TRUE;
 	    break;
+	case 'N':
+ 	    set_nonsequential = TRUE;
+	    break;
 	case '?':
 	default:
 	    break;
@@ -495,6 +498,15 @@ int main(int argc, char **argv)
     else
 	use_mailcommand = 1;
 
+#ifndef FNV
+    /* the nonsequential mode won't work unless we compiled the FNV library
+       (./configure --enable-libfnv) */
+    if (set_nonsequential)
+      progerr("the nonsequential mode is only available if you enabled the\n compilation"
+	      "of the fnv hash library. Try doing a\n\t./configure --enable-libfnv\n"
+	      "and recompile if you want to use this option.");
+#endif /* FNV */
+
     /* 
      * A little performance speed up.  The following was being done
      * over and over in the write functions. This way it is done once.
@@ -572,6 +584,10 @@ int main(int argc, char **argv)
 	if (set_linkquotes)
 	    analyze_headers(max_msgnum + 1);
 
+	/* write the index of msgno/msgid_hash filenames */
+	if (set_nonsequential)
+	    write_messageindex (0, max_msgnum + 1);
+
 	writearticles(amount_old, max_msgnum + 1);
 
 	if (set_delete_msgnum)
@@ -597,6 +613,11 @@ int main(int argc, char **argv)
 	}
 	if (set_linkquotes)
 	    analyze_headers(max_msgnum + 1);
+
+	/* write the index of msgno/msgid_hash filenames */
+	if (set_nonsequential)
+	  write_messageindex (0, max_msgnum + 1);
+
 	writearticles(0, max_msgnum + 1);
     }
 

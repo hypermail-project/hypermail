@@ -2249,8 +2249,9 @@ int parsemail(char *mbox,	/* file name */
 			    if (att_dir == NULL) {
 
 				/* first check the DIR_PREFIXER */
-				trio_asprintf(&att_dir,"%s%c" DIR_PREFIXER "%04d",
-					      dir, PATH_SEPARATOR, num);
+				trio_asprintf(&att_dir,"%s%c" DIR_PREFIXER "%s",
+					      dir, PATH_SEPARATOR, 
+					      message_name (emp));
 				check1dir(att_dir);
 				/* If this is a repeated run on the same archive we already
 				 * have HTML'ized, we risk extracting the same attachments
@@ -2675,8 +2676,16 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
 	sprintf(inreply_start, "<strong>%s:</strong> <a href=\"",
 		lang[MSG_IN_REPLY_TO]);
     }
-    trio_asprintf(&filename, "%s%s%.4d.%s", set_dir,
-		  subdir ? subdir->subdir : "", num, set_htmlsuffix);
+
+    /* prepare the name of the file that stores the message */
+    if (set_nonsequential)
+      trio_asprintf(&filename, "%s%s%s.%s", set_dir,
+		    subdir ? subdir->subdir : "", 
+		    msgnum_id_table[num],
+		    set_htmlsuffix);
+    else
+      trio_asprintf(&filename, "%s%s%.4d.%s", set_dir,
+		    subdir ? subdir->subdir : "", num, set_htmlsuffix);
 
     /*
      * fromdate == <!-- received="Wed Jun  3 10:12:00 1998 CDT" -->
@@ -2888,11 +2897,18 @@ static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
 {
     int num = 0;
     int num_added = 0;
-    int max_num = (num_from_gdbm == -1 ? find_max_msgnum() : num_from_gdbm);
+    int max_num;
     struct emailinfo *e0 = NULL;
 
     struct reply *replylist_tmp = NULL;
     int first_read_body = 0;
+    
+    if (num_from_gdbm != -1)
+      max_num = num_from_gdbm;
+    else if (set_nonsequential)
+      max_num = find_max_msgnum_id();
+    else
+      max_num = find_max_msgnum();
 
     if (max_num > max_msgnum)
 	max_msgnum = max_num;
@@ -2970,6 +2986,10 @@ static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
     /* Strategy: loop on files, opening each and copying the header comments
      * into dynamically-allocated memory, then saving if it's not corrupt. */
 
+    if (set_nonsequential)
+      /* read the msgid to msgnum table */
+      msgnum_id_table = read_msgnum_id_table (max_num);
+
     while (num <= max_num) {
 	struct emailinfo *ep0 = NULL;
 	int parse_body = (set_linkquotes && num >= first_read_body);
@@ -2990,6 +3010,13 @@ static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
 	    fflush(stdout);
 	}
     }
+
+    if (set_nonsequential)
+      {
+	/* free the msgnum_id_table */
+	free_msgnum_id_table (msgnum_id_table, max_num);
+	msgnum_id_table = NULL;
+      }
 
     if (set_showprogress)
 	printf("\b\b\b\b%4d %s.\n", num, lang[MSG_ARTICLES]);

@@ -55,6 +55,7 @@ bool set_usegdbm;
 bool set_writehaof;
 bool set_append;
 char *set_append_filename;
+bool set_nonsequential;
 bool set_warn_surpressions;
 bool set_files_by_thread;
 
@@ -331,6 +332,10 @@ struct Config cfg[] = {
      "# Specifies the filename to be used by the append option.\n"
      "#$DIR may be used to specify a name relative to the directory\n"
      "#specified in the -d or dir option.\n"},
+
+    {"nonsequential",  &set_nonsequential,  BFALSE,    CFG_SWITCH,
+     "# Set this to On to generate filenames that are not sequential, but 
+        rather a hash of the message properties.\n"},
 
     {"thrdlevels", &set_thrdlevels, INT(4), CFG_INTEGER,
      "# This specifies the number of thread levels to outline\n"
@@ -1084,6 +1089,7 @@ void dump_config(void)
     printf("set_usegdbm = %d\n",set_usegdbm);
     printf("set_writehaof = %d\n",set_writehaof);
     printf("set_append = %d\n",set_append);
+    printf("set_nonsequential = %d\n",set_nonsequential);
     printf("set_thrdlevels = %d\n",set_thrdlevels);
     printf("set_dirmode = %04o\n",set_dirmode);
     printf("set_filemode = %04o\n",set_filemode);

@@ -6,6 +6,12 @@ Center's Suggestions located at http://www.landfield.com/cgi-bin/hmsuggest.
 General Things:
 ===============
 
+- Add the msgid hash to the emailinfo structure to speed-up looking
+  of this value when we already know it.
+
+- Finish the libtool work on the fnv library so that we can link to
+  shared libraries _and_ install/uninstall them.
+
 - Need to lowercase HTML tags to support XHTML 1.0 in the future.
 
 - Need to add XHTML support - Configurable ?

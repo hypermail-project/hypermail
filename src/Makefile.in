@@ -27,11 +27,12 @@ INSTALL_PROG=@INSTALL@
 #WNOERROR=-Werror
 #WARNINGS=$(WNOERROR) -ansi -pedantic -Wall -Wtraditional -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Dlint
 
-CFLAGS=@CFLAGS@ @INCLUDES@ -Ipcre $(WARNINGS)
+FNV_CFLAGS=@FNV_CFLAGS@
+CFLAGS=@CFLAGS@ @INCLUDES@ -Ipcre @FNV_INCLUDES@ $(FNV_CFLAGS) $(WARNINGS)
 YACC=@YACC@
 NETLIBS=@LIBS@
-LDFLAGS=@LDFLAGS@ -Lpcre
-MISC_LIBS= -lm -lpcre
+LDFLAGS=@LDFLAGS@ -Lpcre @FNV_LDFLAGS@
+MISC_LIBS= -lm -lpcre @FNV_LIBS@
 OPT_LIBS=@EXTRA_LIBS@
 
 INCS=		domains.h hypermail.h lang.h proto.h \
@@ -56,10 +57,13 @@ MAILOBJS=	mail.o ../libcgi/libcgi.a
 .c.o:
 	$(CC) -c $(CFLAGS) $<
 
-all:    pcre/libpcre.a hypermail$(SUFFIX) mail$(SUFFIX) lang$(SUFFIX)
+all:    pcre/libpcre.a @FNV_DEP@ hypermail$(SUFFIX) mail$(SUFFIX) lang$(SUFFIX)
 
 pcre/libpcre.a:
 	@cd pcre; $(MAKE) libtool libpcre.a CC="$(CC)" CFLAGS="$(CFLAGS)"
+
+fnv/libfnv.a:
+	@cd fnv; $(MAKE) libfnv.a CC="$(CC)" CFLAGS="$(CFLAGS)"
 
 hypermail$(SUFFIX): $(OBJS) 
 	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(OBJS) $(OPT_LIBS) $(MISC_LIBS)
@@ -116,6 +120,7 @@ clean:
 	rm -f .inslog tca.map lint.out
 	rm -f getdate.c
 	@cd pcre; $(MAKE) clean
+	@(if test $(FNV_CFLAGS) = "-DFNV" ; then cd fnv; $(MAKE) clobber; fi)
 	@cd ../libcgi; $(MAKE) clean
 
 #

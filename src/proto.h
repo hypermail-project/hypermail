@@ -50,6 +50,12 @@ char *htmlfilename(const char *, struct emailinfo *, const char *);
 char *haofname(struct emailinfo *);
 int matches_existing(int);
 
+char *messageindex_name(void);
+int find_max_msgnum_id(void);
+char **read_msgnum_id_table(int);
+void free_msgnum_id_table(char **, int);
+char *message_name(struct emailinfo *);
+
 /*
 ** hypermail.c functions
 */

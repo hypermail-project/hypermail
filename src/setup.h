@@ -79,6 +79,7 @@ extern bool set_usegdbm;
 extern bool set_writehaof;
 extern bool set_append;
 extern char *set_append_filename;
+extern bool set_nonsequential;
 extern bool set_warn_surpressions;
 extern bool set_files_by_thread;
 

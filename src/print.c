@@ -728,6 +728,8 @@ void printattachments(FILE *fp, struct header *hp,
 {
     char *subj;
     char *attdir;
+    char *msgnum;
+
     const char *rel_path_to_top = (subdir_email ?
 				   subdir_email->subdir->rel_path_to_top : "");
 
@@ -739,8 +741,9 @@ void printattachments(FILE *fp, struct header *hp,
 	    subj = convchars(em->subject);
 
 	    /* See if there's a directory corresponding to this message */
-	    trio_asprintf(&attdir, "%s%c" DIR_PREFIXER "%04d",
-			  set_dir, PATH_SEPARATOR, em->msgnum);
+	    msgnum = message_name (em);
+	    trio_asprintf(&attdir, "%s%c" DIR_PREFIXER "s",
+			  set_dir, PATH_SEPARATOR, msgnum);
 	    if (isdir(attdir)) {
 	        DIR *dir = opendir(attdir);
 
@@ -783,8 +786,8 @@ void printattachments(FILE *fp, struct header *hp,
 			if (!stat(filename, &fileinfo))
 			    file_size = fileinfo.st_size;
 			free(filename);
-			trio_asprintf(&filename, DIR_PREFIXER "%04d%c%s",
-				      em->msgnum,
+			trio_asprintf(&filename, DIR_PREFIXER "%s%c%s",
+				      message_name (em),
 				      PATH_SEPARATOR, entry->d_name);
 			stripped_filename = strchr(entry->d_name, '-');
 			if (stripped_filename)
@@ -2796,3 +2799,39 @@ void write_toplevel_indices(int amountmsgs)
     }
     free(filename);
 }
+
+/*
+** This writes out the message index... a file giving the old msgno
+** and the hash string that corresponds to it.
+*/
+void write_messageindex (int startnum, int maxnum)
+{
+    int num;
+    struct emailinfo *email;
+
+    FILE *fp;
+    char *buf;
+
+    struct body *bp;
+
+    if (set_showprogress)
+	printf("%s \"%s\"...    ", lang[MSG_WRITING_ARTICLES], set_dir);
+
+    /* write the intial message and number of messages in the index */
+    buf = messageindex_name ();
+    fp = fopen (buf, "w");
+    free (buf);
+    fprintf (fp, "%.04d %.04d\n", startnum, maxnum);
+
+    /* write the reference to the message filenames */
+    num = startnum;
+    while (num < maxnum) {
+	if ((bp = hashnumlookup(num, &email)) != NULL) 
+	  {
+	    buf = message_name (email);
+	    fprintf (fp, "%.04d %s.html\n", num, buf);
+	  }
+	num++;
+    }
+    fclose (fp);
+} /* end write_messageindex () */

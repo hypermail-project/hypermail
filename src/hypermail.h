@@ -332,6 +332,8 @@ VAR long firstdatenum;
 VAR long lastdatenum;
 VAR int max_msgnum;
 
+VAR char **msgnum_id_table;
+
 VAR const char *latest_folder_path;
 
 #ifdef MAIN_FILE

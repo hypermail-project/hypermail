@@ -1,5 +1,18 @@
 Version Changes for Hypermail
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Jose Kahan (jose@w3.org) (September 25, 2002)
+  Added a new option to compute the archived filenames using an fnv hash
+  of the msgid + received From date. The resulting filename is 8 bytes long
+  (a space of 2^32 bits) + the extension. You can eventually change it to
+  16 bytes if this is too short. Just look at the code. 
+  The advantage of this is that you can add and remove items from the
+  archive and not worry anymore about broken links if the sequence
+  changes (e.g., if you are rebuilding an archive). To activate this
+  option, you need to do a ./ configure --enable-libfnv, then 
+  recompile hypermail. The name of the new  option is nonsequential
+  (lack of imagination!). 
+
  Peter McCluskey (September 17, 2002)
   Added reverse_folders option.
 

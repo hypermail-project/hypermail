@@ -1,0 +1,380 @@
+
+# Makefile.in for Fowler / Noll / Vo (FNV) Hash Tools library
+#
+# Prepared for the autoconf tools from the original Makefile
+# by Jose KAHAN (jose.kahan@w3.org).
+#
+# -------------------------------------------------------------
+#  Original comments
+#  ------------------------------------------------------------
+#
+# @(#) $Revision$
+# @(#) $Id$
+# @(#) $Source$
+#
+# See:
+#	http://www.isthe.com/chongo/tech/comp/fnv/index.html
+#
+# for the most up to date copy of this code and the FNV hash home page.
+#
+# Please do not copyright this code.  This code is in the public domain.
+#
+# LANDON CURT NOLL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+# INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO
+# EVENT SHALL LANDON CURT NOLL BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+# CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+# USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+# OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+# PERFORMANCE OF THIS SOFTWARE.
+#
+# By:
+#	chongo <Landon Curt Noll> /\oo/\
+#	http://www.isthe.com/chongo/
+#
+# Share and Enjoy!	:-)
+
+
+#---------------------------------------------------------------------------#
+# To build mingw32 DLL uncomment the next two lines. This addition for      #
+# mingw32 was contributed by <Paul.Sokolovsky@technologist.com>. I (Philip  #
+# Hazel) don't know anything about it! There are some additional targets at #
+# the bottom of this Makefile.                                              #
+#---------------------------------------------------------------------------#
+#
+# include dll.mk
+# DLL_LDFLAGS=-s
+
+#---------------------------------------------------------------------------#
+# The next few lines are modified by "configure" to insert data that it is  #
+# given in its arguments, or which it finds out for itself.                 #
+#---------------------------------------------------------------------------#
+
+# BINDIR is the directory in which the fnv command is installed.
+# INCDIR is the directory in which the public header file fnv.h is installed.
+# LIBDIR is the directory in which the libraries are installed.
+# MANDIR is the directory in which the man pages are installed.
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+
+BINDIR = @bindir@
+LIBDIR = @libdir@
+INCDIR = @includedir@
+MANDIR = @mandir@
+
+CC = @CC@
+CFLAGS = @CFLAGS@
+RANLIB = @RANLIB@
+UTF8   = @UTF8@
+
+
+# LIBTOOL defaults to "./libtool", which enables the building of shared
+# libraries. If "configure" is called with --disable-shared-libraries, LIBTOOL
+# is set to "", which stops shared libraries from being built, and LIBSUFFIX
+# is set to "a" instead of "la", which causes the shared libraries not to be
+# installed.
+
+LIBTOOL = @LIBTOOL@
+LIBSUFFIX = @LIBSUFFIX@
+
+# These are the version numbers for the shared libraries
+
+FNVLIBVERSION = @FNV_LIB_VERSION@
+FNVPOSIXLIBVERSION = @FNV_POSIXLIB_VERSION@
+
+#---------------------------------------------------------------------------#
+# For almost all systems, the command to create a library is "ar cq", but   #
+# there is at least one where it is different, so this command must be      #
+# configurable. However, I haven't got round to learning how to make        #
+# "configure" find this out for itself. It is necessary to use a command    #
+# such as "make AR='ar -rc'" if you need to vary this. The setting of AR is #
+# *not* passed over to ./ltconfig, because it does its own setting up.      #
+#---------------------------------------------------------------------------#
+
+AR = ar cq
+
+# make tools
+#
+SHELL= /bin/sh
+TAR= tar
+EGREP= egrep
+GZIP_BIN= gzip
+INSTALL= install
+
+DESTBIN= /usr/local/bin
+DESTLIB= /usr/local/lib
+DESTINC= /usr/local/include
+# NOTE: Lines with WWW in them are removed from the shipped Makefile
+WWW= /web/isthe/chroot/html/chongo/src/fnv
+
+# what to build
+#
+SRC=	hash_32.c hash_64.c \
+	fnv32.c fnv64.c \
+	have_ulong64.c
+HSRC=	fnv.h \
+	longlong.h
+ALL=	${SRC} ${HSRC} \
+	README Makefile
+PROGS=	fnv032 fnv064 fnv0_32 fnv0_64 fnv132 fnv164 fnv1_32 fnv1_64
+LIBS=	libfnv.$(LIBSUFFIX)
+LIBOBJ=	hash_32.o hash_64.o
+OTHEROBJ= fnv32.o fnv64.o
+TARGETS= ${LIBOBJ} ${LIBS} ${PROGS}
+
+# default rule
+#
+all: libtool ${TARGETS}
+
+# things to build
+
+libtool: config.guess config.sub ltconfig ltmain.sh
+	@if test "$(LIBTOOL)" = "./libtool"; then \
+	echo '--- Building libtool ---'; \
+	CC=$(CC) CFLAGS='$(CFLAGS)' RANLIB='$(RANLIB)' ./ltconfig ./ltmain.sh; \
+	echo '--- Built libtool ---'; fi
+
+hash_32.o: hash_32.c longlong.h fnv.h
+	${CC} ${CFLAGS} hash_32.c -c
+
+hash_64.o: hash_64.c longlong.h fnv.h
+	${CC} ${CFLAGS} hash_64.c -c
+
+libfnv.la:     $(OBJ)
+	@echo ' '
+	@echo '--- Building shared library: libfnv'
+	@echo ' '
+	-rm -f libpcre.la
+	./libtool $(CC) -version-info '$(FNVLIBVERSION)' -o libfnv.la -rpath $(LIBDIR) $(LOBJ)
+
+libfnv.a: ${LIBOBJ}
+	@echo ' '
+	@echo '--- Building static library: libfnv'
+	@echo ' '
+	rm -f $@
+	${AR} $@ ${LIBOBJ}
+	${RANLIB} $@
+
+fnv32.o: fnv32.c longlong.h fnv.h
+	${CC} ${CFLAGS} fnv32.c -c
+
+fnv032: fnv32.o libfnv.a
+	${CC} fnv32.o libfnv.a -o fnv032
+
+fnv64.o: fnv64.c longlong.h fnv.h
+	${CC} ${CFLAGS} fnv64.c -c
+
+fnv064: fnv64.o libfnv.a
+	${CC} fnv64.o libfnv.a -o fnv064
+
+fnv0_32: fnv032
+	-rm -f $@
+	-cp -f $? $@
+
+fnv0_64: fnv064
+	-rm -f $@
+	-cp -f $? $@
+
+fnv132: fnv032
+	-rm -f $@
+	-cp -f $? $@
+
+fnv164: fnv064
+	-rm -f $@
+	-cp -f $? $@
+
+fnv1_32: fnv032
+	-rm -f $@
+	-cp -f $? $@
+
+fnv1_64: fnv064
+	-rm -f $@
+	-cp -f $? $@
+
+longlong.h: have_ulong64.c Makefile
+	-@rm -f have_ulong64 have_ulong64.o ll_tmp longlong.h
+	@echo 'forming longlong.h'
+	@echo '/*' > longlong.h
+	@echo ' * DO NOT EDIT -- generated by the Makefile' >> longlong.h
+	@echo ' */' >> longlong.h
+	@echo '' >> longlong.h
+	@echo '#if !defined(__LONGLONG_H__)' >> longlong.h
+	@echo '#define __LONGLONG_H__' >> longlong.h
+	@echo '' >> longlong.h
+	@echo '/* do we have/want to use a long long type? */' >> longlong.h
+	-@rm -f have_ulong64.o have_ulong64
+	-@${CC} ${CFLAGS} have_ulong64.c -c 2>/dev/null; true
+	-@${CC} ${CFLAGS} have_ulong64.o -o have_ulong64 2>/dev/null; true
+	-@${SHELL} -c "./have_ulong64 > ll_tmp 2>/dev/null" \
+	    >/dev/null 2>&1; true
+	-@if [ -s ll_tmp ]; then \
+	    cat ll_tmp >> longlong.h; \
+	else \
+	    echo '#undef HAVE_64BIT_LONG_LONG	/* no */' >> longlong.h; \
+	fi
+	@echo '' >> longlong.h
+	@echo '#endif /* !__LONGLONG_H__ */' >> longlong.h
+	-@rm -f have_ulong64 have_ulong64.o ll_tmp
+	@echo 'longlong.h formed'
+
+# utilities
+#
+install: all
+	-@if [ -d "${DESTBIN}" ]; then \
+	    echo "	mkdir -p ${DESTBIN}"; \
+	    mkdir -p ${DESTBIN}; \
+	fi
+	-@if [ -d "${DESTLIB}" ]; then \
+	    echo "	mkdir -p ${DESTLIB}"; \
+	    mkdir -p ${DESTLIB}; \
+	fi
+	-@if [ -d "${DESTINC}" ]; then \
+	    echo "	mkdir -p ${DESTINC}"; \
+	    mkdir -p ${DESTINC}; \
+	fi
+	${INSTALL} -m 0755 ${PROGS} ${DESTBIN}
+	${INSTALL} -m 0644 ${LIBS} ${DESTLIB}
+	${RANLIB} ${DESTLIB}/libfnv.a
+	${INSTALL} -m 0644 ${HSRC} ${DESTINC}
+	@# NOTE: Lines with WWW in them are removed from the shipped Makefile
+	-@if [ -d ${WWW} ]; then \
+	    echo "rm -f Makefile.ship";			: WWW; \
+	    rm -f Makefile.ship;			: WWW; \
+	    echo "${EGREP} -v WWW Makefile > Makefile.ship"; 	: WWW; \
+	    ${EGREP} -v WWW Makefile > Makefile.ship; 	: WWW; \
+	    echo "rm -f Makefile.save";			: WWW; \
+	    rm -f Makefile.save;			: WWW; \
+	    echo "ln Makefile Makefile.save";		: WWW; \
+	    ln Makefile Makefile.save;			: WWW; \
+	    echo "cp -f Makefile.ship Makefile";	: WWW; \
+	    cp -f Makefile.ship Makefile;		: WWW; \
+	    echo "${TAR} -cf - ${ALL} | ${GZIP_BIN} --best > fnv_hash.tar.gz";: WWW; \
+	    ${TAR} -cf - ${ALL} | ${GZIP_BIN} --best > fnv_hash.tar.gz;: WWW; \
+	    echo "${INSTALL} -m 0644 fnv_hash.tar.gz ${ALL} ${WWW}"; \
+	    ${INSTALL} -m 0644 fnv_hash.tar.gz ${ALL} ${WWW}; \
+	    echo "mv -f Makefile.save Makefile";	: WWW; \
+	    mv -f Makefile.save Makefile;		: WWW; \
+	    echo "rm -f fnv_hash.tar.gz Makefile.ship";	: WWW; \
+	    rm -f fnv_hash.tar.gz Makefile.ship;	: WWW; \
+	fi;						: WWW
+
+clean:
+	-rm -f have_ulong64 have_ulong64.o ll_tmp ll_tmp2 longlong.h
+	-rm -f ${LIBOBJ}
+	-rm -f ${OTHEROBJ}
+	-rm -rf *.lo *.la .libs
+	-rm -f fnv_hash.tar.gz Makefile.ship	# WWW
+
+clobber: clean
+	-rm -f ${TARGETS}
+
+distclean: clobber
+	-rm -f Makefile libtool config.h config.status config.log config.cache	
+
+check: all
+	@echo
+	@echo "	These tests should not print an un-indented hash value:"
+	@echo
+	@echo "	fnv0_32 -s hi == 0x6800a3d1"
+	-@./fnv0_32 -s hi | ${EGREP} -v 0x6800a3d1; /bin/true
+	@echo "	fnv0_32 -s hello == 0xec6d6be8"
+	-@./fnv0_32 -s hello | ${EGREP} -v 0xec6d6be8; /bin/true
+	@echo "	fnv0_32 -s curds and whey == 0x4a83403b"
+	-@./fnv0_32 -s curds and whey | ${EGREP} -v 0x4a83403b; /bin/true
+	@echo "	fnv0_64 -s hi == 0x000068000000b0d1"
+	-@./fnv0_64 -s hi | ${EGREP} -v 0x000068000000b0d1; /bin/true
+	@echo "	fnv0_64 -s hello == 0x3fa86e63bc7d03c8"
+	-@./fnv0_64 -s hello | ${EGREP} -v 0x3fa86e63bc7d03c8; /bin/true
+	@echo "	fnv0_64 -s curds and whey == 0x09d2b4132bd1333b"
+	-@./fnv0_64 -s curds and whey | ${EGREP} -v 0x09d2b4132bd1333b;/bin/true
+	-@rm -f ll_tmp ll_tmp2
+	-@echo line 1 > ll_tmp
+	-@echo line 2 >> ll_tmp
+	-@echo line 3 >> ll_tmp
+	@echo '	echo "line 1\\nline 2\\nline 3" > ll_tmp'
+	@echo "	dd if=/dev/zero bs=1024k count=4 of=ll_tmp2 >/dev/null 2>&1"
+	-@dd if=/dev/zero bs=1024k count=4 of=ll_tmp2 >/dev/null 2>&1
+	@echo "	fnv0_32 < ll_tmp == 0x1fad81d0"
+	-@./fnv0_32 < ll_tmp | ${EGREP} -v 0x1fad81d0; /bin/true
+	@echo "	fnv0_64 < ll_tmp == 0xa8cf5b7784759250"
+	-@./fnv0_64 < ll_tmp | ${EGREP} -v 0xa8cf5b7784759250; /bin/true
+	@echo "	fnv0_32 < ll_tmp2 == 0x00000000"
+	-@./fnv0_32 < ll_tmp2 | ${EGREP} -v 0x00000000; /bin/true
+	@echo "	fnv0_64 < ll_tmp2 == 0x0000000000000000"
+	-@./fnv0_64 < ll_tmp2 | ${EGREP} -v 0x0000000000000000; /bin/true
+	@echo "	fnv0_32 ll_tmp == 0x1fad81d0"
+	-@./fnv0_32 ll_tmp | ${EGREP} -v 0x1fad81d0; /bin/true
+	@echo "	fnv0_64 ll_tmp == 0xa8cf5b7784759250"
+	-@./fnv0_64 ll_tmp | ${EGREP} -v 0xa8cf5b7784759250; /bin/true
+	@echo "	fnv0_32 ll_tmp2 == 0x00000000"
+	-@./fnv0_32 ll_tmp2 | ${EGREP} -v 0x00000000; /bin/true
+	@echo "	fnv0_64 ll_tmp2 == 0x0000000000000000"
+	-@./fnv0_64 ll_tmp2 | ${EGREP} -v 0x0000000000000000; /bin/true
+	@echo "	fnv0_32 ll_tmp ll_tmp == 0xc500fd20"
+	-@./fnv0_32 ll_tmp ll_tmp | ${EGREP} -v 0xc500fd20; /bin/true
+	@echo "	fnv0_64 ll_tmp ll_tmp == 0x3c8b9c3715fc1920"
+	-@./fnv0_64 ll_tmp ll_tmp | ${EGREP} -v 0x3c8b9c3715fc1920; /bin/true
+	@echo "	fnv0_32 ll_tmp ll_tmp2 == 0x6fad81d0"
+	-@./fnv0_32 ll_tmp ll_tmp2 | ${EGREP} -v 0x6fad81d0; /bin/true
+	@echo "	fnv0_64 ll_tmp ll_tmp2 == 0x29a78f5dd4759250"
+	-@./fnv0_64 ll_tmp ll_tmp2 | ${EGREP} -v 0x29a78f5dd4759250; /bin/true
+	@echo "	fnv0_32 ll_tmp2 ll_tmp == 0x1fad81d0"
+	-@./fnv0_32 ll_tmp2 ll_tmp | ${EGREP} -v 0x1fad81d0; /bin/true
+	@echo "	fnv0_64 ll_tmp2 ll_tmp == 0xa8cf5b7784759250"
+	-@./fnv0_64 ll_tmp2 ll_tmp | ${EGREP} -v 0xa8cf5b7784759250; /bin/true
+	@echo "	fnv0_32 ll_tmp2 ll_tmp2 == 0x00000000"
+	-@./fnv0_32 ll_tmp2 ll_tmp2 | ${EGREP} -v 0x00000000; /bin/true
+	@echo "	fnv0_64 ll_tmp2 ll_tmp2 == 0x0000000000000000"
+	-@./fnv0_64 ll_tmp2 ll_tmp2 | ${EGREP} -v 0x0000000000000000; /bin/true
+	@echo
+	@echo "	fnv1_32 -s hi == 0x6977223c"
+	-@./fnv1_32 -s hi | ${EGREP} -v 0x6977223c; /bin/true
+	@echo "	fnv1_32 -s hello == 0xb6fa7167"
+	-@./fnv1_32 -s hello | ${EGREP} -v 0xb6fa7167; /bin/true
+	@echo "	fnv1_32 -s curds and whey == 0x08ebf912"
+	-@./fnv1_32 -s curds and whey | ${EGREP} -v 0x08ebf912; /bin/true
+	@echo "	fnv1_64 -s hi == 0x08326007b4eb2b9c"
+	-@./fnv1_64 -s hi | ${EGREP} -v 0x08326007b4eb2b9c; /bin/true
+	@echo "	fnv1_64 -s hello == 0x7b495389bdbdd4c7"
+	-@./fnv1_64 -s hello | ${EGREP} -v 0x7b495389bdbdd4c7; /bin/true
+	@echo "	fnv1_64 -s curds and whey == 0x795ad7b2d9a7dc72"
+	-@./fnv1_64 -s curds and whey | ${EGREP} -v 0x795ad7b2d9a7dc72;/bin/true
+	@echo "	fnv1_32 < ll_tmp == 0xb8cbeb33"
+	-@./fnv1_32 < ll_tmp | ${EGREP} -v 0xb8cbeb33; /bin/true
+	@echo "	fnv1_64 < ll_tmp == 0x79dcad190c3291b3"
+	-@./fnv1_64 < ll_tmp | ${EGREP} -v 0x79dcad190c3291b3; /bin/true
+	@echo "	fnv1_32 < ll_tmp2 == 0xce1c9dc5"
+	-@./fnv1_32 < ll_tmp2 | ${EGREP} -v 0xce1c9dc5; /bin/true
+	@echo "	fnv1_64 < ll_tmp2 == 0xf8e3e56ce9222325"
+	-@./fnv1_64 < ll_tmp2 | ${EGREP} -v 0xf8e3e56ce9222325; /bin/true
+	@echo "	fnv1_32 ll_tmp == 0xb8cbeb33"
+	-@./fnv1_32 ll_tmp | ${EGREP} -v 0xb8cbeb33; /bin/true
+	@echo "	fnv1_64 ll_tmp == 0x79dcad190c3291b3"
+	-@./fnv1_64 ll_tmp | ${EGREP} -v 0x79dcad190c3291b3; /bin/true
+	@echo "	fnv1_32 ll_tmp2 == 0xce1c9dc5"
+	-@./fnv1_32 ll_tmp2 | ${EGREP} -v 0xce1c9dc5; /bin/true
+	@echo "	fnv1_64 ll_tmp2 == 0xf8e3e56ce9222325"
+	-@./fnv1_64 ll_tmp2 | ${EGREP} -v 0xf8e3e56ce9222325; /bin/true
+	@echo "	fnv1_32 ll_tmp ll_tmp == 0x08ae22e5"
+	-@./fnv1_32 ll_tmp ll_tmp | ${EGREP} -v 0x08ae22e5; /bin/true
+	@echo "	fnv1_64 ll_tmp ll_tmp == 0x10a587a0ff68f305"
+	-@./fnv1_64 ll_tmp ll_tmp | ${EGREP} -v 0x10a587a0ff68f305; /bin/true
+	@echo "	fnv1_32 ll_tmp ll_tmp2 == 0x23cbeb33"
+	-@./fnv1_32 ll_tmp ll_tmp2 | ${EGREP} -v 0x23cbeb33; /bin/true
+	@echo "	fnv1_64 ll_tmp ll_tmp2 == 0xcafae19b7f3291b3"
+	-@./fnv1_64 ll_tmp ll_tmp2 | ${EGREP} -v 0xcafae19b7f3291b3; /bin/true
+	@echo "	fnv1_32 ll_tmp2 ll_tmp == 0x1fcbeb33"
+	-@./fnv1_32 ll_tmp2 ll_tmp | ${EGREP} -v 0x1fcbeb33; /bin/true
+	@echo "	fnv1_64 ll_tmp2 ll_tmp == 0x06319755db3291b3"
+	-@./fnv1_64 ll_tmp2 ll_tmp | ${EGREP} -v 0x06319755db3291b3; /bin/true
+	@echo "	fnv1_32 ll_tmp2 ll_tmp2 == 0x1b1c9dc5"
+	-@./fnv1_32 ll_tmp2 ll_tmp2 | ${EGREP} -v 0x1b1c9dc5; /bin/true
+	@echo "	fnv1_64 ll_tmp2 ll_tmp2 == 0x637a2df54e222325"
+	-@./fnv1_64 ll_tmp2 ll_tmp2 | ${EGREP} -v 0x637a2df54e222325; /bin/true
+	@echo
+	-@rm -f ll_tmp ll_tmp2
+	@echo "	All done!"
+
+
+
+

@@ -1,0 +1,72 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(fnv.h)
+
+dnl Arrange to build config.h from config.in.
+dnl Manual says this macro should come right after AC_INIT.
+AC_CONFIG_HEADER(config.h:config.in)
+
+dnl Provide the current FNV version information. Do not use numbers
+dnl with leading zeros for the minor version, as they end up in a C
+dnl macro, and may be treated as octal constants. Stick to single
+dnl digits for minor numbers less than 10. There are unlikely to be
+dnl that many releases anyway. 
+dnl JK: As there was no such release number, I gave it 1.0 and the
+dnl date of last commit of the Makefile
+
+FNV_MAJOR=1
+FNV_MINOR=0
+FNV_DATE=09-Sep-2002
+FNV_VERSION=${FNV_MAJOR}.${FNV_MINOR}
+
+dnl Provide versioning information for libtool shared libraries that
+dnl are built by default on Unix systems.
+
+FNV_LIB_VERSION=0:1:0
+
+dnl Checks for programs.
+AC_PROG_CC
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_LIBTOOL
+
+dnl Checks for libraries.
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS(fcntl.h unistd.h)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_TYPE_SIZE_T
+
+dnl Handle --enable-shared-libraries
+
+LIBTOOL=./libtool
+LIBSUFFIX=la
+AC_ARG_ENABLE(shared,
+[  --enable-shared         build FNV as a shared library],
+if test "$enableval" = "no"; then
+  LIBTOOL=
+  LIBSUFFIX=a
+fi
+)
+
+# JK: as the install/uninstall stuff is not yet ready, I am forcing the
+# unshared lib by default
+LIBTOOL=
+LIBSUFFIX=a
+
+
+dnl Checks for library functions.
+
+dnl "Export" these variables
+
+AC_SUBST(LIBTOOL)
+AC_SUBST(LIBSUFFIX)
+AC_SUBST(FNV_MAJOR)
+AC_SUBST(FNV_MINOR)
+AC_SUBST(FNV_DATE)
+AC_SUBST(FNV_VERSION)
+AC_SUBST(FNV_LIB_VERSION)
+
+AC_OUTPUT(Makefile)

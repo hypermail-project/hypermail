@@ -31,6 +31,9 @@
 #ifdef GDBM
 #include "gdbm.h"
 #endif
+#ifdef FNV
+#include "fnv.h"
+#endif
 
 /*
 ** Does a file exist?
@@ -363,6 +366,112 @@ int find_max_msgnum()
     return max_num;
 }
 
+/*
+** Returns a buffer with  the name of the message index name file.
+** The caller has to free this buffer.
+*/
+
+char *messageindex_name(void)
+{
+  char *buf;
+
+  trio_asprintf (&buf, "%s%s", set_dir,"msgindex");
+  return (buf);
+}
+
+/*
+** Returns the corresponding message number from the messageindex file.
+*/
+int find_max_msgnum_id()
+{
+    int max_num = -1;
+    int num;
+
+    FILE *fp;
+    char line[MAXLINE];
+    int maxnum;
+    int startnum;
+    char *buf;
+    
+    /* open the index file */
+    buf = messageindex_name ();
+    fp = fopen (buf, "r");
+    free (buf);
+    if (fp)
+      {
+	fgets (line, sizeof(line), fp);
+	if (2 == sscanf (line, "%04d %04d", &startnum, &maxnum))
+	  max_num = maxnum;
+	fclose (fp);
+      }
+
+    return max_num;
+}
+
+/* 
+** Get a list of msgid corresponding to hypermail msg numbers
+*/
+char ** read_msgnum_id_table(int max_num)
+{
+    char **table;
+    int read_msgs;
+    FILE *fp;
+    char line[MAXLINE];
+    char *buf;
+
+    if (max_num == -1)
+      return NULL;
+
+    table = (char **) calloc (sizeof (char *), max_num);
+
+    /* open the index file */
+    buf = messageindex_name ();
+    fp = fopen (buf, "r");
+    free (buf);
+
+    /* skip the max_msgnum (first) line */
+    fgets (line, sizeof(line), fp);
+
+    read_msgs = 0;
+    while (fgets (line, sizeof (line), fp) && read_msgs < max_num)
+      {
+	char *msgid;
+	int num;
+	msgid = malloc (strlen (line) + 1) ;
+	sscanf (line, "%d %s\n", &num, msgid);
+	/* was the message skipped? */
+	if (read_msgs < num)
+	  {
+	    while (read_msgs < num)
+	      {
+		table[read_msgs] = NULL;
+		read_msgs++;
+	      }
+	  }
+	table[read_msgs] = msgid;
+	read_msgs++;
+      }
+    fclose (fp);
+    
+    return table;
+}
+
+/* 
+** Frees the table used to store the msgnum id correspondance
+*/
+void free_msgnum_id_table(char *table[], int max_num)
+{
+  int i;
+
+  if (!table)
+    return;
+
+  for (i = 0; i < max_num; i++)
+    if (table[i])
+      free (table[i]);
+  free (table);
+}
+
 int is_empty_archive()
 {
     DIR *dir;
@@ -470,6 +579,34 @@ struct emailsubdir *msg_subdir(int msgnum, time_t date)
 }
 
 /*
+** Returns the filename we want to use. According to the convention, this
+** can be the msgnumber, the msgid, or some other kind of name. 
+*/
+char *message_name (struct emailinfo *email)
+{
+  static char buffer[9];
+
+  if (set_nonsequential && email->msgid)
+    {
+#ifdef FNV
+      /* Call the FNV msg hash library */
+      Fnv32_t hash_val; 
+
+      hash_val = fnv_32_buf(email->msgid, strlen (email->msgid), FNV1_32_INIT);
+      hash_val = fnv_32_str(email->fromdatestr, hash_val);
+      sprintf (buffer, "%08x", hash_val);
+
+      return buffer;
+#endif /* FNV */
+    }
+  else
+    {
+      sprintf (buffer, "%.4d", email->msgnum);
+      return buffer;
+    }
+}
+
+/*
  * returns "<a href=...>" that links to to_email from the directory of
  * from_email, or from the set_dir directory if email is NULL.
  */
@@ -492,24 +629,32 @@ char *msg_relpath(struct emailinfo *to_email, struct emailinfo *from_email)
  */
 {
     static char buffer[MAXFILELEN];
+    char *name;
+
+    name = message_name (to_email);
+
     if (!from_email && to_email->subdir)
-        trio_snprintf(buffer, MAXFILELEN, "%s%.4d.%s",
-		  to_email->subdir->subdir, to_email->msgnum, set_htmlsuffix);
+        trio_snprintf(buffer, MAXFILELEN, "%s%s.%s",
+		  to_email->subdir->subdir, name, set_htmlsuffix);
     else if(!to_email->subdir || to_email->subdir == from_email->subdir)
-        trio_snprintf(buffer, MAXFILELEN, "%.4d.%s",
-		  to_email->msgnum, set_htmlsuffix);
+        trio_snprintf(buffer, MAXFILELEN, "%s.%s",
+		  name, set_htmlsuffix);
     else
-        trio_snprintf(buffer, MAXFILELEN, "%s%s%.4d.%s",
+        trio_snprintf(buffer, MAXFILELEN, "%s%s%s.%s",
 		  to_email->subdir->rel_path_to_top,
-		  to_email->subdir->subdir, to_email->msgnum, set_htmlsuffix);
+		  to_email->subdir->subdir, name, set_htmlsuffix);
     return buffer;
 }
 
 char *articlehtmlfilename(struct emailinfo *email)
 {
     char *buf;
-    trio_asprintf(&buf, "%s%.4d.%s", email->subdir ? email->subdir->full_path
-		  : set_dir, email->msgnum, set_htmlsuffix);
+    char *name;
+
+    name = message_name (email);
+
+    trio_asprintf(&buf, "%s%s.%s", email->subdir ? email->subdir->full_path
+		  : set_dir, name, set_htmlsuffix);
     return buf;
 }
 
