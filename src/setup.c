@@ -38,6 +38,7 @@ bool set_discard_dup_msgids;
 bool set_usemeta;
 bool set_uselock;
 bool set_ietf_mbox;
+bool set_spamprotect;
 
 int set_thrdlevels;
 int set_dirmode;
@@ -305,7 +306,13 @@ struct Config cfg[] = {
      "# %p for the full path to the attachment\n"
      "# %f for the file name part only\n"
      "# %d for the directory name only\n"
-     "# %n for the message number\n" "# %c for the content type string\n"}
+     "# %n for the message number\n" "# %c for the content type string\n"},
+
+    {"spamprotect", &set_spamprotect, BFALSE, CFG_SWITCH,
+     "# Set this to On to make hypermail not output real email addresses\n"
+     "# in the output HTML but instead it will obfuscate them a little.\n"}
+
+
 };
 
 /* ---------------------------------------------------------------- */

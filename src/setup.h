@@ -63,6 +63,7 @@ extern bool set_discard_dup_msgids;
 extern bool set_usemeta;
 extern bool set_uselock;
 extern bool set_ietf_mbox;
+extern bool set_spamprotect;
 
 extern int set_thrdlevels;
 extern int set_dirmode;
