@@ -1012,7 +1012,14 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply)
 	    }
 
 	    if (!inheader && (bp->line)[0] == '\n')
-		fprintf(fp, "<p>");
+        /* within the <pre></pre> statements you do not need to
+           insert <p> statements since text is already preformated.
+           the W3C HTML validation script fails for such pages 
+                Akis Karnouskos <akis@ceid.upatras.gr>     */
+                {
+                if (!pre)
+                        fprintf(fp, "<p>");
+                }
 	    else {
 		if (insig) {
 		    ConvURLs(fp, bp->line, id, subject);
