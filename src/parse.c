@@ -742,9 +742,6 @@ static char *
 extract_rfc2047_content(char *iptr)
 {
     char *end_ptr, *ptr;
-#ifdef NOTUSED
-    char *blurb = NULL;
-#endif
     struct Push buff;
 
     INIT_PUSH(buff);

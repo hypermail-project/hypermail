@@ -677,9 +677,6 @@ int matches_existing(int msgnum)
       char *indexname;
       GDBM_FILE gp;
       int num;
-#ifdef NOTUSED
-      int num_added = 0;
-#endif
 
       trio_asprintf(&indexname, "%s%s", set_dir, GDBM_INDEX_NAME);
 
@@ -708,13 +705,6 @@ int matches_existing(int msgnum)
 	  char *date = NULL;
 	  char *msgid = NULL;
 	  char *fromdate = NULL;
-
-#ifdef NOTUSED
-	  char *inreply = NULL;
-	  char *charset = NULL;
-	  char *isodate = NULL;
-	  char *isofromdate = NULL;
-#endif
 
 	  num = eptr->msgnum;
 	  key.dptr = (char *)&num;

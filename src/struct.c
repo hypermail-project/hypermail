@@ -492,12 +492,25 @@ struct emailinfo *hashreplylookup(int msgnum, char *inreply, char *subject, int 
      * time round the loop.
      */
     {
+#define MAX_SUBJ_LEN 300
+
 	char *s, *saved_s;
 	struct emailinfo *lowest_so_far = NULL;
 	int match = 0;
 
-	s = emalloc(strlen(subject) + 1);	/* AUDIT biege: can we trigger a DoS here by using a very long "Subject"? */
+        size_t subj_len;
+
+        subj_len = strlen(subject) > MAX_SUBJ_LEN ? MAX_SUBJ_LEN : strlen(subject);
+        s = emalloc(subj_len + 1);
+        saved_s = strncpy(s, subject, subj_len);
+        s[subj_len] = '\0';
+
+#ifdef NOTDEF
+/* AUDIT biege: can we trigger a DoS here by using a very long "Subject"? */
+
+	s = emalloc(strlen(subject) + 1);	
 	saved_s = strcpy(s, subject);
+#endif
 
         if (isre(s, NULL))
             do {

@@ -1135,9 +1135,6 @@ int print_links(FILE *fp, struct emailinfo *email, int pos, int in_thread_file)
 	char *ptr;
 	struct reply *rp;
 	int is_reply = 0;
-#ifdef NOTUSED
-	char *href;
-#endif
 	int loc_cmp = (pos == PAGE_BOTTOM ? 3 : 4);
 	/*
 	 * Should we print message links ?
@@ -1315,11 +1312,6 @@ void writearticles(int startnum, int maxnum)
     int is_reply = 0;
     int maybe_reply = 0; /* const, why is this here? pcm 2002-08-30 */
     struct emailinfo *email;
-#ifdef NOTUSED
-    int subjmatch;
-    struct emailinfo *old_reply_to = NULL;
-    struct emailinfo *email2;
-#endif
     struct emailinfo *email_next_in_thread;
 
     struct body *bp;
@@ -2185,9 +2177,6 @@ void writehaof(int amountmsgs, struct emailinfo *email)
     int newfile;
     char *filename;
     FILE *fp;
-#ifdef NOTUSED
-    char *authname = index_name[email && email->subdir != NULL][AUTHOR_INDEX];
-#endif
 
     filename = haofname(email);
     printf("haofname %s\n", filename);

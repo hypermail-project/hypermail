@@ -2,9 +2,12 @@ Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
- Kent Landfield (Feb 17, 2003)
-   Added missing contrib utilities, contrib/msg2hypermailarchive.py
-   and contrib/runtest to FILES
+ Kent Landfield (Feb 18, 2003)
+   - Added missing contrib utilities, contrib/msg2hypermailarchive.py
+     and contrib/runtest to FILES
+   - Added checking in struct.c to limit the length of Subject: line to 
+     avoid theoretical Denial-of-Service
+   - Removed code that was ifdef'ed NOTUSED
 
  Peter McCluskey (Feb 17, 2003)
    Fix to attachment Content-Type parsing to strip all whitespace off

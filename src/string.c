@@ -626,9 +626,6 @@ static char *translateurl(char *url)
 {
     char *p;
     struct Push buff;
-#ifdef NOTUSED
-    int in_ascii = TRUE, esclen = 0;
-#endif
     INIT_PUSH(buff);
 
     for (p = url; *p; p++) {
