@@ -27,7 +27,7 @@ void printsubjects(FILE *, struct header *, char **, int, int,
 		   struct emailinfo *);
 void printauthors(FILE *, struct header *, char **, int, int,
 		  struct emailinfo *);
-int printattachments(FILE *, struct header *, struct emailinfo *);
+int printattachments(FILE *, struct header *, struct emailinfo *, bool *);
 
 int checkreplies(FILE *, int, int level, int thread_file_depth);
 void fprint_menu(FILE *, mindex_t, char *, char *, char *, int,

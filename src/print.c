@@ -763,25 +763,26 @@ void printdates(FILE *fp, struct header *hp, int year, int month, struct emailin
 ** Pretty-prints the files with attachments in the index files.
 ** Returns the number of attachments that were printed.
 */
-int printattachments(FILE *fp, struct header *hp, struct emailinfo *subdir_email)
+int printattachments(FILE *fp, struct header *hp, struct emailinfo *subdir_email, bool *is_first)
 {
     char *subj;
     char *attdir;
     char *msgnum;
     int  nb_attach = 0;
+    static char *first_attributes = "<a  accesskey=\"j\" name=\"first\" id=\"first\"></a>";
 
-	const char *rel_path_to_top = (subdir_email ? subdir_email->subdir->rel_path_to_top : "");
+    const char *rel_path_to_top = (subdir_email ? subdir_email->subdir->rel_path_to_top : "");
 
     if (hp != NULL) {
 	struct emailinfo *em = hp->data;
-	nb_attach = printattachments(fp, hp->left, subdir_email);
+	nb_attach = printattachments(fp, hp->left, subdir_email, is_first);
 	if ((!subdir_email || subdir_email->subdir == em->subdir)
 	    && !em->is_deleted) {
 	    subj = convchars(em->subject, em->charset);
 
 	    /* See if there's a directory corresponding to this message */
-			msgnum = message_name(em);
-			trio_asprintf(&attdir, "%s%c" DIR_PREFIXER "%s", set_dir, PATH_SEPARATOR, msgnum);
+	    msgnum = message_name(em);
+	    trio_asprintf(&attdir, "%s%c" DIR_PREFIXER "%s", set_dir, PATH_SEPARATOR, msgnum);
 	    if (isdir(attdir)) {
 	        DIR *dir = opendir(attdir);
 		
@@ -791,7 +792,13 @@ int printattachments(FILE *fp, struct header *hp, struct emailinfo *subdir_email
 		  fprintf(fp, "<tr><td>%s%s</a></td><td><a name=\"%d\"><em>%s</em></a></td>" "<td>%s</td></tr>\n", msg_href(em, subdir_email, TRUE), subj, em->msgnum, em->name, getindexdatestr(em->date));
 		}
 		else {
-		  fprintf(fp, "<li>%s<dfn>%s</dfn></a>&nbsp;" "<a name=\"%d\"><em>%s</em></a>&nbsp;<em>(%s)</em>\n", msg_href(em, subdir_email, TRUE), subj, em->msgnum, em->name, getindexdatestr(em->date));
+		  fprintf(fp, "<li>%s%s<dfn>%s</dfn></a>&nbsp;" 
+			  "<a name=\"%d\"><em>%s</em></a>&nbsp;<em>(%s)</em>\n", 
+			  (*is_first) ? first_attributes : "",
+			  msg_href(em, subdir_email, TRUE), subj, em->msgnum, em->name, 
+			  getindexdatestr(em->date));
+		  if (*is_first)
+		    *is_first = FALSE;
 		}
 		if (dir) {
 #ifdef HAVE_DIRENT_H
@@ -834,7 +841,7 @@ int printattachments(FILE *fp, struct header *hp, struct emailinfo *subdir_email
 	    free(attdir);
 	    free(subj);
 	}
-	nb_attach += printattachments(fp, hp->right, subdir_email);
+	nb_attach += printattachments(fp, hp->right, subdir_email, is_first);
     }
     return nb_attach;
 }
@@ -2147,6 +2154,7 @@ void writeattachments(int amountmsgs, struct emailinfo *email)
     char *attname = index_name[email && email->subdir != NULL][ATTACHMENT_INDEX];
     time_t start_date_num = email && email->subdir ? email->subdir->first_email->date : firstdatenum;
     time_t end_date_num = email && email->subdir ? email->subdir->last_email->date : lastdatenum;
+    bool is_first = TRUE; /* used to print the anchor to the first element (WAI) */
 
     filename = htmlfilename(attname, email, "");
 
@@ -2180,14 +2188,14 @@ void writeattachments(int amountmsgs, struct emailinfo *email)
      */
 
     if (set_indextable) {
-		fprintf(fp, "<div class=\"center\">\n<table width=\"80%%\">\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong>%s</strong></td></tr>\n", lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
-	printattachments(fp, datelist, email);
+      fprintf(fp, "<div class=\"center\">\n<table width=\"80%%\">\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong>%s</strong></td></tr>\n", lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
+	printattachments(fp, datelist, email, &is_first);
 	fprintf(fp, "</table>\n</div>\n");
     }
     else {
         fprintf (fp, "<div class=\"messages-list\">\n");
 	fprintf(fp, "<ul>\n");
-	if (printattachments(fp, datelist, email) == 0)
+	if (printattachments(fp, datelist, email, &is_first) == 0)
 	   fprintf(fp, "<li style=\"display: none\">Nothing received yet!</li>\n");
 	fprintf(fp, "</ul>\n");
 	fprintf(fp, "</div>\n");
@@ -2310,6 +2318,7 @@ void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
   const char *break_str;
   const char *endline;
   static char date_str[DATESTRLEN+11]; /* made static for smaller stack */
+  static char *first_attributes = "<a  accesskey=\"j\" name=\"first\" id=\"first\"></a>";
 
   if (hp != NULL) {
     printsubjects(fp, hp->left, oldsubject, year, month, subdir_email);
@@ -2326,9 +2335,16 @@ void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
 			subj);
 	    }
 	    else {
-	        if (*oldsubject && *oldsubject[0] != '\0')  /* close the previous open list */
+	      bool is_first;
+	        if (*oldsubject && *oldsubject[0] != '\0')  { /* close the previous open list */
 		  fprintf(fp, "</ul></li>\n");
-		fprintf(fp, "<li><dfn>%s</dfn>\n", subj);
+		  is_first = FALSE;
+		} 
+		else
+		  is_first = TRUE;
+
+		fprintf(fp, "<li>%s<dfn>%s</dfn>\n", 
+			(is_first) ? first_attributes : "", subj);
 		fprintf(fp, "<ul>\n");
 	    }
 	}
@@ -2447,6 +2463,7 @@ void printauthors(FILE *fp, struct header *hp, char **oldname,
   const char *break_str;
   const char *endline;
   static char date_str[DATESTRLEN+11]; /* made static for smaller stack */
+  static char *first_attributes = "<a  accesskey=\"j\" name=\"first\" id=\"first\"></a>";
 
   if (hp != NULL) {
     printauthors(fp, hp->left, oldname, year, month, subdir_email);
@@ -2460,14 +2477,23 @@ void printauthors(FILE *fp, struct header *hp, char **oldname,
       if (strcasecmp(hp->data->name, *oldname)) {
 
 	if(set_indextable)
-		fprintf(fp,
-			"<tr><td colspan=\"3\"><strong>%s</strong></td></tr>",
-			hp->data->name);
+	  fprintf(fp,
+		  "<tr><td colspan=\"3\"><strong>%s</strong></td></tr>",
+		  hp->data->name);
 	else {
-		if (*oldname && *oldname[0] != '\0') /* close the previous open list */
-		  fprintf(fp, "</ul></li>\n");
-		fprintf(fp, "<li><dfn>%s</dfn>\n", hp->data->name);
-		fprintf(fp, "<ul>\n");
+	  bool is_first;
+
+	  if (*oldname && *oldname[0] != '\0') { /* close the previous open list */
+	    fprintf(fp, "</ul></li>\n");
+	    is_first = FALSE;
+	  }
+	  else
+	    is_first = TRUE;
+
+	  fprintf(fp, "<li>%s<dfn>%s</dfn>\n", 
+		  (is_first) ? first_attributes : "",
+		  hp->data->name);
+	  fprintf(fp, "<ul>\n");
 	}
       }
       if(set_indextable) {
