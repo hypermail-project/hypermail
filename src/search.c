@@ -718,8 +718,11 @@ check_match(struct bigram_list *bigram, struct body *bp, char *ptr,
 		char *p = match_info->last_matched_string;
 		int add_len = strlen(bp3->line);
 		if (match_len + add_len + 2 > alloc_len)
+		{
+		    alloc_len = 2*(match_len + add_len + 2);
 		    match_info->last_matched_string =
-		        (char *)realloc(p, alloc_len *= 2);
+		        (char *)realloc(p, alloc_len);
+		}
 		strcat(match_info->last_matched_string + match_len, bp3->line);
 		match_len += add_len;
 		if (add_len > 0 && bp3->line[add_len-1] != '\n')

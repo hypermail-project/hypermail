@@ -1,5 +1,11 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Peter McCluskey (Nov 13 2001)
+  Fixed malloc bug that caused segfault with linkquotes=1.
+
+Peter McCluskey (Nov 12 2001)
+  Update to trio-1.4 (from 1.2) to fix Alpha compile problem.
+
 Peter McCluskey (Nov 7 2001)
  Changes to hypetombox.pl:
   - add some support for handling attachments.
