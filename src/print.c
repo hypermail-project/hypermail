@@ -615,7 +615,7 @@ void printattachments(FILE *fp, struct header *hp,
     if (hp != NULL) {
 	struct emailinfo *em = hp->data;
 	printattachments(fp, hp->left, subdir_email);
-	if (!subdir_email || subdir_email->subdir == em->subdir
+	if ((!subdir_email || subdir_email->subdir == em->subdir)
 	    && !em->is_deleted) {
 	    subj = convchars(em->subject);
 
@@ -2388,7 +2388,7 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
     for (j = 0; j <= AUTHOR_INDEX; ++j)
 	save_name[j] = index_name[0][j];
     print_index_header(fp, set_label, set_dir, subject, summary_filename);
-    fprintf(fp, "<TABLE>\n");
+    fprintf(fp, "<table>\n");
     for (y = first_year; y <= last_year; ++y) {
 	for(m = (set_monthly_index ? 0 : -1);
 	    m < (set_monthly_index ? 12 : 0); ++m) {
@@ -2445,18 +2445,18 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
 		    fprint_summary(fp1, PAGE_TOP, first_date, last_date,
 				   count);
 		    if (set_showhr)
-		        fprintf(fp1, "<HR NOSHADE>\n");
+		        fprintf(fp1, "<hr noshade>\n");
 		}
 
 		if (set_indextable) {
 		    fprintf(fp1,
-			    "<DIV ALIGN=CENTER>\n<TABLE>\n<TR><TD><U><STRONG>%s</STRONG></U></TD><TD><U><STRONG>%s</STRONG></U></TD><TD><U><STRONG> %s</STRONG></U></TD></TR>\n",
+			    "<div align=center>\n<table>\n<tr><td><u><strong>%s</strong></u></td><td><u><strong>%s</strong></u></td><td><u><strong> %s</strong></u></td></tr>\n",
 			    lang[j == AUTHOR_INDEX ? MSG_CAUTHOR : MSG_CSUBJECT],
 			    lang[j == AUTHOR_INDEX ? MSG_CSUBJECT : MSG_CAUTHOR],
 			    lang[MSG_CDATE]);
 		}
 		else {
-		    fprintf(fp1, "<UL>\n");
+		    fprintf(fp1, "<ul>\n");
 		}
 		switch(j) {
 		    case DATE_INDEX:
@@ -2474,10 +2474,10 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
 		}
 
 		if (set_indextable) {
-		    fprintf(fp1, "</TABLE>\n</DIV>\n<P>\n");
+		    fprintf(fp1, "</table>\n</div>\n<p>\n");
 		}
 		else {
-		    fprintf(fp1, "</UL>\n<P>\n");
+		    fprintf(fp1, "</ul>\n<p>\n");
 		}
 
 		/* 
@@ -2489,7 +2489,7 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
 		    print_index_footer_links(fp1, j, last_date, count, NULL);
 		else {
 		    if (set_showhr)
-		        fprintf(fp1, "<HR NOSHADE>\n");
+		        fprintf(fp1, "<hr noshade>\n");
 		    fprint_summary(fp1, PAGE_BOTTOM, first_date, last_date,
 				   count);
 		    fprint_menu(fp1, j, set_archives, "", "", PAGE_BOTTOM,
@@ -2502,27 +2502,27 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
 		if (!count) {
 		    remove(filename);
 		    if(started_line)
-		        fprintf(fp, "<TD></TD>");
+		        fprintf(fp, "<td></td>");
 		    else ++empties;
 		}
 		else {
 		    if (!started_line) {
-		        fprintf(fp, "<TR><TD>%s</TD><TD>%d %s</TD>",
+		        fprintf(fp, "<tr><td>%s</td><td>%d %s</td>",
 				month_str_pub, count, lang[MSG_ARTICLES]);
 			while(empties--)
-			    fprintf(fp, "<TD></TD>");
+			    fprintf(fp, "<td></td>");
 			started_line = 1;
 		    }
 		    chmod(filename, set_filemode);
-		    fprintf(fp, "<TD><A HREF=\"%sby%s\">%s</A></TD>",
+		    fprintf(fp, "<td><a href=\"%sby%s\">%s</a></td>",
 			    month_str, save_name[j], indextypename[j]);
 		}
 		free(filename);
 	    }
-	    if (started_line) fprintf(fp, "</TR>\n");
+	    if (started_line) fprintf(fp, "</tr>\n");
 	}
     }
-    fprintf(fp,"</TABLE>\n");
+    fprintf(fp,"</table>\n");
     printfooter(fp, ihtmlfooterfile, set_label, set_dir,
 		subject, summary_filename);
     for (j = 0; j <= AUTHOR_INDEX; ++j)
