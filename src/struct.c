@@ -739,6 +739,36 @@ int rmlastlines(struct body *bp)
     return 0;
 }
 
+/* copy bp on to the end of origbp, deallocate bp */
+
+struct body *
+append_body(struct body *origbp, struct body **origlp, struct body *bp)
+{
+    while (bp) {
+	struct body *next;
+	origbp = addbody(origbp, origlp, bp->line,
+			 (bp->header ? BODY_HEADER : 0)
+			 | (bp->html ? BODY_HTMLIZED : 0)
+			 | (bp->attached ? BODY_ATTACHED : 0));
+	next = bp->next;
+	free(bp->line);
+	free(bp);
+	bp = next;
+    }
+    return origbp;
+}
+
+void free_body(struct body *bp)
+{
+    while (bp != NULL) {
+	struct body *cp = bp->next;
+	if (bp->line)
+	    free(bp->line);
+	free(bp);
+	bp = cp;
+    }
+}
+
 /*
 ** If a message is a reply to another, that message's number and the number of
 ** the message it may be referring to is put in this list.  

@@ -1641,7 +1641,9 @@ int parsemail(char *mbox,	/* file name */
 			     */
 
 			    boundary = strcasestr(ptr, "boundary=");
-
+#if DEBUG_PARSE
+			    printf("boundary found in %s\n", ptr);
+#endif
 			    if (boundary) {
 				boundary = strchr(boundary, '=');
 				if (boundary) {
@@ -1658,13 +1660,35 @@ int parsemail(char *mbox,	/* file name */
 				    boundary = boundbuffer;
 				}
 
+				/* let's remember 'bp' and 'lp' */
+				origbp = bp;
+				origlp = lp;
+				/* restart on a new list: */
+				lp = bp = NULL;
+
 				while (fgets(line_buf, MAXLINE, fp)) {
 				    if (!strncmp(line_buf + set_ietf_mbox, "--", 2) &&
 					!strncmp(line_buf + set_ietf_mbox + 2, boundbuffer,
 						 strlen(boundbuffer))) {
 					break;
 				    }
+				    if (!strncasecmp(line_buf, "From ", 5)) {
+				        isinheader = 0;
+#if DEBUG_PARSE
+					printf("Error, new message found instead of boundary!\n");
+#endif
+					origbp = append_body(origbp, &origlp, bp);
+					bp = origbp;
+					lp = origlp;
+					boundary = NULL;
+					goto leave_header;
+				    }
+				    /* save lines in case no boundary found */
+				    bp = addbody(bp, &lp, line_buf, bodyflags);
 				}
+				free_body(bp);
+				bp = origbp;
+				lp = origlp;
 
 				/* 
 				 * This stores the boundary string in a stack 
@@ -1822,7 +1846,7 @@ int parsemail(char *mbox,	/* file name */
 	else {
 
 	    /* not in header */
-
+	leave_header:
 	    /* If this isn't a single mail: see if the line is a message
 	     * separator. If there is a "^From " found, check to see if there
 	     * is a valid date field in the line. If not then consider it a
@@ -1994,25 +2018,7 @@ int parsemail(char *mbox,	/* file name */
 #if DEBUG_PARSE
 				printf("We DUMP the chosen alternative\n");
 #endif
-				while (bp) {
-				    origbp = addbody(origbp, &origlp,
-						     bp->line,
-						     (bp->
-						      header ? BODY_HEADER
-						      : 0) | (bp->
-							      html ?
-							      BODY_HTMLIZED
-							      : 0) | (bp->
-								      attached
-								      ?
-								      BODY_ATTACHED
-								      : 0)
-					);
-				    next = bp->next;
-				    free(bp->line);
-				    free(bp);
-				    bp = next;
-				}
+				origbp = append_body(origbp, &origlp, bp);
 				bp = origbp;
 				lp = origlp;
 
@@ -2050,6 +2056,9 @@ int parsemail(char *mbox,	/* file name */
 						 BODY_HTMLIZED | bodyflags);
 				}
 			    }
+#if DEBUG_PARSE
+			    printf("mime parsing isinheader set to 1\n");
+#endif
 			    isinheader = 1;	/* back on a kind-of-header */
 			    /* @@@ why are we changing the status of this variable? */
 			    file_created = NO_FILE;	/* not created any file yet */
@@ -3172,14 +3181,7 @@ void fixnextheader(char *dir, int num, int direction)
     fclose(fp);
 
     /* can we clean up a bit please... */
-    bp = cp;
-    while (bp != NULL) {
-	cp = bp->next;
-	if (bp->line)
-	    free(bp->line);
-	free(bp);
-	bp = cp;
-    }
+    free_body(cp);
     free(filename);
 }
 
@@ -3328,14 +3330,7 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
     fclose(fp);
 
     /* can we clean up a bit please... */
-    bp = cp;
-    while (bp) {
-	cp = bp->next;
-	if (bp->line)
-	    free(bp->line);
-	free(bp);
-	bp = cp;
-    }
+    free_body(cp);
     free(filename);
 }
 
@@ -3409,14 +3404,7 @@ void fixthreadheader(char *dir, int num, int max_update)
     fclose(fp);
 
     /* can we clean up a bit please... */
-    bp = cp;
-    while (bp != NULL) {
-	cp = bp->next;
-	if (bp->line)
-	    free(bp->line);
-	free(bp);
-	bp = cp;
-    }
+    free_body(cp);
     free(filename);
 }
 

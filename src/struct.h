@@ -19,6 +19,8 @@ struct body *hashnumlookup(int, struct emailinfo **);
 struct emailinfo *neighborlookup(int, int);
 
 struct body *addbody(struct body *, struct body **, char *, int);
+struct body *append_body(struct body *, struct body **, struct body *);
+void free_body(struct body *);
 
 struct reply *addreply(struct reply *, int, struct emailinfo *, int,
 		       struct reply **);
