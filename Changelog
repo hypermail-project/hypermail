@@ -2,6 +2,10 @@ Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+ Kent Landfield (Feb 28, 2003)
+   - changed wait.h sys/wait.h for portability in msg2archive
+
+   - removed unused variable in finelink.c
  Kent Landfield (Feb 20, 2003)
    - corrected docs/Makefile.in to create the images dir if it does not exist.
 

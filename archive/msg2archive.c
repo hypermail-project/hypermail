@@ -21,7 +21,7 @@
 #include <ctype.h>
 #include <fcntl.h>
 #include <time.h>
-#include <wait.h>
+#include <sys/wait.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "lists.h"
