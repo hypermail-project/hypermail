@@ -34,6 +34,7 @@ little here.  That will change shortly.
 <LI><A HREF="#14">Why is the downloaded file name different when I download hypermail.tar.gz ?</A>
 <LI><A HREF="#15">Can I throttle hypermail's CPU usage ?</A>
 <LI><A HREF="#16">How can I make my archive searchable ?</A>
+<LI><A HREF="#17">How does hypermail decide whether messages are in the same thread?</A>
 </OL>
 
 <P ALIGN=CENTER><IMG SRC="/images/common/yellowline.gif" WIDTH=400 HEIGHT=2 ALT="----"></P>
@@ -391,6 +392,22 @@ These seem to be the most popular choices:
 </ul>
 You can probably get more complete (but apparently not recent) info at:
 <a href="http://www.searchenginewatch.com/resources/software.html">Search Engine Software For Your Web Site</a>.
+
+<H3><A HREF="#" NAME="17">How does hypermail decide whether messages are in the same thread?</A></H3>
+<P>
+ It uses the In-Reply-To: header if that is available. If not, it uses
+the References: header if that is available. If these are not available,
+it looks for previous messages with the same subject header. Matches based
+on the subject are listed as "maybe" replies.
+<P>
+ If the linkquotes option is used, it will also search the message bodies
+of the previous searchbackmsgnum (default = 500) messages for text that
+looks like it is being quoted in the current message. If it finds one or more
+prior messages with such text matches, it will treat the one with the longest
+match as the message being replied to. The exact algorithms for deciding what
+is quoted text are a bit complex. These matches override the In-Reply-To:
+and References: info (this rule may deserve further thought).
+
 <P ALIGN=CENTER><IMG SRC="/images/common/yellowline.gif" WIDTH=400 HEIGHT=2 ALT="----"></P>
 <BR>
 <DIV ALIGN=CENTER>
