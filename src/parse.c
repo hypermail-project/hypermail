@@ -3700,7 +3700,7 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 	    }
 	    if (!strncmp(bp->line, " [ <a href=\"#replies\">", 22)) {
 	      list_started = TRUE; 
-	      fprintf (fp, bp->line);
+	      fprintf (fp, "%s", bp->line);
 	      bp = bp->next;
 	      continue;
 	    }
@@ -3708,7 +3708,7 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 	      if (list_started == FALSE)
 		fprintf (fp, " [ <a href=\"#replies\">%s</a> ]\n", 
 			 lang[MSG_REPLIES]);
-	      fprintf (fp, bp->line);
+	      fprintf (fp, "%s", bp->line);
 	      bp = bp->next;
 	      continue;
 	    }
