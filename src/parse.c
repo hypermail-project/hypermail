@@ -2725,7 +2725,8 @@ static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
 	first_read_body = max_num - set_searchbackmsgnum;
 	if (first_read_body < 0)
 	    first_read_body = 0;
-	num = first_read_body;
+	if (num_from_gdbm != -1)
+	    num = first_read_body;
     }
 #if 0
     else if (set_searchbackmsgnum && set_increment) {
