@@ -4,6 +4,12 @@ Version Changes for Hypermail
 ============================
 HYPERMAIL VERSION pre-2.1.9:
 ============================
+ Peter McCluskey (Feb 5, 2004)
+  Update much of the documentation.
+
+ Peter McCluskey (Feb 4, 2004)
+  Change default in setup.c for spamprotect and spamprotect_id to On.
+
  Peter McCluskey (Feb 2, 2004)
   Add set_report_new_file and set_report_new_folder options.
 
