@@ -1181,7 +1181,7 @@ char *parseurl(char *input, char *charset)
 	    if (set_iso2022jp)
 		    urlscan = sscanf(inputp, "%255[^] \033)>\"\'\n[\t\\]", urlbuff);
 	    else
-		    urlscan = sscanf(inputp, "%255[^] )>\"\'\n[\t\\]", urlbuff);
+		    urlscan = sscanf(inputp, "%255[^] )<>\"\'\n[\t\\]", urlbuff);
 	    if (urlscan == 1) {
 	        char *r;
 	
