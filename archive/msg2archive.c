@@ -88,15 +88,19 @@ static FILE *safe_tmpfile(void)
   int fd;
   char *tfile;
 
-  tfile = strdup("hn-inXXXXXX");
+  tfile = strdup("/tmp/hn-inXXXXXX");
 
   if ((fd = mkstemp(tfile)) < 0)
     return(NULL);
 
-  unlink(tfile);
+fprintf(stderr,"%s: mkstemp(%s) succeeded\n", progname, tfile);
+
+/*
+  unlink(tfile); 
 
   if (fchmod(fd, S_IRUSR | S_IWUSR) != 0)
     return(NULL);
+*/
 
   return(fdopen(fd, "w+b"));
 }
@@ -168,7 +172,11 @@ int main(int argc, char **argv)
     */
 
     if ((msgfp = safe_tmpfile()) == NULL) {
+	 perror("tempfile open failed");
          fprintf(stderr,"%s: Can't open tempfile\n",progname);
+         fprintf(stderr, "uid = %ld - gid = %ld euid = %ld - egid = %ld\n",
+		    (long)getuid(), (long)getgid(), (long)geteuid(),
+		    (long)getegid());
 	 exit(10);
     }
 

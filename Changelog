@@ -3,6 +3,9 @@ Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
  Kent Landfield (Feb 20, 2003)
+   - corrected docs/Makefile.in to create the images dir if it does not exist.
+
+ Kent Landfield (Feb 20, 2003)
    - added wait.h to msg2archive that was needed for s_popen()
    - removed unused variable in finelink.c
 
