@@ -164,7 +164,7 @@ AC_STRUCT_TM
 
 AC_FUNC_STRFTIME
 AC_CHECK_FUNCS(mkdir strdup strstr strtol memcpy memset lstat strcasecmp \
-               stricmp strcmpi getpwuid getopt)
+               strcasestr getpwuid getopt)
 
 AC_TYPE_SIZE_T
 
