@@ -103,6 +103,11 @@ int set_msgsperfolder;
 
 bool set_iso2022jp;
 
+struct hmlist *set_deleted = NULL;
+struct hmlist *set_expires = NULL;
+struct hmlist *set_delete_msgnum = NULL;
+int set_delete_level;
+
 struct Config cfg[] = {
     {"language", &set_language, LANGUAGE, CFG_STRING,
      "# A two-letter string specifying the language to use!\n"
@@ -475,7 +480,8 @@ struct Config cfg[] = {
      "# Put messages in subdirectories with this many messages per\n"
      "# directory. Do not use this and folder_by_date on the same archive.\n"
      "# Do not alter this for an existing archive without removing the old\n"
-     "# html files.\n"},
+     "# html files. Deleted/expired messages ARE COUNTED for the purpose\n"
+     "# of deciding how many messages to put in a subdirectory.\n"},
 
     {"describe_folder", &set_describe_folder, NULL, CFG_STRING,
      "# Controls the labels used in folders.html to describe the\n"
@@ -497,6 +503,28 @@ struct Config cfg[] = {
 
     {"iso2022jp", &set_iso2022jp, BFALSE, CFG_SWITCH,
      "# Set this to On to support ISO-2022-JP messages.\n"},
+
+    {"deleted", &set_deleted, "X-Hypermail-Deleted X-No-Archive", CFG_LIST,
+     "# This is the list of headers that indicate the message should\n"
+     "# not be displayed if the value of this header is 'yes'.\n"},
+
+    {"expires", &set_expires, "Expires", CFG_LIST,
+     "# This is the list of headers that indicate the message should\n"
+     "# not be displayed if the value of this header is a date in the past.\n"},
+    {"delete_msgnum", &set_delete_msgnum, NULL, CFG_LIST,
+     "# This is the list of message numbers that should be deleted from the\n"
+     "# html archive. The mbox is not changed.\n"},
+
+    {"delete_level", &set_delete_level, INT(DELETE_LEAVES_STUBS), CFG_INTEGER,
+     "# 0 - remove deleted and expired files. Note that with this choice\n"
+     "      threading may be screwed up if there are replies to deleted or\n"
+     "      expired options and the archive is updated incrementally\n"
+     "# 1 - remove message body\n"
+     "# 2 - remove message body for deleted messages, leave expired messages\n"
+     "# 3 - leave all messages\n"
+     "# Deleted and expired messages are removed from the index files\n"
+     "# regardless of the delete_level selection.\n"},
+
 };
 
 /* ---------------------------------------------------------------- */

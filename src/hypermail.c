@@ -28,6 +28,7 @@
 #include "print.h"
 #include "finelink.h"
 #include "search.h"
+#include "struct.h"
 
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
@@ -191,9 +192,9 @@ int main(int argc, char **argv)
     /* get pre config options here */
     while ((i = getopt(argc,argv,
 #ifdef GDBM
-			    "a:Ab:c:d:gil:L:m:n:o:ps:tTuvVx1M?"
+			    "a:Ab:c:d:gil:L:m:n:o:ps:tTuvVx0:1M?"
 #else
-			    "a:Ab:c:d:il:L:m:n:o:ps:tTuvVx1M?"
+			    "a:Ab:c:d:il:L:m:n:o:ps:tTuvVx0:1M?"
 #endif
 			    )) != -1) {
         switch((char) i) {
@@ -224,6 +225,7 @@ int main(int argc, char **argv)
 	case 'T':
 	case 'u':
 	case 'x':
+	case '0':
 	case '1':
 	case 'M':
 	    break;
@@ -252,9 +254,9 @@ int main(int argc, char **argv)
 
     while ((i = getopt(argc,argv,
 #ifdef GDBM
-			    "a:Ab:c:d:gil:L:m:n:o:ps:tTuvx1M?"
+			    "a:Ab:c:d:gil:L:m:n:o:ps:tTuvx0:1M?"
 #else
-			    "a:Ab:c:d:il:L:m:n:o:ps:tTuvx1M?"
+			    "a:Ab:c:d:il:L:m:n:o:ps:tTuvx0:1M?"
 #endif
       )) != -1) {
         switch((char) i) {
@@ -316,6 +318,9 @@ int main(int argc, char **argv)
 	    break;
 	case 'x':
 	    set_overwrite = TRUE;
+	    break;
+	case '0':
+	    set_delete_msgnum = add_list(set_delete_msgnum, optarg);
 	    break;
 	case '1':
 	    set_readone = TRUE;
@@ -450,6 +455,9 @@ int main(int argc, char **argv)
 	index_name[0][ATTACHMENT_INDEX] = index_name[1][ATTACHMENT_INDEX];
     }
     init_index_names();
+    if (set_msgsperfolder && set_folder_by_date) {
+	progerr("msgsperfolder and folder_by_date may not be used at the same time!");
+    }
 
     /*
      * General settings for mail command and rewriting.
@@ -534,21 +542,27 @@ int main(int argc, char **argv)
 	lock_archive(set_dir);
 
     if (set_increment) {
+	int num_displayable;
 	if (set_linkquotes)
 	    replylist = NULL;
-	amount_old = loadoldheaders(set_dir);
+	num_displayable = loadoldheaders(set_dir);
+	amount_old = max_msgnum + 1; /* counts gaps as messages */
 
 	/* start numbering at this number */
-	amount_new = parsemail(set_mbox, use_stdin, set_readone,
-			       set_increment, set_dir, set_inlinehtml,
-			       amount_old);
+	amount_new = num_displayable
+	  + parsemail(set_mbox, use_stdin, set_readone,
+		      set_increment, set_dir, set_inlinehtml, amount_old);
 	if (set_linkquotes)
-	    analyze_headers(amount_new);
+	    analyze_headers(max_msgnum + 1);
 
-	writearticles(amount_old, amount_new);
+	writearticles(amount_old, max_msgnum + 1);
+
+	if (set_delete_msgnum)
+	    update_deletions(amount_old);
+	amount_new -= count_deleted(amount_old);
 
 	if (set_show_msg_links) {
-	    fixnextheader(set_dir, amount_old - 1);
+	    fixnextheader(set_dir, amount_old, -1);
 	    if (set_showreplies)
 		fixreplyheader(set_dir, amount_old, 0);
 	    fixthreadheader(set_dir, amount_old);
@@ -559,13 +573,9 @@ int main(int argc, char **argv)
 	    parsemail(set_mbox, use_stdin, set_readone, set_increment,
 		      set_dir, set_inlinehtml, 0);	/* number from 0 */
 	if (set_linkquotes)
-	    analyze_headers(amount_new);
+	    analyze_headers(max_msgnum + 1);
 	if (amount_new) {	/* this is the amount of mails to write */
-	    writearticles(0, amount_new);
-	    if (set_linkquotes) {
-		for (i = 1; i < amount_old; ++i)
-		    fixreplyheader(set_dir, i, 1);
-	    }
+	    writearticles(0, max_msgnum + 1);
 	}
     }
 

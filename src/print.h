@@ -3,10 +3,7 @@
 */
 
 #ifdef GDBM
-int togdbm(void *gp, int num, char *name, char *email,
-	   char *date, char *msgid, char *subject, char *inreply,
-	   char *fromdate, char *charset, char *isodate,
-	   char *isofromdate);
+int togdbm(void *gp, struct emailinfo *);
 #endif
 
 void printcomment(FILE *, char *, char *);

@@ -14,11 +14,12 @@ char *getsubject(char *);
 char *getreply(char *);
 void print_progress(int, char *, char *);
 int parsemail(char *, int, int, int, char *, int, int);
+int parse_old_html(int, struct emailinfo *, int, int, struct reply **);
 int loadoldheaders(char *);
 void crossindex(void);
 void crossindexthread1(struct header *);
 void crossindexthread2(int);
-void fixnextheader(char *, int);
+void fixnextheader(char *, int, int);
 void fixreplyheader(char *, int, int);
 void fixthreadheader(char *, int);
 int isre(char *, char **);
@@ -26,6 +27,7 @@ char *findre(char *, char **);
 int textcontent(char *);
 char *createlink(char *, char *, char *, int, char *);
 void emptydir(char *);
+int count_deleted(int);
 
 /*
  * Suffix to prepend to all saved attachments' filenames when the
@@ -43,11 +45,6 @@ void emptydir(char *);
  * Used to replace invalid characters in supplied attachment filenames
  */
 #define REPLACEMENT_CHAR '_'
-
-/* 
- * Path separator for attachment file path generation
- */
-#define PATH_SEPARATOR '/'
 
 /*
  * Directory where meta information will be stored

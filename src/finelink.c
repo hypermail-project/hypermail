@@ -169,9 +169,11 @@ add_anchor(int msgnum, int quoting_msgnum, int quote_num,
 	free(filename);
 	if (msgnum > quoting_msgnum)
 	    return 0;		/* just a forward ref */
-	fprintf(stderr, "Couldn't read \"%s\". %d %d\n", filename, msgnum,
-		quoting_msgnum);
-	return 0;
+	if (set_showprogress)
+	    fprintf(stderr, "Couldn't read message number %d (linked from %d). "
+		    "May mean message deleted with delete_level = 0.\n",
+		    msgnum, quoting_msgnum);
+	return -1;
     }
     tmpfilename = htmlfilename("tmp", ep, "tmp");
     if ((fp2 = fopen(tmpfilename, "w")) == NULL) {

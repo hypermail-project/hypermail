@@ -561,7 +561,6 @@ static void add_old_replies()
 	    replylist = addreply(replylist, rp2->frommsgnum, rp2->data, 0,
 				 &replylist_end);
 #endif
-	    /*fprintf(stderr,"add_old_replies %3d from %3d/%3d\n",rp2->msgnum,rp2->frommsgnum,rp2->data->msgnum); */
 	}
     }
 }
@@ -601,11 +600,11 @@ static void find_replyto_from_html(int num)
     free(filename);
 }
 
-void analyze_headers(int amount_new)
+void analyze_headers(int max_num)
 {
     int i;
     int min_search_msgnum = 0;
-    int num = amount_new;
+    int num = max_num;
 
     if (set_searchbackmsgnum > 0 && set_increment
 	&& num - set_searchbackmsgnum > min_search_msgnum)

@@ -145,6 +145,11 @@ typedef enum { DATE_INDEX, THREAD_INDEX, SUBJECT_INDEX, AUTHOR_INDEX,
     ATTACHMENT_INDEX, FOLDERS_INDEX, NO_INDEX
 } mindex_t;
 
+/* 
+ * Path separator for attachment file path generation
+ */
+#define PATH_SEPARATOR '/'
+
 /*
 ** Use this struct to build expandable buffers. Quick and easy.
 ** Daniel 1998-11-17.
@@ -236,6 +241,8 @@ struct emailinfo {
     int isreply;
 #endif
     struct emailsubdir *subdir;		/* NULL unless set_msgsperfolder or set_folder_by_date */
+    long exp_time;
+    int is_deleted;		/* 1=deleted, 2=expired */
 };
 
 struct header {
@@ -270,6 +277,7 @@ struct boundary {
 VAR struct header *subjectlist;
 VAR struct header *authorlist;
 VAR struct header *datelist;
+VAR struct hashemail *deletedlist;
 VAR struct reply *replylist;
 VAR struct reply *replylist_end; /* last node in replylist */
 VAR struct reply *threadlist;
@@ -309,6 +317,7 @@ VAR char *mhtmlfooterfile;
 
 VAR long firstdatenum;
 VAR long lastdatenum;
+VAR int max_msgnum;
 
 VAR const char *latest_folder_path;
 

@@ -166,6 +166,9 @@ struct language_entry {
 #define MSG_PREV_DIRECTORY                       110
 #define MSG_NEXT_DIRECTORY                       111
 #define MSG_FOLDERS_INDEX                        112
+#define MSG_DELETED                              113
+#define MSG_EXPIRED                              114
+#define MSG_DEL_SHORT                            115
 
 #ifdef MAIN_FILE
 
@@ -295,6 +298,9 @@ char *de[] = {       /* German */
   "Previous Folder",  /* MSG_PREV_DIRECTORY                     -HTML */
   "Next Folder",      /* MSG_NEXT_DIRECTORY                     -HTML */
   "List of Folders",  /* MSG_FOLDERS_INDEX                      -HTML */
+  "This message has been deleted from the archive", /* MSG_DELETED -HTML */
+  "This message has expired",                       /* MSG_EXPIRED -HTML */
+  "(deleted message)", /* MSG_DEL_SHORT                            -HTML */
   NULL,                                   /* End Of Message Table - NOWHERE*/
 };
 
@@ -417,6 +423,9 @@ char *en[] = {       /* English */
   "Previous Folder",  /* MSG_PREV_DIRECTORY                     -HTML */
   "Next Folder",      /* MSG_NEXT_DIRECTORY                     -HTML */
   "List of Folders",  /* MSG_FOLDERS_INDEX                      -HTML */
+  "This message has been deleted from the archive", /* MSG_DELETED -HTML */
+  "This message has expired",                       /* MSG_EXPIRED -HTML */
+  "(deleted message)", /* MSG_DEL_SHORT                            -HTML */
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 
@@ -548,6 +557,9 @@ char *es[] = {       /* Espanol/Spanish */
   "Previous Folder",  /* MSG_PREV_DIRECTORY                     -HTML */
   "Next Folder",      /* MSG_NEXT_DIRECTORY                     -HTML */
   "List of Folders",  /* MSG_FOLDERS_INDEX                      -HTML */
+  "This message has been deleted from the archive", /* MSG_DELETED -HTML */
+  "This message has expired",                       /* MSG_EXPIRED -HTML */
+  "(deleted message)", /* MSG_DEL_SHORT                            -HTML */
   NULL,                               /* End Of Message Table */
 };
 
@@ -669,6 +681,9 @@ char *fi[] = {       /* Finnish */
   "Previous Folder",  /* MSG_PREV_DIRECTORY                     -HTML */
   "Next Folder",      /* MSG_NEXT_DIRECTORY                     -HTML */
   "List of Folders",  /* MSG_FOLDERS_INDEX                      -HTML */
+  "This message has been deleted from the archive", /* MSG_DELETED -HTML */
+  "This message has expired",                       /* MSG_EXPIRED -HTML */
+  "(deleted message)", /* MSG_DEL_SHORT                            -HTML */
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -792,6 +807,9 @@ char *fr[] = {       /* French */
   "Previous Folder",  /* MSG_PREV_DIRECTORY                     -HTML */
   "Next Folder",      /* MSG_NEXT_DIRECTORY                     -HTML */
   "List of Folders",  /* MSG_FOLDERS_INDEX                      -HTML */
+  "This message has been deleted from the archive", /* MSG_DELETED -HTML */
+  "This message has expired",                       /* MSG_EXPIRED -HTML */
+  "(deleted message)", /* MSG_DEL_SHORT                            -HTML */
   NULL,                                  /* End Of Message Table  - NOWHERE*/
 };
 
@@ -915,6 +933,9 @@ char *is[] = {       /* Icelandic */
   "Previous Folder",  /* MSG_PREV_DIRECTORY                     -HTML */
   "Next Folder",      /* MSG_NEXT_DIRECTORY                     -HTML */
   "List of Folders",  /* MSG_FOLDERS_INDEX                      -HTML */
+  "This message has been deleted from the archive", /* MSG_DELETED -HTML */
+  "This message has expired",                       /* MSG_EXPIRED -HTML */
+  "(deleted message)", /* MSG_DEL_SHORT                            -HTML */
   NULL,                               /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1043,6 +1064,9 @@ char *se[] = {
   "Previous Folder",  /* MSG_PREV_DIRECTORY                     -HTML */
   "Next Folder",      /* MSG_NEXT_DIRECTORY                     -HTML */
   "List of Folders",  /* MSG_FOLDERS_INDEX                      -HTML */
+  "This message has been deleted from the archive", /* MSG_DELETED -HTML */
+  "This message has expired",                       /* MSG_EXPIRED -HTML */
+  "(deleted message)", /* MSG_DEL_SHORT                            -HTML */
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 

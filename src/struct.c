@@ -233,6 +233,8 @@ struct emailinfo *addhash(int num, char *date, char *name,
     e->isreply = 0;
 #endif
     e->msgnum = num;
+    if (num > max_msgnum)
+        max_msgnum = num;
     e->emailaddr = strsav(email);
     if ((name == NULL) || (*name == '\0'))
 	e->name = strsav(email);
@@ -249,9 +251,12 @@ struct emailinfo *addhash(int num, char *date, char *name,
     }
     e->msgid = strsav(msgid);
     e->subject = strsav(subject);
+    e->unre_subject = unre(subject);
     e->inreplyto = strsav(inreply);
     e->charset = strsav(charset);
     e->flags = 0;
+    e->is_deleted = 0;
+    e->exp_time = -1;
     e->bodylist = sp;
 
     /* Added by Daniel 1999-03-19, we need this hash later to find the mail
@@ -291,6 +296,36 @@ struct emailinfo *addhash(int num, char *date, char *name,
     etable[hashval] = h;
 
     return e;			/* the actual mail struct pointer */
+}
+
+int insert_in_lists(struct emailinfo *emp)
+{
+    if (set_delete_msgnum) {
+	char num_str[32];
+	sprintf(num_str, "%d", emp->msgnum);
+	if (inlist(set_delete_msgnum, num_str)) {
+	    if (!emp->is_deleted) {
+	        if(emp->subdir)
+		    --emp->subdir->count;
+	    }
+	    emp->is_deleted = 1;
+	}
+    }
+    if (emp->is_deleted) {
+	struct hashemail *h;
+	h = (struct hashemail *)malloc(sizeof(struct hashemail));
+	h->data = emp;
+	h->next = deletedlist;
+	deletedlist = h;
+    }
+    else {
+        authorlist = addheader(authorlist, emp, 1, 0);
+
+	subjectlist = addheader(subjectlist, emp, 0, 0);
+
+    }
+    datelist = addheader(datelist, emp, 2, 0);
+    return !emp->is_deleted;
 }
 
 /*
@@ -515,6 +550,30 @@ struct body *hashnumlookup(int num, struct emailinfo **emailp)
 }
 
 /*
+ * Find the nearest non-deleted email to num by adding direction to num.
+ */
+
+struct emailinfo *neighborlookup(int num, int direction)
+{
+    struct hashemail *ep;
+    char numstr[NUMSTRLEN];
+    num += direction;
+
+    while (num >= 0 && num <= max_msgnum) {
+	sprintf(numstr, "%d", num);
+	for (ep = etable[hash(numstr)]; ep != NULL; ep = ep->next)
+	    if (ep->data && (num == ep->data->msgnum)) {
+	        if (ep->data->is_deleted)
+		    break;
+	          /* return a mere pointer to it! */
+		return ep->data;
+	    }
+	num += direction;
+    }
+    return NULL;
+}
+
+/*
 ** Add a line to a linked list that makes up a boundary stack. This new one 
 ** should be the new "active" boundary.
 **
@@ -693,8 +752,15 @@ struct reply *addreply2(struct reply *rp, struct emailinfo *from_email,
 			struct emailinfo *email, int maybereply,
 			struct reply **last_node) {
 #ifdef FASTREPLYCODE
-    from_email->replylist = addreply(from_email->replylist,
-				     from_email->msgnum,
+    struct reply *tempnode, *tempnode2;
+    for (tempnode = rp; tempnode != NULL; tempnode = tempnode->next) {
+	if (tempnode->msgnum == email->msgnum) { /* duplicate? */
+	    if (tempnode->maybereply)
+	        tempnode->maybereply = maybereply;
+	    return rp;		/* don't add 2nd time */
+	}
+    }
+    from_email->replylist = addreply(from_email->replylist, from_email->msgnum,
 				     email, maybereply, NULL);
 #endif
     return addreply(rp, from_email->msgnum, email, maybereply, last_node);

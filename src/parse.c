@@ -301,15 +301,20 @@ void crossindex(void)
     if(!set_linkquotes)
         replylist = NULL;
 
-    while (hashnumlookup(num, &email)) {
+    while (num <= max_msgnum) {
+	if (!hashnumlookup(num, &email)) {
+	    ++num;
+	    continue;
+	}
 	status = hashreplynumlookup(email->msgnum,
 				    email->inreplyto, email->subject,
 				    &maybereply);
 	if (status != -1) {
-#ifdef FASTREPLYCODE
 	    struct emailinfo *email2;
-	    hashnumlookup(status, &email2);
-#endif
+	    if (!hashnumlookup(status, &email2)) {
+		++num;
+		continue;
+	    }
 	    if (set_linkquotes) {
 	        struct reply *rp;
 		int found_num = 0;
@@ -380,8 +385,9 @@ void crossindexthread2(int num)
 	}
     for (rp = ep->replylist; rp != NULL; rp = rp->next) {
 	if (!(rp->data->flags & USED_THREAD) 
-	    && (!rp->maybereply || ignore_maybes)) {
+	    && (!rp->maybereply || !ignore_maybes)) {
 	    rp->data->flags |= USED_THREAD;
+	    if (0) printf("add thread %d %d\n", num, rp->data->msgnum);
 	    threadlist = addreply(threadlist, num, rp->data, 0,
 				  &threadlist_end);
 	    printedlist = markasprinted(printedthreadlist, rp->msgnum);
@@ -440,8 +446,8 @@ void crossindexthread1(struct header *hp)
 	if (!isreply && !wasprinted(printedthreadlist, hp->data->msgnum) &&
 	    !(hp->data->flags & USED_THREAD)) {
 	    hp->data->flags |= USED_THREAD;
-	    threadlist = addreply(threadlist, hp->data->msgnum, hp->data, 0,
-				  &threadlist_end);
+	    threadlist = addreply(threadlist, hp->data->msgnum, hp->data,
+				  0, &threadlist_end);
 	    crossindexthread2(hp->data->msgnum);
 	    threadlist = addreply(threadlist, -1, NULL, 0, &threadlist_end);
 	}
@@ -1049,6 +1055,10 @@ int parsemail(char *mbox,	/* file name */
     char *cp;
     char *dp = NULL;
     int num, isinheader, hassubject, hasdate;
+    int num_added = 0;
+    long exp_time = -1;
+    int is_deleted = 0;
+    char filename[MAXFILELEN];
     struct emailinfo *emp;
     char *att_dir = NULL;	/* directory name to store attachments in */
     char *meta_dir = NULL;	/* directory name where we're storing the meta data
@@ -1116,6 +1126,7 @@ int parsemail(char *mbox,	/* file name */
     EncodeType decode = ENCODE_NORMAL;
     ContentType content = CONTENT_TEXT;
 
+
     if (use_stdin || !mbox || !strcasecmp(mbox, "NONE"))
 	fp = stdin;
     else if ((fp = fopen(mbox, "r")) == NULL) {
@@ -1124,7 +1135,6 @@ int parsemail(char *mbox,	/* file name */
 	progerr(errmsg);
     }
     if(set_append) {
-        char filename[MAXFILELEN];
     
 	/* add to an mbox as we read */
 
@@ -1229,6 +1239,7 @@ int parsemail(char *mbox,	/* file name */
 		 */
 
 		for (head = bp; head; head = head->next) {
+		    char head_name[128];
 		    if (head->header && !head->demimed) {
 			head->line =
 			    mdecodeRFC2047(head->line, strlen(head->line));
@@ -1238,6 +1249,23 @@ int parsemail(char *mbox,	/* file name */
 		    if (head->parsedheader || head->attached ||
 			!head->header) {
 			continue;
+		    }
+		    if (!sscanf(head->line, "%127[^:]", head_name))
+		        continue;
+		    
+		    if (inlist(set_deleted, head_name)) {
+		        char *val = getsubject(head->line); /* revisit me */
+			if (!strcasecmp(val, "yes"))
+			    is_deleted = 1;
+			free(val);
+		    }
+
+		    if (inlist(set_expires, head_name)) {
+		        char *val = getmaildate(head->line);
+			exp_time = convtoyearsecs(val);
+			if (exp_time != -1 && exp_time < time(NULL))
+			    is_deleted = 2;
+			free(val);
 		    }
 
 		    if (!strncasecmp(head->line, "Date:", 5)) {
@@ -1749,14 +1777,10 @@ int parsemail(char *mbox,	/* file name */
                 strcpymax(fromdate, dp ? dp : "", DATESTRLEN);
 
 		if (emp) {
-		    /* only add actual mails */
-		    authorlist = addheader(authorlist, emp, 1, 0);
-
-		    emp->unre_subject = unre(subject);
-		    subjectlist = addheader(subjectlist, emp, 0, 0);
-
-		    datelist = addheader(datelist, emp, 2, 0);
-
+		    emp->exp_time = exp_time;
+		    emp->is_deleted = is_deleted;
+		    if (insert_in_lists(emp))
+		        ++num_added;
 		    num++;
 		}
 
@@ -1809,6 +1833,9 @@ int parsemail(char *mbox,	/* file name */
 		/* by default we have none! */
 		hassubject = 0;
 		hasdate = 0;
+
+		is_deleted = 0;
+		exp_time = -1;
 
                 alternativeparser = FALSE; /* there is none anymore */
 
@@ -2269,12 +2296,10 @@ int parsemail(char *mbox,	/* file name */
 	emp = addhash(num, date, namep, emailp, msgid, subject, inreply,
 		      fromdate, charset, NULL, NULL, bp);
 	if (emp) {
-	    authorlist = addheader(authorlist, emp, 1, 0);
-
-	    emp->unre_subject = unre(subject);
-	    subjectlist = addheader(subjectlist, emp, 0, 0);
-
-	    datelist = addheader(datelist, emp, 2, 0);
+	    emp->exp_time = exp_time;
+	    emp->is_deleted = is_deleted;
+	    if (insert_in_lists(emp))
+	        ++num_added;
 	    num++;
 	}
 
@@ -2352,6 +2377,8 @@ int parsemail(char *mbox,	/* file name */
 	    threadlist_by_msgnum[i] = NULL;
     }
 #endif
+    if (num > max_msgnum)
+	max_msgnum = num - 1;
     crossindex();
     threadlist = NULL;
     printedthreadlist = NULL;
@@ -2387,21 +2414,13 @@ int parsemail(char *mbox,	/* file name */
 	free(boundp);
     }
 
-    return num;			/* amount of mails read */
+    return num_added;			/* amount of mails read */
 }
 
-/*
-** All this does is get all the relevant header information from the
-** comment fields in existing archive files. Everything is loaded into
-** structures in the exact same way as if articles were being read from
-** stdin or a mailbox.
-**
-** Return the number of mails read.
-*/
 
-static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
+int parse_old_html(int num, struct emailinfo *ep, int parse_body,
+		   int do_insert, struct reply **replylist_tmp)
 {
-    FILE *fp;
     char line[MAXLINE];
     char *name = NULL;
     char *email = NULL;
@@ -2413,86 +2432,29 @@ static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
     char *charset = NULL;
     char *isodate = NULL;
     char *isofromdate = NULL;
-    char *filename;
-    struct emailsubdir *subdir;
     char command[100];
-    int num = 0;
-    struct emailinfo *e0 = NULL;
-
+    char *valp;
+    char legal = FALSE;
+    int reply_msgnum = -1;
+    long exp_time = -1;
+    int is_deleted = 0;
+    int num_added = 0;
     struct body *bp = NULL;
     struct body *lp = NULL;
 
-    struct reply *replylist_tmp = NULL;
-    int first_read_body = 0;
+    struct emailsubdir *subdir = ep ? ep->subdir : msg_subdir(num, 0);
+    char *filename = maprintf("%s%s%.4d.%s", set_dir,
+			      subdir ? subdir->subdir : "",
+			      num, set_htmlsuffix);
+
+    FILE *fp;
+
     char inreply_start[256];
     static char *inreply_start_old = "<b>In reply to:</b> <a href=\"";
     if (set_linkquotes) {
-	sprintf(inreply_start, "<STRONG>%s:</STRONG> <A HREF=\"",
+	sprintf(inreply_start, "<strong>%s:</strong> <a href=\"",
 		lang[MSG_IN_REPLY_TO]);
     }
-
-    if (num_from_gdbm != -1 && set_searchbackmsgnum && set_increment) {
-	first_read_body = num_from_gdbm - set_searchbackmsgnum;
-	if (first_read_body < 0)
-	    first_read_body = 0;
-	num = first_read_body;
-    }
-    else if (set_searchbackmsgnum && set_increment) {
-	int jump = 1000;	 /* search for biggest message number */
-	while (jump && first_read_body >= 0) {
-	    subdir = msg_subdir(first_read_body, 0);
-	    filename = maprintf("%s%s%s%.4d.%s", set_dir,
-				(dir[strlen(dir) - 1] == '/') ? "" : "/",
-				subdir ? subdir->subdir : "",
-				first_read_body, set_htmlsuffix);
-	    if ((fp = fopen(filename, "r")) != NULL) {
-	        fclose(fp);
-		if (jump < 0) jump = -jump/2;
-		first_read_body += jump;
-	    }
-	    else {
-	        if (jump > 0) jump = -jump/2;
-		first_read_body += jump;
-	    }
-	    free(filename);
-	    free(subdir);
-	}
-	first_read_body -= set_searchbackmsgnum + 1;
-    }
-    if (set_folder_by_date) {
-	if (!num_from_gdbm)
-	    return 0;
-	if (!hashnumlookup(first_read_body, &e0)) {
-	    if (set_usegdbm)
-	        sprintf(errmsg,
-			"set_folder_by_date error old msg %d num_from_gdbm %d",
-			first_read_body, num_from_gdbm);
-	    else
-#ifdef GDBM
-	        sprintf(errmsg, "folder_by_date requires usegdbm option");
-#else
-	        sprintf(errmsg, "folder_by_date requires usegdbm option"
-			". gdbm support has not been compiled into this"
-			" copy of hypermail. You probably need to install"
-			"gdbm and rerun configure.");
-#endif
-	    progerr(errmsg);
-	}
-	subdir = e0->subdir;
-    }
-    else
-        subdir = msg_subdir(num, 0);
-    filename = maprintf("%s%s%s%.4d.%s", dir,
-			(dir[strlen(dir) - 1] == '/') ? "" : "/",
-			subdir ? subdir->subdir : "", num, set_htmlsuffix);
-
-    if (!set_linkquotes)
-      bp = addbody(bp, &lp, "\0", 0);
-
-    authorlist = subjectlist = datelist = NULL;
-
-    if (set_showprogress)
-	printf("%s...\n", lang[MSG_READING_OLD_HEADERS]);
 
     /*
      * fromdate == <!-- received="Wed Jun  3 10:12:00 1998 CDT" -->
@@ -2511,14 +2473,7 @@ static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
      * isodate     == <!-- isosent="19980603101207" -->
      */
 
-    /* Strategy: loop on files, opening each and copying the header comments
-     * into dynamically-allocated memory, then saving if it's not corrupt. */
-
-    while ((fp = fopen(filename, "r")) != NULL) {
-	char *valp;
-	char legal = FALSE;
-	int reply_msgnum = -1;
-
+    if ((fp = fopen(filename, "r")) != NULL) {
 	while (fgets(line, sizeof(line), fp)) {
 
 	    if (1 == sscanf(line, "<!-- %99[^=]=", command)) {
@@ -2549,6 +2504,20 @@ static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
 		    isodate = getvalue(line);
 		else if (!strcasecmp(command, "isoreceived"))
 		    isofromdate = getvalue(line);
+		else if (!strcasecmp(command, "expires")) {
+		    valp = getvalue(line);
+		    if (valp) {
+			exp_time = convtoyearsecs(valp);
+			free(valp);
+		    }
+		}
+		else if (!strcasecmp(command, "isdeleted")) {
+		    valp = getvalue(line);
+		    if (valp) {
+			is_deleted = atoi(valp);
+			free(valp);
+		    }
+		}
 		else if (!strcasecmp(command, "inreplyto")) {
 		    valp = getvalue(line);
 		    if (valp) {
@@ -2558,30 +2527,32 @@ static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
 		}
 		else if (!strcasecmp(command, "body")) {
 		    /*
-		     * When we reach the mail body, we know we've got all the headers
-		     * there were!
+		     * When we reach the mail body, we know we've got all the
+		     * headers there were!
 		     */
-		    if (set_linkquotes) {
+		    if (parse_body) {
 			while (fgets(line, MAXLINE, fp)) {
 			    char *ptr;
 			    char *line2;
-			    if (num < first_read_body
-				&& !strcmp(line,"<!-- nextthread=\"start\" -->\n"))
-			        break;
 			    if (!strcmp(line,"<!-- body=\"end\" -->\n"))
 			        break;
+#if 0
+			    if (!strcmp(line,"<p><!-- body=\"end\" -->\n"))
+			        break;
+#endif
 			    line2 = remove_hypermail_tags(line);
 			    if (line2) {
 			        if (!bp && *line2 != '\n') {
 				    bp = addbody(bp, &lp, "\n", 0);
-				    if (num_from_gdbm != -1)
-				        e0->bodylist = bp;
+				    if (ep != NULL)
+				        ep->bodylist = bp;
 				}
 				ptr = unconvchars(line2);
 				bp = addbody(bp, &lp, ptr ? ptr : "", 0);
-				if (num_from_gdbm != -1 && !e0->bodylist->line[0])
-				    e0->bodylist = bp;
-				if(0) fprintf(stderr,"addbody %sfrom %s",ptr,line);
+				if (ep != NULL && !ep->bodylist->line[0])
+				    ep->bodylist = bp;
+				if(0) fprintf(stderr,"addbody %p %d from %s",
+					      bp, !ep->bodylist->line[0], ptr);
 				free(ptr);
 				if (set_linkquotes && !inreply) {
 				    char *new_inreply = getreply(line2);
@@ -2591,130 +2562,203 @@ static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
 				free(line2);
 			    }
 			}
-			if (!bp)
-			    bp = addbody(bp, &lp, "\0", 0);
 		    }
+		    if (!bp)
+			bp = addbody(bp, &lp, "\0", 0);
 		    fclose(fp);
 		    legal = TRUE;	/* with a body tag we consider this a valid syntax */
 		    break;
 		}
-		else if (set_linkquotes) {
-		    char *ptr;
-		    if ((ptr = strstr(line, inreply_start)) != NULL)
-		        reply_msgnum = atoi(ptr + strlen(inreply_start));
-		    else if ((ptr = strstr(line, inreply_start_old)) != NULL)
-		        reply_msgnum = atoi(ptr + strlen(inreply_start_old));
-		}
+	    }
+	    else if (set_linkquotes) {
+		char *ptr;
+		if ((ptr = strcasestr(line, inreply_start)) != NULL)
+		    reply_msgnum = atoi(ptr + strlen(inreply_start));
+		else if ((ptr = strstr(line, inreply_start_old)) != NULL)
+		    reply_msgnum = atoi(ptr + strlen(inreply_start_old));
 	    }
 	}
+    }
 
-	if (num_from_gdbm == -1 && legal) {
-	    struct emailinfo *emp;
-	    /* only do this if the input was reliable */
+    if (legal) {	    /* only do this if the input was reliable */
+	struct emailinfo *emp;
+	if (replylist_tmp == NULL || !do_insert)
+	    emp = ep;
+	else
 	    emp = addhash(num, date ? date : NODATE,
 			  name, email, msgid, subject, inreply,
 			  fromdate, charset, isodate, isofromdate, bp);
-	    if (emp != NULL) {
-		authorlist = addheader(authorlist, emp, 1, 0);
-		emp->unre_subject = unre(subject);
-		subjectlist = addheader(subjectlist, emp, 0, 0);
-		datelist = addheader(datelist, emp, 2, 0);
-		if(set_linkquotes && reply_msgnum != -1) {
+	if (emp != NULL && replylist_tmp != NULL) {
+	    if (do_insert) {
+	        emp->exp_time = exp_time;
+		emp->is_deleted = is_deleted;
+		if (insert_in_lists(emp))
+		    ++num_added;
+	    }
+
+	    if(set_linkquotes && reply_msgnum != -1) {
 #ifdef FASTREPLYCODE
-		    struct emailinfo *email2;
-		    if (hashnumlookup(reply_msgnum, &email2))
-		        replylist_tmp = addreply2(replylist_tmp, email2, emp,
-						  0, NULL);
+		struct emailinfo *email2;
+		if (hashnumlookup(reply_msgnum, &email2))
+		    *replylist_tmp = addreply2(*replylist_tmp, email2, emp,
+					       0, NULL);
 #else
-		    replylist_tmp = addreply(replylist_tmp, reply_msgnum, emp,
-					     0, NULL);
+		*replylist_tmp = addreply(*replylist_tmp, reply_msgnum,
+					  emp, 0, NULL);
 #endif
-		}
 	    }
 	}
-	if (charset) {
-	    free(charset);
-	    charset = NULL;
+    }
+    if (charset) {
+	free(charset);
+    }
+    if (name) {
+	free(name);
+    }
+    if (subject) {
+	free(subject);
+    }
+    if (msgid) {
+	free(msgid);
+    }
+    if (inreply) {
+	free(inreply);
+    }
+    if (fromdate) {
+	free(fromdate);
+    }
+    if (date) {
+	free(date);
+    }
+    if (email) {
+	free(email);
+    }
+    if (isodate) {
+	free(isodate);
+    }
+    if (isofromdate) {
+	free(isofromdate);
+    }
+    free(filename);
+#if 0
+    if (bp != NULL) {		/* revisit me */
+	if (bp->line)
+	    free(bp->line);
+	free(bp);
+    }
+#endif
+    return num_added;
+}
+
+/*
+** All this does is get all the relevant header information from the
+** comment fields in existing archive files. Everything is loaded into
+** structures in the exact same way as if articles were being read from
+** stdin or a mailbox.
+**
+** Return the number of mails read.
+*/
+
+static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
+{
+    int num = 0;
+    int num_added = 0;
+    int max_num = (num_from_gdbm == -1 ? find_max_msgnum() : num_from_gdbm);
+    struct emailinfo *e0 = NULL;
+
+    struct reply *replylist_tmp = NULL;
+    int first_read_body = 0;
+
+    if (set_searchbackmsgnum) {
+	first_read_body = max_num - set_searchbackmsgnum;
+	if (first_read_body < 0)
+	    first_read_body = 0;
+	num = first_read_body;
+    }
+#if 0
+    else if (set_searchbackmsgnum && set_increment) {
+	int jump = 1000;	 /* search for biggest message number */
+	while (jump && first_read_body >= 0) {
+	    subdir = msg_subdir(first_read_body, 0);
+	    filename = maprintf("%s%s%s%.4d.%s", set_dir,
+				(dir[strlen(dir) - 1] == '/') ? "" : "/",
+				subdir ? subdir->subdir : "",
+				first_read_body, set_htmlsuffix);
+	    if ((fp = fopen(filename, "r")) != NULL) {
+	        fclose(fp);
+		if (jump < 0) jump = -jump/2;
+		first_read_body += jump;
+	    }
+	    else {
+	        if (jump > 0) jump = -jump/2;
+		first_read_body += jump;
+	    }
+	    free(filename);
+	    free(subdir);
 	}
-	if (name) {
-	    free(name);
-	    name = NULL;
+	first_read_body -= set_searchbackmsgnum + 1;
+    }
+#endif
+    if (set_folder_by_date) {
+	if (!num_from_gdbm)
+	    return 0;
+	if (!hashnumlookup(first_read_body, &e0)) {
+	    if (set_usegdbm)
+	        sprintf(errmsg,
+			"set_folder_by_date error old msg %d num_from_gdbm %d",
+			first_read_body, num_from_gdbm);
+	    else
+#ifdef GDBM
+	        sprintf(errmsg, "folder_by_date requires usegdbm option");
+#else
+	        sprintf(errmsg, "folder_by_date requires usegdbm option"
+			". gdbm support has not been compiled into this"
+			" copy of hypermail. You probably need to install"
+			"gdbm and rerun configure.");
+#endif
+	    progerr(errmsg);
 	}
-	if (subject) {
-	    free(subject);
-	    subject = NULL;
+    }
+
+    if (num_from_gdbm == -1)
+        authorlist = subjectlist = datelist = NULL;
+
+    if (set_showprogress)
+	printf("%s...\n", lang[MSG_READING_OLD_HEADERS]);
+
+
+    /* Strategy: loop on files, opening each and copying the header comments
+     * into dynamically-allocated memory, then saving if it's not corrupt. */
+
+    while (num <= max_num) {
+	struct emailinfo *ep0 = NULL;
+	int parse_body = (set_linkquotes && num >= first_read_body);
+	if (num_from_gdbm != -1 || set_folder_by_date) {
+	    if (!hashnumlookup(num, &ep0)) {
+	        if (++num > max_num)
+		    break;
+	        continue;
+	    }
 	}
-	if (msgid) {
-	    free(msgid);
-	    msgid = NULL;
-	}
-	if (inreply) {
-	    free(inreply);
-	    inreply = NULL;
-	}
-	if (fromdate) {
-	    free(fromdate);
-	    fromdate = NULL;
-	}
-	if (date) {
-	    free(date);
-	    date = NULL;
-	}
-	if (email) {
-	    free(email);
-	    email = NULL;
-	}
-	if (isodate) {
-	    free(isodate);
-	    isodate = NULL;
-	}
-	if (isofromdate) {
-	    free(isofromdate);
-	    isofromdate = NULL;
-	}
+	num_added += parse_old_html(num, ep0, parse_body, num_from_gdbm == -1,
+				    &replylist_tmp);
 
 	num++;
-	if (set_linkquotes) {
-	    bp = NULL;
-	}
 
 	if (!(num % 10) && set_showprogress) {
 	    printf("\r%4d", num);
 	    fflush(stdout);
 	}
-
-	if (set_folder_by_date) {
-	    if (!hashnumlookup(num, &e0))
-	        break;		/* ought to mean end of old msgs */
-	    subdir = e0->subdir;
-	}
-	else
-	    subdir = msg_subdir(num, 0);
-
-	free(filename);
-
-	filename = maprintf("%s%s%s%.4d.%s", dir,
-			    (dir[strlen(dir) - 1] == '/') ? "" : "/",
-			    subdir ? subdir->subdir : "", num, set_htmlsuffix);
     }
-    free(filename);
 
     if (set_showprogress)
 	printf("\b\b\b\b%4d %s.\n", num, lang[MSG_ARTICLES]);
 
     if (set_linkquotes)
-      set_alt_replylist(replylist_tmp);
+	set_alt_replylist(replylist_tmp);
 
-    /* can we clean up a bit please... */
-    if (bp != NULL) {
-	if (bp->line)
-	    free(bp->line);
-	free(bp);
-    }
-
-    return num;
+    return num_added;
 } /* end loadoldheadersfrommessages() */
-
 
 /*
 ** Load message summary information from a GDBM index.
@@ -2728,6 +2772,7 @@ static int loadoldheadersfromGDBMindex(char *dir)
       struct body *bp = NULL;
       struct body *lp = NULL;
       int num;
+      int num_added = 0;
 
       bp = addbody(bp, &lp, "\0", 0);
       authorlist = subjectlist = datelist = NULL;
@@ -2757,12 +2802,20 @@ static int loadoldheadersfromGDBMindex(char *dir)
 
 	datum content;
 	datum key;
+	int max_num;
 
 	key.dptr = (char *) &num;
 	key.dsize = sizeof(num);
 
-	for(num = 0; 1; num++) {
-	  char *dp;
+	num = -1;
+	content = gdbm_fetch(gp, key);
+	if (!content.dptr)
+	    max_num = -1;
+	else
+	    max_num = atoi(content.dptr);
+
+	for(num = 0; max_num == -1 || num <= max_num; num++) {
+	  char *dp, *dp_end;
 	  char *name=NULL;
 	  char *email=NULL;
 	  char *date=NULL;
@@ -2773,11 +2826,17 @@ static int loadoldheadersfromGDBMindex(char *dir)
 	  char *charset=NULL;
 	  char *isodate=NULL;
 	  char *isofromdate=NULL;
+	  long exp_time = -1;
+	  int is_deleted = 0;
 	  struct emailinfo *emp;
 
 	  content = gdbm_fetch(gp, key);
-	  if(!(dp = content.dptr))
-	    break;
+	  if(!(dp = content.dptr)) {
+	      if (max_num == -1) /* old file where gaps in nums not legal */
+		  break;	 /* must be at end */ 
+	      continue;
+	  }
+	  dp_end = dp + content.dsize;
 	  fromdate = dp;
 	  dp += strlen(dp) + 1;
 	  date = dp;
@@ -2797,13 +2856,22 @@ static int loadoldheadersfromGDBMindex(char *dir)
 	  isofromdate = dp;
 	  dp += strlen(dp) + 1;
 	  isodate = dp;
+	  dp += strlen(dp) + 1;
+	  if (dp < dp_end) {
+	      exp_time = iso_to_secs(dp);
+	      dp += strlen(dp) + 1;
+	  }
+	  if (dp < dp_end) {
+	      is_deleted = atoi(dp);
+	      dp += strlen(dp) + 1;
+	  }
 
 	  if(emp = addhash(num, date, name, email, msgid, subject, inreply,
 			   fromdate, charset, isodate, isofromdate, bp)) {
-	    authorlist = addheader(authorlist, emp, 1, 0);
-	    emp->unre_subject = unre(subject);
-	    subjectlist = addheader(subjectlist, emp, 0, 0);
-	    datelist = addheader(datelist, emp, 2, 0);
+	      emp->exp_time = exp_time;
+	      emp->is_deleted = is_deleted;
+	      if (insert_in_lists(emp))
+		  ++num_added;
 	  }
 	  free(subject);
 	  free(inreply);
@@ -2850,13 +2918,15 @@ static int loadoldheadersfromGDBMindex(char *dir)
       } /* end case of could not read gdbm index */
 
       free(indexname);
+#if 0				/* ?? */
       if(bp) {
         if (bp->line) 
 	  free(bp->line);
         free(bp);
       }
+#endif
 
-      return num;
+      return num_added;
 
 } /* end loadoldheadersfromGDBMindex() */
 #endif
@@ -2893,13 +2963,13 @@ int loadoldheaders(char *dir)
 ** incrementally updated.
 */
 
-void fixnextheader(char *dir, int num)
+void fixnextheader(char *dir, int num, int direction)
 {
     char *filename;
     char line[MAXLINE];
     struct emailinfo *email;
 
-    struct body *bp, *cp, *dp = NULL, *status, *lp = NULL;
+    struct body *bp, *cp, *dp = NULL, *lp = NULL;
     int ul;
     FILE *fp;
     char *ptr;
@@ -2908,12 +2978,10 @@ void fixnextheader(char *dir, int num)
     dp = NULL;
     ul = 0;
 
-    if (hashnumlookup(num, &e3))
+    if ((e3 = neighborlookup(num, direction)) != NULL)
 	filename = articlehtmlfilename(e3);
-    else /* revisit me - this case is probably impossible */
-	filename = maprintf("%s%s%.4d.%s", dir,
-	      (dir[strlen(dir) - 1] == '/') ? "" : "/", num,
-	      set_htmlsuffix);
+    else
+	return;
 
     bp = NULL;
     fp = fopen(filename, "r");
@@ -2932,8 +3000,8 @@ void fixnextheader(char *dir, int num)
 	while (bp) {
 	    fprintf(fp, "%s", bp->line);
 	    if (!strncmp(bp->line, "<!-- next=", 10)) {
-		status = hashnumlookup(num + 1, &email);
-		if (status != NULL) {
+		email = neighborlookup(num, 1);
+		if (email != NULL) {
 		    if (set_usetable) {
 			dp = bp->next;
 			if (!strncmp(dp->line, "<ul>", 4)) {
@@ -2982,7 +3050,7 @@ void fixreplyheader(char *dir, int num, int remove_maybes)
     char line[MAXLINE];
 
     int subjmatch;
-    int replynum = 0;
+    int replynum = -1;
 
     struct body *bp, *cp, *status;
     struct body *lp = NULL;
@@ -3005,7 +3073,7 @@ void fixreplyheader(char *dir, int num, int remove_maybes)
     
     status = hashnumlookup(num, &email);
 
-    if (status == NULL || (email->inreplyto && !email->inreplyto[0]))
+    if (status == NULL || email->is_deleted)
 	return;
 
     if (remove_maybes || set_linkquotes) {
@@ -3021,8 +3089,8 @@ void fixreplyheader(char *dir, int num, int remove_maybes)
     if (set_linkquotes) {
       struct reply *rp;
       for (rp = replylist; rp != NULL; rp = rp->next) {
-	if (rp->frommsgnum == num && !rp->maybereply) {
-	  replynum = rp->msgnum;
+	if (rp->msgnum == num && !rp->maybereply) {
+	  replynum = rp->frommsgnum;
 	  break;
 	}
       }
@@ -3038,21 +3106,17 @@ void fixreplyheader(char *dir, int num, int remove_maybes)
       }
     }
     else {
-	if (email->inreplyto && email->inreplyto[0]) {
-	    email2 =
-	        hashreplylookup(email->msgnum, email->inreplyto, &subjmatch);
-	    if (!email2)
-	        return;
-	    replynum = email2->msgnum;
-	}
+	if (!email->inreplyto || !email->inreplyto[0])
+	    return;
+	email2 = hashreplylookup(email->msgnum, email->inreplyto, &subjmatch);
+	if (!email2)
+	    return;
+	replynum = email2->msgnum;
     }
 
-    if (email2 != NULL)
-	filename = articlehtmlfilename(email2);
-    else /* revisit me - this case is probably pointless or harmful */
-	filename = maprintf("%s%s%.4d.%s", dir,
-	      (dir[strlen(dir) - 1] == '/') ? "" : "/",
-	      replynum, set_htmlsuffix);
+    if (email2 == NULL)
+	hashnumlookup(replynum, &email2);
+    filename = articlehtmlfilename(email2);
 
     bp = NULL;
     fp = fopen(filename, "r");
@@ -3083,27 +3147,28 @@ void fixreplyheader(char *dir, int num, int remove_maybes)
     if (fp) {
 	while (bp) {
 	    if (!strncmp(bp->line, "<!-- reply", 10)) {
+	        char *del_msg = (email2->is_deleted ? lang[MSG_DEL_SHORT] : "");
 	        if (last_reply) {
 		  char buf1[MAXLINE];
 		  ptr = convchars(email->subject);
-		  sprintf(buf1, "<li><strong>%s:</strong> "
-			  "%s%s: \"%s\"</a>\n",
-			  lang[MSG_REPLY], msg_href(email, email2),
+		  sprintf(buf1,
+			  "<li><strong>%s:</strong>%s %s%s: \"%s\"</a>\n",
+			  lang[MSG_REPLY], del_msg, msg_href(email, email2),
 			  email->name, ptr);
 
 		  if (strcmp(buf1, last_reply))
 		      fputs(buf1, fp);
 		}
 		else {
-		    fprintf(fp, "<li><strong>%s:</strong> ", lang[MSG_REPLY]);
-		    fprintf(fp, "%s", msg_href(email, email2));
+		    fprintf(fp, "<li><strong>%s:</strong>", lang[MSG_REPLY]);
+		    fprintf(fp, "%s %s", del_msg, msg_href(email, email2));
 		    fprintf(fp, "%s: \"%s\"</a>\n", email->name,
 			    ptr = convchars(email->subject));
 		    free(ptr);
 		}
 	    }
 	    if (next_in_thread - 1 == replynum
-		&& (strstr(bp->line, current_next_pattern)
+		&& (strcasestr(bp->line, current_next_pattern)
 		    || strstr(bp->line, old_next_pattern))) {
 	        bp = bp->next;
 		continue; /* line duplicates next in thread; surpress */
@@ -3112,7 +3177,7 @@ void fixreplyheader(char *dir, int num, int remove_maybes)
 		|| strncasecmp(bp->line, current_maybe_pattern, strlen(current_maybe_pattern))
 		|| strncasecmp(bp->line, old_maybe_pattern, strlen(old_maybe_pattern)))
 	        fprintf(fp, "%s", bp->line); /* not redundant or disproven */
-	    if (set_linkquotes && (strstr(bp->line, current_reply_pattern)
+	    if (set_linkquotes && (strcasestr(bp->line, current_reply_pattern)
 				   || strstr(bp->line, old_reply_pattern)))
 	        last_reply = bp->line;
 	    bp = bp->next;
@@ -3211,4 +3276,19 @@ void fixthreadheader(char *dir, int num)
 	bp = cp;
     }
     free(filename);
+}
+
+int count_deleted(int limit)
+{
+    struct hashemail *hp;
+    struct emailsubdir *sd;
+    int total = 0;
+    for (hp = deletedlist; hp != NULL; hp = hp->next) {
+	if (hp->data->msgnum < limit) {
+	    ++total;
+	    if ((sd = hp->data->subdir) != NULL)
+	        --sd->count;
+	}
+    }
+    return total;
 }

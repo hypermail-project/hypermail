@@ -22,6 +22,11 @@
 #include "hypermail.h"
 #include "setup.h"
 #include "struct.h"
+#ifdef HAVE_DIRENT_H
+#include <dirent.h>
+#else
+#include <sys/dir.h>
+#endif
 
 /*
 ** Does a file exist?
@@ -285,6 +290,72 @@ void symlink_latest()
 	progerr(errmsg);
 	return;
     }
+}
+
+int find_max_msgnum()
+{
+    DIR *dir;
+#ifdef HAVE_DIRENT_H
+    struct dirent *entry;
+#else
+    struct direct *entry;
+#endif
+    int max_num = -1;
+    int num;
+    char *s_dir = strsav(set_dir);
+    int len = strlen(s_dir);
+    if (len > 0 && s_dir[len-1] == PATH_SEPARATOR)
+	s_dir[len-1] = 0;
+    dir = opendir(s_dir);
+    if (dir == NULL)
+	return -1;
+    if (set_msgsperfolder) {
+        int max_folder = -1;
+	char *tmpptr;
+	while ((entry = readdir(dir))) {
+	    const char *p = entry->d_name;
+	    while (isdigit(*p))
+	        ++p;
+	    if (!*p && p > entry->d_name) {
+	        num = atoi(entry->d_name);
+		if (num > max_folder) {
+		    char *full_path = maprintf("%s%d", set_dir, num);
+		    if (isdir(full_path))
+		        max_folder = num;
+		    free(full_path);
+		}
+	    }
+	}
+	closedir(dir);
+	tmpptr = maprintf("%s%d", set_dir, max_folder);
+	free(s_dir);
+	s_dir = tmpptr;
+	if (max_folder == -1)
+	    return -1;
+	dir = opendir(s_dir);
+	if (dir == NULL) {
+	    sprintf(errmsg, "internal error find_max_msgnum opening \"%s\".",
+		    s_dir);
+	    progerr(errmsg);
+	}
+    }
+    while ((entry = readdir(dir))) {
+	const char *p = entry->d_name;
+	while (isdigit(*p))
+	    ++p;
+	if (*p == '.' && p >= entry->d_name + 4) {
+	    ++p;
+	    if (!strcmp(p, set_htmlsuffix)) {
+	        num = atoi(entry->d_name);
+		if (num > max_num)
+		    max_num = num;
+	    }
+	}
+    }
+    closedir(dir);
+    free(s_dir);
+    max_msgnum = max_num;
+    return max_num;
 }
 
 static char *msgsperfolder_label(char *frmptr, int subdir_no)

@@ -127,4 +127,15 @@ extern char *set_describe_folder;
 
 extern bool set_iso2022jp;
 
+extern struct hmlist *set_deleted;
+extern struct hmlist *set_expires;
+extern struct hmlist *set_delete_msgnum;
+extern int set_delete_level;
+/* values for delete_level: */
+enum { DELETE_REMOVES_FILES,
+       DELETE_LEAVES_STUBS, /* always replace msg body with lang[MSG_DELETED/MSG_EXPIRED] */
+       DELETE_LEAVES_EXPIRED_TEXT, /* stubs for deleted msgs, full msg for expired */
+       DELETE_LEAVES_TEXT /* leave full message */
+};
+
 #endif

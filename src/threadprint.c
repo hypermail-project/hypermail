@@ -6,8 +6,8 @@
 
 static void format_thread_info(FILE *, struct emailinfo *, int, int *,
 			       struct emailinfo *);
-static int finish_thread_levels(FILE **, int, int, int *,
-				FILE **, char **, char **, int);
+static int finish_thread_levels(FILE **, int, int, int *, FILE **,
+				char **, char **, int, struct emailinfo *);
 
 /* Define this to make it print a whole lot of debug output to stdout: */
 /* #define DEBUG_THREAD */
@@ -25,6 +25,7 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
     int newlevel;
     int i;
     int prev = -1;
+    int hide_level = 0;
     int thread_file_depth = (year == -1 &&
 			     month == -1 ? set_thread_file_depth : 0);
     static int reply_list_count = 0;
@@ -45,7 +46,7 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 	    level =
 		finish_thread_levels(&fp, level, 0, num_replies, fp_stack,
 				     filename_stack, subject_stack,
-				     thread_file_depth);
+				     thread_file_depth, email);
 	    rp = rp->next;
 	    continue;
 	}
@@ -62,9 +63,11 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 	    level =
 		finish_thread_levels(&fp, level, 0, num_replies, fp_stack,
 				     filename_stack, subject_stack,
-				     thread_file_depth);
+				     thread_file_depth, email);
 	    stack[level] = rp->msgnum;
 	}
+	else if (hide_level)
+	    ;			/* don't change level */ 
 	else if (rp->frommsgnum == prev) {
 	    if (level < MAXSTACK)
 		level++;
@@ -78,14 +81,12 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 		    fprintf(fp, "<ul>\n");
 		}
 		else if (level < MAXSTACK) {
-		    char filename[MAXFILELEN];
+		    char *filename;
 		    char subject[TITLESTRLEN];
-		    sprintf(filename, "%u%s", reply_list_count,
-			    index_name[subdir != NULL][THREAD_INDEX]);
-		    filename_stack[level] = strsav(filename);
-		    sprintf(filename, "%s%s%s", set_dir,
-			    (set_dir[strlen(set_dir) - 1] ==
-			     '/') ? "" : "/", filename_stack[level]);
+		    filename_stack[level] = 
+		      maprintf("%u%s", reply_list_count,
+			       index_name[subdir != NULL][THREAD_INDEX]);
+		    filename = htmlfilename(filename_stack[level], email, "");
 		    unlink(filename);	/* so chmod won't fail if someone else owned it */
 		    fp_stack[level - 1] = fp;
 		    if ((fp = fopen(filename, "w")) == NULL) {
@@ -98,6 +99,7 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 		    print_index_header(fp, set_label, set_dir,
 				       subject, filename);
 		    fprintf(fp, "<ul>\n");
+		    free(filename);
 		    ++reply_list_count;
 		}
 	    }
@@ -145,7 +147,8 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 		level =
 		    finish_thread_levels(&fp, level, newlevel, num_replies,
 					 fp_stack, filename_stack,
-					 subject_stack, thread_file_depth);
+					 subject_stack, thread_file_depth,
+					 email);
 	    }
 
 	    stack[newlevel] = rp->msgnum;
@@ -153,10 +156,12 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 
 	/* Now print this mail */
 	if ((year == -1 || year_of_datenum(rp->data->date) == year)
-	    && (month == -1 || month_of_datenum(rp->data->date) == month))
+	    && (month == -1 || month_of_datenum(rp->data->date) == month)
+	    && !rp->data->is_deleted)
 	    format_thread_info(fp, rp->data, level, num_replies, email);
 
 	prev = rp->msgnum;
+	hide_level = (rp->data->is_deleted && rp->frommsgnum != rp->msgnum);
 	rp = rp->next;
     }
 }
@@ -209,7 +214,7 @@ static int finish_thread_levels(FILE **fp, int level, int newlevel,
 				int *num_replies, FILE **fp_stack,
 				char **filename_stack,
 				char **subject_stack,
-				int thread_file_depth)
+				int thread_file_depth, struct emailinfo *email)
 {
     if (!set_indextable) {
 	while (level > newlevel) {
@@ -219,10 +224,8 @@ static int finish_thread_levels(FILE **fp, int level, int newlevel,
 		    fprintf(*fp, "</ul>\n");
 		}
 		else if (level < MAXSTACK) {
-		    char filename[MAXFILELEN];
-		    sprintf(filename, "%s%s%s", set_dir,
-			    (set_dir[strlen(set_dir) - 1] ==
-			     '/') ? "" : "/", filename_stack[level]);
+		    char *filename = htmlfilename(filename_stack[level],
+						  email, "");
 		    fprintf(*fp, "</ul>");
 		    printfooter(*fp, ihtmlfooterfile, set_label, set_dir,
 				subject_stack[level], filename);
@@ -241,6 +244,7 @@ static int finish_thread_levels(FILE **fp, int level, int newlevel,
 		    else
 			remove(filename);
 		    free(filename_stack[level]);
+		    free(filename);
 		}
 	    }
 	    level--;

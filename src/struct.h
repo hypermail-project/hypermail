@@ -8,12 +8,15 @@ void fill_email_dates(struct emailinfo *, char *, char *, char *, char *);
 struct emailinfo *addhash(int, char *, char *, char *, char *, char *, char *,
 			  char *, char *, char *, char *, struct body *);
 
+int insert_in_lists(struct emailinfo *);
+
 struct emailinfo *hashreplylookup(int, char *, int *);
 
 struct emailinfo *hashmsgidlookup(char *, int *);
 int hashreplynumlookup(int, char *, char *, int *);
 
 struct body *hashnumlookup(int, struct emailinfo **);
+struct emailinfo *neighborlookup(int, int);
 
 struct body *addbody(struct body *, struct body **, char *, int);
 

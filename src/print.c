@@ -49,16 +49,29 @@ static char *indextypename[NO_INDEX];
 ** store a single message summary to an already open-for-write GDBM index
 **/
 
-int togdbm(void *gp, int num, char *name, char *email,
-	   char *date, char *msgid, char *subject, char *inreply,
-	   char *fromdate, char *charset, char *isodate,
-	   char *isofromdate)
+int togdbm(void *gp, struct emailinfo *ep)
 {
   datum key;
   datum content;
   char *buf;
   char *dp;
   int rval;
+  int num = ep->msgnum;
+  char *name = ep->name;
+  char *email = ep->emailaddr;
+  char *date = ep->datestr;
+  char *msgid = ep->msgid;
+  char *subject = ep->subject;
+  char *inreply = ep->inreplyto;
+  char *fromdate = ep->fromdatestr;
+  char *charset = ep->charset;
+  char *isodate = strsav(secs_to_iso(ep->date));
+  char *isofromdate = strsav(secs_to_iso(ep->fromdate));
+  char *exp_time_str = strsav(ep->exp_time == -1 ? ""
+			      : secs_to_iso(ep->exp_time));
+  long exp_time = ep->exp_time;
+  char is_deleted_str[32];
+  msnprintf(is_deleted_str, sizeof(is_deleted_str), "%d", ep->is_deleted);
 
   key.dsize = sizeof(num); /* the key is the message number */
   key.dptr = (char *) &num;
@@ -76,7 +89,8 @@ int togdbm(void *gp, int num, char *name, char *email,
 			     (charset ? strlen(charset) : 0) +
 			     (isodate ? strlen(isodate) : 0) +
 			     (isofromdate ? strlen(isofromdate) : 0) +
-			     10))) {
+			     strlen(exp_time_str) + strlen(is_deleted_str) +
+			     12))) {
     return -1;
   }
   strcpy(dp = buf, fromdate ? fromdate : "");
@@ -99,10 +113,17 @@ int togdbm(void *gp, int num, char *name, char *email,
   dp += strlen(dp) + 1;
   strcpy(dp, isodate ? isodate : "");
   dp += strlen(dp) + 1;
+  strcpy(dp, exp_time_str);
+  dp += strlen(dp) + 1;
+  strcpy(dp, is_deleted_str);
+  dp += strlen(dp) + 1;
   content.dsize = dp - buf;
   content.dptr = buf; /* the value is in this string */
   rval = gdbm_store((GDBM_FILE) gp, key, content, GDBM_REPLACE);
   free(buf);
+  free(exp_time_str);
+  free(isodate);
+  free(isofromdate);
   return !rval;
 
 } /* end togdbm() */
@@ -551,6 +572,7 @@ void printdates(FILE *fp, struct header *hp, int year, int month,
     printdates(fp, hp->left, year, month, subdir_email);
     if ((year == -1 || year_of_datenum(em->date) == year)
 	&& (month == -1 || month_of_datenum(em->date) == month)
+	&& !em->is_deleted
 	&& (!subdir_email || subdir_email->subdir == em->subdir)) {
       subj = convchars(em->subject);
 
@@ -594,7 +616,8 @@ void printattachments(FILE *fp, struct header *hp,
     if (hp != NULL) {
 	struct emailinfo *em = hp->data;
 	printattachments(fp, hp->left, subdir_email);
-	if (!subdir_email || subdir_email->subdir == em->subdir) {
+	if (!subdir_email || subdir_email->subdir == em->subdir
+	    && !em->is_deleted) {
 	    subj = convchars(em->subject);
 
 	    /* See if there's a directory corresponding to this message */
@@ -842,6 +865,15 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply)
 	fprintf(fp, "<hr noshade><p>\n");
 
     printcomment(fp, "body", "start");
+    if (email->is_deleted && set_delete_level != DELETE_LEAVES_TEXT
+	&& !(email->is_deleted == 2
+	     && set_delete_level == DELETE_LEAVES_EXPIRED_TEXT)) {
+        fprintf(fp, lang[email->is_deleted == 2 ? MSG_EXPIRED : MSG_DELETED]);
+	printcomment(fp, "body", "end");
+	if (set_showhr)
+	    fprintf(fp, "<hr noshade>\n");
+	return;
+    }
 
     if (!set_showhtml) {
 	fprintf(fp, "<pre>\n");
@@ -1093,6 +1125,41 @@ print_leading_whitespace(FILE *fp, char *sp)
 }
 
 /*
+ * Perform deletions on old messages when run in incremental mode.
+ */
+
+void update_deletions(int num_old)
+{
+    struct hmlist *tlist;
+    struct reply *rp;
+    int save_ov = set_overwrite;
+    set_overwrite = TRUE;
+    for (tlist = set_delete_msgnum; tlist != NULL; tlist = tlist->next) {
+	struct emailinfo *ep;
+	int num = atoi(tlist->val);
+	if (num >= num_old)
+	    continue;		/* new message - already done */
+	if (hashnumlookup(num, &ep)) {
+	    char *filename = articlehtmlfilename(ep);
+	    if (set_delete_level != DELETE_REMOVES_FILES)
+	        writearticles(num, num + 1);
+	    else if (isfile(filename)) {
+		unlink(filename);
+	    }
+	    free(filename);
+	    for (rp = ep->replylist; rp != NULL; rp = rp->next) {
+	        int rnum = rp->data->msgnum;
+		if (rnum < num_old) {
+		    if (!rp->data->bodylist || !rp->data->bodylist->line[0])
+		        parse_old_html(rnum, rp->data, TRUE, FALSE, NULL);
+		    writearticles(rnum, rnum + 1);/* update MSG_IN_REPLY_TO line */
+		}
+	    }
+	}
+    }
+    set_overwrite = save_ov;
+}
+/*
 ** Printing...the other main part of this program!
 ** This writes out the articles, beginning with the number startnum.
 */
@@ -1143,10 +1210,14 @@ void writearticles(int startnum, int maxnum)
     if (set_showprogress)
 	printf("%s \"%s\"...    ", lang[MSG_WRITING_ARTICLES], set_dir);
 
-    while ((bp = hashnumlookup(num, &email))) {
+    while (num < maxnum) {
 
-	char *filename = articlehtmlfilename(email);
-
+	char *filename;
+	if ((bp = hashnumlookup(num, &email)) == NULL) {
+	    ++num;
+	    continue;
+	}
+	filename = articlehtmlfilename(email);
 	/*
 	 * Determine to overwrite files or not
 	 */
@@ -1160,7 +1231,21 @@ void writearticles(int startnum, int maxnum)
 	set_new_reply_to(-1, -1);
 
 	skip = 0;
-	if (!newfile && !set_overwrite) {
+	if (email->is_deleted && set_delete_level == DELETE_REMOVES_FILES) {
+	    if (!newfile) {
+		unlink(filename);
+	    }
+#ifdef GDBM
+	    else if(gp) {
+	        togdbm((void *) gp, email);
+	    }
+#endif
+	    ++num;
+	    free(filename);
+	    continue;
+	}
+	else if (!newfile && !set_overwrite
+		 && !(email->is_deleted && set_delete_msgnum)) {
 	    skip = 1;		/* is this really necessary with continue ??? */
 	    num++;
 	    free(filename);
@@ -1195,12 +1280,16 @@ void writearticles(int startnum, int maxnum)
 	printcomment(fp, "id", email->msgid);
 	printcomment(fp, "charset", email->charset);
 	printcomment(fp, "inreplyto", ptr = convchars(email->inreplyto));
+	if (email->is_deleted) {
+	    char num_buf[32];
+	    sprintf(num_buf, "%d", email->is_deleted);
+	    printcomment(fp, "isdeleted", num_buf);
+	}
+	printcomment(fp, "expires", email->exp_time == -1 ? "-1"
+		     : secs_to_iso(email->exp_time));
 #ifdef GDBM
 	if(gp) {
-	  togdbm((void *) gp, num, email->name, email->emailaddr, 
-		 email->datestr, email->msgid, email->subject, 
-		 email->inreplyto, email->fromdatestr, email->charset, 
-		 secs_to_iso(email->date), secs_to_iso(email->fromdate));
+	  togdbm((void *) gp, email);
 	}
 #endif
 	if (ptr)
@@ -1272,8 +1361,8 @@ void writearticles(int startnum, int maxnum)
 	     * Is there a next message?
 	     */
 
-	    status = hashnumlookup(num + 1, &email2);
-	    if (status) {
+	    email2 = neighborlookup(num, 1);
+	    if (email2) {
 		fprintf(fp, "<li><strong>%s:</strong> ",
 			lang[MSG_NEXT_MESSAGE]);
 
@@ -1288,8 +1377,8 @@ void writearticles(int startnum, int maxnum)
 	     * Is there a previous message?
 	     */
 
-	    status = hashnumlookup(num - 1, &email2);
-	    if (status) {
+	    email2 = neighborlookup(num, -1);
+	    if (email2) {
 		fprintf(fp, "<li><strong>%s:</strong> ",
 			lang[MSG_PREVIOUS_MESSAGE]);
 		fprintf(fp, "%s%s: \"%s\"</a>\n", msg_href(email2, email),
@@ -1308,6 +1397,8 @@ void writearticles(int startnum, int maxnum)
 		    hashreplylookup(email->msgnum, email->inreplyto,
 				    &subjmatch);
 		if (email2) {
+		    char *del_msg = (email2->is_deleted ? lang[MSG_DEL_SHORT]
+				     : "");
 		    is_reply = 1;
 		    if (subjmatch)
 			fprintf(fp, "<li><strong>%s:</strong>",
@@ -1315,8 +1406,8 @@ void writearticles(int startnum, int maxnum)
 		    else
 			fprintf(fp, "<li><strong>%s:</strong>",
 				lang[MSG_IN_REPLY_TO]);
-		    fprintf(fp, " %s%s: \"%s\"</a>\n", msg_href(email2, email),
-			    email2->name,
+		    fprintf(fp, "%s %s%s: \"%s\"</a>\n", del_msg,
+			    msg_href(email2, email), email2->name,
 			    ptr = convchars(email2->subject));
 		    if (ptr)
 			free(ptr);
@@ -1354,13 +1445,15 @@ void writearticles(int startnum, int maxnum)
                     if (rp->frommsgnum == num
                         && hashnumlookup(rp->msgnum, &email2)) {
 #endif
+		        char *del_msg = (email2->is_deleted
+					 ? lang[MSG_DEL_SHORT] : "");
 			if (rp->maybereply)
 			    fprintf(fp, "<li><strong>%s:</strong>",
 				    lang[MSG_MAYBE_REPLY]);
 			else
 			    fprintf(fp, "<li><strong>%s:</strong>",
 				    lang[MSG_REPLY]);
-			fprintf(fp, " %s", msg_href(email2, email));
+			fprintf(fp, "%s %s", del_msg, msg_href(email2, email));
                         fprintf(fp, "%s: \"%s\"</a>\n", email2->name,
                                 ptr = convchars(email2->subject));
 			free(ptr);
@@ -1445,9 +1538,9 @@ void writearticles(int startnum, int maxnum)
 
 	    printcomment(fp, "next", "start");
 
-	    status = hashnumlookup(num + 1, &email2);
+	    email2 = neighborlookup(num, 1);
 
-	    if (status != NULL) {
+	    if (email2 != NULL) {
 		fprintf(fp, "<li><strong>%s:</strong> ",
 			lang[MSG_NEXT_MESSAGE]);
 		fprintf(fp, "%s%s: \"%s\"</a>\n", msg_href(email2, email),
@@ -1455,12 +1548,12 @@ void writearticles(int startnum, int maxnum)
 		free(ptr);
 	    }
 
-	    status = hashnumlookup(num - 1, &email2);
+	    email2 = neighborlookup(num, -1);
 	    if (set_linkquotes && old_reply_to
 		&& num - 1 == (get_new_reply_to() == -1 ? old_reply_to->msgnum
 			       : get_new_reply_to()))
-	        status = 0;
-	    if (status) {
+	        email2 = NULL;
+	    if (email2) {
 		fprintf(fp, "<li><strong>%s:</strong> ",
 			lang[MSG_PREVIOUS_MESSAGE]);
 		fprintf(fp, "%s%s: \"%s\"</a>\n", msg_href(email2, email),
@@ -1473,13 +1566,15 @@ void writearticles(int startnum, int maxnum)
 		    hashreplylookup(email->msgnum, email->inreplyto,
 				    &subjmatch);
 		if (email2) {
+		    char *del_msg = (email2->is_deleted ? lang[MSG_DEL_SHORT]
+				     : "");
 		    if (subjmatch)
 			fprintf(fp, "<li><strong>%s:</strong>",
 				lang[MSG_MAYBE_IN_REPLY_TO]);
 		    else
 			fprintf(fp, "<li><strong>%s:</strong>",
 				lang[MSG_IN_REPLY_TO]);
-		    fprintf(fp, " %s", msg_href(email2, email));
+		    fprintf(fp, "%s %s", del_msg, msg_href(email2, email));
 		    fprintf(fp, "%s: \"%s\"</a>\n", email2->name,
 			    ptr = convchars(email2->subject));
 		    free(ptr);
@@ -1507,13 +1602,15 @@ void writearticles(int startnum, int maxnum)
 		for (rp = replylist; rp != NULL; rp = rp->next) {
                     if (rp->frommsgnum == num
                         && hashnumlookup(rp->msgnum, &email2)) {
+		        char *del_msg = (email2->is_deleted
+					 ? lang[MSG_DEL_SHORT] : "");
 			if (rp->maybereply)
 			    fprintf(fp, "<li><strong>%s:</strong>",
 				    lang[MSG_MAYBE_REPLY]);
 			else
 			    fprintf(fp, "<li><strong>%s:</strong>",
 				    lang[MSG_REPLY]);
-			fprintf(fp, " %s", msg_href(rp->data, email));
+			fprintf(fp, "%s %s", del_msg, msg_href(email2, email));
                         fprintf(fp, "%s: \"%s\"</a>\n", email2->name,
                                 ptr = convchars(email2->subject));
 			free(ptr);
@@ -1590,12 +1687,16 @@ void writearticles(int startnum, int maxnum)
 	if (get_new_reply_to() != -1) {
 	  	/* will only be true if set_linkquotes is */
 	    struct emailinfo *e3, *e4;
+	    int was_correct = 0;
 	    replace_maybe_replies(filename, email, get_new_reply_to());
 	    for (rp = replylist; rp != NULL; rp = rp->next) {
 	        /* get rid of old guesses for where this links */
 	        if (rp->msgnum == num) {
 #ifdef FASTREPLYCODE
 		    struct reply *rp3;
+		    was_correct = (rp->frommsgnum == get_new_reply_to());
+		    if (was_correct)
+		        break;
 		    hashnumlookup(get_new_reply_to(), &e4);
 		    hashnumlookup(rp->frommsgnum, &e3);
 		    for (rp3 = e3->replylist; rp3 != NULL && rp3->next != NULL;
@@ -1624,6 +1725,8 @@ void writearticles(int startnum, int maxnum)
 #endif
 		}
 	    }
+	    if (!was_correct)
+	        fixreplyheader(set_dir, num, TRUE);
 	}
 
 	if (newfile && chmod(filename, set_filemode) == -1) {
@@ -1644,7 +1747,17 @@ void writearticles(int startnum, int maxnum)
 
 #ifdef GDBM
     if(gp) {
-      gdbm_close(gp);
+        datum key;
+	datum content;
+	int nkey = -1;
+	char num_buf[32];
+	key.dsize = sizeof(nkey); /* the key -1 is for the last msgnum */
+	key.dptr = (char *) &nkey;
+	sprintf(num_buf, "%d", max_msgnum);
+	content.dsize = strlen(num_buf) + 1;
+	content.dptr = num_buf;
+	gdbm_store((GDBM_FILE) gp, key, content, GDBM_REPLACE);
+	gdbm_close(gp);
     }
 #endif
 
@@ -1963,6 +2076,7 @@ void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
     printsubjects(fp, hp->left, oldsubject, year, month, subdir_email);
     if ((year == -1 || year_of_datenum(hp->data->date) == year)
 	&& (month == -1 || month_of_datenum(hp->data->date) == month)
+	&& !hp->data->is_deleted
 	&& (!subdir_email || subdir_email->subdir == hp->data->subdir)) {
       subj = convchars(hp->data->unre_subject);
 
@@ -2112,6 +2226,7 @@ void printauthors(FILE *fp, struct header *hp, char **oldname,
     printauthors(fp, hp->left, oldname, year, month, subdir_email);
     if ((year == -1 || year_of_datenum(hp->data->date) == year)
 	&& (month == -1 || month_of_datenum(hp->data->date) == month)
+	&& !hp->data->is_deleted
 	&& (!subdir_email || subdir_email->subdir == hp->data->subdir)) {
 
       subj = convchars(hp->data->subject);
@@ -2251,7 +2366,8 @@ static int count_messages(struct header *hp, int year, int mo,
 	struct emailinfo *em = hp->data;
 	int cnt = count_messages(hp->left, year, mo, first_date, last_date);
 	if ((year == -1 || year_of_datenum(em->date) == year)
-	    && (mo == -1 || month_of_datenum(em->date) == mo)) {
+	    && (mo == -1 || month_of_datenum(em->date) == mo)
+	    && !em->is_deleted) {
 	    ++cnt;
 	    if (em->date < *first_date)
 	        *first_date = em->date;
