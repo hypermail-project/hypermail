@@ -9,7 +9,8 @@ HYPERMAIL VERSION PRE-2.1.8:
   - Updated pcre library with pcre-4.3 sources. We were distributing a 
     much older version. We were distributing version was 3.3 from 
     August 1, 2000. 
-  - Updated FILES with the lcc files and the pcre changes 
+  - Updated FILES with the lcc files and the pcre changes.
+  - Removed the deprecated "show_hr" from the tests/test.rc file.
 
  Jose Kahan (Jul 2, 2003)
   - parseurl didn't work well when an URL was quoted and enclosed inside 
