@@ -65,6 +65,9 @@ int set_searchbackmsgnum;
 int set_quote_hide_threshold;
 int set_thread_file_depth;
 
+int set_save_alts;
+char *set_alts_text;
+
 char *set_mailcommand;
 char *set_newmsg_command;
 char *set_replymsg_command;
@@ -569,6 +572,19 @@ struct Config cfg[] = {
      "# which match each of these expressions. Uses the same rules for\n"
      "# deletion as the expires option. The expressions use the same\n"
      "# syntax as Perl regular expressions.\n"},
+
+    {"save_alts", &set_save_alts, INT(0), CFG_INTEGER,
+     "# This controls what happens to alternatives (other than the prefered\n"
+     "# alternative) for multipart/alternative messages.\n"
+     "# 0 - discard non-prefered alternatives\n"
+     "# 1 - show all alternatives inline\n"
+     "# 2 - put non-prefered alternatives in a separate file.\n"},
+
+    {"alts_text", &set_alts_text, NULL, CFG_STRING,
+     "# If save_alts is 1, this text is put between the alternatives.\n"
+     "# If save_alts is 2, this text is used to describe the link to each\n"
+     "# alternative file.\n"},
+
 };
 
 /* ---------------------------------------------------------------- */

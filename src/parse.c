@@ -93,6 +93,9 @@ int preferedcontent(int *current_weight, char *type)
 
     status = 0;
 
+    if (set_save_alts == 1)
+	return 1;
+
     /* We let plain text remain PREFERED at all times */
     if (!strcasecmp("text/plain", type)) {
 	if (*current_weight != 0) {
@@ -1522,6 +1525,8 @@ int parsemail(char *mbox,	/* file name */
 				    alternative_lastfile[0] = '\0';
 				}
 			    }
+			    else if (set_save_alts == 2)
+				content = CONTENT_BINARY;
 			    else {
 				/* ...and this type is not a prefered one. Thus, we
 				 * shall ignore it completely! */
@@ -1565,7 +1570,15 @@ int parsemail(char *mbox,	/* file name */
 			    /* text content or text/html follows.
 			     */
 
-			    if (!strcasecmp(type, "text/html"))
+			    if (set_save_alts && alternativeparser
+				&& content == CONTENT_BINARY) {
+				file_created = MAKE_FILE; /* please make one */
+				description = set_alts_text ? set_alts_text
+				  : "alternate version of message";
+				strcpy(attachname, description);
+				safe_filename(attachname);
+			    }
+			    else if (!strcasecmp(type, "text/html"))
 				content = CONTENT_HTML;
 			    else
 				content = CONTENT_TEXT;
@@ -2016,7 +2029,7 @@ int parsemail(char *mbox,	/* file name */
 #endif
 			}
 			else {
-			    if (alternativeparser) {
+			    if (alternativeparser && !set_save_alts) {
 				/*
 				 * parsing another alternative, so we save the
 				 * precedent values 
@@ -2031,8 +2044,15 @@ int parsemail(char *mbox,	/* file name */
 				headp = bp = lp = NULL;
 				alternative_file[0] = '\0';
 			    }
-			    else
+			    else {
 				att_counter++;
+				if (alternativeparser && set_save_alts == 1) {
+				    bp = addbody(bp, &lp,
+						 set_alts_text ? set_alts_text
+						 : "<hr>",
+						 BODY_HTMLIZED | bodyflags);
+				}
+			    }
 			    isinheader = 1;	/* back on a kind-of-header */
 			    /* @@@ why are we changing the status of this variable? */
 			    file_created = NO_FILE;	/* not created any file yet */
