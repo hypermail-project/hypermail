@@ -1916,7 +1916,10 @@ void writearticles(int startnum, int maxnum)
 	  if ((fp = fopen(filename, "w")) == NULL) { /* AUDIT biege:where? */
 	        snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
 		progerr(errmsg);
-	    }
+	  }
+	  if (set_report_new_file) {
+	      printf("%s\n", filename);
+	  }
 	}
 
 	email_next_in_thread = nextinthread(email->msgnum);

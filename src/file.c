@@ -137,15 +137,18 @@ void checkdir(char *dir)
 		if (errno != ENOENT || mkdir(dir, set_dirmode) < 0) {
 #endif
 		    if (errno != EEXIST) {
-						snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_CANNOT_CREATE_DIRECTORY], dir);
+			snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_CANNOT_CREATE_DIRECTORY], dir);
 			progerr(errmsg);
 		    }
 		}
+		if (set_report_new_folder) {
+		    printf("%s\n", dir);
+		}
 		if (set_showprogress)
-					printf(" %s \"%s\", %s %o.\n", lang[MSG_CREATING_DIRECTORY], dir, lang[MSG_MODE], set_dirmode);
+		    printf(" %s \"%s\", %s %o.\n", lang[MSG_CREATING_DIRECTORY], dir, lang[MSG_MODE], set_dirmode);
 
 		if (chmod(dir, set_dirmode) == -1) {
-					snprintf(errmsg, sizeof(errmsg), "%s \"%s\" to %o.", lang[MSG_CANNOT_CHMOD], dir, set_dirmode);
+		    snprintf(errmsg, sizeof(errmsg), "%s \"%s\" to %o.", lang[MSG_CANNOT_CHMOD], dir, set_dirmode);
 		    progerr(errmsg);
 		}
 	    }

@@ -67,6 +67,8 @@ bool set_warn_surpressions;
 bool set_files_by_thread;
 bool set_href_detection;
 bool set_mbox_shortened;
+bool set_report_new_file;
+bool set_report_new_folder;
 
 int set_showhtml;
 int set_thrdlevels;
@@ -750,6 +752,18 @@ struct Config cfg[] = {
      "# beginning of the mbox or appending new messages to the end (unless\n"
      "# you rebuild the archive from scratch using a complete mbox).\n", FALSE},
 
+    {"report_new_folder", &set_report_new_folder, BFALSE, CFG_SWITCH,
+     "# Set this to On to have it print (on stdout) the names of any\n"
+     "# new directories created pursuant to the folder_by_date or\n"
+     "# msgsperfolder option, or the initial creation of the archive.\n"
+     "# It will print the full path if that is what you use to specify\n"
+     "# the archive directory. Does not print anything when attachment\n"
+     "# or metadata directories are created.\n", FALSE},
+
+    {"report_new_file", &set_report_new_file, BFALSE, CFG_SWITCH,
+     "# Set this to On to have it print (on stdout) the names of any\n"
+     "# new files created for new messages. It will print the full path\n"
+     "# if that is what you use to specify the archive directory.\n", FALSE},
 };
 
 /* ---------------------------------------------------------------- */

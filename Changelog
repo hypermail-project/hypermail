@@ -4,6 +4,14 @@ Version Changes for Hypermail
 ============================
 HYPERMAIL VERSION pre-2.1.9:
 ============================
+ Peter McCluskey (Feb 2, 2004)
+  Add set_report_new_file and set_report_new_folder options.
+
+ Peter McCluskey (Jan 23, 2004)
+  Add in missing <a name="end"> for index files.
+  Removed a misleading, nonportable timezone string from link titles in
+ toplevel index pages.
+
  Peter McCluskey (Jan 9, 2004)
   Change to make mbox_shortened option work a little better with
  discard_dup_msgids = 0.
