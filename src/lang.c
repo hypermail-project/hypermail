@@ -4,13 +4,19 @@
 
 #include "hypermail.h"
 
-char **valid_language(char *lg)
+char **valid_language(char *lg, char **locale_code)
 {
     struct language_entry *lte;
 
+    if (!strcmp(lg, "se")) {
+	printf("Warning: language code 'se' not supported. Using 'sv' (Swedish) instead.\n");
+	lg = "sv";
+    }
     lte = &ltable[0];
     while (lte->langcode != NULL) {
 	if (strcmp(lg, lte->langcode) == 0) {
+	    if (locale_code != NULL && *locale_code == NULL)
+		*locale_code = lte->locale_code;
 	    return (lte->mtable);
 	}
 	lte++;
@@ -56,7 +62,7 @@ int main(int argc, char **argv)
 	}
     }
 
-    if ((lang = valid_language(language)) == NULL) {
+    if ((lang = valid_language(language, NULL)) == NULL) {
 	(void)fprintf(stderr, "%s: %s: invalid language specified\n",
 		      progname, language);
 	return (1);

@@ -29,6 +29,7 @@
 struct language_entry {
     char     *langcode;
     char     **mtable;
+    char     *locale_code;
 };
 
 /* print.c */
@@ -958,7 +959,7 @@ char *is[] = {       /* Icelandic */
 ** (a little secret for free: we don't say bork ;-)
 */
 
-char *se[] = {
+char *sv[] = {
   "Nytt brev",                      /* New Message        -HTML*/
   "Svar" ,                          /* Reply              -HTML*/
   "Om den här listan",      /* About this list    -HTML*/
@@ -1091,13 +1092,13 @@ char *se[] = {
 */
 
 struct language_entry ltable[] = {
-{    "de",      de   },     /* German  */
-{    "en",      en   },     /* English */
-{    "es",      es   },     /* Spanish */
-{    "fi",      fi   },     /* Finnish */
-{    "fr",      fr   },     /* French  */
-{    "is",      is   },     /* Icelandic */
-{    "se",      se   },     /* Swedish */
+{    "de",      de,    "de_DE"   },     /* German  */
+{    "en",      en,    "en_US"   },     /* English */
+{    "es",      es,    "es_ES"   },     /* Spanish */
+{    "fi",      fi,    "fi_FI"   },     /* Finnish */
+{    "fr",      fr,    "fr_FR"   },     /* French  */
+{    "is",      is,    "is_IS"   },     /* Icelandic */
+{    "sv",      sv,    "sv_SE"   },     /* Swedish */
 {     NULL,     NULL },     /* EOL     */
 };
 

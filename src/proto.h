@@ -58,7 +58,7 @@ void usage(void);
 /*
 ** lang.c function
 */
-char **valid_language(char *);
+char **valid_language(char *, char **);
 
 /*
 ** lock.c functions

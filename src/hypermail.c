@@ -165,7 +165,7 @@ int main(int argc, char **argv)
 {
     int i, use_stdin, use_mbox;
     char *configfile = NULL;
-    char **tlang;
+    char **tlang, *locale_code;
     int cmd_show_variables;
     int print_usage;
 
@@ -350,16 +350,23 @@ int main(int argc, char **argv)
      * valid language. Otherwise strange things happen quickly.
      */
 
-    if ((tlang = valid_language(set_language)) == NULL) {
+    if (strlen(set_language) > 2) {
+	locale_code = strsav(set_language);
+	set_language[2] = 0;	/* shorten to 2-letter code */
+    }
+    else
+	locale_code = NULL;
+
+    if ((tlang = valid_language(set_language, &locale_code)) == NULL) {
 	sprintf(errmsg, "\"%s\" %s.", set_language,
 		lang[MSG_LANGUAGE_NOT_SUPPORTED]);
 	cmderr(errmsg);
     }
 
 #ifdef HAVE_LOCALE_H
-    if ( ! setlocale(LC_ALL, set_language) ) {
-        sprintf(errmsg, "WARNING: setlocale: \"%s\" %s.\n", set_language,
-	        lang[MSG_LANGUAGE_NOT_SUPPORTED]);
+    if ( ! setlocale(LC_ALL, locale_code) ) {
+        sprintf(errmsg, "WARNING: locale \"%s\", not supported.\n",
+		locale_code);
         fprintf(stderr, errmsg);
     }
 #endif
