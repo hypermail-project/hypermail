@@ -2390,9 +2390,9 @@ int parsemail(char *mbox,	/* file name */
                              */
 
 #ifdef O_BINARY
-#define OPENBITMASK O_WRONLY | O_CREAT | O_BINARY
+#define OPENBITMASK O_WRONLY | O_CREAT | O_TRUNC | O_BINARY
 #else
-#define OPENBITMASK O_WRONLY | O_CREAT
+#define OPENBITMASK O_WRONLY | O_CREAT | O_TRUNC
 #endif
 			    if (binname) {
 				binfile = open(binname, OPENBITMASK,

@@ -5,9 +5,13 @@ Version Changes for Hypermail
 HYPERMAIL VERSION pre-2.1.9:
 ============================
 
+ Jose Kahan (Jul 30, 2003)
+  - When rebuilding an archive, the attachment files were not being overwritten
+    correctly. . Fixed this by adding an O_TRUNC flag.
+
  Jose Kahan (Jul 29, 2003)
   - Removed a memory leak in file.c as reported by insure.
-  - The ietf-mbox option didn't work on BASE64 coded attachments.    
+  - The ietf-mbox option didn't work on "quoted printable" encoded attachments.    
 
  Peter McCluskey (July 22, 2003)
    Fix show_msg_links = 3 option (Jose's changes assumed it didn't exist).
