@@ -2,6 +2,13 @@
 ** print.c functions
 */
 
+#ifdef GDBM
+int togdbm(void *gp, int num, char *name, char *email,
+	   char *date, char *msgid, char *subject, char *inreply,
+	   char *fromdate, char *charset, char *isodate,
+	   char *isofromdate);
+#endif
+
 void printcomment(FILE *, char *, char *);
 void printbody(FILE *, struct body *, char *, char *, int, char *, char *, int);
 char *print_leading_whitespace(FILE *, char *);

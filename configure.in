@@ -5,6 +5,7 @@ AC_INIT(src/hypermail.c)
 AC_CONFIG_HEADER(config.h)
 AC_PREFIX_DEFAULT(/usr/local)
 LIBS=""
+EXTRA_LIBS=""
 
 dnl ===========================================================================
 dnl Get host, target and build variables filled with appropriate info.
@@ -142,7 +143,7 @@ AC_HEADER_STDC
 AC_CHECK_HEADERS(alloca.h arpa/inet.h ctype.h dirent.h errno.h \
 	fcntl.h locale.h malloc.h netdb.h netinet/in.h pwd.h stdarg.h \
 	stdio.h stdlib.h string.h sys/dir.h sys/param.h sys/socket.h \
-	sys/stat.h sys/time.h sys/types.h time.h unistd.h)
+	sys/stat.h sys/time.h sys/types.h time.h unistd.h gdbm.h)
 
 AC_HEADER_STAT
 AC_HEADER_DIRENT
@@ -195,11 +196,17 @@ if test $USENSL != yes; then
         fi
 fi
 
+AC_CHECK_LIB(gdbm,gdbm_open,result=yes,result=no)
+if test $result = yes; then
+        EXTRA_LIBS="$EXTRA_LIBS -lgdbm"
+fi
+
 dnl ===========================================================================
 dnl Makefile variable substitution 
 dnl ===========================================================================
 
 AC_SUBST(LIBS)
+AC_SUBST(EXTRA_LIBS)
 
 AC_OUTPUT(Makefile archive/Makefile docs/Makefile libcgi/Makefile src/Makefile tests/testhm src/defaults.h)
 

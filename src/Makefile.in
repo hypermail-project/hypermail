@@ -31,6 +31,7 @@ CFLAGS=@CFLAGS@ $(WARNINGS)
 YACC=@YACC@
 NETLIBS=@LIBS@
 LDFLAGS=@LDFLAGS@
+OPT_LIBS=@EXTRA_LIBS@
 
 INCS=		domains.h hypermail.h lang.h proto.h \
 		../config.h ../patchlevel.h dsprintf.h threadprint.h \
@@ -54,7 +55,7 @@ MAILOBJS=	mail.o ../libcgi/libcgi.a
 all:   hypermail$(SUFFIX) mail$(SUFFIX)
 
 hypermail$(SUFFIX): $(OBJS) 
-	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(OBJS) 
+	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(OPT_LIBS) $(OBJS) 
 	chmod 0755 $@
 
 mail$(SUFFIX):	$(MAILOBJS)

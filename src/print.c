@@ -38,6 +38,75 @@
 static char *indextypename[NO_INDEX];
 static char *indextypefilename[NO_INDEX];
 
+#ifdef GDBM
+
+#include "gdbm.h"
+
+/*
+** store a single message summary to an already open-for-write GDBM index
+**/
+
+int togdbm(void *gp, int num, char *name, char *email,
+	   char *date, char *msgid, char *subject, char *inreply,
+	   char *fromdate, char *charset, char *isodate,
+	   char *isofromdate)
+{
+  datum key;
+  datum content;
+  char *buf;
+  char *dp;
+  int rval;
+
+  key.dsize = sizeof(num); /* the key is the message number */
+  key.dptr = (char *) &num;
+
+  /* malloc() a string long enough for our data */
+
+  if(!(buf = (char *) malloc(
+			     (name ? strlen(name) : 0) + 
+			     (email ? strlen(email) : 0) + 
+			     (date ? strlen(date) : 0) +
+			     (msgid ? strlen(msgid) : 0) + 
+			     (subject ? strlen(subject) : 0) + 
+			     (inreply ? strlen(inreply) : 0) +
+			     (fromdate ? strlen(fromdate) : 0) +
+			     (charset ? strlen(charset) : 0) +
+			     (isodate ? strlen(isodate) : 0) +
+			     (isofromdate ? strlen(isofromdate) : 0) +
+			     10))) {
+    return -1;
+  }
+  strcpy(dp = buf, fromdate ? fromdate : "");
+  dp += strlen(dp) + 1;
+  strcpy(dp, date ? date : "");
+  dp += strlen(dp) + 1;
+  strcpy(dp, name ? name : "");
+  dp += strlen(dp) + 1;
+  strcpy(dp, email ? email : "");
+  dp += strlen(dp) + 1;
+  strcpy(dp, subject ? subject : "");
+  dp += strlen(dp) + 1;
+  strcpy(dp, msgid ? msgid : "");
+  dp += strlen(dp) + 1;
+  strcpy(dp, inreply ? inreply : "");
+  dp += strlen(dp) + 1;
+  strcpy(dp, charset ? charset : "");
+  dp += strlen(dp) + 1;
+  strcpy(dp, isofromdate ? isofromdate : "");
+  dp += strlen(dp) + 1;
+  strcpy(dp, isodate ? isodate : "");
+  dp += strlen(dp) + 1;
+  content.dsize = dp - buf;
+  content.dptr = buf; /* the value is in this string */
+  rval = gdbm_store((GDBM_FILE) gp, key, content, GDBM_REPLACE);
+  free(buf);
+  return !rval;
+
+} /* end togdbm() */
+
+#endif
+
+
 /* Uses threadlist to find the next message after
  * msgnum in the thread containing msgnum.
  * Returns NULL if there are no more messages in 
@@ -948,6 +1017,32 @@ void writearticles(int startnum, int maxnum)
     FILE *fp;
     char *ptr;
 
+#ifdef GDBM
+
+    /* A gdbm hack for avoiding opening all the message files to
+     * get the header comments; see parse.c for details thereof. */
+
+    char indexname[MAXFILELEN];
+    static GDBM_FILE gp;
+
+    if(set_usegdbm) {
+      sprintf(indexname, (set_dir[strlen(set_dir)-1] == '/') 
+	      ? "%s%s" : "%s/%s",
+	      set_dir, GDBM_INDEX_NAME);
+
+      /* open the database, creating it if necessary */
+	    
+      if(!(gp = gdbm_open(indexname, 0, GDBM_WRCREAT, 0664, 0))) {
+
+	/* couldn't open; unlink it rather than risk running
+	 * with an inconsistent version; it will be recreated if
+	 * necessary */
+
+	unlink(indexname);
+      }
+    }
+#endif
+
     num = startnum;
 
     if (set_showprogress)
@@ -1006,6 +1101,14 @@ void writearticles(int startnum, int maxnum)
 	printcomment(fp, "id", email->msgid);
 	printcomment(fp, "charset", email->charset);
 	printcomment(fp, "inreplyto", ptr = convchars(email->inreplyto));
+#ifdef GDBM
+	if(gp) {
+	  togdbm((void *) gp, num, email->name, email->emailaddr, 
+		 email->datestr, email->msgid, email->subject, 
+		 email->inreplyto, email->fromdatestr, email->charset, 
+		 secs_to_iso(email->date), secs_to_iso(email->fromdate));
+	}
+#endif
 	if (ptr)
 	    free(ptr);
 
@@ -1428,9 +1531,16 @@ void writearticles(int startnum, int maxnum)
 
 	num++;
     }
+
+#ifdef GDBM
+    if(gp) {
+      gdbm_close(gp);
+    }
+#endif
+
     if (set_showprogress)
 	printf("\b\b\b\b    \n");
-}
+} /* end writearticles() */
 
 /*
 ** Write the date index...

@@ -149,11 +149,17 @@ struct language_entry {
 #define MSG_MONTHLY_INDEX                        97
 #define MSG_YEARLY_INDEX                         98
 
+#define MSG_OPTION_G                             99
+#define MSG_CREATING_GDBM_INDEX                  100
+#define MSG_CANT_CREATE_GDBM_INDEX               101
+#define MSG_OPTION_ARCHIVE                       102
+#define MSG_CANNOT_BOTH_READ_AND_WRITE_TO_MBOX   103
+
 #ifdef CHANGE_12DEC2000_BC
 /* XXX Move these up with the others */
-#define MSG_ATTACHMENT_VIEW			 99
-#define MSG_BY_ATTACHMENT			 100
-#define MSG_WRITING_ATTACHMENT_INDEX  		 101
+#define MSG_ATTACHMENT_VIEW			 104
+#define MSG_BY_ATTACHMENT			 105
+#define MSG_WRITING_ATTACHMENT_INDEX  		 106
 #endif
 
 #ifdef MAIN_FILE
@@ -270,6 +276,11 @@ char *de[] = {       /* German */
   "respond to this message",              /* MA Reply            -HTML*/
   "Summary of Monthly Index Files",       /* monthly             -HTML*/
   "Summary of Yearly Index Files",        /* yearly              -HTML*/
+  "Build a GDBM header cache",   /* Build a GDBM header cache   -STDOUT*/
+  "Creating gdbm index... ",     /* Creating gdbm index         -STDOUT*/
+  "Can't create gdbm file... ",  /* Can't create gdbm index     -STDOUT*/
+  "Maintain an mbox archive",    /* Maintain an mbox archive    -STDOUT*/
+  "Can't both read from and write to an mbox.", /* "Can't both read from and write to an mbox." -STDOUT*/
 #ifdef CHANGE_12DEC2000_BC
   "Attachement-Sicht",                    /* Attachment view       -HTML*/
   "Nach Nachtrichten mit Attachement",	  /* By messages with attachments -HTML*/
@@ -383,6 +394,11 @@ char *en[] = {       /* English */
   "respond to this message",     /* MA Reply            -HTML*/
   "Summary of Monthly Index Files",       /* monthly             -HTML*/
   "Summary of Yearly Index Files",        /* yearly              -HTML*/
+  "Build a GDBM header cache",   /* Build a GDBM header cache   -STDOUT*/
+  "Creating gdbm index... ",     /* Creating gdbm index         -STDOUT*/
+  "Can't create gdbm file... ",  /* Can't create gdbm index     -STDOUT*/
+  "Maintain an mbox archive",    /* Maintain an mbox archive    -STDOUT*/
+  "Can't both read from and write to an mbox.", /* "Can't both read from and write to an mbox." -STDOUT*/
 #ifdef CHANGE_12DEC2000_BC
   "Attachment view",			  /* Attachment view       -HTML*/
   "By messages with attachments",	  /* By messages with attachments -HTML*/
@@ -505,6 +521,11 @@ char *es[] = {       /* Espanol/Spanish */
   "respond to this message",          /* MA Reply            -HTML*/
   "Summary of Monthly Index Files",   /* monthly             -HTML*/
   "Summary of Yearly Index Files",    /* yearly              -HTML*/
+  "Build a GDBM header cache",   /* Build a GDBM header cache   -STDOUT*/
+  "Creating gdbm index... ",     /* Creating gdbm index         -STDOUT*/
+  "Can't create gdbm file... ",  /* Can't create gdbm index     -STDOUT*/
+  "Maintain an mbox archive",    /* Maintain an mbox archive    -STDOUT*/
+  "Can't both read from and write to an mbox.", /* "Can't both read from and write to an mbox." -STDOUT*/
 #ifdef CHANGE_12DEC2000_BC
   "Por Añadido",                      /* Attachment view  -HTML*/
   "Por mensajes con añadidos",	  /* By messages with attachments -HTML*/
@@ -617,6 +638,11 @@ char *fi[] = {       /* Finnish */
   "respond to this message",         /* MA Reply            -HTML*/
   "Summary of Monthly Index Files",      /* monthly             -HTML*/
   "Summary of Yearly Index Files",       /* yearly              -HTML*/
+  "Build a GDBM header cache",   /* Build a GDBM header cache   -STDOUT*/
+  "Creating gdbm index... ",     /* Creating gdbm index         -STDOUT*/
+  "Can't create gdbm file... ",  /* Can't create gdbm index     -STDOUT*/
+  "Maintain an mbox archive",    /* Maintain an mbox archive    -STDOUT*/
+  "Can't both read from and write to an mbox.", /* "Can't both read from and write to an mbox." -STDOUT*/
 #ifdef CHANGE_12DEC2000_BC
   "Attachment view",                      /* Attachment view  -HTML*/
   "By messages with attachments",	  /* By messages with attachments -HTML*/
@@ -731,6 +757,11 @@ char *fr[] = {       /* French */
   "r&eacute;pondre &agrave; ce message",      /* MA Reply            -HTML*/
   "Summary of Monthly Index Files",      /* monthly             -HTML*/
   "Summary of Yearly Index Files",       /* yearly              -HTML*/
+  "Build a GDBM header cache",   /* Build a GDBM header cache   -STDOUT*/
+  "Creating gdbm index... ",     /* Creating gdbm index         -STDOUT*/
+  "Can't create gdbm file... ",  /* Can't create gdbm index     -STDOUT*/
+  "Maintain an mbox archive",    /* Maintain an mbox archive    -STDOUT*/
+  "Can't both read from and write to an mbox.", /* "Can't both read from and write to an mbox." -STDOUT*/
 #ifdef CHANGE_12DEC2000_BC
   "Liste par attachements",               /* Attachment view  -HTML*/
   "Par messages avec attachments",	  /* By messages with attachments -HTML*/
@@ -845,6 +876,11 @@ char *is[] = {       /* Icelandic */
   "respond to this message",          /* MA Reply            -HTML*/
   "Summary of Monthly Index Files",   /* monthly             -HTML*/
   "Summary of Yearly Index Files",    /* yearly              -HTML*/
+  "Build a GDBM header cache",   /* Build a GDBM header cache   -STDOUT*/
+  "Creating gdbm index... ",     /* Creating gdbm index         -STDOUT*/
+  "Can't create gdbm file... ",  /* Can't create gdbm index     -STDOUT*/
+  "Maintain an mbox archive",    /* Maintain an mbox archive    -STDOUT*/
+  "Can't both read from and write to an mbox.", /* "Can't both read from and write to an mbox." -STDOUT*/
 #ifdef CHANGE_12DEC2000_BC
   "Attachment view",                      /* Attachment view  -HTML*/
   "By messages with attachments",	  /* By messages with attachments -HTML*/
@@ -964,6 +1000,11 @@ char *se[] = {
   "respond to this message",        /* MA Reply            -HTML*/
   "Summary of Monthly Index Files", /* monthly             -HTML*/
   "Summary of Yearly Index Files",  /* yearly              -HTML*/
+  "Build a GDBM header cache",   /* Build a GDBM header cache   -STDOUT*/
+  "Creating gdbm index... ",     /* Creating gdbm index         -STDOUT*/
+  "Can't create gdbm file... ",  /* Can't create gdbm index     -STDOUT*/
+  "Maintain an mbox archive",    /* Maintain an mbox archive    -STDOUT*/
+  "Can't both read from and write to an mbox.", /* "Can't both read from and write to an mbox." -STDOUT*/
 #ifdef CHANGE_12DEC2000_BC
   "Attachment view",                      /* Attachment view  -HTML*/
   "By messages with attachments",	  /* By messages with attachments -HTML*/

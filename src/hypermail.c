@@ -125,9 +125,11 @@ void usage(void)
 
     printf("%s:\n", lang[MSG_OPTIONS]);
     printf("  -a URL        : %s\n", lang[MSG_OPTION_A]);
+    printf("  -A            : %s\n", lang[MSG_OPTION_ARCHIVE]);
     printf("  -b URL        : %s\n", lang[MSG_OPTION_B]);
     printf("  -c file       : %s\n", lang[MSG_OPTION_C]);
     printf("  -d dir        : %s\n", lang[MSG_OPTION_D]);
+    printf("  -g            : %s\n", lang[MSG_OPTION_G]);
     printf("  -i            : %s\n", lang[MSG_OPTION_I]);
     printf("  -l label      : %s\n", lang[MSG_OPTION_L]);
     printf("  -m mbox       : %s\n", lang[MSG_OPTION_M]);
@@ -187,9 +189,14 @@ int main(int argc, char **argv)
     opterr = 0;
 
     /* get pre config options here */
-    while ((i = getopt(argc, argv, "a:b:c:d:il:L:m:n:o:ps:tTuvVx1M?")) !=
-	   -1) {
-	switch ((char)i) {
+    while ((i = getopt(argc,argv,
+#ifdef GDBM
+			    "a:Ab:c:d:gil:L:m:n:o:ps:tTuvVx1M?"
+#else
+			    "a:Ab:c:d:il:L:m:n:o:ps:tTuvVx1M?"
+#endif
+			    )) != -1) {
+        switch((char) i) {
 	case 'c':
 	    configfile = strreplace(configfile, optarg);
 	    break;
@@ -199,8 +206,12 @@ int main(int argc, char **argv)
 	case 'V':
 	    version();
 	 /*NOTREACHED*/ case 'a':
+	case 'A':
 	case 'b':
 	case 'd':
+#ifdef GDBM
+	case 'g':
+#endif
 	case 'i':
 	case 'l':
 	case 'L':
@@ -239,9 +250,17 @@ int main(int argc, char **argv)
 
     /* now get the post-config options! */
 
-    while ((i = getopt(argc, argv, "a:b:c:d:il:L:m:n:o:ps:tTuvx1M?")) !=
-	   -1) {
-	switch ((char)i) {
+    while ((i = getopt(argc,argv,
+#ifdef GDBM
+			    "a:Ab:c:d:gil:L:m:n:o:ps:tTuvx1M?"
+#else
+			    "a:Ab:c:d:il:L:m:n:o:ps:tTuvx1M?"
+#endif
+      )) != -1) {
+        switch((char) i) {
+	case 'A':
+	    set_append = 1;
+	    break;
 	case 'a':
 	    set_archives = strreplace(set_archives, optarg);
 	    break;
@@ -254,6 +273,11 @@ int main(int argc, char **argv)
 	case 'd':
 	    set_dir = strreplace(set_dir, optarg);
 	    break;
+#ifdef GDBM
+	case 'g':
+	    set_usegdbm = 1;
+	    break;
+#endif
 	case 'i':
 	    use_stdin = TRUE;
 	    break;
@@ -455,6 +479,9 @@ int main(int argc, char **argv)
 
     if (use_mbox && use_stdin) {
 	cmderr(lang[MSG_CANNOT_READ_FROM_BOTH_FILE_AND_STDIN]);
+    }
+    if(set_append && use_mbox) {
+        cmderr(lang[MSG_CANNOT_BOTH_READ_AND_WRITE_TO_MBOX]);
     }
 
     gettimezone();

@@ -1,5 +1,8 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Peter McCluskey (Mar 19 2001)
+  - Added new usegdbm and append options from Scott Rose.
+
 Peter McCluskey (Mar 14 2001)
   - Added avoid_indices option.
 

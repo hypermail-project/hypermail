@@ -45,6 +45,11 @@ bool set_spamprotect;
 #ifdef CHANGE_12DEC2000_BC
 bool set_attachmentsindex;
 #endif
+#ifdef GDBM
+bool set_usegdbm;
+#endif
+bool set_append;
+char *set_append_filename;
 
 int set_showhtml;
 int set_thrdlevels;
@@ -186,7 +191,7 @@ struct Config cfg[] = {
     {"showbr", &set_showbr, BTRUE, CFG_SWITCH,
      "# Set this to On to place <br> tags at the end of article lines.\n"
      "# Otherwise, all non-quoted article lines will word wrap. This\n"
-     "# only takes effect if hm_showhtml is enabled.\n"},
+     "# only takes effect if hm_showhtml is 1.\n"},
 
     {"showhr", &set_showhr, BTRUE, CFG_SWITCH,
      "# Set this to On to place horizontal rules before and after articles.\n"},
@@ -233,6 +238,20 @@ struct Config cfg[] = {
 
     {"uselock", &set_uselock, BTRUE, CFG_SWITCH,
      "# Set this to On to use hypermail's internal locking mechanism.\n"},
+
+#ifdef GDBM
+    {"usegdbm",  &set_usegdbm,  BFALSE,    CFG_SWITCH,
+     "# Set this to On to use gdbm to implement a header cache."},
+#endif
+
+    {"append",  &set_append,  BFALSE,    CFG_SWITCH,
+     "# Set this to On to maintain a parallel mbox archive. The file\n"
+     "#name defaults to mbox in the directory specified by -d or dir.\n"},
+
+    {"append_filename", &set_append_filename, NULL, CFG_STRING,
+     "# Specifies the filename to be used by the append option.\n"
+     "#$DIR may be used to specify a name relative to the directory\n"
+     "#specified in the -d or dir option.\n"},
 
     {"thrdlevels", &set_thrdlevels, INT(4), CFG_INTEGER,
      "# This specifies the number of thread levels to outline\n"

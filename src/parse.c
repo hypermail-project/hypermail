@@ -19,6 +19,10 @@
 ** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA 
 */
 
+#ifdef GDBM
+#include "gdbm.h"
+#endif
+
 #include "hypermail.h"
 #include "setup.h"
 #include "struct.h"
@@ -1012,7 +1016,7 @@ int parsemail(char *mbox,	/* file name */
 	      char *dir, int inlinehtml,	/* if HTML should be inlined */
 	      int startnum)
 {
-    FILE *fp;
+    FILE *fp, *fpo;
     char *date = NULL;
     char *subject = NULL;
     char *msgid = NULL;
@@ -1098,6 +1102,26 @@ int parsemail(char *mbox,	/* file name */
 		lang[MSG_CANNOT_OPEN_MAIL_ARCHIVE], mbox);
 	progerr(errmsg);
     }
+    if(set_append) {
+        char filename[512]; /* revisit me */
+    
+	/* add to an mbox as we read */
+
+	if(set_append_filename && strncmp(set_append_filename, "$DIR/", 5)) {
+	    strcpy(filename, set_append_filename);
+	}
+	else if(snprintf(filename, sizeof(filename), "%s%s%s", dir,
+			 (dir[strlen(dir) - 1] == '/') ? "" : "/",
+			 set_append_filename ? set_append_filename + 5 : "mbox") 
+	   == sizeof(filename)) {
+	    progerr("Can't build mbox filename");
+	}
+	if(!(fpo = fopen(filename, "a"))) {
+	    snprintf(errmsg, sizeof(errmsg), "%s \"%s\".",
+		     lang[MSG_CANNOT_OPEN_MAIL_ARCHIVE], filename);
+	    progerr(errmsg);
+	}
+    }
 
     num = startnum;
 
@@ -1132,6 +1156,11 @@ int parsemail(char *mbox,	/* file name */
 #if DEBUG_PARSE
 	printf("IN: %s", line);
 #endif 
+	if(set_append) {
+	    if(fputs(line_buf, fpo) < 0) {
+	        progerr("Can't write to \"mbox\""); /* revisit me */
+	    }
+	}
 	line = line_buf + set_ietf_mbox; 
 	if (isinheader) {
 	    if (!strncasecmp(line_buf, "From ", 5))
@@ -1576,7 +1605,7 @@ int parsemail(char *mbox,	/* file name */
 				boundary = NULL;
 			}
 		    }
-		    else
+		    else 
 			if (!strncasecmp
 			    (head->line, "Content-Transfer-Encoding:", 26)) {
 			char *ptr = head->line + 26;
@@ -1653,6 +1682,9 @@ int parsemail(char *mbox,	/* file name */
 	    }
 	}
 	else {
+
+	    /* not in header */
+
 	    /* If this isn't a single mail: see if the line is a message
 	     * separator. If there is a "^From " found, check to see if there
 	     * is a valid date field in the line. If not then consider it a
@@ -2187,6 +2219,9 @@ int parsemail(char *mbox,	/* file name */
 	    }
 	}
     }
+    if(set_append && fclose(fpo)) {
+	progerr("Can't close \"mbox\"");
+    }
 
 
     if (!isinheader || readone) {
@@ -2327,7 +2362,7 @@ int parsemail(char *mbox,	/* file name */
 ** Return the number of mails read.
 */
 
-int loadoldheaders(char *dir)
+static int loadoldheadersfrommessages(char *dir)
 {
     FILE *fp;
     char line[MAXLINE];
@@ -2404,6 +2439,9 @@ int loadoldheaders(char *dir)
      * isofromdate == <!-- isoreceived="19980603101200" -->
      * isodate     == <!-- isosent="19980603101207" -->
      */
+
+    /* Strategy: loop on files, opening each and copying the header comments
+     * into dynamically-allocated memory, then saving if it's not corrupt. */
 
     while ((fp = fopen(filename, "r")) != NULL) {
 	char *valp;
@@ -2584,7 +2622,179 @@ int loadoldheaders(char *dir)
     }
 
     return num;
-}
+} /* end loadoldheadersfrommessages() */
+
+
+/*
+** Load message summary information from a GDBM index.
+*/
+#ifdef GDBM
+
+static int loadoldheadersfromGDBMindex(char *dir)
+{
+      char *indexname;
+      GDBM_FILE gp;
+      struct body *bp = NULL;
+      struct body *lp = NULL;
+      int num;
+
+      bp = addbody(bp, &lp, "\0", 0);
+      authorlist = subjectlist = datelist = NULL;
+
+      /* Use gdbm performance hack: instead of opening each and
+       * every .html file to get the comment information, get it
+       * from a gdbm index, where the key is the message number and
+       * the content is a string containing the values separated by
+       * nullchars, in this order:
+       *   fromdate
+       *   date
+       *   name
+       *   email
+       *   subject
+       *   inreply
+       *   charset      v2.0
+       *   isofromdate  v2.0
+       *   isodate      v2.0
+       */
+
+      indexname = maprintf((dir[strlen(dir)-1] == '/') ? "%s%s" : "%s/%s",
+			   dir, GDBM_INDEX_NAME);
+
+      if(gp = gdbm_open(indexname, 0, GDBM_READER, 0, 0)) {
+
+	/* we _can_ read the index */
+
+	datum content;
+	datum key;
+
+	key.dptr = (char *) &num;
+	key.dsize = sizeof(num);
+
+	for(num = 0; 1; num++) {
+	  char *dp;
+	  char *name=NULL;
+	  char *email=NULL;
+	  char *date=NULL;
+	  char *msgid=NULL;
+	  char *subject=NULL;
+	  char *inreply=NULL;
+	  char *fromdate=NULL;
+	  char *charset=NULL;
+	  char *isodate=NULL;
+	  char *isofromdate=NULL;
+	  struct emailinfo *emp;
+
+	  content = gdbm_fetch(gp, key);
+	  if(!(dp = content.dptr))
+	    break;
+	  fromdate = dp;
+	  dp += strlen(dp) + 1;
+	  date = dp;
+	  dp += strlen(dp) + 1;
+	  name = dp;
+	  dp += strlen(dp) + 1;
+	  email = dp;
+	  dp += strlen(dp) + 1;
+	  subject = unconvchars(dp);
+	  dp += strlen(dp) + 1;
+	  msgid = dp;
+	  dp += strlen(dp) + 1;
+	  inreply = unconvchars(dp);
+	  dp += strlen(dp) + 1;
+	  charset = dp;
+	  dp += strlen(dp) + 1;
+	  isofromdate = dp;
+	  dp += strlen(dp) + 1;
+	  isodate = dp;
+
+	  if(emp = addhash(num, date, name, email, msgid, subject, inreply,
+			   fromdate, charset, isodate, isofromdate, bp)) {
+	    authorlist = addheader(authorlist, emp, 1, 0);
+	    emp->unre_subject = unre(subject);
+	    subjectlist = addheader(subjectlist, emp, 0, 0);
+	    datelist = addheader(datelist, emp, 2, 0);
+	  }
+	  free(subject);
+	  free(inreply);
+
+	  if (!(num % 10) && set_showprogress) {
+	    printf("\r%4d", num);
+	    fflush(stdout);
+	  }
+
+	} /* end loop on messages */
+
+	gdbm_close(gp);
+
+      } /* end case of able to read gdbm index */
+
+      else { 
+	struct emailinfo *emp;
+
+	/* can't read?  create. */
+
+	if (set_showprogress)
+	  printf(lang[MSG_CREATING_GDBM_INDEX]);
+	num = loadoldheadersfrommessages(dir);
+	
+	if(!(gp = gdbm_open(indexname, 0, GDBM_NEWDB, 0600, 0))){
+
+	  /* Serious problem here: can't create! So, just muddle on. */
+
+	  if (set_showprogress)
+	    printf(lang[MSG_CANT_CREATE_GDBM_INDEX]);
+	  return num;
+	}
+
+	/* Can create new; now, populate it */
+
+	for (num = 0; hashnumlookup(num, &emp); num++) {
+	  togdbm((void *) gp, num, emp->name, emp->emailaddr, emp->datestr, 
+		 emp->msgid, emp->subject, emp->inreplyto, emp->fromdatestr, 
+		 emp->charset, NULL, NULL);
+	}
+	gdbm_close(gp);
+
+      } /* end case of could not read gdbm index */
+
+      free(indexname);
+      if(bp) {
+        if (bp->line) 
+	  free(bp->line);
+        free(bp);
+      }
+
+      return num;
+
+} /* end loadoldheadersfromGDBMindex() */
+#endif
+
+/* All this does is get all the relevant header information.
+** Everything is loaded into structures in the exact same way as if
+** articles were being read from stdin or a mailbox.
+**
+** Return the number of mails read.  */
+
+int loadoldheaders(char *dir)
+{
+  int num;
+
+  if (set_showprogress)
+    printf("%s...\n", lang[MSG_READING_OLD_HEADERS]);
+#ifdef GDBM
+  if(set_usegdbm)
+    num = loadoldheadersfromGDBMindex(dir);
+  else
+#endif
+    num = loadoldheadersfrommessages(dir);
+
+  if (set_showprogress)
+    printf("\b\b\b\b%4d %s.\n", num, lang[MSG_ARTICLES]);
+
+  return num;
+
+} /* end loadoldheaders() */
+
 
 /*
 ** Adds a "Next:" link in the proper article, after the archive has been

@@ -27,6 +27,7 @@
 #include "setup.h"
 #include "parse.h"
 
+
 /*
 ** Push byte onto a buffer realloc the buffer if needed.
 **
@@ -410,7 +411,7 @@ char *convchars(char *line)
 	}
     }
     RETURN_PUSH(buff);
-}
+} /* end convchars() */
 
 /*
 ** Just the opposite of convchars().
@@ -461,7 +462,6 @@ static void translatechars(char *start, char *end, struct Push *buff)
     for (p = start; p <= end; p++) {
 
 	switch (*p) {
-
 	case '<':
 	    PushString(buff, "&lt;");
 	    break;
@@ -740,7 +740,6 @@ static char *url[] = {
     NULL
 };
 
-
 char *parseurl(char *input)
 {
     struct Push buff;		/* output buffer */
@@ -883,4 +882,4 @@ char *parseurl(char *input)
 	}
     }
     RETURN_PUSH(buff);
-}
+} /* end parseurl() */

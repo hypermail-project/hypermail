@@ -69,6 +69,11 @@ extern bool set_spamprotect;
 #ifdef CHANGE_12DEC2000_BC
 extern bool set_attachmentsindex;
 #endif
+#ifdef GDBM
+extern bool set_usegdbm;
+#endif
+extern bool set_append;
+extern char *set_append_filename;
 
 extern int set_showhtml;
 extern int set_thrdlevels;
