@@ -216,7 +216,14 @@ struct language_entry {
 #define MSG_THIS_PERIOD                          151
 #define MSG_RECEIVED_ON                          152
 #define MSG_NEARBY                               153
-
+#define MSG_RESORTED                             154
+#define MSG_LTITLE_LISTED_BY_DATE                155
+#define MSG_LTITLE_DISCUSSION_THREADS            156
+#define MSG_LTITLE_LISTED_BY_AUTHOR              157
+#define MSG_LTITLE_LISTED_BY_SUBJECT             158
+#define MSG_LTITLE_LISTED_BY_ATTACHMENT          159
+#define MSG_PERIOD                               160
+#define MSG_TO                                   161
 #ifdef MAIN_FILE
 
 /*
@@ -394,6 +401,14 @@ char *de[] = {       /* German */
   "This period", /* This period - HTML*/
   "Received on", /* Received on - HTML */
   "Nearby", /* Nearby - HTML */
+  "re-sorted", /* Resorted - HTML */
+  "listed by date", /* listed by date - HTML */
+  "by discussion threads" , /* discussion threads - HTML */
+  "listed by author", /* listed by author - HTML */
+  "by subject", /* listed by subject - HTML */
+  "by attachment", /* by attachment - HTML */
+  "period", /* period - HTML */
+  " to ", /* to - HTML */
   NULL,                              /* End Of Message Table - NOWHERE*/
 };
 
@@ -558,6 +573,14 @@ char *pl[] = {                      /* English */
   "This period", /* This period - HTML*/
   "Received on", /* Received on - HTML */
   "Nearby", /* Nearby - HTML */
+  "re-sorted", /* Resorted - HTML */
+  "listed by date", /* listed by date - HTML */
+  "by discussion threads" , /* discussion threads - HTML */
+  "listed by author", /* listed by author - HTML */
+  "by subject", /* listed by subject - HTML */
+  "by attachment", /* by attachment - HTML */
+  "period", /* period - HTML */
+  " to ", /* to - HTML */
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -723,6 +746,14 @@ char *en[] = {       /* English */
   "This period", /* This period - HTML*/
   "Received on", /* Received on - HTML */
   "Nearby", /* Nearby - HTML */
+  "re-sorted", /* Resorted - HTML */
+  "listed by date", /* listed by date - HTML */
+  "by discussion threads" , /* discussion threads - HTML */
+  "listed by author", /* listed by author - HTML */
+  "by subject", /* listed by subject - HTML */
+  "by attachment", /* by attachment - HTML */
+  "period", /* period - HTML */
+  " to ", /* to - HTML */
   NULL,                         /* End Of Message Table      - NOWHERE*/
 };
 
@@ -898,6 +929,14 @@ char *es[] = {       /* Espanol/Spanish */
   "This period", /* This period - HTML*/
   "Received on", /* Received on - HTML */
   "Nearby", /* Nearby - HTML */
+  "re-sorted", /* Resorted - HTML */
+  "listed by date", /* listed by date - HTML */
+  "by discussion threads" , /* discussion threads - HTML */
+  "listed by author", /* listed by author - HTML */
+  "by subject", /* listed by subject - HTML */
+  "by attachment", /* by attachment - HTML */
+  "period", /* period - HTML */
+  " to ", /* to - HTML */
   NULL,                               /* End Of Message Table */
 };
 
@@ -1061,6 +1100,14 @@ char *fi[] = {       /* Finnish */
   "This period", /* This period - HTML*/
   "Received on", /* Received on - HTML */
   "Nearby", /* Nearby - HTML */
+  "re-sorted", /* Resorted - HTML */
+  "listed by date", /* listed by date - HTML */
+  "by discussion threads" , /* discussion threads - HTML */
+  "listed by author", /* listed by author - HTML */
+  "by subject", /* listed by subject - HTML */
+  "by attachment", /* by attachment - HTML */
+  "period", /* period - HTML */
+  " to ", /* to - HTML */
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1227,6 +1274,14 @@ char *it[] = {       /* Italian */
   "This period", /* This period - HTML*/
   "Received on", /* Received on - HTML */
   "Nearby", /* Nearby - HTML */
+  "re-sorted", /* Resorted - HTML */
+  "listed by date", /* listed by date - HTML */
+  "by discussion threads" , /* discussion threads - HTML */
+  "listed by author", /* listed by author - HTML */
+  "by subject", /* listed by subject - HTML */
+  "by attachment", /* by attachment - HTML */
+  "period", /* period - HTML */
+  " to ", /* to - HTML */
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1392,6 +1447,14 @@ char *fr[] = {       /* French */
   "This period", /* This period - HTML*/
   "Received on", /* Received on - HTML */
   "Nearby", /* Nearby - HTML */
+  "re-sorted", /* Resorted - HTML */
+  "listed by date", /* listed by date - HTML */
+  "by discussion threads" , /* discussion threads - HTML */
+  "listed by author", /* listed by author - HTML */
+  "by subject", /* listed by subject - HTML */
+  "by attachment", /* by attachment - HTML */
+  "period", /* period - HTML */
+  " to ", /* to - HTML */
   NULL,                                    /* End Of Message Table  - NOWHERE*/
 };
 
@@ -1559,6 +1622,14 @@ char *is[] = {       /* Icelandic */
   "This period", /* This period - HTML*/
   "Received on", /* Received on - HTML */
   "Nearby", /* Nearby - HTML */
+  "re-sorted", /* Resorted - HTML */
+  "listed by date", /* listed by date - HTML */
+  "by discussion threads" , /* discussion threads - HTML */
+  "listed by author", /* listed by author - HTML */
+  "by subject", /* listed by subject - HTML */
+  "by attachment", /* by attachment - HTML */
+  "period", /* period - HTML */
+  " to ", /* to - HTML */
   NULL,                               /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1729,6 +1800,14 @@ char *sv[] = {
   "This period", /* This period - HTML*/
   "Received on", /* Received on - HTML */
   "Nearby", /* Nearby - HTML */
+  "re-sorted", /* Resorted - HTML */
+  "listed by date", /* listed by date - HTML */
+  "by discussion threads" , /* discussion threads - HTML */
+  "listed by author", /* listed by author - HTML */
+  "by subject", /* listed by subject - HTML */
+  "by attachment", /* by attachment - HTML */
+  "period", /* period - HTML */
+  " to ", /* to - HTML */
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 
@@ -1899,6 +1978,14 @@ char *no[] = {
   "This period", /* This period - HTML*/
   "Received on", /* Received on - HTML */
   "Nearby", /* Nearby - HTML */
+  "re-sorted", /* Resorted - HTML */
+  "listed by date", /* listed by date - HTML */
+  "by discussion threads" , /* discussion threads - HTML */
+  "listed by author", /* listed by author - HTML */
+  "by subject", /* listed by subject - HTML */
+  "by attachment", /* by attachment - HTML */
+  "period", /* period - HTML */
+  " to ", /* to - HTML */
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 
@@ -2070,6 +2157,14 @@ char *gr[] = {       /* Greek */
   "This period", /* This period - HTML*/
   "Received on", /* Received on - HTML */
   "Nearby", /* Nearby - HTML */
+  "re-sorted", /* Resorted - HTML */
+  "listed by date", /* listed by date - HTML */
+  "by discussion threads" , /* discussion threads - HTML */
+  "listed by author", /* listed by author - HTML */
+  "by subject", /* listed by subject - HTML */
+  "by attachment", /* by attachment - HTML */
+  "period", /* period - HTML */
+  " to ", /* to - HTML */
   NULL,                           	/* End Of Message Table - NOWHERE*/
 };
 
@@ -2233,6 +2328,14 @@ char *ru[] = {     /* Russian */
   "This period", /* This period - HTML*/
   "Received on", /* Received on - HTML */
   "Nearby", /* Nearby - HTML */
+  "re-sorted", /* Resorted - HTML */
+  "listed by date", /* listed by date - HTML */
+  "by discussion threads" , /* discussion threads - HTML */
+  "listed by author", /* listed by author - HTML */
+  "by subject", /* listed by subject - HTML */
+  "by attachment", /* by attachment - HTML */
+  "period", /* period - HTML */
+  " to ", /* to - HTML */
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 

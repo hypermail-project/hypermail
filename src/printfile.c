@@ -291,6 +291,8 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
       fprintf (fp, "pre { background-color:inherit;}\n");
       fprintf (fp, ".head { border-bottom:1px solid black;}\n");
       fprintf (fp, ".foot { border-top:1px solid black;}\n");
+      fprintf (fp, "th {font-style:italic;}\n");
+      fprintf (fp, "table { margin-left:2em;}");
 
       /* JK: This was the WAI rule before */
       /* fprintf (fp, "#body {background-color:#fff;}\n"); */

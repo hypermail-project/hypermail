@@ -343,7 +343,7 @@ void fprint_summary(FILE *fp, int pos, long first_d, long last_d, int num)
 
 /*----------------------------------------------------------------------------*/
 
-void print_index_header_links(FILE *fp, mindex_t called_from, long startdatenum, long enddatenum, int amountmsgs, struct emailsubdir *subdir)
+void print_index_header_links (FILE *fp, mindex_t called_from, long startdatenum, long enddatenum, int amountmsgs, struct emailsubdir *subdir)
 {
     /* 
      * Print out the links for
@@ -997,20 +997,12 @@ char *ConvURLsString(char *line, char *mailid, char *mailsubject, char *charset)
 
 void printheaders (FILE *fp, struct emailinfo *email)
 {
-    int insig, inblank;
     struct body *bp = email->bodylist;
     char *id = email->msgid;
     char *subject = email->subject;
-    int msgnum = email->msgnum;
     char head[128];
     char head_lower[128];
-    int pre = FALSE;
     char *header_content;
-
-    int inquote;
-    int quote_num;
-    int quoted_percent;
-    bool replace_quoted;
 
     if (email->is_deleted && set_delete_level != DELETE_LEAVES_TEXT 
 	&& !(email->is_deleted == 2 && set_delete_level == DELETE_LEAVES_EXPIRED_TEXT)) {
@@ -2816,14 +2808,18 @@ void write_summary_indices(int amount_new)
 
 void write_toplevel_indices(int amountmsgs)
 {
-    int j, newfile;
+    int i, j, newfile;
+    bool first = TRUE;
     struct emailsubdir *sd;
     char *subject = lang[MSG_FOLDERS_INDEX];
+    static char period_name[DATESTRLEN*2 + 1];
+    char *end_date;
+    char *index_title;
     char *filename;
+    char *saved_set_dateformat;
     FILE *fp;
 
     filename = htmlfilename(index_name[0][FOLDERS_INDEX], NULL, "");
-
     if (isfile(filename))
 	newfile = 0;
     else
@@ -2832,22 +2828,37 @@ void write_toplevel_indices(int amountmsgs)
     if (!show_index[0][FOLDERS_INDEX])
 	fp = NULL;
     else if ((fp = fopen(filename, "w")) == NULL) {
-	snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
+        snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
 	progerr(errmsg);
     }
     if (fp) {
-	print_index_header(fp, set_label, set_dir, subject, filename);
-	print_index_header_links(fp, FOLDERS_INDEX, firstdatenum, lastdatenum, amountmsgs, NULL);
-	fprintf (fp, "</div>\n");
-	fprintf(fp, "<table>\n");
+      print_index_header(fp, set_label, set_dir, subject, filename);
+      print_index_header_links(fp, FOLDERS_INDEX, firstdatenum, lastdatenum, amountmsgs, NULL);
+      fprintf (fp, "</div>\n");
+      fprintf(fp, "<table>\n");
+      for (i = 0, j = 0; j <= ATTACHMENT_INDEX; ++j) {
+	if (show_index[1][j])
+	  i++;
+      }
+      /* not sure if the following -- for computing the colspan is correct will work
+	 with all configurations. */
+      if (i > 0)
+	i--;
+      fprintf(fp, "<thead><tr>\n"
+	      "<th>%s</th><th colspan=\"%d\">%s</th>\n"
+	      "<th align=\"right\">%s</th>\n"
+	      "</tr></thead>\n"
+	      "<tbody>\n", lang[MSG_PERIOD], i, lang[MSG_RESORTED], 
+	      lang[MSG_ARTICLES]);
     }
     sd = folders;
     if (set_reverse_folders)
 	while (sd->next_subdir)
 	    sd = sd->next_subdir;
+    saved_set_dateformat = set_dateformat;
+    set_dateformat = "%d %b %Y";
     for (; sd != NULL; sd = set_reverse_folders ? sd->prior_subdir : sd->next_subdir) {
 	int started_line = 0;
-	int empties = 0;
 	if (!datelist->data)
 	    continue;
 	for (j = 0; j <= ATTACHMENT_INDEX; ++j) {
@@ -2856,18 +2867,26 @@ void write_toplevel_indices(int amountmsgs)
 	    switch (j) {
 		case DATE_INDEX:
 		    writedates(sd->count, sd->first_email);
+		    index_title = lang[MSG_LTITLE_LISTED_BY_DATE];
 		    break;
 	        case THREAD_INDEX:
 		    writethreads(sd->count, sd->first_email);
+		    index_title = lang[MSG_LTITLE_DISCUSSION_THREADS];
 		    break;
 	        case SUBJECT_INDEX:
 		    writesubjects(sd->count, sd->first_email);
+		    index_title = lang[MSG_LTITLE_LISTED_BY_SUBJECT];
 		    break;
 		case AUTHOR_INDEX:
 		    writeauthors(sd->count, sd->first_email);
+		    index_title = lang[MSG_LTITLE_LISTED_BY_AUTHOR];
 		    break;
 		case ATTACHMENT_INDEX:
 		    writeattachments(sd->count, sd->first_email);
+		    index_title = lang[MSG_LTITLE_LISTED_BY_ATTACHMENT];
+		    break;
+  	        default:
+		    index_title = "";
 		    break;
 	    }
 	    if (set_writehaof)
@@ -2875,27 +2894,48 @@ void write_toplevel_indices(int amountmsgs)
 
 	    if (!fp)
 	        continue;
-	    if (!sd->count) {
-	        if (started_line)
-		    fprintf(fp, "<td></td>");
-		else
-	            ++empties;
-	    }
+
+	    if (!started_line) {
+	      strcpy (period_name, getdatestr (sd->first_email->fromdate));
+	      end_date = getdatestr (sd->last_email->fromdate);
+	      if (strcmp (period_name, end_date)) {
+		strcat (period_name, lang[MSG_TO]);
+		strcat (period_name, end_date);
+	      }
+	      fprintf(fp, "<tr%s><td align=\"left\">%s",
+		      (first) ? " class=\"first\"" : "",
+		      (first) ? "<a name=\"first\" id=\"first\"></a>" : "");
+	      /* only add a link to the index if it is not empty */
+	      if (sd->count > 0)
+		fprintf (fp, "<a title=\"%s %s\" href=\"%s%s\">",
+			 period_name, index_title, sd->subdir, index_name[1][j]);
+	      fprintf (fp, "%s", period_name);
+	      if (sd->count > 0)
+		fprintf (fp, "</a>");
+	      fprintf (fp, "</td>");
+	      if (first)
+		first = FALSE;
+	      started_line = 1;
+	    } 
 	    else {
-	        if (!started_line) {
-		    fprintf(fp, "<tr><td>%s</td><td>%d %s</td>", sd->description, sd->count, lang[MSG_ARTICLES]);
-		    while (empties--)
-		        fprintf(fp, "<td></td>");
-		    started_line = 1;
-		}
-		fprintf(fp, "<td><a href=\"%s%s\">%s</a></td>", sd->subdir, index_name[1][j], indextypename[j]);
+	      fprintf(fp, "<td>");
+	      /* only add a link to the index if it is not empty */
+	      if (sd->count > 0)
+		fprintf (fp, "<a title=\"%s %s\" href=\"%s%s\">",
+			 period_name, index_title, sd->subdir, index_name[1][j]);
+	      fprintf (fp, "%s", indextypename[j]);
+	      if (sd->count > 0)
+		fprintf (fp, "</a>");
+	      fprintf (fp, "</td>");
 	    }
 	}
 	if (started_line && fp)
-	    fprintf(fp, "</tr>\n");
+	    fprintf(fp, "<td align=\"center\">%d</td></tr>\n", sd->count);
     }
+    set_dateformat = saved_set_dateformat;
+
     if (fp) {
-      fprintf(fp, "</table>\n");
+      fprintf(fp, "</tbody>\n</table>\n");
       
       /* 
        * Print out archive information links at the bottom of the index
