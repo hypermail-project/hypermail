@@ -1,5 +1,11 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Peter McCluskey (Mar 31 2001)
+  - fixed core dump with showhtml=2 created by yesterday's checkin.
+  - added isodate, gmtime options.
+  - bug fixes to mime decoding and to libcgi/form_ent.c from
+    Greg Shenaut <greg@bogslab.ucdavis.edu>
+
 Peter McCluskey (Mar 30 2001)
   - Reorganized hmrc.html.
   - Add options to split archive into subdirectories:

@@ -816,7 +816,7 @@ static char *mdecodeRFC2047(char *string, int length)
 		/* base64 decoding */
 		int len;
 		base64Decode(ptr, output, &len);
-		output += len - 1;
+		output += len;
 	    }
 	    else {
 		/* unsupported encoding type */

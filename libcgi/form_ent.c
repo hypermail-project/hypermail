@@ -162,6 +162,7 @@ form_entry *get_fes_from_stream(int length, FILE *stream)
     int asize;
     int i;
     int c;
+    int c1, c2;
 
     while (isspace(c = getccl(stream, length)) || c == '&');
     if (c == EOF)
@@ -182,8 +183,9 @@ form_entry *get_fes_from_stream(int length, FILE *stream)
 	    fe->name[i] = ' ';
 	    break;
 	case '%':
-	    fe->name[i] =
-		dd2c(getccl(stream, length), getccl(stream, length));
+	    c1 = getccl(stream, length);
+	    c2 = getccl(stream, length);
+	    fe->name[i] = dd2c(c1, c2);
 	    break;
 	default:
 	    fe->name[i] = c;
@@ -213,9 +215,9 @@ form_entry *get_fes_from_stream(int length, FILE *stream)
 		    fe->val[i] = ' ';
 		    break;
 		case '%':
-		    fe->val[i] =
-			dd2c(getccl(stream, length),
-			     getccl(stream, length));
+		    c1 = getccl(stream, length);
+		    c2 = getccl(stream, length);
+		    fe->val[i] = dd2c(c1, c2);
 		    break;
 		default:
 		    fe->val[i] = c;
