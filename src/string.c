@@ -633,6 +633,13 @@ char *parseemail(char *input,	/* string to parse */
     char *ptr;
     char *lastpos = input;
     struct Push buff;
+    
+    char *at;
+
+    if(set_spamprotect)
+      at="_at_";
+    else
+      at="@";
 
     INIT_PUSH(buff);
 
@@ -667,16 +674,16 @@ char *parseemail(char *input,	/* string to parse */
 			PushNString(&buff, lastpos, email - lastpos);
 		    }
 
-                    msnprintf(mailaddr, sizeof(mailaddr),"%.*s@%s", 
-                            ptr-email, email, mailbuff);
+                    msnprintf(mailaddr, sizeof(mailaddr),"%.*s%s%s", 
+                            ptr-email, email, at, mailbuff);
 
 		    if (valid_root_domain(mailaddr)) {
 			char *mailcmd = makemailcommand(set_mailcommand,
 							mailaddr, mid,
 							msubject);
 			msnprintf(tempbuff, sizeof(tempbuff),
-				  "<a href=\"%s\">%.*s@%s</a>", mailcmd,
-				  ptr - email, email, mailbuff);
+				  "<a href=\"%s\">%.*s%s%s</a>", mailcmd,
+				  ptr - email, email, at, mailbuff);
 
 			free(mailcmd);
 
