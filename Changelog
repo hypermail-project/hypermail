@@ -1,5 +1,11 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (Feb 20 2001)
+  - replaced the bodymailcommand with the following, to be more compatible:
+   * mailcommand - works as before unless replymsg_command specified
+   * replymsg_command - used for sending a reply to the list; if not specified,
+     is set to the value in mailcommand for compatibility with old .hmrc's
+   * newmsg_command - used for sending a new message to the list
 
  Peter McCluskey (Feb 19 2001) applied patches from "W. Tasin" <tasin@fhm.edu>
  - some changes in the german translation

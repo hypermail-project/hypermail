@@ -76,7 +76,8 @@ extern int set_locktime;
 extern char *set_label;
 
 extern char *set_mailcommand;
-extern char *set_bodymailcommand;
+extern char *set_newmsg_command;
+extern char *set_replymsg_command;
 extern char *set_mailto;
 extern char *set_hmail;
 extern char *set_domainaddr;

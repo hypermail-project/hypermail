@@ -678,7 +678,7 @@ char *parseemail(char *input,	/* string to parse */
                             ptr-email, email, at, mailbuff);
 
 		    if (valid_root_domain(mailaddr)) {
-			char *mailcmd = makemailcommand(set_bodymailcommand,
+			char *mailcmd = makemailcommand(set_mailcommand,
 							mailaddr, mid,
 							msubject);
 			msnprintf(tempbuff, sizeof(tempbuff),

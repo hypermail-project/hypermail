@@ -50,7 +50,8 @@ int set_filemode;
 int set_locktime;
 
 char *set_mailcommand;
-char *set_bodymailcommand;
+char *set_newmsg_command;
+char *set_replymsg_command;
 char *set_mailto;
 char *set_hmail;
 char *set_domainaddr;
@@ -223,20 +224,10 @@ struct Config cfg[] = {
      "# This is an octal number representing the file permissions\n"
      "# that new files are set to when they are created.\n"},
 
-    {"bodymailcommand", &set_bodymailcommand, "not set", CFG_STRING,
-     "# This specifies the mail command to use when  converting\n"
-     "# email  addresses to links. The variables $TO, $SUBJECT,\n"
-     "# and $ID can be used in constructing the command string.\n"
-     "# This command is used inside the mail bodies and  in the\n"
-     "# From: line.\n"},
-
     {"mailcommand", &set_mailcommand, MAILCOMMAND, CFG_STRING,
-     "# This specifies the mail command to use when  converting\n"
-     "# email  addresses to links. The variables $TO, $SUBJECT,\n"
-     "# and $ID can be used in constructing the command string.\n"
-     "# If a bodymailcommand string is specified, mailcommand\n"
-     "# only affects the New Message and Reply To fields; otherwise\n"
-     "# it also affects the fields that bodymailcommand affects\n"},
+     "# This specifies the mail command to use when converting\n"
+     "# email addresses to links. The variables $TO, $SUBJECT,\n"
+     "# and $ID can be used in constructing the command string.\n"},
 
     {"mailto", &set_mailto, NULL, CFG_STRING,
      "# The address of the contact point that is put in the HTML header\n"
@@ -245,6 +236,17 @@ struct Config cfg[] = {
 
     {"hmail", &set_hmail, NULL, CFG_STRING,
      "# Set this to the list's submission address.\n"},
+
+    {"newmsg_command", &set_newmsg_command, "mailto:$TO", CFG_STRING,
+     "# This specifies the mail command to use when converting the\n"
+     "# set_hmail address to links in replies. The variables $TO, $SUBJECT,\n"
+     "# and $ID can be used in constructing the command string.\n"},
+
+    {"replymsg_command", &set_replymsg_command, "not set", CFG_STRING,
+     "# This specifies the mail command to use when converting the\n"
+     "# set_hmail address to links in replies. The variables $TO, $SUBJECT,\n"
+     "# and $ID can be used in constructing the command string. The value\n"
+     "# from mailcommand will be used if this option is not specified.\n"},
 
     {"domainaddr", &set_domainaddr, DOMAINADDR, CFG_STRING,
      "# Set this to the domainname you want added to a mail address\n"
@@ -471,8 +473,10 @@ void PreConfig(void)
 
 void PostConfig(void)
 {
-    if (!strcmp(set_bodymailcommand, "not set"))
-	set_bodymailcommand = set_mailcommand;
+    /* Keep default behavior the same as it was when mailcommand applied
+    * to the cases now covered by replymsg_command. */
+    if (!strcmp(set_replymsg_command, "not set"))
+	set_replymsg_command = set_mailcommand;
 }
 
 int ConfigAddItem(char *cfg_line)

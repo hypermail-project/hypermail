@@ -80,7 +80,8 @@ void fprint_menu(FILE *fp, mindex_t idx, char *archives,
 
     if (set_mailcommand) {
 	if (set_hmail) {
-	    ptr = makemailcommand(set_mailcommand, set_hmail, "", "");
+	    ptr = makemailcommand(set_newmsg_command, set_hmail,
+				  currentid, cursub);
             if (strcmp(ptr, "NONE")!=0)
 	         fprintf(fp, "<th><a href=\"%s\">%s</a></th>\n",
 			 ptr ? ptr : "", lang[MSG_NEW_MESSAGE]);
@@ -90,7 +91,7 @@ void fprint_menu(FILE *fp, mindex_t idx, char *archives,
 	    if ((currentid != NULL && currentid[0] != '\0') ||
 		(cursub != NULL && cursub[0] != '\0')) {
 
-		ptr = makemailcommand(set_mailcommand, set_hmail,
+		ptr = makemailcommand(set_replymsg_command, set_hmail,
 				      currentid, cursub);
 		if (strcmp(ptr, "NONE")!=0)
 		    fprintf(fp, "<th><a href=\"%s\">%s</a></th>\n",
@@ -232,7 +233,7 @@ void print_index_header_links(FILE *fp, int called, int amountmsgs)
 
     /* JK: moved it here as it looks better and changed a bit the text */
     if (set_mailcommand && set_hmail) {
-	ptr = makemailcommand(set_mailcommand, set_hmail, "", "");
+	ptr = makemailcommand(set_newmsg_command, set_hmail, "", "");
 	fprintf(fp, "<br><strong>%s:</strong> <a href=\"%s\">[ %s ]</a>\n",
 		lang[MSG_MAIL_ACTIONS], ptr ? ptr : "", 
 		lang[MSG_MA_NEW_MESSAGE]);
@@ -324,7 +325,7 @@ void print_index_footer_links(FILE *fp, int called, int amountmsgs)
 
     /* JK: added it here as it looks better and changed a bit the text */
     if (set_mailcommand && set_hmail) {
-	ptr = makemailcommand(set_mailcommand, set_hmail, "", "");
+	ptr = makemailcommand(set_newmsg_command, set_hmail, "", "");
 	fprintf(fp, "<br><strong>%s:</strong> <a href=\"%s\">[ %s ]</a>\n",
 		lang[MSG_MAIL_ACTIONS], ptr ? ptr : "", 
 		lang[MSG_MA_NEW_MESSAGE]);
@@ -836,7 +837,7 @@ void writearticles(int startnum, int maxnum)
 #endif
 	if (!strcmp(email->name, email->emailaddr)) {
 	    if (use_mailcommand) {
-		ptr = makemailcommand(set_bodymailcommand,
+		ptr = makemailcommand(set_mailcommand,
 				      email->emailaddr,
 				      email->msgid, email->subject);
 		fprintf(fp, "<strong>From:</strong> <a href=\"%s\">", ptr ? ptr : "");
@@ -849,7 +850,7 @@ void writearticles(int startnum, int maxnum)
 	}
 	else {
 	    if (use_mailcommand && strcmp(email->emailaddr,"(no email)")!=0) {
-		ptr = makemailcommand(set_bodymailcommand,
+		ptr = makemailcommand(set_mailcommand,
 				      email->emailaddr,
 				      email->msgid, email->subject);
 		fprintf(fp, "<strong>From:</strong> %s (<a href=\"%s\">",
@@ -1012,7 +1013,7 @@ void writearticles(int startnum, int maxnum)
 			lang[MSG_MAIL_ACTIONS]);
 		if ((email->msgid && email->msgid[0]) ||
 		    (email->subject && email->subject[0])) {
-		    ptr = makemailcommand(set_mailcommand, set_hmail,
+		    ptr = makemailcommand(set_replymsg_command, set_hmail,
 					  email->msgid, email->subject);
 		    fprintf(fp,
 			    " <a href=\"%s\">[ %s ]</a>",
@@ -1020,7 +1021,8 @@ void writearticles(int startnum, int maxnum)
 		    if (ptr)
 			free(ptr);
 		}
-	        ptr = makemailcommand("mailto:$TO", set_hmail, "", "");
+	        ptr = makemailcommand(set_newmsg_command, set_hmail,
+				      email->msgid, email->subject);
 		fprintf(fp, " <a href=\"%s\">[ %s ]</a>\n",
 			ptr ? ptr : "", lang[MSG_MA_NEW_MESSAGE]);
 		if (ptr)
@@ -1161,7 +1163,7 @@ void writearticles(int startnum, int maxnum)
 			  lang[MSG_MAIL_ACTIONS]);
 		  if ((email->msgid && email->msgid[0]) ||
 		      (email->subject && email->subject[0])) {
-		      ptr = makemailcommand(set_mailcommand, set_hmail,
+		      ptr = makemailcommand(set_replymsg_command, set_hmail,
 					    email->msgid, email->subject);
 		      fprintf(fp,
 			      " <a href=\"%s\">[ %s ]</a>",
@@ -1169,7 +1171,8 @@ void writearticles(int startnum, int maxnum)
 		      if (ptr)
 			  free(ptr);
 		  }
-	          ptr = makemailcommand("mailto:$TO", set_hmail, "", "");
+	          ptr = makemailcommand(set_newmsg_command, set_hmail,
+					email->msgid, email->subject);
 		  fprintf(fp, " <a href=\"%s\">[ %s ]</a>\n",
 			  ptr ? ptr : "", lang[MSG_MA_NEW_MESSAGE]);
 		  if (ptr)
