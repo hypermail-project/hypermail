@@ -4,6 +4,9 @@ Version Changes for Hypermail
 ============================
 HYPERMAIL VERSION pre-2.1.9:
 ============================
+ Peter McCluskey (Nov 15, 2003)
+  Add Portugese support from Hugo Cisneiros.
+
  Peter McCluskey (Oct 1, 2003)
   Fix some problems with starting message number that caused bugs when
   increment = 1, linkquotes = 1 and using folder_by_date.
