@@ -699,6 +699,7 @@ void PostConfig(void)
 	show_index[0][THREAD_INDEX]  = !inlist(set_avoid_top_indices, "thread");
 	show_index[0][ATTACHMENT_INDEX] = !inlist(set_avoid_top_indices, "attachments")
 	    && set_attachmentsindex;
+	show_index[0][FOLDERS_INDEX]  = !inlist(set_avoid_top_indices, "folders");
     }
     else {
 	for (i = 0; i <= ATTACHMENT_INDEX; ++i)
