@@ -856,9 +856,6 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply)
     char *id = email->msgid;
     char *subject = email->subject;
     int msgnum = email->msgnum;
-#ifdef REMOVED_19991103
-    int inhtml;
-#endif
     char inheader = FALSE;	/* we always start in a mail header */
     int pre = FALSE;
 
@@ -907,10 +904,6 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply)
 
     inblank = 1;
     insig = 0;
-
-#ifdef REMOVED_19991103
-    inhtml = 0;
-#endif
 
     while (bp != NULL) {
 	if (bp->html) {
@@ -966,17 +959,6 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply)
 	    }
 	}
 
-#ifdef REMOVED_990310
-	if (bp->attached && bp->header) {
-            /* only show <br> if not in <pre> since 
-             * in <pre> mode, the existing newlines are enough! 
-             */
-	    fprintf(fp, "%s%s", bp->line, pre ? "" : "<br>\n");	
-	    bp = bp->next;
-	    continue;
-	}
-#endif
-
 	if (((bp->line)[0] != '\n') && (bp->header && !set_showheaders)) {
 	    bp = bp->next;
 	    continue;
@@ -1000,43 +982,6 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply)
 	else
 	    inblank = 0;
 
-#ifdef REMOVED_19991103
-	if (!strncasecmp(bp->line, "<html>", 6)) {
-	    inhtml = 1;
-	    if (!set_showhtml && pre) {
-		fprintf(fp, "</pre>\n");
-		pre = FALSE;
-	    }
-	}
-	else if (!strncasecmp(bp->line, "</html>", 7)) {
-	    inhtml = 0;
-	    if (set_showhtml)
-		fprintf(fp, "%s", bp->line);
-	    else {
-		char *ptr;
-		fprintf(fp, "%s<br>", ptr = convchars(bp->line));
-		free(ptr);
-	    }
-	    if (!set_showhtml && !pre) {
-		fprintf(fp, "<pre>\n");
-		pre = TRUE;
-	    }
-	    bp = bp->next;
-	    continue;
-	}
-
-	if (inhtml) {
-	    if (set_showhtml)
-		fprintf(fp, "%s", bp->line);
-	    else {
-		char *ptr;
-		fprintf(fp, "%s<br>", ptr = convchars(bp->line));
-		free(ptr);
-	    }
-	    bp = bp->next;
-	    continue;
-	}
-#endif
 	if (set_showhtml) {
 	    if (is_sig_start(bp->line)) {
 		insig = 1;
