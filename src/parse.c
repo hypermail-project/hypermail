@@ -3516,7 +3516,7 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 		 lang[MSG_REPLY]);
         snprintf(current_nextinthread_pattern, 
                 sizeof(current_nextinthread_pattern), 
-                "<li><dfn>%</dfn>: <a href=", lang[MSG_NEXT_IN_THREAD]);
+                "<li><dfn>%s</dfn>: <a href=", lang[MSG_NEXT_IN_THREAD]);
         snprintf(current_next_pattern, sizeof(current_next_pattern), 
                 "<li>dfn>%s</dfn>: <a href=", lang[MSG_NEXT_MESSAGE]);
 
