@@ -1557,8 +1557,11 @@ int parsemail(char *mbox,	/* file name */
 			    ptr++;
 
 			sscanf(ptr, "%128[^;]", type);
-			if ((cp = strchr(type, '\n')) != NULL)
-			    *cp = '\0';	/* rm newlines */
+			cp = type + strlen(type) - 1;
+			while (cp > type && isspace(*cp)) {
+			    *cp = '\0';	/* rm newlines, etc */
+			    --cp;
+			}
 
 			/* now, check if there's a charset indicator here too! */
 			cp = strcasestr(ptr, "charset=");
