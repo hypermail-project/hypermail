@@ -1,6 +1,10 @@
 Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ Jose Kahan (jose@w3.org) (January 24, 2003)
+  Fixed a buffer overflow reported by Ulf Harnhammar from VSU security.
+
  Peter McCluskey (January 22, 2003)
   If mime message has an end boundary but no start boundary (as a buggy
  version of Microsoft Outlook seems to create), the body is now treated

@@ -1470,7 +1470,7 @@ int parsemail(char *mbox,	/* file name */
 				    if (*np == '"')
                                 	np++;
 				    for (jp = attachname; np && *np != '\n'
-					   && *np != '"';) {
+					   && *np != '"' && jp < attachname + sizeof(attachname) - 1;) {
                                 	*jp++ = *np++;
 				    }
 				    *jp = '\0';
@@ -2261,8 +2261,14 @@ int parsemail(char *mbox,	/* file name */
 			    if (att_dir == NULL) {
 
 				/* first check the DIR_PREFIXER */
+#ifdef JOSE
+                                trio_asprintf(&att_dir,"%s%c" DIR_PREFIXER "%s",
+                                              dir, PATH_SEPARATOR,
+                                              message_name (emp))
+#else
 				trio_asprintf(&att_dir,"%s%c" DIR_PREFIXER "%04d",
 					      dir, PATH_SEPARATOR, num);
+#endif
 				check1dir(att_dir);
 				/* If this is a repeated run on the same archive we already
 				 * have HTML'ized, we risk extracting the same attachments
