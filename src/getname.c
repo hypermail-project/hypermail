@@ -13,6 +13,29 @@ static int blankstring(char *str)
     return (1);
 }
 
+char *spamify(char *input)
+{
+  /* we should replace the @-letter in the email
+     address */
+  int newlen=strlen(input)+4;
+  char *atptr=strchr(input, '@');
+  if(atptr) {
+    char *newbuf = malloc(newlen);
+    int index=atptr-input;
+    /* copy the part before the @ */
+    memcpy(newbuf, input, index);
+    /* append _at_ */
+    memcpy(newbuf+index, "_at_", 4);
+    /* append the part after the @ */
+    strcpy(newbuf+index+4, input+index+1);
+    /* correct the pointer and free the old */
+    free(input);
+    return newbuf;
+  }
+  /* weird email, bail out */
+  return input;
+}
+
 /*
 ** Grabs the name and email address from a From: header.
 ** This could get tricky; I've tried to keep it simple.
