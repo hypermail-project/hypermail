@@ -252,8 +252,8 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
     }
     else {
 	fprintf(fp, "<li>%s<strong>%s</strong></a> "
-		"<a name=\"%s\"><em>%s <small>(%s)</small></em></a>\n", href,
-		subj, message_name (email), email->name, getdatestr(email->date));
+		"<a name=\"%d\"><em>%s <small>(%s)</small></em></a>\n", href,
+		subj, email->msgnum, email->name, getdatestr(email->date));
     }
     free(subj);
     ++num_replies[level];
