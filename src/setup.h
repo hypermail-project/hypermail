@@ -42,6 +42,7 @@ extern char *set_about;
 extern char *set_dir;
 extern char *set_defaultindex;
 extern char *set_default_top_index;
+extern char *set_txtsuffix;
 
 extern bool set_overwrite;
 extern bool set_inlinehtml;
@@ -53,7 +54,8 @@ extern bool set_showheaders;
 extern bool set_showbr;
 extern bool set_showhr;
 extern bool set_showreplies;
-extern bool set_show_msg_links;
+extern int set_show_msg_links;
+extern int set_show_index_links;
 extern bool set_usetable;
 extern bool set_indextable;
 extern bool set_iquotes;

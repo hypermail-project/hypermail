@@ -18,6 +18,7 @@ char *set_about;
 char *set_dir;
 char *set_defaultindex;
 char *set_default_top_index;
+char *set_txtsuffix;
 
 bool set_overwrite;
 bool set_inlinehtml;
@@ -29,7 +30,8 @@ bool set_showheaders;
 bool set_showbr;
 bool set_showhr;
 bool set_showreplies;
-bool set_show_msg_links;
+int set_show_msg_links;
+int set_show_index_links;
 bool set_usetable;
 bool set_indextable;
 bool set_iquotes;
@@ -227,10 +229,20 @@ struct Config cfg[] = {
      "# Set this to On to show all replies to a message as links\n"
      "# in article files.\n"},
 
-    {"show_msg_links", &set_show_msg_links, BTRUE, CFG_SWITCH,
-     "# Set this to On to put the individual message links at the top\n"
-     "# of the individual message pages. Set this to Off to produce pages\n"
-     "# without the Next, Previous, Reply, In-Reply-To, etc. links.\n"},
+    {"show_msg_links", &set_show_msg_links, INT(1), CFG_INTEGER,
+     "# Set this to 1 to put the individual message links at the top\n"
+     "# of the individual message pages. Set this to 0 to produce pages\n"
+     "# without the Next, Previous, Reply, In-Reply-To, etc. links. Set\n"
+     "# it to 3 to produce those links only at the top of the message\n"
+     "# pages, or 4 to produce those links only at the bottom of the\n"
+     "# message.\n"},
+
+    {"show_index_links", &set_show_index_links, INT(1), CFG_INTEGER,
+     "# Set this to 1 to show links to index pages from the top and\n"
+     "# bottom of each message file. Set it to 0 to avoid those links.\n"
+     "# Set it to 3 to show the links only at the top of the message\n"
+     "# pages, or 4 to produce those links only at the bottom of the\n"
+     "# message.\n"},
 
     {"usetable", &set_usetable, BFALSE, CFG_SWITCH,
      "# Setting this variable to On will tell Hypermail to generate\n"
@@ -525,6 +537,11 @@ struct Config cfg[] = {
      "# Deleted and expired messages are removed from the index files\n"
      "# regardless of the delete_level selection.\n"},
 
+    {"txtsuffix", &set_txtsuffix, NULL, CFG_STRING,
+     "# If you want the original mail messages archived in individual files,\n"
+     "# set this to the extension that you want these messages to have\n"
+     "# (recommended value: txt).\n"},
+
 };
 
 /* ---------------------------------------------------------------- */
@@ -751,7 +768,12 @@ int ConfigAddItem(char *cfg_line)
 		    break;
 		case CFG_INTEGER:
 		    /* get an integer using any base */
-		    *(int *)cfg[i].value = strtol(towhat, NULL, 0);
+		    /* ON/YES support is for options that used to be 
+		       CFG_SWITCH's */
+		    if (!strcasecmp("ON", towhat) || !strcasecmp("YES", towhat))
+			*(int *)cfg[i].value = 1;
+		    else
+		        *(int *)cfg[i].value = strtol(towhat, NULL, 0);
 		    break;
 		case CFG_OCTAL:
 		    /* get an octal number */

@@ -40,6 +40,13 @@ General Things:
 - Convert the doc files to a SGML system like linuxdoc, which will allow
   generating html, text, and man pages from the same source.
 
+ - You currently look for text in messages of the form http://... and
+ turn them into hyperlinks. You also look for text in the form
+ foo@bar.com and turn that into a mailto: hyperlink.
+ I suggest you also look for text in for form of
+ mailto:foo@bar.com?subject=bat and turn the whole of it into a
+ mailto: link, with the correct subject line.
+
 =============
 Index Issues:
 =============

@@ -60,7 +60,7 @@ int uudecode(FILE *input,	/* get file data from (if needed) */
 	     char *iptr,	/* input string from where we are right now */
 	     char *output,	/* write result to, must be at least 80 bytes */
 	     int *length,	/* output size */
-	     char init)
+	     struct Push *init)
 {				/* set to non-zero when initing */
     register int n;
     register char ch, *p;
@@ -70,6 +70,7 @@ int uudecode(FILE *input,	/* get file data from (if needed) */
 
     if (length)
 	*length = 0;		/* in case we abort early */
+    
 
     if (init) {
 	/* search for header line */
@@ -77,6 +78,7 @@ int uudecode(FILE *input,	/* get file data from (if needed) */
 	    if (!fgets(buf, MAXPATHLEN, input)) {
 		return 2;
 	    }
+	    PushString(init, buf);
 	    iptr = buf + set_ietf_mbox;
 	}
 #if 0

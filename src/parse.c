@@ -881,15 +881,18 @@ static char *mdecodeRFC2047(char *string, int length)
 ** Written by Daniel.Stenberg@haxx.nu
 */
 
-static void mdecodeQP(FILE *file, char *input, char **result, int *length)
+static char * mdecodeQP(FILE *file, char *input, char **result, int *length)
 {
     int outcount = 0;
     char *buffer = input;
     unsigned char inchar;
     char *output;
+    struct Push pbuf;
 
     int len = strlen(input);
     output = strsav(input);
+
+    INIT_PUSH(pbuf);
 
     while ((inchar = *input) != '\0') {
 
@@ -912,6 +915,7 @@ static void mdecodeQP(FILE *file, char *input, char **result, int *length)
 		if (!fgets(buffer, MAXLINE, file))
 		    break;
 		input = buffer;
+		PushString(&pbuf, buffer);
 		continue;
 	    }
 	    else if ('=' == *input) {
@@ -932,6 +936,7 @@ static void mdecodeQP(FILE *file, char *input, char **result, int *length)
 
     *result = output;
     *length = outcount;
+    RETURN_PUSH(pbuf);
 }
 
 char *createlink(char *format, char *dir, char *file, int num, char *type)
@@ -1022,6 +1027,26 @@ void emptydir(char *directory)
     }
 }
 
+static void write_txt_file(struct emailinfo *emp, struct Push *raw_text_buf)
+{
+    char *txt_filename;
+    char *p = PUSH_STRING(*raw_text_buf);
+    char tmp_buf[32];
+    sprintf(tmp_buf, "%.4d", emp->msgnum);
+    txt_filename = htmlfilename(tmp_buf, emp, set_txtsuffix);
+    if ((!emp->is_deleted || (emp->is_deleted == 1 && set_delete_level > 2)
+	 || (emp->is_deleted == 2 && set_delete_level == 2))
+	&& (set_overwrite || !isfile(txt_filename))) {
+        FILE *fp = fopen(txt_filename, "w");
+	if (fp) {
+	    fwrite(p, strlen(p), 1, fp);
+	    fclose(fp);
+	}
+    }
+    free(p);
+    INIT_PUSH(*raw_text_buf);
+}
+
 /*
 ** Parsing...the heart of Hypermail!
 ** This loads in the articles from stdin or a mailbox, adding the right
@@ -1038,6 +1063,7 @@ int parsemail(char *mbox,	/* file name */
 	      int startnum)
 {
     FILE *fp, *fpo;
+    struct Push raw_text_buf;
     char *date = NULL;
     char *subject = NULL;
     char *msgid = NULL;
@@ -1150,6 +1176,8 @@ int parsemail(char *mbox,	/* file name */
 
     num = startnum;
 
+    INIT_PUSH(raw_text_buf);
+
     hassubject = 0;
     hasdate = 0;
     isinheader = 1;
@@ -1177,7 +1205,8 @@ int parsemail(char *mbox,	/* file name */
 	}
     }
 
-    while (fgets(line_buf, MAXLINE, fp) != NULL) {
+    for ( ; fgets(line_buf, MAXLINE, fp) != NULL; 
+	  set_txtsuffix ? PushString(&raw_text_buf, line_buf) : 0) {
 #if DEBUG_PARSE
 	printf("IN: %s", line);
 #endif 
@@ -1669,13 +1698,30 @@ int parsemail(char *mbox,	/* file name */
 			    decode = ENCODE_NORMAL;
 			}
 			else if (!strncasecmp(ptr, "x-uue", 5)) {
+			    struct Push pbuf;
+			    char *p2;
+			    INIT_PUSH(pbuf);
 			    decode = ENCODE_UUENCODE;
 
-			    if (uudecode(fp, line, line, NULL, TRUE))
+			    if (uudecode(fp, line, line, NULL, &pbuf))
 				/*
 				 * oh gee, we failed this is chaos 
                                  */
 				break;
+			    p2 = PUSH_STRING(pbuf);
+			    if (p2) {
+			        if (set_append) {
+				    if(fputs(p2, fpo) < 0) {
+				        progerr("Can't write to \"mbox\"");
+				    }
+				}
+				if (set_txtsuffix) {
+				    PushString(&raw_text_buf, line_buf);
+				    line_buf[0] = 0; /*avoid dup at next for iter*/
+				    PushString(&raw_text_buf, p2);
+				}
+				free(p2);
+			    }
 			}
 			else {
 			    /* Unknown format, we use default decoding */
@@ -1777,6 +1823,8 @@ int parsemail(char *mbox,	/* file name */
 		        ++num_added;
 		    num++;
 		}
+		if (set_txtsuffix)
+		    write_txt_file(emp, &raw_text_buf);
 
 		if (hasdate)
 		    free(date);
@@ -1960,14 +2008,24 @@ int parsemail(char *mbox,	/* file name */
 
 		switch (decode) {
 		case ENCODE_QP:
-		    mdecodeQP(fp, line, &data, &datalen);
+		    {
+			char *p2 = mdecodeQP(fp, line, &data, &datalen);
+			if (p2) {
+			    if (set_txtsuffix) {
+			        PushString(&raw_text_buf, line_buf);
+				line_buf[0] = 0;
+				PushString(&raw_text_buf, p2);
+			    }
+			    free(p2);
+			}
+		    }
 		    break;
 		case ENCODE_BASE64:
 		    base64Decode(line, newbuffer, &datalen);
 		    data = newbuffer;
 		    break;
 		case ENCODE_UUENCODE:
-		    uudecode(NULL, line, newbuffer, &datalen, FALSE);
+		    uudecode(NULL, line, newbuffer, &datalen, NULL);
 		    data = newbuffer;
 		    break;
 		case ENCODE_NORMAL:
@@ -2272,7 +2330,6 @@ int parsemail(char *mbox,	/* file name */
 	progerr("Can't close \"mbox\"");
     }
 
-
     if (!isinheader || readone) {
 	if (!hassubject)
 	    subject = NOSUBJECT;
@@ -2293,6 +2350,8 @@ int parsemail(char *mbox,	/* file name */
 	    emp->is_deleted = is_deleted;
 	    if (insert_in_lists(emp))
 	        ++num_added;
+	    if (set_txtsuffix)
+	        write_txt_file(emp, &raw_text_buf);
 	    num++;
 	}
 

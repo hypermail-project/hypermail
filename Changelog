@@ -1,5 +1,14 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Peter McCluskey (May 4 2001)
+  - enhance show_msg_links to support links only at top or only at bottom.
+  - add show_index_links option to control links from message page to indices.
+  - add txtsuffix option
+  - On/Yes now converted to 1 for CFG_INTEGER options (for compatibility
+   with options that used to be CFG_SWITCH's)
+  - fix append option so that it handles uuencoded attachments and
+    mdecodeQP() calls correctly.
+
 Kent Landfield (May 4 2001)
   - corrected compilation issue for Sun CC in string.c
   - corrected check for set_custom_archives in hypermail.c

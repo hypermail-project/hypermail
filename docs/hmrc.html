@@ -106,6 +106,7 @@ on or off.
     <ul>
     <li><a href="#showreplies">showreplies</a> list of messages
     <li><a href="#show_msg_links">show_msg_links</a> next, previous, next in thread
+    <li><a href="#show_index_links">show_index_links</a> control links to index pages
     <li><a href="#showheaders">showheaders</a> To:, From:, Subject:
     <li><a href="#show_headers">show_headers</a> others (Message-ID, etc)
     <li><a href="#mhtmlheaderfile">mhtmlheaderfile</a> template
@@ -148,6 +149,7 @@ on or off.
     <li><a href="#usegdbm">usegdbm</a> cache header info
     <li><a href="#append">append</a> create mbox archive also
     <li><a href="#append_filename">append_filename</a> name of mbox output
+    <li><a href="#txtsuffix">txtsuffix</a> save each raw message
     <li><a href="#deleted">deleted</a> what headers indicate deletion
     <li><a href="#expires">expires</a> what headers indicate expire date
     <li><a href="#delete_msgnum">delete_msgnum</a> delete these messages
@@ -654,14 +656,24 @@ If this is set to 0 no reply links are generated.
 </dd>
 
 <a name="show_msg_links"></a>
-<dt><strong>show_msg_links = [ 0 | 1 ]</strong></dt><dd>
+<dt><strong>show_msg_links = [ 0 | 1 | 3 | 4 ]</strong></dt><dd>
 Set this to 1 if you want links to Next, Prev, Next thread, Reply to, etc.
 displayed on the article pages. Setting this to 0 disables these links
-from appearing on the generated pages.
+from appearing on the generated pages. Set it to 3 to produce those links
+only at the top of the message pages, or 4 to produce those links only at
+the bottom of the message.
 <br>
 <br><i>show_msg_links = 1</i>
 </dd>
-
+<a name="show_index_links"></a>
+<dt><strong>show_index_links = [ 0 | 1 | 3 | 4 ]</strong></dt><dd>
+ Set this to 1 to show links to index pages from the top and
+bottom of each message file. Set it to 0 to avoid those links.
+Set it to 3 to show the links only at the top of the message
+pages, or 4 to produce those links only at the bottom of the message.
+<br>
+<br><i>show_index_links = 1</i>
+</dd>
 <a name="showheaders"></a>
 <dt><strong>showheaders = [ 0 | 1 ]</strong></dt><dd>
 Set this to 1 to show the RFC 822 message headers To:, 
@@ -919,6 +931,14 @@ $DIR may be used to specify a name relative to the directory
 specified in the -d or dir option.
 <br>
 <br><i>append_filename = $DIR/INBOX</i>
+</dd>
+<a name="txtsuffix"></a>
+<dt><strong>txtsuffix = [ string ]</strong></dt><dd>
+If you want the original mail messages archived in individual files,
+set this to the extension that you want these messages to have
+(recommended value: <strong>txt</strong>).
+<br>
+<br><i>txtsuffix = txt</i> (off by default)
 </dd>
 <a name="deleted"></a>
 <dt><strong>deleted = list of headers used to indicate deletion</strong></dt><dd>

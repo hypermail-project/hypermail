@@ -80,7 +80,7 @@ char *PushString(struct Push *push, const char *append)
 {				/* string to append */
     char *string = NULL;
 
-#if 0
+#if 1
     return PushNString(push, append, strlen(append));
 #else
     while (*append) {		/* continue until zero termination */

@@ -22,6 +22,7 @@
 #include "hypermail.h"
 #include "setup.h"
 #include "struct.h"
+#include <errno.h>
 #ifdef HAVE_DIRENT_H
 #include <dirent.h>
 #else

@@ -215,50 +215,52 @@ void fprint_menu(FILE *fp, mindex_t idx, char *archives, char *currentid,
 	fprintf(fp, "<th><a href=\"%s\">%s</a></th>\n", set_about,
 		lang[MSG_ABOUT_THIS_LIST]);
 
-    if (idx != NO_INDEX && !set_reverse) {
-	if (pos == PAGE_TOP)
-	    fprintf(fp, "<th><a href=\"#end\">%s</a></th>\n",
-		    lang[MSG_END_OF_MESSAGES]);
-	else
-	    fprintf(fp, "<th><a name=\"end\" href=\"#\">%s</a></th>\n",
-		    lang[MSG_START_OF_MESSAGES]);
-    }
-
-    for (i = 0; i <= AUTHOR_INDEX; ++i) {
-	if (idx != i && show_index[dlev][i]) {
-	    fprintf(fp, "<th><a href=\"%s\">%s</a></th>\n",
-		    index_name[dlev][i], lang[MSG_DATE_VIEW + i]);
-	    ++count_l;
+    if (set_show_index_links && set_show_index_links != (pos == PAGE_TOP ? 4 : 3)) {
+        if (idx != NO_INDEX && !set_reverse) {
+	    if (pos == PAGE_TOP)
+	        fprintf(fp, "<th><a href=\"#end\">%s</a></th>\n",
+			lang[MSG_END_OF_MESSAGES]);
+	    else
+	        fprintf(fp, "<th><a name=\"end\" href=\"#\">%s</a></th>\n",
+			lang[MSG_START_OF_MESSAGES]);
 	}
-    }
 
-    if (show_index[dlev][ATTACHMENT_INDEX]) {
-	if (idx != ATTACHMENT_INDEX) {
-	    fprintf(fp, "<th><a href=\"%s\">%s</a></th>\n",
-		    index_name[dlev][ATTACHMENT_INDEX],
-		    lang[MSG_ATTACHMENT_VIEW]);
-	    ++count_l;
+	for (i = 0; i <= AUTHOR_INDEX; ++i) {
+	    if (idx != i && show_index[dlev][i]) {
+	        fprintf(fp, "<th><a href=\"%s\">%s</a></th>\n",
+			index_name[dlev][i], lang[MSG_DATE_VIEW + i]);
+		++count_l;
+	    }
 	}
-    }
-    if (subdir) {
-	int f_cols = (subdir->prior_subdir != NULL)
-	  + (subdir->next_subdir != NULL);
-	const char *colspan = 2*f_cols <= count_l ? " colspan=\"2\"": "";
-	fprintf(fp, "</tr><tr>");
-	if (subdir->prior_subdir)
-	    fprintf(fp, "<th%s><a href=\"%s%s%s\">%s, %s</a></th>",
-		    colspan, subdir->rel_path_to_top,
-		    subdir->prior_subdir->subdir, index_name[idx],
-		    lang[MSG_PREV_DIRECTORY], lang[MSG_DATE_VIEW + idx]);
-	if (subdir->next_subdir)
-	    fprintf(fp, "<th%s><a href=\"%s%s%s\">%s, %s</a></th>",
-		    colspan, subdir->rel_path_to_top,
-		    subdir->next_subdir->subdir, index_name[idx],
-		    lang[MSG_NEXT_DIRECTORY], lang[MSG_DATE_VIEW + idx]);
-	if (show_index[0][FOLDERS_INDEX])
-	    fprintf(fp, "<th><a href=\"%s%s\">%s</a></th>",
-		    subdir->rel_path_to_top, index_name[0][FOLDERS_INDEX],
-		    lang[MSG_FOLDERS_INDEX]);
+
+	if (show_index[dlev][ATTACHMENT_INDEX]) {
+	    if (idx != ATTACHMENT_INDEX) {
+	        fprintf(fp, "<th><a href=\"%s\">%s</a></th>\n",
+			index_name[dlev][ATTACHMENT_INDEX],
+			lang[MSG_ATTACHMENT_VIEW]);
+		++count_l;
+	    }
+	}
+	if (subdir && idx != NO_INDEX) {
+	    int f_cols = (subdir->prior_subdir != NULL)
+	      + (subdir->next_subdir != NULL);
+	    const char *colspan = 2*f_cols <= count_l ? " colspan=\"2\"": "";
+	    fprintf(fp, "</tr><tr>");
+	    if (subdir->prior_subdir)
+	        fprintf(fp, "<th%s><a href=\"%s%s%s\">%s, %s</a></th>",
+			colspan, subdir->rel_path_to_top,
+			subdir->prior_subdir->subdir, index_name[idx],
+			lang[MSG_PREV_DIRECTORY], lang[MSG_DATE_VIEW + idx]);
+	    if (subdir->next_subdir)
+	        fprintf(fp, "<th%s><a href=\"%s%s%s\">%s, %s</a></th>",
+			colspan, subdir->rel_path_to_top,
+			subdir->next_subdir->subdir, index_name[idx],
+			lang[MSG_NEXT_DIRECTORY], lang[MSG_DATE_VIEW + idx]);
+	    if (show_index[0][FOLDERS_INDEX])
+	        fprintf(fp, "<th><a href=\"%s%s\">%s</a></th>",
+			subdir->rel_path_to_top, index_name[0][FOLDERS_INDEX],
+			lang[MSG_FOLDERS_INDEX]);
+	}
     }
 
     if (archives && *archives)
@@ -1269,6 +1271,8 @@ void writearticles(int startnum, int maxnum)
 	    }
 	}
 
+	email_next_in_thread = nextinthread(email->msgnum);
+
 	/*
 	 * Create the comment fields necessary for incremental updating
 	 */
@@ -1363,7 +1367,7 @@ void writearticles(int startnum, int maxnum)
 	 * Should we print message links ?
 	 */
 
-	if (set_show_msg_links) {
+	if (set_show_msg_links && set_show_msg_links != 4) {
 	    printcomment(fp, "next", "start");
 	    fprintf(fp, "<ul>\n");
 
@@ -1430,7 +1434,6 @@ void writearticles(int startnum, int maxnum)
 
 	    printcomment(fp, "nextthread", "start");
 
-	    email_next_in_thread = nextinthread(email->msgnum);
 	    if (email_next_in_thread) {
 		fprintf(fp, "<li><strong>%s:</strong> ",
 			lang[MSG_NEXT_IN_THREAD]);
@@ -1475,26 +1478,28 @@ void writearticles(int startnum, int maxnum)
 
 	if (!set_usetable) {
             int dlev = (email->subdir != NULL);
-	    if (!set_show_msg_links)
+	    if (!(set_show_msg_links && set_show_msg_links != 4))
 		fprintf(fp, "<ul>\n");
-	    fprintf(fp,"<li><strong>%s %s:</strong> \n",
-		      lang[MSG_MESSAGES], lang[MSG_SORTED_BY]);
-	    if (show_index[dlev][DATE_INDEX])
-	        fprintf(fp, "<a href=\"%s#%d\">[ %s ]</a>\n",
-			index_name[dlev][DATE_INDEX], num, lang[MSG_DATE]);
-	    if (show_index[dlev][THREAD_INDEX])
-	        fprintf(fp, "<a href=\"%s#%d\">[ %s ]</a>\n",
-			index_name[dlev][THREAD_INDEX], num, lang[MSG_THREAD]);
-	    if (show_index[dlev][SUBJECT_INDEX])
-	        fprintf(fp, "<a href=\"%s#%d\">[ %s ]</a>\n",
-			index_name[dlev][SUBJECT_INDEX], num, lang[MSG_SUBJECT]);
-	    if (show_index[dlev][AUTHOR_INDEX])
-	        fprintf(fp, "<a href=\"%s#%d\">[ %s ]</a>\n",
-			index_name[dlev][AUTHOR_INDEX], num, lang[MSG_AUTHOR]);
-	    if (show_index[dlev][ATTACHMENT_INDEX]) {
-		fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n",
-			index_name[dlev][ATTACHMENT_INDEX],
-			lang[MSG_ATTACHMENT]);
+	    if (set_show_index_links && set_show_index_links != 4) {
+	        fprintf(fp,"<li><strong>%s %s:</strong> \n",
+			lang[MSG_MESSAGES], lang[MSG_SORTED_BY]);
+	        if (show_index[dlev][DATE_INDEX])
+		    fprintf(fp, "<a href=\"%s#%d\">[ %s ]</a>\n",
+			    index_name[dlev][DATE_INDEX], num, lang[MSG_DATE]);
+		if (show_index[dlev][THREAD_INDEX])
+		    fprintf(fp, "<a href=\"%s#%d\">[ %s ]</a>\n",
+			    index_name[dlev][THREAD_INDEX], num, lang[MSG_THREAD]);
+		if (show_index[dlev][SUBJECT_INDEX])
+		    fprintf(fp, "<a href=\"%s#%d\">[ %s ]</a>\n",
+			    index_name[dlev][SUBJECT_INDEX], num, lang[MSG_SUBJECT]);
+		if (show_index[dlev][AUTHOR_INDEX])
+		    fprintf(fp, "<a href=\"%s#%d\">[ %s ]</a>\n",
+			    index_name[dlev][AUTHOR_INDEX], num, lang[MSG_AUTHOR]);
+		if (show_index[dlev][ATTACHMENT_INDEX]) {
+		    fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n",
+			    index_name[dlev][ATTACHMENT_INDEX],
+			    lang[MSG_ATTACHMENT]);
+		}
 	    }
 
 	    if (set_custom_archives && *set_custom_archives)
@@ -1526,7 +1531,7 @@ void writearticles(int startnum, int maxnum)
 	    }
 	}
 
-	if (set_show_msg_links || !set_usetable)
+	if ((set_show_msg_links && set_show_msg_links != 4) || !set_usetable)
 	    fprintf(fp, "</ul>\n");
 
 	if (set_linkquotes || set_showhtml == 2)
@@ -1544,7 +1549,7 @@ void writearticles(int startnum, int maxnum)
 	 * Should we print out the message links ?
 	 */
 
-	if (set_show_msg_links) {
+	if (set_show_msg_links && set_show_msg_links != 3) {
 	  /* JK: removed a <p>\n here */
 	    fprintf(fp, "<ul>\n");
 
@@ -1639,28 +1644,30 @@ void writearticles(int startnum, int maxnum)
 			PAGE_BOTTOM, email->subdir);
 	else {
 	      int dlev = (email->subdir != NULL);
-	      if (!set_show_msg_links)
+	      if (!(set_show_msg_links && set_show_msg_links != 3))
 		  fprintf(fp, "<ul>\n");
-	      fprintf(fp,"<li><strong>%s %s:</strong> \n",
-		      lang[MSG_MESSAGES], lang[MSG_SORTED_BY]);
-	      if (show_index[dlev][DATE_INDEX])
-		  fprintf(fp,"<a href=\"%s#%d\">[ %s ]</a>\n",
-			  index_name[dlev][DATE_INDEX], num, lang[MSG_DATE]);
-	      if (show_index[dlev][THREAD_INDEX])
-		  fprintf(fp,"<a href=\"%s#%d\">[ %s ]</a>\n",
-			  index_name[dlev][THREAD_INDEX], num,
-			  lang[MSG_THREAD]);
-	      if (show_index[dlev][SUBJECT_INDEX])
-		  fprintf(fp,"<a href=\"%s#%d\">[ %s ]</a>\n",
-			  index_name[dlev][SUBJECT_INDEX], num,
-			  lang[MSG_SUBJECT]);
-	      if (show_index[dlev][AUTHOR_INDEX])
-		  fprintf(fp,"<a href=\"%s#%d\">[ %s ]</a>\n",
-			  index_name[dlev][AUTHOR_INDEX], num,
-			  lang[MSG_AUTHOR]);
-	      if (show_index[dlev][ATTACHMENT_INDEX]) {
-		  fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n",
-			  index_name[dlev][ATTACHMENT_INDEX], lang[MSG_ATTACHMENT]);
+	      if (set_show_index_links && set_show_index_links != 3) {
+		  fprintf(fp,"<li><strong>%s %s:</strong> \n",
+			  lang[MSG_MESSAGES], lang[MSG_SORTED_BY]);
+		  if (show_index[dlev][DATE_INDEX])
+		      fprintf(fp,"<a href=\"%s#%d\">[ %s ]</a>\n",
+			      index_name[dlev][DATE_INDEX], num, lang[MSG_DATE]);
+		  if (show_index[dlev][THREAD_INDEX])
+		      fprintf(fp,"<a href=\"%s#%d\">[ %s ]</a>\n",
+			      index_name[dlev][THREAD_INDEX], num,
+			      lang[MSG_THREAD]);
+		  if (show_index[dlev][SUBJECT_INDEX])
+		      fprintf(fp,"<a href=\"%s#%d\">[ %s ]</a>\n",
+			      index_name[dlev][SUBJECT_INDEX], num,
+			      lang[MSG_SUBJECT]);
+		  if (show_index[dlev][AUTHOR_INDEX])
+		      fprintf(fp,"<a href=\"%s#%d\">[ %s ]</a>\n",
+			      index_name[dlev][AUTHOR_INDEX], num,
+			      lang[MSG_AUTHOR]);
+		  if (show_index[dlev][ATTACHMENT_INDEX]) {
+		      fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n",
+			      index_name[dlev][ATTACHMENT_INDEX], lang[MSG_ATTACHMENT]);
+		  }
 	      }
 	      if (set_custom_archives && *set_custom_archives)
 		  fprintf(fp,"<li><strong>%s:</strong> %s\n", 
@@ -1689,6 +1696,11 @@ void writearticles(int startnum, int maxnum)
 		     free(ptr);
 	      }
 	      fprintf(fp, "</ul>\n");
+	}
+
+	if (set_txtsuffix) {
+	    fprintf(fp, "<p><a href=\"%.4d.%s\">%s</a>",
+		    email->msgnum, set_txtsuffix, lang[MSG_TXT_VERSION]);
 	}
 
 	printfooter(fp, mhtmlfooterfile, set_label, set_dir,
