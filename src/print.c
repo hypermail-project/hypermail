@@ -777,6 +777,7 @@ void printdates(FILE *fp, struct header *hp, int year, int month, struct emailin
 	  fprintf (fp, "%s", date_str);
 	  strcpy (prev_date_str, tmp);
 	}
+	date_str[0] = 0;
 	startline = "<li>";
 	break_str = "&nbsp;";
 	endline = "</li>";
