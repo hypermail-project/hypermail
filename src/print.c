@@ -2993,17 +2993,23 @@ void write_toplevel_indices(int amountmsgs)
 	        continue;
 
 	    if (!started_line) {
+	      time_t first_date = sd->first_email->fromdate;
+	      time_t last_date = sd->last_email->fromdate;
+	      if (set_use_sender_date) {
+		  first_date = sd->first_email->date;
+		  last_date = sd->last_email->date;
+	      }
 	      set_dateformat = verbose_dateformat;
-	      strcpy (verbose_period_name, getdatestr (sd->first_email->fromdate));
+	      strcpy (verbose_period_name, getdatestr (first_date));
 	      set_dateformat = abbr_dateformat;
-	      strcpy (abbr_period_name, getdatestr (sd->first_email->fromdate));
-	      end_date = getdatestr (sd->last_email->fromdate);
+	      strcpy (abbr_period_name, getdatestr (first_date));
+	      end_date = getdatestr (last_date);
 	      if (strcmp (abbr_period_name, end_date)) {
 		strcat (abbr_period_name, lang[MSG_TO]);
 		strcat (abbr_period_name, end_date);
 		/* do the same thing for the verbose one */
 		set_dateformat = verbose_dateformat;
-		end_date = getdatestr (sd->last_email->fromdate);
+		end_date = getdatestr (last_date);
 		strcat (verbose_period_name, lang[MSG_TO]);
 		strcat (verbose_period_name, end_date);
 	      }

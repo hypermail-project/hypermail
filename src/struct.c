@@ -137,7 +137,7 @@ void fill_email_dates(struct emailinfo *e, char *date, char *fromdate, char *iso
 		    date_parsed[24] = '\0';
 		    fromdate_parsed[24] = '\0';
 		    rbs_bigtime++;
-					fprintf(stderr, "%d [%d:%d]: %s: received before sent\n %-38.38s %-30.38s\n %-38.38s %-38.38s\n", num, rbs, rbs_bigtime, msgid, fromdate, date, fromdate_parsed, date_parsed);
+		    fprintf(stderr, "%d [%d:%d]: %s: received before sent\n %-38.38s %-30.38s\n %-38.38s %-38.38s\n", num, rbs, rbs_bigtime, msgid, fromdate, date, fromdate_parsed, date_parsed);
 		}
 	    }
 #endif
@@ -251,7 +251,8 @@ struct emailinfo *addhash(int num, char *date, char *name, char *email, char *ms
 	e->name = strsav(name);
 
     fill_email_dates(e, date, fromdate, isodate, isofromdate);
-    e->subdir = msg_subdir(e->msgnum, e->fromdate);
+    e->subdir = msg_subdir(e->msgnum, set_use_sender_date ? e->date
+			   : e->fromdate);
     if (e->subdir && set_increment != -1) {
 	if (!e->subdir->first_email)
 	    e->subdir->first_email = e;
@@ -938,6 +939,8 @@ struct header *addheader(struct header *hp, struct emailinfo *email, int sorttyp
 
 	if (sorttype == 2) {
 	    yearsecs = hp->data->datenum = email->fromdate;
+	    if (set_use_sender_date)
+	        yearsecs = hp->data->datenum = email->date;
 	    if (!firstdatenum || yearsecs < firstdatenum)
 		firstdatenum = yearsecs;
 	    if (yearsecs > lastdatenum)

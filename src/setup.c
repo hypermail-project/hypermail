@@ -69,6 +69,7 @@ bool set_href_detection;
 bool set_mbox_shortened;
 bool set_report_new_file;
 bool set_report_new_folder;
+bool set_use_sender_date;
 
 int set_showhtml;
 int set_thrdlevels;
@@ -766,6 +767,13 @@ struct Config cfg[] = {
      "# Set this to On to have it print (on stdout) the names of any\n"
      "# new files created for new messages. It will print the full path\n"
      "# if that is what you use to specify the archive directory.\n", FALSE},
+
+    {"use_sender_date", &set_use_sender_date, BFALSE, CFG_SWITCH,
+     "# Set this to On to have it use the Date: header (created by the\n"
+     "# the system that sent the message) rather than the date/time the\n"
+     "# message was received, for purposes such as putting in folders\n"
+     "# or sorting. Details of which purposes this affects may change\n"
+     "# in the future.\n", FALSE},
 };
 
 /* ---------------------------------------------------------------- */
