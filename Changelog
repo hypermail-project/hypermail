@@ -1,5 +1,8 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Peter McCluskey (May 30 2001)
+  - changes to Swedish from peter karlsson.
+
 Peter McCluskey (May 22 2001)
   - change default value for avoid_top_indices to none.
   - fixed make to handle pcre properly.
