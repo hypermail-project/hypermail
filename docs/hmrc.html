@@ -13,7 +13,7 @@ The hypermail list configuration file is used to specify <em>list
 specific</em> or <em>user specific</em> information to hypermail.
 Comments are denoted by the '#' character at the begining of the line.
 The file to use can be specified via the -c command line argument.
-The default file is .hmrc in the user's home direectory.
+The default file is .hmrc in the user's home directory.
 </p><p>
 Examples listed on this page are shown <i>in this style</i>. The default
 value is shown unless otherwise indicated. <b>Off</b> is equivalent
@@ -36,7 +36,6 @@ on or off.
   <li><a href="#headers">Headers</a>
     <ul>
     <li><a href="#label">label</a> set the &lt;title&gt;
-    <li><a href="#usetable">usetable</a> style for links at top and bottom
     <li><a href="#hmail">hmail</a> list submission address
     <li><a href="#newmsg_command">newmsg_command</a> new list message mailto
     <li><a href="#replymsg_command">replymsg_command</a> reply mailto
@@ -58,7 +57,7 @@ on or off.
     <li><a href="#monthly_index">monthly_index</a> create monthly index files
     <li><a href="#yearly_index">yearly_index</a> create yearly index files
     <li><a href="#defaultindex">defaultindex</a> what goes in index.html
-    <li><a href="#default_top_index">default_top_index</a> what goes in top direectory index.html
+    <li><a href="#default_top_index">default_top_index</a> what goes in top directory index.html
     <li><a href="#avoid_indices">avoid_indices</a> don't generate these files
     <li><a href="#avoid_top_indices">avoid_top_indices</a> don't generate these files
     <li><a href="#attachmentsindex">attachmentsindex</a> create these files
@@ -88,8 +87,8 @@ on or off.
   <li><a href="#msg_body">Body style</a>
     <ul>
     <li><a href="#showhtml">showhtml</a> how much conversion to html?
+    <li><a href="#href_detection">href_detection</a> how to handle URLs
     <li><a href="#showbr">showbr</a> line wrapping for body
-    <li><a href="#showhr">showhr</a> hr at top, bottom
     <li><a href="#iquotes">iquotes</a> italicize quotes
     <li><a href="#mcss_url">mcss_url</a> stylesheet
     <li><a href="#quote_hide_threshold">quote_hide_threshold</a> cut excessive quoting
@@ -161,6 +160,7 @@ on or off.
   <li><a href="#sysmisc">Miscellaneous</a>
     <ul>
     <li><a href="#usegdbm">usegdbm</a> cache header info
+    <li><a href="#writehaof">writehaof</a> write XML archive overview file
     <li><a href="#append">append</a> create mbox archive also
     <li><a href="#append_filename">append_filename</a> name of mbox output
     <li><a href="#txtsuffix">txtsuffix</a> save each raw message
@@ -175,6 +175,8 @@ on or off.
     <li><a href="#uselock">uselock</a> serialize
     <li><a href="#locktime">locktime</a> timeouts
     <li><a href="#base_url">base_url</a>
+    <li><a href="#report_new_folder">report_new_folder</a> notify when creating directory
+    <li><a href="#report_new_file">report_new_file</a> notify when creating new message files
     </ul>
   </ul>
 </ul>
@@ -255,14 +257,6 @@ This is the default title you want to call your archives.
 <br> Set this to NONE to use the name of the input mailbox.
 <br>
 <br><i>label = Hypermail Development List</i>  (default value is filename?????)
-</dd>
-<a name="usetable"></a>
-<dt><strong>usetable = [ 0 | 1 ]</strong></dt><dd>
- Setting this variable to 1 will tell Hypermail to generate an
-index menu at the top and bottom of each page in a table format.
-Set to 0 if you want the standard Hypermail page look and feel.
-<br>
-<br><i>usetable = 0</i>
 </dd>
 
 <a name="hmail"></a>
@@ -594,6 +588,15 @@ similar to that in <a href="http://www.cs.wustl.edu/~seth/txt2html/">txt2html.pl
 <br><i>showhtml = 1</i>
 </dd>
 
+<a name="href_detection"></a>
+<dt><strong>href_detection = [ 0 | 1 ]</strong></dt><dd>
+ Set this to 1 to assume that any string on the body of the message that
+says &lt;A HREF=&quot; ... &lt;/A&gt; is a URL, together with its markup
+and treat it as such.
+<br>
+<br><i>href_detection = 0</i>
+</dd>
+
 <a name="showbr"></a>
 <dt><strong>showbr = [ 0 | 1 ]</strong></dt><dd>
 Set this to 1 if you want article lines to end with the &lt;br&gt; tag.
@@ -601,14 +604,6 @@ Else set to 0 to have non-quoted lines word-wrap. Only takes effect
 if showhtml is set to 1.
 <br>
 <br><i>showbr = 1</i>
-</dd>
-
-<a name="showhr"></a>
-<dt><strong>showhr = [ 0 | 1 ]</strong></dt><dd>
-Set to 1 if you want horizontal rules &lt;HR&gt; before and after 
-the articles. Set to 0 if you don't.
-<br>
-<br><i>showhr = 1</i>
 </dd>
 <a name="iquotes"></a>
 <dt><strong>iquotes = [ 0 | 1 ]</strong></dt><dd>
@@ -644,8 +639,7 @@ quoted text exceeds the number indicated by this option.
  Set this to 1 to generate (in addition to the usual files),
 a file for each thread that contains all the messages in that
 thread. The first line in each thread of the thread index page
-links to this file instead of to a single message. This option
-should still be considered experimental.
+links to this file instead of to a single message.
 <br>
 <br><i>files_by_thread = 0</i>
 </dd>
@@ -699,7 +693,7 @@ Set this to On to make hypermail not output real email addresses
 in the output HTML but instead it will obfuscate them a little.
 You can control the obfuscation with <a href="#antispamdomain">antispamdomain</a>.
 <br>
-<br><i>spamprotect = Off</i>
+<br><i>spamprotect = On</i>
 </dd>
 <a name="antispamdomain"></a>
 <dt><strong>antispamdomain = string with invalid domain</strong></dt><dd>
@@ -718,7 +712,7 @@ ids in HTML comments (sometimes used internally by hypermail) but
 instead it will obfuscate them a little so they don't look like
 email addresses to spammers.
 <br>
-<br><i>spamprotect_id = Off</i>
+<br><i>spamprotect_id = On</i>
 </dd>
 <h3><a name="msg_head">Message page headers/footers</a></h3>
 <a name="showreplies"></a>
@@ -1121,6 +1115,13 @@ It will not provide any speedup with the <a href="#linkquotes">linkquotes</a> op
 <br>
 <br><i>usegdbm = 0</i>
 </dd>
+<a name="writehaof"></a>
+<dt><strong>writehaof = [ 0 | 1 ]</strong></dt><dd>
+Set this to On to let hypermail write an XML archive overview file
+in each directory. The filename is archive_overview.haof.
+<br>
+<br><i>writehaof = 0</i>
+</dd>
 <a name="append"></a>
 <dt><strong>append = [ 0 | 1 ]</strong></dt><dd>
 Set this to On to maintain a parallel mbox archive. The file
@@ -1213,7 +1214,7 @@ the attachments relates to.
 <br><i>progress = 0</i>
 </dd>
 <a name="warn_surpressions"></a>
-<dt><strong> warn_surpressions  [ 0 | 1 ]</strong></dt><dd>
+<dt><strong> warn_surpressions = [ 0 | 1 ]</strong></dt><dd>
 Set this to 1 to get warnings (on stdout) about messages that
 are not converted because of they are missing a msgid (if
 require_msgids is On) or because one of the following options
@@ -1223,7 +1224,7 @@ filter_require filter_out_full_body filter_require_full_body.
 <br><i>warn_surpressions = 1</i>
 </dd>
 <a name="uselock"></a>
-<dt><strong> uselock  [ 0 | 1 ]</strong></dt><dd>
+<dt><strong> uselock = [ 0 | 1 ]</strong></dt><dd>
 Controls whether to use hypermail's built-in locking mechanism. 
 By default, this option is set to <strong>1</strong>. Set it to 
 <strong>0</strong> if you have an external locking mechanism,
@@ -1248,6 +1249,23 @@ directories more than one level deep (e.g. with '%y/%m').
 <br>
 <br><i>base_url = http://www.hypermail.org/mail-archive/</i>
 </dd>
+<a name="report_new_folder"></a>
+<dt><strong>report_new_folder = [ 0 | 1 ]</strong></dt><dd>
+Set this to On to have it print (on stdout) the names of any
+new directories created pursuant to the folder_by_date or
+msgsperfolder option, or the initial creation of the archive.
+It will print the full path if that is what you use to specify
+the archive directory. Does not print anything when attachment
+or metadata directories are created.<br>
+<br><i>report_new_folder = 0</i>
+</dd>
+<a name="report_new_file"></a>
+<dt><strong>report_new_file = [ 0 | 1 ]</strong></dt><dd>
+Set this to On to have it print (on stdout) the names of any
+new files created for new messages. It will print the full path
+if that is what you use to specify the archive directory.
+<br><i>report_new_file = 0</i>
+</dd>
 </dl>
 <p>
 <hr noshade>
@@ -1266,7 +1284,7 @@ and <STRONG><A HREF="archive_search.html">Adding a Search Engines to your Hyperm
 
 <hr noshade>
 <small><em><strong>
-Last updated November 24, 2002
+Last updated February 4, 2004
 </strong></em></small>
 
 </body>
