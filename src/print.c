@@ -1346,7 +1346,7 @@ void writearticles(int startnum, int maxnum)
 		ptr = makemailcommand(set_mailcommand,
 				      email->emailaddr,
 				      email->msgid, email->subject);
-		fprintf(fp, "<strong>From:</strong> <a href=\"%s\">", ptr ? ptr : "");
+		fprintf(fp, "<strong>%s:</strong> <a href=\"%s\">", lang[MSG_FROM], ptr ? ptr : "");
 		if (ptr)
 		    free(ptr);
 		fprintf(fp, "<em>%s</em></a><br>\n", email->name);
@@ -1359,8 +1359,8 @@ void writearticles(int startnum, int maxnum)
 		ptr = makemailcommand(set_mailcommand,
 				      email->emailaddr,
 				      email->msgid, email->subject);
-		fprintf(fp, "<strong>From:</strong> %s (<a href=\"%s\">",
-			email->name, ptr ? ptr : "");
+		fprintf(fp, "<strong>%s:</strong> %s (<a href=\"%s\">",
+			lang[MSG_FROM], email->name, ptr ? ptr : "");
 		if (ptr)
 		    free(ptr);
 		fprintf(fp, "<em>%s</em></a>)<br>\n", email->emailaddr);
@@ -1368,12 +1368,12 @@ void writearticles(int startnum, int maxnum)
 	    else
 	    {
 		fprintf(fp,
-			"<strong>From:</strong> %s (<em>%s</em>)<br>\n",
-			email->name, 
+			"<strong>%s:</strong> %s (<em>%s</em>)<br>\n",
+			lang[MSG_FROM], email->name, 
 			(strcmp(email->emailaddr,"(no email)")!=0) ? email->emailaddr : "no email");
 	    }
 	}
-	fprintf(fp, "<strong>Date:</strong> %s\n<p>\n",
+	fprintf(fp, "<strong>%s:</strong> %s\n<p>\n", lang[MSG_CDATE],
 		getdatestr(email->date));
 
 	/*
