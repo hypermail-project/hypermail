@@ -1,6 +1,8 @@
 Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (June 20, 2003)
+  Fix a core dump with empty Date:.
 
  Jose Kahan (Jun 10, 2003)
   - Some extra WAI enhancements requested during the period of public comments:

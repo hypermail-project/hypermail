@@ -70,6 +70,8 @@ void fill_email_dates(struct emailinfo *e, char *date, char *fromdate, char *iso
     }
     else {
 	e->date = e->fromdate = -1;
+	if (date == NULL)
+	    date = NODATE;
 	if (!strcmp(date, NODATE)) {
 	    date_valid = 0;
 	}
