@@ -1144,7 +1144,7 @@ int parsemail(char *mbox,	/* file name */
 				   scanned the headers of this mail. */
 
     char Mime_B = FALSE;
-    char boundbuffer[128] = "";
+    char boundbuffer[256] = "";
 
     struct boundary *boundp = NULL;	/* This variable is used to store a stack 
 					   of boundary separators in cases with mimed 
@@ -1162,7 +1162,7 @@ int parsemail(char *mbox,	/* file name */
 
     char *charset = NULL;	/* this is the LOCAL charset used in the mail */
 
-    char *boundary = NULL;
+    char *boundary_id = NULL;
     char type[129];		/* for Content-Type type */
     char charbuffer[129];	/* for Content-Type charset */
     FileStatus file_created = NO_FILE;	/* for attachments */
@@ -1191,6 +1191,8 @@ int parsemail(char *mbox,	/* file name */
 	/* add to an mbox as we read */
 
 	if(set_append_filename && strncmp(set_append_filename, "$DIR/", 5)) {
+	    if(strlen(set_append_filename) >= sizeof(filename))
+	        progerr("append_filename too long");
 	    strcpy(filename, set_append_filename);
 	}
 	else if(trio_snprintf(filename, sizeof(filename), "%s%s", dir,
@@ -1505,7 +1507,8 @@ int parsemail(char *mbox,	/* file name */
                                 np = fname+9;
                                 if (*np == '"')
                                      np++;
-                                for (jp = attachname; np && *np != '\n' && *np != '"';) {
+                                for (jp = attachname; np && *np != '\n' && *np != '"'
+				       && jp < attachname + sizeof(attachname) - 1;) {
                                      *jp++ = *np++;
                                 }
                                 *jp = '\0';
@@ -1622,6 +1625,8 @@ int parsemail(char *mbox,	/* file name */
 				file_created = MAKE_FILE; /* please make one */
 				description = set_alts_text ? set_alts_text
 				  : "alternate version of message";
+				if (strlen(description) >= sizeof(attachname))
+				  progerr("alts_text too long");
 				strcpy(attachname, description);
 				safe_filename(attachname);
 			    }
@@ -1690,24 +1695,24 @@ int parsemail(char *mbox,	/* file name */
 			     * Find the first boundary separator 
 			     */
 
-			    boundary = strcasestr(ptr, "boundary=");
+			    boundary_id = strcasestr(ptr, "boundary=");
 #if DEBUG_PARSE
 			    printf("boundary found in %s\n", ptr);
 #endif
-			    if (boundary) {
-				boundary = strchr(boundary, '=');
-				if (boundary) {
-				    boundary++;
-				    while (isspace(*boundary))
-					boundary++;
-				    if ('\"' == *boundary) {
-					sscanf(++boundary, "%[^\"]",
+			    if (boundary_id) {
+				boundary_id = strchr(boundary_id, '=');
+				if (boundary_id) {
+				    boundary_id++;
+				    while (isspace(*boundary_id))
+					boundary_id++;
+				    if ('\"' == *boundary_id) {
+					sscanf(++boundary_id, "%255[^\"]",
 					       boundbuffer);
 				    }
 				    else
-					sscanf(boundary, "%[^;\n]",
+					sscanf(boundary_id, "%255[^;\n]",
 					       boundbuffer);
-				    boundary = boundbuffer;
+				    boundary_id = boundbuffer;
 				}
 
 				/* let's remember 'bp' and 'lp' */
@@ -1731,20 +1736,20 @@ int parsemail(char *mbox,	/* file name */
 					  origbp = append_body(origbp, &origlp, bp);
 					bp = origbp;
 					lp = origlp;
-					boundary = NULL;
+					boundary_id = NULL;
 					goto leave_header;
 				    }
 				    /* save lines in case no boundary found */
 				    bp = addbody(bp, &lp, line_buf, bodyflags);
 				}
-				if (!strncmp(line_buf + set_ietf_mbox + 2 + strlen(boundary), "--", 2)
+				if (!strncmp(line_buf + set_ietf_mbox + 2 + strlen(boundary_id), "--", 2)
 				    && bp != origbp) {
 				    /* end of mime found before mime start */
 				    /* probably a Microsoft Outlook bug */
 				    origbp = append_body(origbp, &origlp, bp);
 				    bp = origbp;
 				    lp = origlp;
-				    boundary = NULL;
+				    boundary_id = NULL;
 				    goto leave_header;
 				}
 				free_body(bp);
@@ -1808,7 +1813,7 @@ int parsemail(char *mbox,	/* file name */
 
 			    }
 			    else
-				boundary = NULL;
+				boundary_id = NULL;
 			}
 		    }
 		    else 
