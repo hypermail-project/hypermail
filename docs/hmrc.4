@@ -1,4 +1,4 @@
-.TH hmrc 4 "February 01, 2002"
+.TH hmrc 4 "February 04, 2004"
 .SH NAME
 hmrc \- Hypermail configuration file 
 .SH DESCRIPTION
@@ -7,7 +7,7 @@ can use a configuration file to allow you to customize the individual
 aspects of a list.  In past versions of hypermail it was necessary for 
 all hmrc variables to begin with 'hm_'.  While still supported, it is 
 not necessary to use the 'hm_' prefix any longer and this document
-reflects that. [This page is out of date. See the hmrc.html file for
+reflects that. [This page may be out of date. See the hmrc.html file for
 complete and up to date info.]
 .RE
 .LP
@@ -42,12 +42,6 @@ Boolean numbers can have the value of
 or
 .B 1.
 .TP
-.B htmlsuffix = "suffix"
-Use this to specify the html file suffix to be used when Hypermail 
-generates the html files.  This is dependent on local needs.  Do not 
-put a '.' in the value.  It would result in "file..html", probably 
-not what you want. 
-.TP
 .B language = two letter language specification
 This is a two-letter string specifying the default language to use, or a
 longer string specifying a language and locale.
@@ -57,55 +51,24 @@ and generating archives.
 .in 10
 .B Current supported languages:
 
-      de - German
-      en - English
-      es - Spanish
-      fi - Finnish
-      fr - French
-      gr - Greek
-      el - Greek
-      is - Icelandic 
-      no - Norwegian
-      pl - Polish
-      ru - Russian
-      sv - Swedish
+      de (de_DE) - German
+      en (en_US) - English
+      es (es_ES) - Spanish
+      fi (fi_FI) - Finnish
+      fr (fr_FR) - French
+      el (el) - Greek
+      gr (el_GR) - Greek
+      is (is_IS) - Icelandic
+      no (no_NO) - Norwegian
+      pl (pl_PL) - Polish
+      pt (pt_BR) - Brazilian Portuguese
+      ru (ru_RU) - Russian
+      sv (sv_SE) - Swedish
 
 .nr
 The directory /usr/share/i18n/locales on many systems has the locale
 codes that are available on that system.
 
-.TP
-.B uselock = boolean_number
-Controls whether to use hypermail's built-in locking mechanism.  By default,
-this option is set to 
-.B 1.
-Set it to 
-.B 0
-if you have an external locking mechanism,
-like, for example, when using procmail or smartlist.
-.TP
-.B locktime = number-of-seconds
-Set this to the number of seconds that a lock should be honored
-when processing inbound messages.  Defaults to 3600 seconds.
-.TP
-.B usemeta = boolean_number
-This option allows you to use metadata to store the content type of a MIME
-attachment and, later on,  when a user browses the attachment, send back
-this information in the HTTP Content-Type header.  When set to
-.B 1,
-the Content-Type
-header of  a MIME attachment will be stored in a metadata
-file.  Let us say that the MIME attachments for a message are stored in
-directory
-.B att-num.
-The metadata for those attachments will then be stored in directory
-.B att-num/.meta.
-If a MIME attachment is stored in file
-.B att-file,
-its metadata will be stored in file
-.B att-file.meta.
-This convention is directly compatible with the Apache server handling of
-metada.
 .TP
 .B mbox = "filename"
 This is the mailbox to read messages in from.  Set this with a value of
@@ -119,6 +82,107 @@ will tell hypermail that the mbox is formatted according to the IETF
 mbox convention: all lines, except for the envelope, are prefixed with a
 .B >
 char.
+.TP
+.B linkquotes = [ 0 | 1 ]
+Set this to On to create fine-grained links from quoted
+text to the text where the quote originated. It also improves
+the threads index file by more accurately matching messages
+with replies. Note that this may be rather cpu intensive (see
+the searchbackmsgnum option to alter the performance).
+.TP
+.B eurodate = boolean_number
+Set this to
+.B 1
+to display article received dates with days before months instead of months 
+before days.
+.TP
+.B folder_by_date = strftime date format
+This string causes the messages to be put in subdirectories
+by date. The string will be passed to strftime(3) to generate
+subdirectory names based on message dates. Suggested values are
+"%y%m" or "%b%y" for monthly subdirectories, "%Y" for
+yearly, "%G/%V" for weekly. Do not alter this for an existing
+archive without removing the old html files. If you use this
+and update the archive incrementally (e.g. with -u), you must
+use the usegdbm option.
+.TP
+.B msgsperfolder = number
+Put messages in subdirectories with this many messages per
+directory. Do not use this and folder_by_date on the same archive.
+Do not alter this for an existing archive without removing the old
+html files. Deleted/expired messages ARE COUNTED for the purpose
+of deciding how many messages to put in a subdirectory.
+.TP
+.B increment = [ 0 | 1 | -1 ]
+Define as
+.B 1
+to append all input messages to the end of existing archives.
+ Define as
+.B 0
+for it to read a mailbox that corresponds to the entire
+archive. (See the mbox_shortened option for
+an exception to the requirement that it be the entire archive).
+If there are any existing html messages, it will figure out which
+ones at the end of the mailbox are new, and add only those that haven't been
+converted yet.
+ Define as
+.B -1
+to have hypermail figure out whether the input
+is entirely new messages to be appended or whether it contains
+messages that are already in the archive. A value of -1 cannot be
+used with the mbox_shortened option or with the -i command line
+option or with mbox = NONE.
+.TP
+.B label = "label name"
+Define this as the label to put in archives. 
+.TP
+.B dir = "directory"
+This is the directory that Hypermail will look for when creating and
+updating archives.  If defined as
+.B "NONE"
+the directory will have the same name as the input mailbox.
+.LP
+.in 10
+Using date substitution cookies, you can tell Hypermail to archive 
+messages in directories by the date they were received.
+.LP
+.in 10
+.B Substitution cookies supported
+
+    %d - two digit day of month (1-28/30/31)
+    %D - three letter day of the week
+    %m - two digit month of year (1-12)
+    %M - three letter month of year (Jan, ..., Dec)
+    %y - four digit year (1990,..2001)
+.LP
+.in 10
+For example, if you wished to have Hypermail archive files by year and month,
+you might use
+.LP
+.in 20
+.B dir = /lists/somelist/%y/%M
+.LP
+.in 10
+When a message was processed it would be put into a directory 
+.B /lists/somelist/1998/Jun 
+(if the message is processed in June of 1998).  If the message arrives and there 
+is no storage directory, Hypermail will automatically create it and store 
+the message in the new directory.
+ Note that the date that Hypermail was run will be used, not
+a date from the message (use the folder_by_date option to
+have Hypermail use dates from messages).
+.TP
+.B dateformat = strftime date format
+Format used in 
+.B strftime(3) 
+call for displaying dates.
+See 
+.B strftime(3) 
+for the valid conversion specifications.
+.TP
+.B stripsubject = "string"
+A string to be stripped from all subject lines. Helps unclutter
+mailing lists which add tags to subject lines.
 .TP
 .B archives = "URL"
 This will create a link in the archived index pages labeled
@@ -142,6 +206,25 @@ to the specified URL.  Set this to
 .B "NONE"
 to omit such a link.
 .TP
+.B usemeta = boolean_number
+This option allows you to use metadata to store the content type of a MIME
+attachment and, later on,  when a user browses the attachment, send back
+this information in the HTTP Content-Type header.  When set to
+.B 1,
+the Content-Type
+header of  a MIME attachment will be stored in a metadata
+file.  Let us say that the MIME attachments for a message are stored in
+directory
+.B att-num.
+The metadata for those attachments will then be stored in directory
+.B att-num/.meta.
+If a MIME attachment is stored in file
+.B att-file,
+its metadata will be stored in file
+.B att-file.meta.
+This convention is directly compatible with the Apache server handling of
+metada.
+.TP
 .B indextable = boolean_number
 Setting this variable to 
 .B 1
@@ -150,14 +233,6 @@ Subject/Author/Date listings using a table format.
 Set to 
 .B 0 
 if you want the standard Hypermail index page look and feel. 
-.TP
-.B usetable = boolean_number
-Setting this variable to 
-.B 1
-will tell Hypermail to generate an index menu at the top and bottom 
-of each page in a table format.  Set to 
-.B 0 
-if you want the standard Hypermail page look and feel. 
 .TP
 .B reverse = boolean_number
 Setting this variable to
@@ -204,11 +279,6 @@ Set this to
 .B 1
 to italicize quoted lines.
 .TP
-.B showhr = boolean_number
-Set this to
-.B 1
-to place horizontal rules before and after articles.
-.TP
 .B show_msg_links = boolean_number
 Set this to
 .B 1
@@ -216,12 +286,6 @@ to put the individual message links at the top of the individual
 message pages.  Set this to
 .B 0
 to produce pages without the Next, Previous, Reply, In-Reply-To, etc.  links.
-.TP
-.B eurodate = boolean_number
-Set this to
-.B 1
-to display article received dates with days before months instead of months 
-before days.
 .TP
 .B showreplies = boolean_number
 Set this to
@@ -247,7 +311,7 @@ Set this to
 .B 1
 to make hypermail not output real email addresses in the output
 HTML, but instead obfuscate them a little.  By default email
-addresses are not obfuscated.
+addresses are obfuscated.
 .TP
 .B antispam_at = "string"
 Set this to 
@@ -255,23 +319,19 @@ Set this to
 make hypermail use something like "_at_" instead of the RFC 2822 @ address
 separator.
 .TP
+.B spamprotect_id = boolean_number
+Set this to 
+.B 1
+to make hypermail not output real email message
+ids in HTML comments (sometimes used internally by hypermail) but
+instead it will obfuscate them a little so they don't look like
+email addresses to spammers.
+.TP
 .B attachmentsindex = boolean_number
 Set this to
 .B 0
 to make hypermail not output an index of articles with attachments.
 By default hypermail outputs this index.
-.TP
-.B dateformat = strftime date format
-Format used in 
-.B strftime(3) 
-call for displaying dates.
-See 
-.B strftime(3) 
-for the valid conversion specifications.
-.TP
-.B stripsubject = "string"
-A string to be stripped from all subject lines. Helps unclutter
-mailing lists which add tags to subject lines.
 .TP
 .B mailto = "address"
 The address of the contact point that is put in the HTML header line 
@@ -323,44 +383,179 @@ Hypermail will add the DOMAINADDR to the email address.  If defined as
 .B "NONE",
 this feature is turned off.
 .TP
-.B label = "label name"
-Define this as the label to put in archives. 
+.B htmlsuffix = "suffix"
+Use this to specify the html file suffix to be used when Hypermail 
+generates the html files.  This is dependent on local needs.  Do not 
+put a '.' in the value.  It would result in "file..html", probably 
+not what you want. 
 .TP
-.B dir = "directory"
-This is the directory that Hypermail will look for when creating and
-updating archives.  If defined as
-.B "NONE"
-the directory will have the same name as the input mailbox.
-.LP
-.in 10
-Using date substitution cookies, you can tell Hypermail to archive 
-messages in directories by the date they were received.
-.LP
-.in 10
-.B Substitution cookies supported
+.B describe_folder = "string describing folder"
+Controls the labels used in folders.html to describe the
+directories created by the folder_by_date or msgsperfolder
+options. For folder_by_date labels, the describe_folder string
+will be passed to strftime(3) the same as the folder_by_date string.
+For msgsperfolder:
 
-    %d - two digit day of month (1-28/30/31)
-    %D - three letter day of the week
-    %m - two digit month of year (1-12)
-    %M - three letter month of year (Jan, ..., Dec)
-    %y - four digit year (1990,..2001)
-.LP
-.in 10
-For example, if you wished to have Hypermail archive files by year and month,
-you might use
-.LP
-.in 20
-.B dir = /lists/somelist/%y/%M
-.LP
-.in 10
-When a message was processed it would be put into a directory 
-.B /lists/somelist/1998/Jun 
-(if the message is processed in June of 1998).  If the message arrives and there 
-is no storage directory, Hypermail will automatically create it and store 
-the message in the new directory.
- Note that the date that Hypermail was run will be used, not
-a date from the message (use the folder_by_date option to
-have Hypermail use dates from messages).
+  %d for the directory number (starts with 0)
+  %D for the directory number (starts with 1)
+  %m for the number of the first message in the directory
+  %M for the number of the last message that can be put in the directory.
+
+.TP
+.B latest_folder = "string"
+If folder_by_date or msgsperfolder are in use, create
+a symbolic link by this name to the most recently created
+subdirectory. Note that many web servers are configured to
+not follow symbolic links for security reasons.
+.TP
+.B base_url = "url"
+The url of the archive's main directory. This is needed when
+the latest_folder option is used and the folder_by_date makes
+directories more than one level deep (e.g. with '%y/%m').
+.TP
+.B iso2022jp = boolean_number
+Set this to On to support ISO-2022-JP messages.
+.TP
+.B uselock = boolean_number
+Controls whether to use hypermail's built-in locking mechanism.  By default,
+this option is set to 
+.B 1.
+Set it to 
+.B 0
+if you have an external locking mechanism,
+like, for example, when using procmail or smartlist.
+.TP
+.B locktime = number-of-seconds
+Set this to the number of seconds that a lock should be honored
+when processing inbound messages.  Defaults to 3600 seconds.
+.TP
+.B deleted = "list of headers"
+This is the list of headers that indicate the message should
+not be displayed if the value of this header is 'yes'.
+The default is "X-Hypermail-Deleted X-No-Archive".
+.TP
+.B expires = "list of headers"
+This is the list of headers that indicate the message should
+not be displayed if the value of this header is a date in the past.
+The default value is "Expires".
+.TP
+.B delete_older = "date"
+Any message older than this date should not be displayed.
+Example: delete_older = "Wed, 14 Mar 2001 12:59:51 +0200"
+.TP
+.B delete_newer = "date"
+Any message newer than this date should not be displayed.
+.TP
+.B delete_msgnum = "list of message numbers"
+ This is the list of message numbers that should be deleted from the
+html archive. The mbox is not changed.
+.TP
+.B delete_level = [ 0 | 1 | 2 | 3 ]
+ 0 - remove deleted and expired files. Note that with this choice threading may be screwed up if there are replies to deleted or expired options and the archive is updated incrementally
+ 1 - remove message body
+ 2 - remove message body for deleted messages, leave expired messages
+ 3 - leave all messages
+Deleted and expired messages are removed from the index files
+regardless of the delete_level selection. The default is 1.
+.TP
+.B txtsuffix = "suffix"
+ If you want the original mail messages archived in individual files,
+set this to the extension that you want these messages to have
+(recommended value: txt).
+.TP
+.B filter_out = "list of patterns"
+Delete from the html archives any message having a header line
+which matches any of these expressions. Uses the same rules for
+deletion as the expires option. The expressions use the same
+syntax as Perl regular expressions.
+.TP
+.B filter_require = "list of patterns"
+Delete from the html archives any message not having header lines
+which match each of these expressions. Uses the same rules for
+deletion as the expires option. The expressions use the same
+syntax as Perl regular expressions.
+.TP
+.B filter_out_full_body = "list of patterns"
+Delete from the html archives any message having a line
+which matches any of these expressions. Uses the same rules for
+deletion as the expires option. The expressions use the same
+syntax as Perl regular expressions.
+.TP
+.B filter_require_full_body = "list of patterns"
+Delete from the html archives any message not having lines
+which match each of these expressions. Uses the same rules for
+deletion as the expires option. The expressions use the same
+syntax as Perl regular expressions.
+.TP
+.B save_alts = [ 0 | 1 | 2 ]
+This controls what happens to alternatives (other than the prefered
+alternative) for multipart/alternative messages.
+ 0 - discard non-prefered alternatives
+ 1 - show all alternatives inline
+ 2 - put non-prefered alternatives in a separate file.
+.TP
+.B alts_text = "string"
+If save_alts is 1, this text is put between the alternatives.
+If save_alts is 2, this text is used to describe the link to each
+alternative file.
+.TP
+.B warn_surpressions = boolean_number
+Set this to On to get warnings (on stdout) about messages that
+are not converted because of they are missing a msgid (if
+require_msgids is On) or because one of the following options
+surpressed it: deleted expires delete_msgnum filter_out
+filter_require filter_out_full_body filter_require_full_body.
+.TP
+.B unsafe_chars = "characters"
+Any characters listed in this string are removed from user-specified
+attachment filenames. Those characters will be replaced by a "_"
+(which means that specifying "_" here won't have any effect).
+Note that many characters (including / and ) are removed by the
+safe_filename in parse.c regardless of what this option says. There
+might be some security problems that can be prevented if you specify
+"." here (e.g. if a web server is configured to enable server side
+includes on filenames ending in something other than .shtml), but
+that will prevent browsers from recognizing many file types.
+.TP
+.B files_by_thread = boolean_number
+Set this to On to generate (in addition to the usual files),
+a file for each thread that contains all the messages in that thread.
+.TP
+.B href_detection = boolean_number
+Set this to On to assume that any string on the body of the message
+that says <A HREF=" ... </A> is a URL, together with its markup
+and treat it as such.
+.TP
+.B mbox_shortened = boolean_number
+Set this to On to enable use of mbox that has had some of its
+initial messages deleted. Requires usegdbm = 1 and increment = 0.
+The first message in the shortened mbox must have a Message-Id header.
+If discard_dup_msgids is 0, the first message in the shortened mbox
+may not have the same Message-Id as a message that was deleted.
+The mbox may not be altered in any way other than deleting from
+beginning of the mbox or appending new messages to the end (unless
+you rebuild the archive from scratch using a complete mbox).
+.TP
+.B report_new_folder = boolean_number
+Set this to On to have it print (on stdout) the names of any
+new directories created pursuant to the folder_by_date or
+msgsperfolder option, or the initial creation of the archive.
+It will print the full path if that is what you use to specify
+the archive directory. Does not print anything when attachment
+or metadata directories are created.
+.TP
+.B report_new_file = boolean_number
+Set this to On to have it print (on stdout) the names of any
+new files created for new messages. It will print the full path
+if that is what you use to specify the archive directory.
+.TP
+.B startmsgnum = number
+Sets the number of the first message of an archive. This option is
+only active when adding new messages to brand new archive.
+If not set, the default number will be 0000.
+Note that if you change this setting, you are stuck with it. If you
+rebuild your archive, you must use the same value or you'll break any
+link pointing to your archive.
 .TP
 .B attachmentlink = attachment link format
 .LP
@@ -389,11 +584,6 @@ available, it's a good idea to define this as
 Set this to
 .B 1
 to make Hypermail overwrite existing archives. 
-.TP
-.B increment = boolean_number
-Set this to
-.B 1
-to read one article only and append it to existing archives.
 .TP
 .B progress = [ 0 | 1 | 2 ]
 Set this to
@@ -504,11 +694,6 @@ mail messages.  If set to
 .B 0
 , HTML-parts will be stored as separate files.
 .TP
-.B readone = boolean number
-Set this to 
-.B 1
-to specify there is only one message in the input.
-.TP
 .B text_types = MIME types to be treated as text/plain.
 This is a list of MIME types that you want hypermail to treat
 exactly as if they were text/plain.  This can be listed 
@@ -531,13 +716,6 @@ This is the list of MIME attachment types that you do not want to
 do anything with.  They are quietly ignored.  They can be listed 
 individually on multiple lines or comma or space separated on a 
 single line.
-.TP
-.B linkquotes = [ 0 | 1 ]
-Set this to On to create fine-grained links from quoted
-text to the text where the quote originated. It also improves
-the threads index file by more accurately matching messages
-with replies. Note that this may be rather cpu intensive (see
-the searchbackmsgnum option to alter the performance).
 .TP
 .B searchbackmsgnum = postive integer
 If the linkquotes option is on and an incremental update is being
