@@ -340,10 +340,10 @@ void print_index_header_links(FILE *fp, mindex_t called_from,
 	fprintf(fp, "<strong><a href=\"#end\">%s</a></strong><br>\n",
 		lang[MSG_MOST_RECENT_MESSAGES]);
 
-    if (called_from != (AUTHOR_INDEX && show_index[dlev][AUTHOR_INDEX]) ||
-        called_from != (DATE_INDEX &&  show_index[dlev][DATE_INDEX]) ||
-        called_from != (THREAD_INDEX && show_index[dlev][THREAD_INDEX]) ||
-        called_from != (SUBJECT_INDEX && show_index[dlev][SUBJECT_INDEX]))
+    if ((called_from != AUTHOR_INDEX && show_index[dlev][AUTHOR_INDEX]) ||
+        (called_from != DATE_INDEX &&  show_index[dlev][DATE_INDEX]) ||
+        (called_from != THREAD_INDEX && show_index[dlev][THREAD_INDEX]) ||
+        (called_from != SUBJECT_INDEX && show_index[dlev][SUBJECT_INDEX]))
            fprintf(fp, "<strong>%d %s %s:</strong> \n", amountmsgs,
                lang[MSG_ARTICLES], lang[MSG_SORTED_BY]);
 
@@ -462,10 +462,10 @@ void print_index_footer_links(FILE *fp, mindex_t called_from,
         fprintf(fp, "</p>\n");
 
     fprintf(fp, "<p>\n");
-    if (called_from != (AUTHOR_INDEX && show_index[dlev][AUTHOR_INDEX]) ||
-        called_from != (DATE_INDEX &&  show_index[dlev][DATE_INDEX]) ||
-        called_from != (THREAD_INDEX && show_index[dlev][THREAD_INDEX]) ||
-        called_from != (SUBJECT_INDEX && show_index[dlev][SUBJECT_INDEX]))
+    if ((called_from != AUTHOR_INDEX && show_index[dlev][AUTHOR_INDEX]) ||
+        (called_from != DATE_INDEX &&  show_index[dlev][DATE_INDEX]) ||
+        (called_from != THREAD_INDEX && show_index[dlev][THREAD_INDEX]) ||
+        (called_from != SUBJECT_INDEX && show_index[dlev][SUBJECT_INDEX]))
            fprintf(fp, "<strong>%d %s %s:</strong> \n", amountmsgs,
                lang[MSG_ARTICLES], lang[MSG_SORTED_BY]);
 
