@@ -3,6 +3,14 @@ Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
  Jose Kahan (Jun 10, 2003)
+  - Some extra WAI enhancements requested during the period of public comments:
+    Order the date index by dates, like in subjects, add <dfn> to the start and
+    end period in the indexes, change the title of "jump to first message" to
+    "jump to list of messages".
+  - The top respond link didn't take into account the msgid or subject. It was just
+    a plain mailto. Made it work as the bottom one.
+
+ Jose Kahan (Jun 10, 2003)
   - Adding new messages using the -u option to an existing file sometimes resulted
     in warnings saying "Message-ID is missing, ignoring message with subject..."
     Patch idea submitted by Peter.

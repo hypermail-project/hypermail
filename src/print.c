@@ -374,8 +374,9 @@ void print_index_header_links(FILE *fp, mindex_t called_from, long startdatenum,
 	|| (called_from != DATE_INDEX && show_index[dlev][DATE_INDEX]) 
 	|| (called_from != THREAD_INDEX && show_index[dlev][THREAD_INDEX]) 
 	|| (called_from != SUBJECT_INDEX && show_index[dlev][SUBJECT_INDEX])) {
-      fprintf(fp, "<li><dfn><a href=\"#first\" title=\"jump to\" tabindex=\"1\">%d %s</a></dfn>:"
-	      " %s %s, %s %s</li>\n", 
+      fprintf(fp, "<li><dfn><a href=\"#first\" title=\"jump to messages list\" "
+	      "tabindex=\"1\">%d %s</a></dfn>:"
+	      " <dfn>%s</dfn> %s, <dfn>%s</dfn> %s</li>\n", 
 	      amountmsgs, lang[MSG_ARTICLES],
 	      lang[MSG_STARTING], getdatestr(startdatenum),
 	      lang[MSG_ENDING], getdatestr(enddatenum));
@@ -701,21 +702,20 @@ void printhtml(FILE *fp, char *line)
 ** Pretty-prints the dates in the index files.
 */
 void printdates(FILE *fp, struct header *hp, int year, int month, struct emailinfo *subdir_email,
-		bool *is_first)
+		char *prev_date_str)
 {
   char *subj;
-  char *first_attributes = " accesskey=\"j\" name=\"first\" id=\"first\"";
-
   const char *startline;
   const char *break_str;
   const char *endline;
   const char *subj_tag;
   const char *subj_end_tag;
   static char date_str[DATESTRLEN+11]; /* made static for smaller stack */
+  static char *first_attributes = "<a  accesskey=\"j\" name=\"first\" id=\"first\"></a>";
 
   if (hp != NULL) {
     struct emailinfo *em=hp->data;
-    printdates(fp, hp->left, year, month, subdir_email, is_first);
+    printdates(fp, hp->left, year, month, subdir_email, prev_date_str);
     if ((year == -1 || year_of_datenum(em->date) == year)
 	&& (month == -1 || month_of_datenum(em->date) == month)
 	&& !em->is_deleted
@@ -730,23 +730,34 @@ void printdates(FILE *fp, struct header *hp, int year, int month, struct emailin
 	subj_end_tag = "";
       }
       else {
+	char *tmp;
+	bool is_first;
+	tmp = getdatestr(hp->data->date);
+	if (strcmp (prev_date_str, tmp)) {
+	  if (*prev_date_str)  { /* close the previous date item */
+	    fprintf (fp, "</ul></li>\n");
+	    is_first = FALSE;
+	  }
+	  else
+	    is_first = TRUE;
+	  sprintf(date_str, "<li>%s<dfn>%s</dfn><ul>\n", 
+		  (is_first) ? first_attributes : "", tmp);
+	  fprintf (fp, "%s", date_str);
+	  strcpy (prev_date_str, tmp);
+	}
 	startline = "<li>";
 	break_str = "&nbsp;";
-	sprintf(date_str, "<em>(%s)</em>", getdatestr(hp->data->date));
 	endline = "</li>";
 	subj_tag = "";
 	subj_end_tag = "";
       }
-      fprintf(fp,"%s<a href=\"%s\"%s>%s%s%s</a>%s<a name=\"%d\"><em>%s</em></a>%s%s%s\n",
+      fprintf(fp,"%s<a href=\"%s\">%s%s%s</a>%s<a name=\"%d\"><em>%s</em></a>%s%s\n",
 	      startline, msg_href(em, subdir_email, FALSE), 
-	      (*is_first) ? first_attributes : "",
 	      subj_tag, subj, subj_end_tag, break_str, em->msgnum, em->name,
-	      break_str, date_str, endline);
+	      break_str, endline);
       free(subj);
-      if (*is_first)
-	*is_first = FALSE;
     }
-    printdates(fp, hp->right, year, month, subdir_email, is_first);
+    printdates(fp, hp->right, year, month, subdir_email, prev_date_str);
   }
 }
 
@@ -1399,11 +1410,14 @@ int print_links_up(FILE *fp, struct emailinfo *email, int pos, int in_thread_fil
 	    fprintf(fp, "[ <a href=\"#start\" name=\"options1\" id=\"options1\" tabindex=\"1\">"
 		    "%s</a> ]\n", lang[MSG_MSG_BODY]);
 	    if (set_mailcommand && set_hmail) {
-	      ptr = makemailcommand("mailto:$TO", set_hmail, "", "");
-	      fprintf(fp, " [ <a href=\"%s\" accesskey=\"r\" title=\"%s\">%s</a> ]\n",
-		      ptr, lang[MSG_MA_REPLY], lang[MSG_RESPOND]);
-	      if (ptr)
-		free(ptr);
+	      if ((email->msgid && email->msgid[0]) || (email->subject && email->subject[0])) {
+		ptr = makemailcommand(set_replymsg_command, set_hmail, email->msgid, 
+				      email->subject);
+		fprintf(fp, " [ <a href=\"%s\" accesskey=\"r\" title=\"%s\">%s</a> ]\n",
+			ptr, lang[MSG_MA_REPLY], lang[MSG_RESPOND]);
+		if (ptr)
+		  free(ptr);
+	      }
 	    }
 	    fprintf(fp, " [ <a href=\"#options2\">%s</a> ]\n", lang[MSG_MORE_OPTIONS]);
 	    fprintf(fp, "</li>\n");
@@ -2045,7 +2059,7 @@ void writedates(int amountmsgs, struct emailinfo *email)
     int newfile;
     char *filename;
     FILE *fp;
-    bool is_first;
+    char prev_date_str[DATESTRLEN];
     char *datename = index_name[email && email->subdir != NULL][DATE_INDEX];
 
     filename = htmlfilename(datename, email, "");
@@ -2091,13 +2105,15 @@ void writedates(int amountmsgs, struct emailinfo *email)
         fprintf (fp, "<div class=\"messages-list\">\n");
 	fprintf(fp, "<ul>\n");
     }
-    is_first = TRUE;
-    printdates(fp, datelist, -1, -1, email, &is_first);
+    prev_date_str[0] = '\0';
+    printdates(fp, datelist, -1, -1, email, prev_date_str);
 
     if (set_indextable)
       fprintf(fp, "</table>\n</div>\n");
     else
       {
+	if (*prev_date_str)  /* close the previous date item */
+	  fprintf (fp, "</ul></li>\n");
 	fprintf(fp, "</ul>\n");
 	printlaststats (fp, lastdatenum);
 	fprintf (fp, "</div>\n");
@@ -2796,8 +2812,11 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
 		switch (j) {
 		    case DATE_INDEX:
 		      {
-		        bool is_first = TRUE;
-		        printdates(fp1, datelist, y, m, NULL, &is_first);
+			char prev_date_str[DATESTRLEN];
+			prev_date_str[0] = '\0';
+		        printdates(fp1, datelist, y, m, NULL, prev_date_str);
+			if (*prev_date_str)  /* close the previous date item */
+			  fprintf (fp, "</ul></li>\n");
 			break;
 		      }
 		    case THREAD_INDEX:

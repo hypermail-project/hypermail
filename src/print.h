@@ -22,7 +22,7 @@ void writehaof(int, struct emailinfo *);
 
 void writeattachments(int, struct emailinfo *);
 
-void printdates(FILE *, struct header *, int, int, struct emailinfo *, bool *);
+void printdates(FILE *, struct header *, int, int, struct emailinfo *, char *);
 void printsubjects(FILE *, struct header *, char **, int, int,
 		   struct emailinfo *);
 void printauthors(FILE *, struct header *, char **, int, int,
