@@ -157,7 +157,7 @@ struct emailinfo *nextinthread(int msgnum)
     return rp->data;
 }
 
-
+#if 0
 /*
 ** Output a menu line with hyperlinks for table display
 **
@@ -247,6 +247,8 @@ void fprint_menu(FILE *fp, mindex_t idx, char *archives, char *currentid, char *
 #endif
 }
 
+#endif
+
 /* non-tables version of fprint_menu */
 
 void fprint_menu0(FILE *fp, struct emailinfo *email, int pos)
@@ -317,6 +319,7 @@ void fprint_menu0(FILE *fp, struct emailinfo *email, int pos)
 }
 
 /*----------------------------------------------------------------------------*/
+#if 0
 
 void fprint_summary(FILE *fp, int pos, long first_d, long last_d, int num)
 {
@@ -340,6 +343,8 @@ void fprint_summary(FILE *fp, int pos, long first_d, long last_d, int num)
     printcomment(fp, "fprint_summary", "end");
 #endif
 }
+
+#endif
 
 /*----------------------------------------------------------------------------*/
 
@@ -512,7 +517,7 @@ void print_index_footer_links(FILE *fp, mindex_t called_from, long enddatenum, i
     printcomment(fp, "index_footer_links", "begin");
 #endif
 
-    fprintf (fp, "<div class=\"foot\">\n");
+    fprintf (fp, "<a name=\"end\"></a><div class=\"foot\">\n");
     fprintf (fp, "<map title=\"%s\" id=\"navbarfoot\" name=\"navbarfoot\">\n", lang[MSG_NAVBAR]);
     fprintf (fp, "<ul>\n");
     
