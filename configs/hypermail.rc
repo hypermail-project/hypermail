@@ -59,6 +59,9 @@ label = Hypermail Development List
 # This is the directory that Hypermail will look for when
 # creating  and updating archives. If defined as NONE the
 # directory will have the same name as the input mailbox.
+# Note that the date that Hypermail was run will be used, not
+# a date from the message (use the folder_by_date option to
+# have Hypermail use dates from messages).
 dir = /ftp/hypermail/mail-archive/%y/%M
 
 # This specifies the default index that  users can view when

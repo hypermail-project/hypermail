@@ -353,11 +353,14 @@ you might use
 .B dir = /lists/somelist/%y/%M
 .LP
 .in 10
-When a message was received it would be put into a directory 
+When a message was processed it would be put into a directory 
 .B /lists/somelist/1998/Jun 
-(if the message arrived in June of 1998).  If the message arrives and there 
+(if the message is processed in June of 1998).  If the message arrives and there 
 is no storage directory, Hypermail will automatically create it and store 
 the message in the new directory.
+ Note that the date that Hypermail was run will be used, not
+a date from the message (use the folder_by_date option to
+have Hypermail use dates from messages).
 .TP
 .B attachmentlink = attachment link format
 .LP
