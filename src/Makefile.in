@@ -61,7 +61,7 @@ MAILOBJS=	mail.o ../libcgi/libcgi.a
 all:    pcre/libpcre.a @FNV_DEP@ hypermail$(SUFFIX) mail$(SUFFIX) lang$(SUFFIX)
 
 pcre/libpcre.a:
-	@cd pcre; $(MAKE) libtool libpcre.a CC="$(CC)" CFLAGS="$(CFLAGS)"
+	@cd pcre; $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)"
 
 fnv/libfnv.a:
 	@cd fnv; $(MAKE) libfnv.a CC="$(CC)" CFLAGS="$(CFLAGS)"
