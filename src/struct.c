@@ -607,6 +607,9 @@ int rmlastlines(struct body *bp)
 {
     struct body *tempnode;
 
+    if(NULL == bp)
+      return 0;
+
     for (tempnode = bp; tempnode->next != NULL &&
 	 (tempnode->next->line)[0] != '\0'; tempnode = tempnode->next);
     if ((tempnode->line)[0] == '\n') {
