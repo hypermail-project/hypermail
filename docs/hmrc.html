@@ -90,7 +90,6 @@ on or off.
     <li><a href="#showbr">showbr</a> line wrapping for body
     <li><a href="#showhr">showhr</a> hr at top, bottom
     <li><a href="#iquotes">iquotes</a> italicize quotes
-    <li><a href="#body">body</a> &lt;body bgcolor="#FFFFFF" ...
     <li><a href="#mcss_url">mcss_url</a> stylesheet
     <li><a href="#quote_hide_threshold">quote_hide_threshold</a> cut excessive quoting
     </ul>
@@ -114,15 +113,18 @@ on or off.
     </ul>
   </ul>
 
-<li><a href="#attachments">Attachments</a>
+<li><a href="#attachments">Attachments</a> <b>Note that some of these may affect security</b>
   <ul>
   <li><a href="#inlinehtml">inlinehtml</a> where to put text/html
   <li><a href="#usemeta">usemeta</a> save Content-Type in meta file
   <li><a href="#text_types">text_types</a> what types are like text/plain?
-  <li><a href="#inline_types">inline_types</a> list what should go in main file
+  <li><a href="#inline_types">inline_types</a> list what should go on main page
   <li><a href="#prefered_types">prefered_types</a> choose from multipart/mixed
   <li><a href="#ignore_types">ignore_types</a> discard text/x-vcard, etc
-  <li><a href="#attachmentlink">attachmentlink</a> how to label
+  <li><a href="#attachmentlink">attachmentlink</a> control filenames
+  <li><a href="#unsafe_chars">unsafe_chars</a> restrict filename chars
+  <li><a href="#save_alts">save_alts</a> multipart/alternative handling
+  <li><a href="#alts_text">alts_text</a> text for some save_alts choices
   </ul>
 
 <li><a href="#sysadmin">System Administration</a>
@@ -130,7 +132,7 @@ on or off.
   <li><a href="#input">Message Input</a>
     <ul>
     <li><a href="#overwrite">overwrite</a> regenerate old messages
-    <li><a href="#increment">increment</a> add one new message to old archive
+    <li><a href="#increment">increment</a> append new message(s) to old archive
     <li><a href="#readone">readone</a> treat input as one message
     <li><a href="#mbox">mbox</a> read messages from this file
     <li><a href="#ietf_mbox">ietf_mbox</a> file format
@@ -162,6 +164,7 @@ on or off.
     <li><a href="#delete_msgnum">delete_msgnum</a> delete these messages
     <li><a href="#delete_level">delete_level</a> what to do with deleted messages
     <li><a href="#progress">progress</a> verbosity
+    <li><a href="#warn_surpressions">warn_surpressions</a> warn about ignored messages
     <li><a href="#uselock">uselock</a> serialize
     <li><a href="#locktime">locktime</a> timeouts
     </ul>
@@ -586,14 +589,6 @@ take effect if showhtml is set to 1.
 <br><i>iquotes = 1</i>
 </dd>
 
-<a name="body"></a>
-<dt><strong>body = [ HTML &lt;BODY&gt; statement | NONE ]</strong></dt><dd>
-Set this to the &lt;BODY&gt; line to use when generating the HTML pages.
-Set to "NONE" to use the builtin &lt;BODY&gt; line by default.
-<br>
-<br><i>body = &lt;BODY BGCOLOR=&quot;#FFFFFF&quot; TEXT=&quot;#000000&quot;&gt;</i>
-</dd>
-
 <a name="mcss_url"></a>
 <dt><strong>mcss_url= [ URL | NONE ]</strong></dt><dd>
 This option let's you specify an external stylesheet that you would like
@@ -747,6 +742,8 @@ expansion.
 <dt><strong>inlinehtml  [ 0 | 1 ]</strong></dt><dd>
 Define to On to make text/html parts to get inlined with the mails.
 If set to Off, HTML-parts will be stored as separate files.
+A "Content-Disposition: attachment;" line in the mail will
+cause an HTML-part to be stored as a separate file even if this option is On.
 <br>
 <br><i>inlinehtml = 1</i>
 </dd>
@@ -804,6 +801,12 @@ This is the list of MIME attachment types that you do not want to
 do anything with. They are quietly ignored and are not processed. 
 They can be listed individually on multiple lines or comma or space 
 separated on a single line.
+<p>
+ Two special types may be used here:
+<br>$BINARY - ignore all types that would be stored as separate files.
+<br>$NONPLAIN - ignore all types not treated as text/plain, and all $BINARY types.
+<br>Note: the behavior of these may be affected by the <a href="#inlinehtml">inlinehtml</a> option.
+<p>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ignore_types = text/x-vcard application/x-msdownload
 <br> or
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ignore_types = text/x-vcard
@@ -824,6 +827,42 @@ Format of the attachment links.
 <br>    %c for the content type string
 <br> 
 <br><i>attachmentlink = "%p"</i>
+</dd>
+
+<a name="unsafe_chars"></a>
+<dt><strong>unsafe_chars = list of chars to prohibit</strong></dt><dd>
+Any characters listed in this string are removed from user-specified
+attachment filenames. Those characters will be replaced by a "_"
+(which means that specifying "_" here won't have any effect).
+Note that many characters (including / and \) are removed by the
+safe_filename in parse.c regardless of what this option says. There
+might be some security problems that can be prevented if you specify
+"." here (e.g. if a web server is configured to enable server side
+includes on filenames ending in something other than .shtml), but
+that will prevent browsers from recognizing many file types.
+<br>
+<br><i>unsafe_chars = "."</i> (disabled by default)
+</dd>
+
+<a name="save_alts"></a>
+<dt><strong>save_alts = [ 0 | 1 | 2 ]</strong></dt><dd>
+ This controls what happens to alternatives (other than the prefered
+alternative) for multipart/alternative messages.
+<br> 0 - discard non-prefered alternatives
+<br> 1 - show all alternatives inline
+<br> 2 - put non-prefered alternatives in a separate file.
+<br>
+<br><i>save_alts = 0</i>
+</dd>
+
+<a name="alts_text"></a>
+<dt><strong>alts_text = descriptive text</strong></dt><dd>
+If save_alts is 1, this text is put between the alternatives.
+<br>If save_alts is 2, this text is used to describe the link to each
+alternative file.
+<br>
+<br><i>alts_text = "alternate version of message"</i> (the default if save_alts = 2)
+<br><i>alts_text = "&lt;hr&gt;"</i> (the default if save_alts = 1)
 </dd>
 
 <h2><a name="sysadmin">System administration</a></h2>
@@ -1059,6 +1098,16 @@ information is listed individually with the number of the message
 the attachments relates to. 
 <br>
 <br><i>progress = 0</i>
+</dd>
+<a name="warn_surpressions"></a>
+<dt><strong> warn_surpressions  [ 0 | 1 ]</strong></dt><dd>
+Set this to 1 to get warnings (on stdout) about messages that
+are not converted because of they are missing a msgid (if
+require_msgids is On) or because one of the following options
+surpressed it: deleted expires delete_msgnum filter_out
+filter_require filter_out_full_body filter_require_full_body.
+<br>
+<br><i>warn_surpressions = 1</i>
 </dd>
 <a name="uselock"></a>
 <dt><strong> uselock  [ 0 | 1 ]</strong></dt><dd>

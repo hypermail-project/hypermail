@@ -1,5 +1,16 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Peter McCluskey (Nov 21 2001)
+  - Applied patches from William King to conform better to HTML 4.01:
+    * remove body option, replace default <body> bgcolor=, text= with inline
+     style sheet (unless user-defined style sheet present).
+    * change <div align=...> to <div class=...>, same for <h1 align=...>
+  - add $BINARY, $NONPLAIN types to ignore_types option.
+  - add warn_surpressions option
+  - add unsafe_chars option
+  - Remove tmpname from parse.c (to get rid of warning about mktemp).
+
 Peter McCluskey (Nov 19 2001)
   - Applied patches from William King to conform better to HTML 4.01:
     * remove noshade from <hr>

@@ -132,7 +132,9 @@ div.center {text-align: center}
 
  Also, if you have been using the icss_url and/or mcss_url options and
 are upgrading to 2.1.4 or higher, you might want to add those statements
-to your style sheet, 
+to your style sheet, as their style is no longer being provided by <body ...>
+tags, etc. (For users not specifying an icss_url and mcss_url, default
+style sheets have been put in all files to maintain that style.)
 
  The overwrite option defaulted to On for many versions. Starting with
 version 2.1.4, it defaults to off again. You may want to turn it on
