@@ -1,5 +1,23 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Peter McCluskey (Apr 16 2001)
+  - added patch from David Eisner <cradle@glue.umd.edu> to prevent subject
+   matching on subject lines which have no Re:.
+  - made hashreplylookup use the same code as hashreplynumlookup (fixes
+   missing "Maybe in reply to" links in some messages.
+  - made find_quote_prefix more cautious about recognizing nonstandard
+   prefixes as quote prefixes (affects linkquotes and showhtml=2 options).
+
+Peter McCluskey (Apr 14 2001)
+  - add missing <ul> when set_show_msg_links == 0. Emre Bastuz <info@emre.de>
+
+Peter McCluskey (Apr 13 2001)
+  - fixed portability problem in strcasestr.
+  - fixed custom_archives to handle NONE properly.
+  - removed a poorly thought out maybereply check in crossindexthread2
+    that was apparently dropping some messages from the thread list.
+
 Peter McCluskey (Apr 12 2001)
   - convert html tags for monthly_index, yearly_index to lowercase.
   - fixed indexing error in getname reported by David Eisner <cradle@glue.umd.edu>
