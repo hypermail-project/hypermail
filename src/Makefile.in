@@ -51,7 +51,7 @@ OBJS=		base64.o date.o domains.o file.o hypermail.o lang.o lock.o \
 		finelink.o txt2html.o search.o quotes.o trio.o triostr.o \
 		trionan.o
 
-MAILOBJS=	mail.o ../libcgi/libcgi.a trio.o trionan.o triostr.o
+MAILOBJS=	mail.o ../libcgi/libcgi.a
 
 .c.o:
 	$(CC) -c $(CFLAGS) $<

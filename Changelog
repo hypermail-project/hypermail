@@ -7,6 +7,8 @@ Version Changes for Hypermail
   binary a little smaller.
    Strip mail.c down to minimal warning message so we don't have to worry
   about analyzing it's security problems.
+   Changes to get strerror, memmove from pcre when missing (e.g. on SunOS).
+  How was this working on SunOS before?
 
  Kent Landfield (kent@hypermail.org) (February 12, 2003)
   - Converted msg2archive.c to use Thomas Biege's <thomas@suse.de>

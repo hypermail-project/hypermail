@@ -175,7 +175,7 @@ AC_STRUCT_TM
 
 AC_FUNC_STRFTIME
 AC_CHECK_FUNCS(mkdir strdup strstr strtol memcpy memset lstat strcasecmp \
-               strcasestr getpwuid getopt snprintf)
+               strcasestr getpwuid getopt snprintf memmove strerror)
 
 AC_TYPE_SIZE_T
 
@@ -382,6 +382,8 @@ dnl ===========================================================================
 dnl Makefile variable substitution 
 dnl ===========================================================================
 
+AC_SUBST(HAVE_MEMMOVE)
+AC_SUBST(HAVE_STRERROR)
 AC_SUBST(LDFLAGS)
 AC_SUBST(LIBS)
 AC_SUBST(EXTRA_LIBS)

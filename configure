@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# From configure.in Revision: 1.12 # Guess values for system-dependent variables and create Makefiles.
+# From configure.in Revision: 1.13 # Guess values for system-dependent variables and create Makefiles.
 # Generated automatically using autoconf version 2.13 
 # Copyright (C) 1992, 93, 94, 95, 96 Free Software Foundation, Inc.
 #
@@ -1845,7 +1845,7 @@ fi
 fi
 
 for ac_func in mkdir strdup strstr strtol memcpy memset lstat strcasecmp \
-               strcasestr getpwuid getopt snprintf
+               strcasestr getpwuid getopt snprintf memmove strerror
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
 echo "configure:1852: checking for $ac_func" >&5
@@ -2585,6 +2585,8 @@ fi
 
 
 
+
+
 trap '' 1 2 15
 cat > confcache <<\EOF
 # This file is a shell script that caches the results of configure
@@ -2754,6 +2756,8 @@ s%@defaultindex@%$defaultindex%g
 s%@domainaddr@%$domainaddr%g
 s%@subdirs@%$subdirs%g
 s%@FNV_DEP@%$FNV_DEP%g
+s%@HAVE_MEMMOVE@%$HAVE_MEMMOVE%g
+s%@HAVE_STRERROR@%$HAVE_STRERROR%g
 s%@EXTRA_LIBS@%$EXTRA_LIBS%g
 s%@INCLUDES@%$INCLUDES%g
 

@@ -20,6 +20,9 @@
 #include "setup.h"
 #include "string.h"
 #include <ctype.h>
+#if ! HAVE_MEMMOVE
+#include "pcre/internal.h"
+#endif
 
 #define MAX_QPREFIX_GUESSES 8
 static char quote_prefix[80];
