@@ -283,6 +283,8 @@ char *safe_filename(char *name)
 	np++;
     }
     *sp = '\0';
+    if (sp >= name + 6 && !strcmp(sp - 6, ".shtml"))
+	strcpy(sp - 6, ".html");
 
     return name;
 }
@@ -2281,15 +2283,16 @@ int parsemail(char *mbox,	/* file name */
 
 				    if (description && description[0] != '\0'
                                         && hasblack(description))
-                                            desc = description;
+                                            desc = convchars(description);
 				    else if (inline_force ||
-					     inlinecontent(type)) desc =
-					    attachname[0] ? attachname :
-					    "picture";
+					     inlinecontent(type))
+				        desc =
+					    attachname[0] ? attachname
+					    : "picture";
 				    else
 					desc =
-					    attachname[0] ? attachname :
-					    "stored";
+					    attachname[0] ? attachname
+					    : "stored";
 
 				    if (description)
 					description = NULL;

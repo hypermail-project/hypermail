@@ -1,5 +1,11 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Peter McCluskey (Nov 14 2001)
+  Changes relevant to security:
+  - attachment filenames ending in .shtml get changed to .html.
+  - attachment descriptions are passed through convchars to prevent html tags
+   from being used there.
+
 Peter McCluskey (Nov 13 2001)
   Fixed malloc bug that caused segfault with linkquotes=1.
 
