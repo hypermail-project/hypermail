@@ -1374,6 +1374,44 @@ static char *href01(struct emailinfo *email, struct emailinfo *email2, int in_th
 	  return msg_href(email2, email, generate_markup);
 }
 
+static void
+print_replies(FILE *fp, struct emailinfo *email, int num, int in_thread_file)
+{
+    struct reply *rp;
+    struct emailinfo *email2;
+    char *ptr;
+    bool list_started = FALSE;
+#ifdef FASTREPLYCODE
+    for (rp = email->replylist; rp != NULL; rp = rp->next) {
+	if (hashnumlookup(rp->msgnum, &email2)) {
+#else
+    for (rp = replylist; rp != NULL; rp = rp->next) {
+        if (rp->frommsgnum == num && hashnumlookup(rp->msgnum, &email2)) {
+#endif
+	    char *del_msg = (email2->is_deleted ? lang[MSG_DEL_SHORT] : "");
+	    if (!list_started) {
+	        list_started = TRUE;
+		fprintf (fp, "<li><a name=\"replies\" id=\"replies\"></a>\n");
+	    }
+	    else
+	        fprintf (fp, "<li>");
+
+	    if (rp->maybereply)
+		fprintf(fp, "<dfn>%s</dfn>:", lang[MSG_MAYBE_REPLY]);
+	    else
+	        fprintf(fp, "<dfn>%s</dfn>:", lang[MSG_REPLY]);
+	    fprintf(fp, "%s <a href=\"%s\" title=\"%s\">", del_msg, 
+		    href01(email, email2, in_thread_file, FALSE),
+		    lang[MSG_LTITLE_REPLIES]);
+	    ptr = convchars(email2->subject, email2->charset);
+	    fprintf(fp, "%s: \"%s\"</a></li>\n", email2->name, ptr);
+	    if (ptr)
+		free(ptr);
+	}
+    }
+    printcomment(fp, "lreply", "end");
+}
+
 int print_links_up(FILE *fp, struct emailinfo *email, int pos, int in_thread_file)
 {
 	int num = email->msgnum;
@@ -1495,7 +1533,13 @@ int print_links_up(FILE *fp, struct emailinfo *email, int pos, int in_thread_fil
 	     bottom reply section.
 	     */
 	
-	    if (set_showreplies) {
+	    if (set_show_msg_links == 3) {
+	        print_replies(fp, email, num, in_thread_file);
+
+		/* close the list */
+		fprintf(fp, "</ul>\n");
+	    }
+	    else if (set_showreplies) {
 #ifdef FASTREPLYCODE
 	      for (rp = email->replylist; rp != NULL; rp = rp->next) {
 		if (hashnumlookup(rp->msgnum, &email2)) {
@@ -1620,46 +1664,16 @@ int print_links(FILE *fp, struct emailinfo *email, int pos, int in_thread_file)
 	/*
 	 * Does this message have replies? If so, print them all!
 	 */
-	
+
 	if (set_showreplies) {
-	  bool list_started = FALSE;
-#ifdef FASTREPLYCODE
-	  for (rp = email->replylist; rp != NULL; rp = rp->next) {
-                    if (hashnumlookup(rp->msgnum, &email2)) {
-#else
-		      for (rp = replylist; rp != NULL; rp = rp->next) {
-			if (rp->frommsgnum == num && hashnumlookup(rp->msgnum, &email2)) {
-#endif
-			  char *del_msg = (email2->is_deleted ? lang[MSG_DEL_SHORT] : "");
-			  if (!list_started) {
-			    list_started = TRUE;
-			    fprintf (fp, "<li><a name=\"replies\" id=\"replies\"></a>\n");
-			  }
-			  else
-			    fprintf (fp, "<li>");
+	    print_replies(fp, email, num, in_thread_file);
 
-			  if (rp->maybereply)
-			    fprintf(fp, "<dfn>%s</dfn>:", lang[MSG_MAYBE_REPLY]);
-			  else
-			    fprintf(fp, "<dfn>%s</dfn>:", lang[MSG_REPLY]);
-			  fprintf(fp, "%s <a href=\"%s\" title=\"%s\">", del_msg, 
-				  href01(email, email2, in_thread_file, FALSE),
-				  lang[MSG_LTITLE_REPLIES]);
-			  ptr = convchars(email2->subject, email2->charset);
-			  fprintf(fp, "%s: \"%s\"</a></li>\n", 
-				  email2->name, ptr);
-			  if (ptr)
-			    free(ptr);
-			}
-		      }
-		      printcomment(fp, "lreply", "end");
-		    }
-
-		    /* close the list */
-		    fprintf(fp, "</ul>\n");
-	  }
-	  return is_reply;
+	    /* close the list */
+	    fprintf(fp, "</ul>\n");
 	}
+	}
+	return is_reply;
+}
 
 static int has_new_replies(struct emailinfo *email)
 {

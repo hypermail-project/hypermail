@@ -5,6 +5,10 @@ Version Changes for Hypermail
 HYPERMAIL VERSION pre-2.1.9:
 ============================
 
+ Peter McCluskey (July 22, 2003)
+   Fix show_msg_links = 3 option (Jose's changes assumed it didn't exist).
+   Updates to German from Tobias Weber.
+
  Kent Landfield (Jul 14, 2003)
    - When show_headers was used in print.c, the newline was not recognized
      early enough in printheaders. A check was added to assure the newline 
