@@ -971,11 +971,11 @@ struct emailsubdir *new_subdir(char *subdir, struct emailsubdir *last_subdir,
     while (sd) {
 	if (!strcmp(subdir, sd->subdir))
 	    return sd;
-	if (sd->next_subdir == NULL)
-	    break;
 	if (sd->a_date < date
 	    && (!insert_point || sd->a_date > insert_point->a_date))
 	    insert_point = sd;
+	if (sd->next_subdir == NULL)
+	    break;
 	sd = sd->next_subdir;
     }
     new_sd = (struct emailsubdir *)emalloc(sizeof(struct emailsubdir));
