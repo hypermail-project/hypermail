@@ -390,22 +390,37 @@ void print_index_header_links (FILE *fp, mindex_t called_from, long startdatenum
     }
 
     /* print the links to the other indexes */
-    if (called_from != THREAD_INDEX && show_index[dlev][THREAD_INDEX])
-      fprintf(fp, " [ <a href=\"%s\" title=\"%s\" accesskey=\"t\" rel=\"alternate\">%s</a> ]\n", 
-	      index_name[dlev][THREAD_INDEX], lang[MSG_LTITLE_BY_THREAD], lang[MSG_THREAD]);
+    if (show_index[dlev][THREAD_INDEX]) {
+      if (called_from != THREAD_INDEX)
+	fprintf(fp, " [ <a href=\"%s\" title=\"%s\" accesskey=\"t\" rel=\"alternate\">%s</a> ]\n", 
+		index_name[dlev][THREAD_INDEX], lang[MSG_LTITLE_BY_THREAD], lang[MSG_THREAD]);
+      else
+	fprintf(fp, " [ %s ]\n", lang[MSG_THREAD]);
+    }
 
-    if (called_from != AUTHOR_INDEX && show_index[dlev][AUTHOR_INDEX])
-      fprintf(fp, " [ <a href=\"%s\" title=\"%s\" accesskey=\"a\" rel=\"alternate\">%s</a> ]\n", 
-	      index_name[dlev][AUTHOR_INDEX], lang[MSG_LTITLE_BY_AUTHOR], lang[MSG_AUTHOR]);
+    if (show_index[dlev][AUTHOR_INDEX]) {
+      if (called_from != AUTHOR_INDEX)
+	fprintf(fp, " [ <a href=\"%s\" title=\"%s\" accesskey=\"a\" rel=\"alternate\">%s</a> ]\n", 
+		index_name[dlev][AUTHOR_INDEX], lang[MSG_LTITLE_BY_AUTHOR], lang[MSG_AUTHOR]);
+      else
+	fprintf(fp, " [ %s ]\n", lang[MSG_AUTHOR]);
+    }
 
-    if (called_from != DATE_INDEX && show_index[dlev][DATE_INDEX])
-      fprintf(fp, " [ <a href=\"%s\" title=\"%s\" accesskey=\"d\" rel=\"alternate\">%s</a> ]\n", 
-	      index_name[dlev][DATE_INDEX], lang[MSG_LTITLE_BY_DATE], lang[MSG_DATE]);
+    if (show_index[dlev][DATE_INDEX]) {
+      if (called_from != DATE_INDEX)
+	fprintf(fp, " [ <a href=\"%s\" title=\"%s\" accesskey=\"d\" rel=\"alternate\">%s</a> ]\n", 
+		index_name[dlev][DATE_INDEX], lang[MSG_LTITLE_BY_DATE], lang[MSG_DATE]);
+      else
+	fprintf(fp, " [ %s ]\n", lang[MSG_DATE]);
+    }
 
-
-    if (called_from != SUBJECT_INDEX && show_index[dlev][SUBJECT_INDEX])
-      fprintf(fp, " [ <a href=\"%s\" title=\"%s\" accesskey=\"s\" rel=\"alternate\">%s</a> ]\n", 
-	      index_name[dlev][SUBJECT_INDEX],  lang[MSG_LTITLE_BY_SUBJECT], lang[MSG_SUBJECT]);
+    if (show_index[dlev][SUBJECT_INDEX]) {
+      if (called_from != SUBJECT_INDEX)
+	fprintf(fp, " [ <a href=\"%s\" title=\"%s\" accesskey=\"s\" rel=\"alternate\">%s</a> ]\n", 
+		index_name[dlev][SUBJECT_INDEX],  lang[MSG_LTITLE_BY_SUBJECT], lang[MSG_SUBJECT]);
+      else
+	fprintf(fp, " [ %s ]\n", lang[MSG_SUBJECT]);
+    }
 
     if (set_attachmentsindex) {
       if (called_from != ATTACHMENT_INDEX) {
@@ -413,6 +428,8 @@ void print_index_header_links (FILE *fp, mindex_t called_from, long startdatenum
 	      index_name[dlev][ATTACHMENT_INDEX],  lang[MSG_LTITLE_BY_ATTACHMENT],
 	      lang[MSG_ATTACHMENT]);
       }
+      else
+	fprintf(fp, " [ %s ]\n", lang[MSG_ATTACHMENT]);
     }
     fprintf (fp, "</li>\n");
 
@@ -509,22 +526,37 @@ void print_index_footer_links(FILE *fp, mindex_t called_from, long enddatenum, i
 	      lang[MSG_SORT_BY]);
 
         /* print the links to the other indexes */
-    if (called_from != THREAD_INDEX && show_index[dlev][THREAD_INDEX])
-      fprintf(fp, " [ <a href=\"%s\" title=\"%s\">%s</a> ]\n", 
-	      index_name[dlev][THREAD_INDEX], lang[MSG_LTITLE_BY_THREAD], lang[MSG_THREAD]);
+    if (show_index[dlev][THREAD_INDEX]) {
+      if (called_from != THREAD_INDEX)
+	fprintf(fp, " [ <a href=\"%s\" title=\"%s\">%s</a> ]\n", 
+		index_name[dlev][THREAD_INDEX], lang[MSG_LTITLE_BY_THREAD], lang[MSG_THREAD]);
+      else
+	fprintf(fp, " [ %s ]\n", lang[MSG_THREAD]);
+    }
 
-    if (called_from != AUTHOR_INDEX && show_index[dlev][AUTHOR_INDEX])
-      fprintf(fp, " [ <a href=\"%s\" title=\"%s\">%s</a> ]\n", 
-	      index_name[dlev][AUTHOR_INDEX], lang[MSG_LTITLE_BY_AUTHOR], lang[MSG_AUTHOR]);
+    if (show_index[dlev][AUTHOR_INDEX]) {
+      if (called_from != AUTHOR_INDEX)
+	fprintf(fp, " [ <a href=\"%s\" title=\"%s\">%s</a> ]\n", 
+		index_name[dlev][AUTHOR_INDEX], lang[MSG_LTITLE_BY_AUTHOR], lang[MSG_AUTHOR]);
+      else
+	fprintf(fp, " [ %s ]\n", lang[MSG_AUTHOR]);
+    }
 
-    if (called_from != DATE_INDEX && show_index[dlev][DATE_INDEX])
-      fprintf(fp, " [ <a href=\"%s\" title=\"%s\">%s</a> ]\n", 
-	      index_name[dlev][DATE_INDEX], lang[MSG_LTITLE_BY_DATE], lang[MSG_DATE]);
+    if (show_index[dlev][DATE_INDEX]) {
+      if (called_from != DATE_INDEX)
+	fprintf(fp, " [ <a href=\"%s\" title=\"%s\">%s</a> ]\n", 
+		index_name[dlev][DATE_INDEX], lang[MSG_LTITLE_BY_DATE], lang[MSG_DATE]);
+      else
+	fprintf(fp, " [ %s ]\n", lang[MSG_DATE]);
+    }
 
-
-    if (called_from != SUBJECT_INDEX && show_index[dlev][SUBJECT_INDEX])
-      fprintf(fp, " [ <a href=\"%s\" title=\"%s\">%s</a> ]\n", 
-	      index_name[dlev][SUBJECT_INDEX], lang[MSG_LTITLE_BY_SUBJECT], lang[MSG_SUBJECT]);
+    if (show_index[dlev][SUBJECT_INDEX]) {
+      if (called_from != SUBJECT_INDEX)
+	fprintf(fp, " [ <a href=\"%s\" title=\"%s\">%s</a> ]\n", 
+		index_name[dlev][SUBJECT_INDEX], lang[MSG_LTITLE_BY_SUBJECT], lang[MSG_SUBJECT]);
+      else
+	fprintf(fp, " [ %s ]\n", lang[MSG_SUBJECT]);
+    }
 
     if (set_attachmentsindex) {
       if (called_from != ATTACHMENT_INDEX) {
@@ -532,6 +564,8 @@ void print_index_footer_links(FILE *fp, mindex_t called_from, long enddatenum, i
 	      index_name[dlev][ATTACHMENT_INDEX], lang[MSG_LTITLE_BY_ATTACHMENT], 
 	      lang[MSG_ATTACHMENT]);
       }
+      else
+	fprintf(fp, " [ %s ]\n", lang[MSG_ATTACHMENT]);
     }
     fprintf (fp, "</li>\n");
 
@@ -1584,7 +1618,6 @@ int print_links(FILE *fp, struct emailinfo *email, int pos, int in_thread_file)
 	struct emailinfo *email2;
 	struct emailinfo *email_next_in_thread = nextinthread(email->msgnum);
 	char *ptr;
-	struct reply *rp;
 	int is_reply = 0;
 	int loc_cmp = (pos == PAGE_BOTTOM ? 3 : 4);
 

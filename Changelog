@@ -27,7 +27,13 @@ HYPERMAIL VERSION pre-2.1.9:
   - Made the Received on footnote line use the same date format as that used for the
     Date: header on top of the messages.
 
- Jose Kahan (Aug  13, 2003)
+ Jose Kahan (Aug  18, 2003)
+  - Small WAI change to the list of indexes to show the entry corresponding to 
+    the current index, but outside of a link. This comes from feedback, where 
+    people said it was less distracting to see the same index to links all 
+    the time.
+
+ Jose Kahan (Aug  18, 2003)
   - Add the <title> WAI enhancement that I had forgotten to do for messages.
     The new format is: [subject] from [author] on [date] ([mailing list label]).
     I also removed the 64 characters maximum limit check we had on the title.
