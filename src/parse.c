@@ -2016,7 +2016,8 @@ int parsemail(char *mbox,	/* file name */
 #if DEBUG_PARSE
 				printf("We DUMP the chosen alternative\n");
 #endif
-				origbp = append_body(origbp, &origlp, bp);
+				if (bp != origbp)
+				    origbp = append_body(origbp, &origlp, bp);
 				bp = origbp;
 				lp = origlp;
 
