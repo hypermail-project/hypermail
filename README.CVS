@@ -11,7 +11,7 @@ From: Ashley M. Kirchner <ashley@pcraft.com>
 
   Now on to the info for the CVS server:
 
-	Address: :pserver:cvs@cvs.hypermail.yeehaw.net:/CVS
+	Address: :pserver:cvs@cvs.hypermail.org:/CVS
 
   The 'cvs' user doesn't have a password, so just hit return when it asks you
   for one.  Also, the cvs user only has read access, so don't try to do
@@ -28,20 +28,20 @@ From: Ashley M. Kirchner <ashley@pcraft.com>
 
    - Once installed, set your CVSROOT enviroment to:
 
-     :pserver:cvs@cvs.hypermail.yeehaw.net:/CVS
+     :pserver:cvs@cvs.hypermail.org:/CVS
 
      For sh, bash and ksh users, execute the following commands:
-     CVSROOT=:pserver:cvs@cvs.hypermail.yeehaw.net:/CVS
+     CVSROOT=:pserver:cvs@cvs.hypermail.org:/CVS
      export CVSROOT
      (or you can stick them in your .profile and/or .bash_profile file)
 
      For C shell users (csh, tcsh), you can do the following:
-     setenv CVSROOT :pserver:cvs@cvs.hypermail.yeehaw.net:/CVS
+     setenv CVSROOT :pserver:cvs@cvs.hypermail.org:/CVS
      (or stick it in your .cshrc and/or .login file)
 
    - From here you can login to the server with:
      # cvs login
-     (Logging in to cvs@cvs.hypermail.yeehaw.net)
+     (Logging in to cvs@cvs.hypermail.org)
      CVS password:  <-- hit RETURN (cvs user password is blank)
 
    - Now you're ready to grab the source
@@ -58,17 +58,20 @@ From: Ashley M. Kirchner <ashley@pcraft.com>
   enviroment if you want, it's just a lot more to type in since you'll have to
   specify the directory every time with:
 
-   -d :pserver:cvs@cvs.hypermail.yeehaw.net:/CVS
+   -d :pserver:cvs@cvs.hypermail.org:/CVS
 
-  eg: cvs -d :pserver:cvs@cvs.hypermail.yeehaw.net:/CVS login
+  eg: cvs -d :pserver:cvs@cvs.hypermail.org:/CVS login
 
 
 Cheers.
 
   Addendum #1: You can also browse the repository at:
-    http://www.hypermail.yeehaw.net/cgi-bin/cvsweb.cgi/
+    http://cvsweb.hypermail.org/
 
   Addendum #2: Pathnames have changed from /cvs/hypermail to /CVS
 
   Addendum #3: [2000.05.28] The hypermail sources got retagged with new date
     and times due to the server rebuild.  Sorry.
+
+  Addendum #4: [2000.05.30] (how many will we add?) server name changed from
+    cvs.hypermail.yeehaw.net to simply cvs.hypermail.org.
