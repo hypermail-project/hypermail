@@ -970,6 +970,7 @@ struct emailsubdir *new_subdir(char *subdir, struct emailsubdir *last_subdir, ch
 	folders = new_sd;
     else if (date < folders->a_date) {
 	new_sd->next_subdir = folders;
+	folders->prior_subdir = new_sd;
 	folders = new_sd;
     }
     else {

@@ -598,13 +598,13 @@ struct emailsubdir *msg_subdir(int msgnum, time_t date)
 	desc = msgsperfolder_label(fmt, subdir_no);
     }
     else if (set_folder_by_date) {
-		strftime(s, DATESTRLEN - 1, set_folder_by_date, localtime(&date));
+	strftime(s, DATESTRLEN - 1, set_folder_by_date, localtime(&date));
 	if (!fmt)
 	    fmt = set_folder_by_date;
 	strftime(desc_buf, DATESTRLEN, fmt, localtime(&date));
 	desc = strsav(desc_buf);
 
-		if (s[0] && s[strlen(s) - 1] != '/')
+	if (s[0] && s[strlen(s) - 1] != '/')
 	    strcat(s, "/");
     }
     else

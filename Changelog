@@ -2,6 +2,11 @@ Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+ Peter McCluskey (May 16, 2003)
+  - Fixed initialization of prior_subdir when dirs created out of
+   order. That fixes a case where a subdir wasn't in index files with
+   reverse_folders = 1.
+
  Jose Kahan (May 13, 2003)
    - Add the WAI enhancements proposed in 
      http://www.w3.org/2002/03/archives-improvements/. 
