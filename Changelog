@@ -1,6 +1,10 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Peter McCluskey (May 7 2001)
+  - fixes to trio configuration.
+
 Peter McCluskey (May 4 2001)
+  - another fix to avoid_top_indices = folders.
   - enhance show_msg_links to support links only at top or only at bottom.
   - add show_index_links option to control links from message page to indices.
   - add txtsuffix option

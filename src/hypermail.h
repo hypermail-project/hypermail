@@ -83,7 +83,7 @@
 #define _MPRINTF_REPLACE
 #include "mprintf.h"
 
-#include <trio.h>
+#include "trio.h"
 
 #ifndef NO_FASTREPLYCODE
 #define FASTREPLYCODE

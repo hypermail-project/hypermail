@@ -28,14 +28,13 @@ INSTALL_PROG=@INSTALL@
  
 # Compiler to use
 CC=@CC@ 
-CFLAGS=@CFLAGS@ @INCLUDES@ -I../trio $(WARNINGS)
-LIBS=@LIBS@ -ltrio -lm
-LDFLAGS=@LDFLAGS@ -L../trio -ltrio
+CFLAGS=@CFLAGS@ @INCLUDES@ $(WARNINGS)
+LIBS=@LIBS@
+LDFLAGS=@LDFLAGS@
 
 all:   hypermail support 
 
 hypermail:
-	@cd trio; $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)"
 	@cd src; $(MAKE) all CC="$(CC)" CFLAGS="$(CFLAGS)" \
 		cgidir="$(cgidir)" bindir="$(bindir)" LIBS="$(LIBS)"
 
@@ -63,7 +62,6 @@ clean:
 	@cd src; $(MAKE) clean 
 	@cd docs; $(MAKE) clean 
 	@cd archive; $(MAKE) clean 
-	@cd trio; $(MAKE) clean 
 	rm -f lint.out
 
 clobber: clean
