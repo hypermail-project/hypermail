@@ -30,6 +30,7 @@
 **              %u - Expanded version link (HMURL,PROGNAME,VERSION)
 **              %S - Subject META TAG - Not valid on index pages
 **              %A - Author META TAG - Not valid on index pages
+**              %D - Date META TAG - Not valid on index pages
 **              \n - newline character
 **              \t - tab character
 **
@@ -37,7 +38,7 @@
 
 int printfile(FILE *fp, char *format, char *label, char *subject,
 	      char *dir, char *name, char *email, char *message_id,
-	      char *charset, char *filename)
+	      char *charset, char *date, char *filename)
 {
     register char *cp;
     register char *aptr;
@@ -101,6 +102,13 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 		}
 		continue;
 
+	    case 'D':		/* %D - date of message */
+		if (date) {
+		    fprintf(fp,
+			    "<meta name=\"Date\" content=\"%s\">",
+			    date);
+		}
+		continue;
 	    case 'e':		/* %e - email address of message author */
 		if (email) {
 		    for (cp = email; *cp; cp++)
@@ -185,7 +193,7 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 
 void print_main_header(FILE *fp, bool index_header, char *label, char *name,
 		       char *email, char *subject, char *charset,
-		       char *filename)
+		       char *date, char *filename)
 {
     char *title;
     char *rp;
@@ -224,6 +232,7 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
 	fprintf(fp, "<meta name=\"Author\" content=\"%s (%s)\">\n",name,email);
     fprintf(fp, "<meta name=\"Subject\" content=\"%s\">\n", rp =
 	    convchars(subject));
+	fprintf(fp, "<meta name=\"Date\" content=\"%s\">\n",date);
     free(rp);
     if (use_mailto)
 	fprintf(fp, "<link rev=\"made\" href=\"mailto:%s\">\n", set_mailto);
@@ -258,15 +267,15 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
 
 void print_msg_header(FILE *fp, char *label, char *subject,
 		      char *dir, char *name, char *email, char *msgid,
-		      char *charset, char *filename)
+		      char *charset, time_t date, char *filename)
 {
     char *ptr;
     if (mhtmlheaderfile)
 	printfile(fp, mhtmlheaderfile, set_label, subject, set_dir, name, 
-		  email, msgid, charset, filename);
+		  email, msgid, charset, secs_to_iso_meta(date), filename);
     else {
 	print_main_header(fp, FALSE, set_label, name, email, subject,
-			  charset, filename);
+			  charset, secs_to_iso_meta(date), filename);
 #if 0 /* JK modified this */       
 	fprintf(fp, "<h1 class=\"center\">%s</h1>\n",
 		ptr = convchars(subject));
@@ -291,9 +300,9 @@ void print_index_header(FILE *fp, char *label, char *dir, char *subject,
 {
     if (ihtmlheaderfile)
 	printfile(fp, ihtmlheaderfile, label, subject, dir, NULL, NULL,
-		  NULL, NULL, filename);
+		  NULL, NULL, NULL, filename);
     else {
-	print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL);
+	print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL, NULL);
 	fprintf(fp, "<h1 class=\"center\">%s<br>%s</h1>\n", label, subject);
 #if 0 /*@@ JK: removed it */	
 	if (!set_usetable)
@@ -313,7 +322,7 @@ void printfooter(FILE *fp, char *htmlfooter, char *label, char *dir,
 
     if (htmlfooter)
 	printfile(fp, htmlfooter, label, subject,
-		  dir, NULL, NULL, NULL, NULL, filename);
+		  dir, NULL, NULL, NULL, NULL, NULL, filename);
     else {
 	if (set_showhr && !set_usetable)
 	    fprintf(fp, "<hr>\n");

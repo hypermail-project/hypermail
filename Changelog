@@ -1,11 +1,23 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+ Peter McCluskey (Feb 4, 2002)
+   Patch from William R. Knox to add meta date tag.
+
  Jose Kahan (jose@w3.org) (Jan 25, 2002)
    - When a message had a charset of type US-ASCII or ISO-8959-1, it wasn't being
      stored in the HTML version of the message. This could result in a correct
      decoding of the message, as browsers assume a user-given default charset in those
      cases.
+
+Peter McCluskey (Jan 11 2002)
+   Patch from William R. Knox to fix possible race condition in creating dirs.
+
+Peter McCluskey (Jan 10 2002)
+   Add %t substitution cookies to provide path to top folder.
+
+Peter McCluskey (Jan  5 2002)
+   Fix segfault in incremental mode with linkquotes.
 
 Peter McCluskey (Dec 19 2001)
    Create version 2.1.4 tarball.

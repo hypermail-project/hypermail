@@ -192,6 +192,23 @@ char *secs_to_iso(time_t t)
     return s;
 }
 
+char *secs_to_iso_meta(time_t t)
+{
+    /* is passed time_t variable
+     * holding number of seconds since EPOCH
+     * returns pointer to string holding date in format
+     * YYYY-MM-DD
+     * This buffer will be overwritten by next call to secs_to_iso_meta.
+     */
+    static char s[10];
+    struct tm *tm;
+
+    tm = localtime(&t);
+    sprintf(s, "%4.4d-%02.2d-%02.2d",
+	    tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday);
+    return s;
+}
+
 time_t iso_to_secs(char *isodate)
 {
     /* is passed string holding date in format

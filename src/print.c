@@ -1263,7 +1263,7 @@ void writearticles(int startnum, int maxnum)
 	print_msg_header(fp, set_label,
 			 email->subject, set_dir,
 			 email->name, email->emailaddr, email->msgid,
-			 email->charset, filename);
+			 email->charset, email->date, filename);
 
 	printcomment(fp, "received", email->fromdatestr);
 	printcomment(fp, "isoreceived", secs_to_iso(email->fromdate));
