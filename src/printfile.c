@@ -234,7 +234,7 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
       /* assume that this is the title of a message and not the title of an index */
       rp2 = convchars(name, charset);
       trio_asprintf(&title, "%s %s %s %s %s (%s)", rp,
-		    lang[MSG_FROM_TITLE], name, lang[MSG_ON_TITLE], date, label);
+		    lang[MSG_FROM_TITLE], rp2, lang[MSG_ON_TITLE], date, label);
       free(rp2);
     }
     else
