@@ -168,6 +168,7 @@ on or off.
     <li><a href="#warn_surpressions">warn_surpressions</a> warn about ignored messages
     <li><a href="#uselock">uselock</a> serialize
     <li><a href="#locktime">locktime</a> timeouts
+    <li><a href="#base_url">base_url</a>
     </ul>
   </ul>
 </ul>
@@ -1145,6 +1146,15 @@ inbound messages before it is overridden.
 <br>
 <br><i>locktime = 3600</i>
 </dd>
+
+<a name="base_url"></a>
+<dt><strong>base_url = url-of-main-archive-directory</strong></dt><dd>
+ The url of the archive's main directory. This is needed when
+the latest_folder option is used and the folder_by_date makes
+directories more than one level deep (e.g. with '%y/%m').
+<br>
+<br><i>base_url = http://www.hypermail.org/mail-archive/</i>
+</dd>
 </dl>
 <p>
 <hr noshade>
@@ -1162,7 +1172,7 @@ and
 
 <hr noshade>
 <small><em><strong>
-Last updated March 29, 2001
+Last updated July 17, 2002
 </strong></em></small>
 
 </body>
