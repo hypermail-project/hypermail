@@ -2,6 +2,10 @@ Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+ Peter McCluskey (Feb 10, 2003)
+  Fixed the append option to handle lines between end of headers through
+ mime boundary correctly.
+
  Jose Kahan (jose@w3.org) (February 06, 2003)
   Added a protection against the use of the nonsequential messaging option
   when hypermail wasn't compiled with the libfnv.

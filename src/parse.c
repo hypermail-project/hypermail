@@ -1722,6 +1722,11 @@ int parsemail(char *mbox,	/* file name */
 				lp = bp = NULL;
 
 				while (fgets(line_buf, MAXLINE, fp)) {
+				    if(set_append) {
+				        if(fputs(line_buf, fpo) < 0) {
+					    progerr("Can't write to \"mbox\""); /* revisit me */
+					}
+				    }
 				    if (!strncmp(line_buf + set_ietf_mbox, "--", 2) &&
 					!strncmp(line_buf + set_ietf_mbox + 2, boundbuffer,
 						 strlen(boundbuffer))) {
@@ -1745,7 +1750,6 @@ int parsemail(char *mbox,	/* file name */
 				if (!strncmp(line_buf + set_ietf_mbox + 2 + strlen(boundary_id), "--", 2)
 				    && bp != origbp) {
 				    /* end of mime found before mime start */
-				    /* probably a Microsoft Outlook bug */
 				    origbp = append_body(origbp, &origlp, bp);
 				    bp = origbp;
 				    lp = origlp;
