@@ -1,0 +1,126 @@
+From Bill Moseley:
+
+I noticed this page on indexing with Swish-e:
+
+  http://hypermail.org/source/docs/archive_search.html
+
+Here's another way if using Perl.
+
+The Swish-e (http://swish-e.org) package comes with a script for
+indexing hypermail archives and includes instructions on usage.  Below
+I've included part of the documentation.
+
+That script is in use here:
+
+  http://swish-e.org/Discussion/archive/
+
+The search results page is not that pretty, but it's just using the
+default templates.  I'm often frustrated when searching archives that I
+can't limit by date or author.  So besides being able to just search by
+name, email, title, etc., you can do a search like:
+
+  hypermail name=moseley
+
+to find posts with "hypermail" in either the title or body, and also
+only messages from moseley.
+
+
+Here's the (un-proof read) instructions:
+
+
+NAME
+    index_hypermail.pl - Parse Hypermail archive for indexing with Swish-e
+
+SYNOPSIS
+    Using an example data structure like this:
+
+        hypermail/
+            archive/
+            search/
+
+    Create the hypermail archive:
+
+        $ cd hypermail
+        $ hypermail -i -d archive < messages.mbox
+
+    Create a swish-e config file:
+
+        $ cd search
+        $ cat swish.conf
+
+        # config for indexing hypermail v2.1.8 archives
+
+        IndexDir ./index_hypermail.pl
+        SwishProgParameters ../archive
+
+        MetaNames swishtitle name email
+        PropertyNames name email
+        IndexContents HTML* .html
+        StoreDescription HTML* <body> 100000
+        UndefinedMetaTags  ignore
+
+    Copy index_hypermail.pl to the current directory. Swish-e installs
+    index_hypermail.pl in the $prefix/share/doc/swish-e/examples/prog-bin
+    directory, where $prefix is typically "/usr/local" or simply "/usr" on
+    some distributions.
+
+        $ cp /usr/local/share/doc/swish-e/example/prog-bin/index_hypermail .
+
+    Then
+
+    Index the documents:
+
+        $ swish-e -c swish.conf -S prog
+
+    Now create the search interface:
+
+        $ cp /usr/local/lib/swish-e/swish.cgi .
+        $ cat .swishcgi.conf
+
+        $ENV{TZ} = 'UTC'; # display dates in UTC format
+
+        return {
+            title           => "Search the Foo List Archive",
+            display_props   => [qw/ name email swishlastmodified /],
+            sorts           => [qw/swishrank swishtitle email swishlastmodified/],
+            metanames       => [qw/swishdefault swishtitle name email/],
+            name_labels     => {
+                swishrank           =>  'Rank',
+                swishtitle          =>  'Subject Only',
+                name                =>  "Poster's Name",
+                email               =>  "Poster's Email",
+                swishlastmodified   =>  'Message Date',
+                swishdefault        =>  'Subject & Body',
+            },
+
+            highlight       => {
+                package         => 'SWISH::PhraseHighlight',
+
+                xhighlight_on    => '<font style="background:#FFFF99">',
+                xhighlight_off   => '</font>',
+
+                meta_to_prop_map => {   # this maps search metatags to display properties
+                    swishdefault    => [ qw/swishtitle swishdescription/ ],
+                    swishtitle      => [ qw/swishtitle/ ],
+                    email           => [ qw/email/ ],
+                    name            => [ qw/name/ ],
+                    swishdocpath    => [ qw/swishdocpath/ ],
+                },
+            },
+        };
+
+    Setup web server (OS/web server dependent):
+
+        /var/www # ln -s /path/to/hypermail/search
+        /var/www # ln -s /path/to/hypermail/archive
+
+    and maybe tell apache to run the script:
+
+        $ cat .htaccess 
+        Deny from all
+        <files swish.cgi>
+            Allow from all
+            SetHandler cgi-script
+            Options +ExecCGI
+        </files>
+
