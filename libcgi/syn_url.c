@@ -26,6 +26,7 @@
 
 #include "cgi.h"
 
+#if 0
 int syn_base_url(char *buf, cgi_info *ci)
 {
     int x;
@@ -39,6 +40,7 @@ int syn_base_url(char *buf, cgi_info *ci)
     else
 	return 0;
 }
+#endif
 
 int print_base_url(cgi_info *ci)
 {

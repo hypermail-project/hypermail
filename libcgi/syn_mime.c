@@ -26,6 +26,7 @@
 
 #include "cgi.h"
 
+#if 0
 int syn_mimeheader(char *buf, char *ct)
 {
     int x;
@@ -37,6 +38,7 @@ int syn_mimeheader(char *buf, char *ct)
     else
 	return 0;
 }
+#endif
 
 int print_mimeheader(const char *ct)
 {

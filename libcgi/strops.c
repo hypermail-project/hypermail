@@ -37,6 +37,7 @@ char *trim(char *s)
     return s;
 }
 
+#if 0
 char *sanitize(char *buf, char *s)
 {
     char *t;
@@ -53,6 +54,7 @@ char *sanitize(char *buf, char *s)
     *t = '\0';
     return buf;
 }
+#endif
 
 char *strmaxcpy(char *dest, char *src, int n)
 {
