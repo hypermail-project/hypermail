@@ -1,6 +1,12 @@
 Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (January 22, 2003)
+  If mime message has an end boundary but no start boundary (as a buggy
+ version of Microsoft Outlook seems to create), the body is now treated
+ as a plain text message rather than discarded.
+  Update trio code to trio version 1.9.
+
  Peter McCluskey (January 20, 2003)
   Several fixes to avoid uninitialized memory reads reported by valgrind.
 

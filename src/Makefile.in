@@ -42,13 +42,13 @@ INCS=		domains.h hypermail.h lang.h proto.h \
 SRCS=		base64.c date.c domains.c file.c hypermail.c lang.c lock.c \
 		mem.c parse.c print.c printfile.c string.c struct.c uudecode.c\
 		dmatch.c setup.c threadprint.c getdate.c getname.c\
-		finelink.c txt2html.c search.c quotes.c trio.c strio.c \
+		finelink.c txt2html.c search.c quotes.c trio.c triostr.c \
 		trionan.c
 
 OBJS=		base64.o date.o domains.o file.o hypermail.o lang.o lock.o \
 		mem.o parse.o print.o printfile.o string.o struct.o uudecode.o\
 		dmatch.o setup.o threadprint.o getdate.o getname.o\
-		finelink.o txt2html.o search.o quotes.o trio.o strio.o \
+		finelink.o txt2html.o search.o quotes.o trio.o triostr.o \
 		trionan.o
 
 MAILOBJS=	mail.o ../libcgi/libcgi.a
@@ -72,8 +72,8 @@ mail$(SUFFIX):	$(MAILOBJS)
 	$(CC) -o $@ $(CFLAGS) $(MAILOBJS) $(NETLIBS)
 	chmod 0755 $@
 
-lang$(SUFFIX): trio.o strio.o trionan.o lang.c lang.h
-	$(CC) -DLANG_PROG $(CFLAGS) -o $@ trio.o strio.o trionan.o lang.c $(LDFLAGS) $(MISC_LIBS)
+lang$(SUFFIX): trio.o trionan.o triostr.o lang.c lang.h
+	$(CC) -DLANG_PROG $(CFLAGS) -o $@ trio.o trionan.o triostr.o lang.c $(LDFLAGS) $(MISC_LIBS)
 
 ../libcgi/libcgi.a:
 	@cd ../libcgi; $(MAKE) all CC="$(CC)" CFLAGS="$(CFLAGS)"
@@ -158,7 +158,6 @@ setup.o: setup.c hypermail.h ../config.h ../patchlevel.h trio.h proto.h \
   lang.h defaults.h setup.h struct.h print.h
 string.o: string.c hypermail.h ../config.h ../patchlevel.h trio.h proto.h \
   lang.h setup.h parse.h
-strio.o: strio.c strio.h
 struct.o: struct.c hypermail.h ../config.h ../patchlevel.h trio.h proto.h \
   lang.h dmatch.h setup.h struct.h parse.h
 threadprint.o: threadprint.c hypermail.h ../config.h ../patchlevel.h \
