@@ -16,6 +16,11 @@ see the hypermail.html, hmrc.html, and hypermail-faq.html files that come
 in the docs/ directory.
 Please refer to Changelog for the list of recent changes.
 
+Hypermail is distributed under the GNU GPL license (see the file COPYING for
+details). Some programs that are distributed with it in the archive and
+contrib directories have different licenses - check the individual files for
+details.
+
 Hypermail Background:
 =====================
 
@@ -32,9 +37,9 @@ In the spring of 1997, Kevin Hughes heavily pressed Hewlett-Packard
 (who was now the legal owner of Hypermail, since EIT was bought by
 VeriFone, which was bought by Hewlett-Packard) into placing a free
 software license onto his old EIT software.  They officially put the
-GNU license on *all* of Kevin's old EIT software, opening it up to
+GNU GPL license on *all* of Kevin's old EIT software, opening it up to
 more open methods of development and distribution. So now Hypermail
-is under GNU.
+is under GPL.
 
 EIT's net.disappearance:
 ------------------------
