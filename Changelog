@@ -4,6 +4,9 @@ Version Changes for Hypermail
 ============================
 HYPERMAIL VERSION pre-2.1.9:
 ============================
+ Peter McCluskey (Sep 11, 2003)
+  Fixes to make pcre work.
+
  Peter McCluskey (Sep 3, 2003)
   Applied patches from Mike McDonald to use nowrap option in the author and
  date columns in the index tables and get rid of all of the 'width=100%'

@@ -30,10 +30,13 @@ int rbs_bigtime = 0;
 #include "struct.h"
 #include "parse.h"
 
+#define HAVE_PCRE
+#ifdef HAVE_PCRE
 #ifdef __LCC__
 #include "../lcc/pcre.h"
 #else
 #include <pcre.h>
+#endif
 #endif
 
 struct body *hashnumlookup(int, struct emailinfo **);
