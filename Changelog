@@ -1,5 +1,8 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Peter McCluskey (Aug 7 2001)
+  - removed In-Reply-To from mailcommand default.
+
 Peter McCluskey (Jul 25 2001)
   - fix to abort before unlinking gdbm file if need it and cannot open it.
   - fix latest_folder option (didn't work in incremental mode).

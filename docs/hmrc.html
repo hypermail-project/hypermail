@@ -267,7 +267,13 @@ set_hmail address to links in replies. The variables $TO, $SUBJECT,
 and $ID can be used in constructing the command string. The value
 from the <a href="#mailcommand">mailcommand</a> option will be used if this option is not specified.
 <br>
-<br><i>replymsg_command=mailto:$TO</i>
+There may be browsers that will benefit from adding something like
+<blockquote>
+%26In-Reply-To=&amp;lt;$ID&amp;gt;
+</blockquote>
+to the command, but I've heard no reports of this actually working.
+<br>
+<br><i>replymsg_command=mailto:$TO?Subject=$SUBJECT</i>
 </dd>
 
 <h3><a name="misc_pages">Miscellaneous</a></h3>
@@ -292,7 +298,13 @@ This is the mail command that email links go to, for instance
 <br> 
 <br> NONE disables mailcommand usage.
 <br>
-<br><i>mailcommand = mailto:$TO?Subject=$SUBJECT%26In-Reply-To=&amp;lt;$ID&amp;gt;</i>
+There may be browsers that will benefit from adding something like
+<blockquote>
+%26In-Reply-To=&amp;lt;$ID&amp;gt;
+</blockquote>
+to the command, but I've heard no reports of this actually working.
+<br>
+<br><i>mailcommand = mailto:$TO?Subject=$SUBJECT</i>
 </dd>
 <a name="mailto"></a>
 <dt><strong>mailto = [ email-address | NONE ]</strong></dt><dd>
