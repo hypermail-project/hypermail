@@ -351,7 +351,7 @@ void print_index_header_links(FILE *fp, mindex_t called_from,
     if (subdir) {
 	fprintf(fp, "<br>");
 	if (subdir->prior_subdir)
-	    fprintf(fp, " <a href=\"%s%s\">%s, %s</a>",
+	    fprintf(fp, " <a href=\"%s%s%s\">%s, %s</a>",
 		    subdir->rel_path_to_top, subdir->prior_subdir->subdir,
 		    index_name[dlev][called_from], lang[MSG_PREV_DIRECTORY],
 		    lang[MSG_DATE_VIEW + called_from]);
@@ -463,12 +463,12 @@ void print_index_footer_links(FILE *fp, mindex_t called_from,
 	if (subdir->prior_subdir)
 	    fprintf(fp, " <a href=\"%s%s%s\">%s, %s</a>",
 		    subdir->rel_path_to_top, subdir->prior_subdir->subdir,
-		    index_name[called_from], lang[MSG_PREV_DIRECTORY],
+		    index_name[dlev][called_from], lang[MSG_PREV_DIRECTORY],
 		    lang[MSG_DATE_VIEW + called_from]);
 	if (subdir->next_subdir)
 	    fprintf(fp, " <a href=\"%s%s%s\">%s, %s</a>",
 		    subdir->rel_path_to_top, subdir->next_subdir->subdir,
-		    index_name[called_from], lang[MSG_NEXT_DIRECTORY],
+		    index_name[dlev][called_from], lang[MSG_NEXT_DIRECTORY],
 		    lang[MSG_DATE_VIEW + called_from]);
 	fprintf(fp, " <a href=\"%s%s\">%s</a>",
 		subdir->rel_path_to_top, index_name[0][FOLDERS_INDEX],
