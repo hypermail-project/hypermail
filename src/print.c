@@ -1926,14 +1926,14 @@ void writeattachments(int amountmsgs, struct emailinfo *email)
 	/* 
 	 * Print out archive information links at the bottom of the index
 	 */
-	print_index_footer_links(fp, DATE_INDEX, lastdatenum, amountmsgs,
+	print_index_footer_links(fp, ATTACHMENT_INDEX, lastdatenum, amountmsgs,
 				 email ? email->subdir : NULL);
     }
     else {
 	if (set_showhr)
 	    fprintf(fp, "<hr>\n");
 	fprint_summary(fp, PAGE_BOTTOM, firstdatenum, lastdatenum, amountmsgs);
-	fprint_menu(fp, DATE_INDEX, set_archives, "", "", PAGE_BOTTOM,
+	fprint_menu(fp, ATTACHMENT_INDEX, set_archives, "", "", PAGE_BOTTOM,
 		    email ? email->subdir : NULL);
     }
 
