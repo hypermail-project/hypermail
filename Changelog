@@ -1,6 +1,22 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Peter McCluskey (Nov 24 2001)
+   Applied patch from William King to add lang= to <html> tag, get rid of
+   duplicate <em>.
+
+Peter McCluskey (Nov 23 2001)
+   Added support for locales of form en_US. Changed language code "se" to
+   "sv", provide warning for old code.
+
+Peter McCluskey (Nov 22 2001)
+  - Applied patch from William King to create meta tag with hypermail version
+    number.
+  - better French support from Emmanuel Blot.
+
+Daniel Stenberg (Nov 21 2001)
+   Updates to congfiure and trio.
+
 Peter McCluskey (Nov 21 2001)
   - Applied patches from William King to conform better to HTML 4.01:
     * remove body option, replace default <body> bgcolor=, text= with inline
