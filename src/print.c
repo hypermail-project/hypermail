@@ -1534,10 +1534,8 @@ int print_links_up(FILE *fp, struct emailinfo *email, int pos, int in_thread_fil
 	     */
 	
 	    if (set_show_msg_links == 3) {
-	        print_replies(fp, email, num, in_thread_file);
-
-		/* close the list */
-		fprintf(fp, "</ul>\n");
+	        /* print_replies(fp, email, num, in_thread_file); */
+		is_reply = print_links(fp, email, pos, in_thread_file);
 	    }
 	    else if (set_showreplies) {
 #ifdef FASTREPLYCODE
