@@ -23,8 +23,6 @@
 
 /* Just a tiny malloc() error checker! */
 
-void progerr(char *errorstr);
-
 void *emalloc(int i)
 {
     void *p;
