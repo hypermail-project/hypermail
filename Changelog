@@ -1,6 +1,13 @@
 Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (January 20, 2003)
+  Several fixes to avoid uninitialized memory reads reported by valgrind.
+
+ Peter McCluskey (January 18, 2003)
+  Fix random behavior in parseurl which sometimes caused core dumps on lines
+ ending in http://, ftp://, etc.
+
  Peter McCluskey (December 19, 2002)
   Apply patch from Wolfgang Spraul fixing link from subdir attachment.html to
  index.html when defaultindex = date
