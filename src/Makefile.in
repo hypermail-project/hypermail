@@ -113,6 +113,7 @@ clean:
 	rm -f *.o .pure *qx *qv *.ln core
 	rm -f .inslog tca.map lint.out
 	rm -f getdate.c
+	@cd pcre; $(MAKE) clean
 	@cd ../libcgi; $(MAKE) clean
 
 #

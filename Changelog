@@ -1,5 +1,8 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Peter McCluskey (Aug 22 2001)
+  - fix Makefile to clean pcre directory.
+
 Peter McCluskey (Aug 7 2001)
   - removed In-Reply-To from mailcommand default.
 
