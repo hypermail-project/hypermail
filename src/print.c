@@ -1294,8 +1294,8 @@ print_links(FILE *fp, struct emailinfo *email, int pos, int in_thread_file)
 	 */
 
 	if (set_show_msg_links && set_show_msg_links != loc_cmp) {
-	    printcomment(fp, "next", "start");
 	    fprintf(fp, "<ul class=\"links\">\n");
+	    printcomment(fp, "next", "start");
 
 	    /*
 	     * Is there a next message?

@@ -3214,11 +3214,13 @@ static int loadoldheadersfromGDBMindex(char *dir)
 	  }
 	  free(subject);
 	  free(inreply);
+#if 0
 	  if(bp) {
 	      if (bp->line) 
 		  free(bp->line);
 	      free(bp);
 	  }
+#endif
 
 	  if (!(num % 10) && set_showprogress) {
 	    printf("\r%4d", num);
@@ -3337,12 +3339,10 @@ void fixnextheader(char *dir, int num, int direction)
 	    if (!strncmp(bp->line, "<!-- next=", 10)) {
 		email = neighborlookup(num-1, 1);
 		if (email != NULL) {
-		    if (set_usetable) {
-			dp = bp->next;
-			if (!strncmp(dp->line, "<ul", 3)) {
-			    fprintf(fp, "%s", dp->line);
-			    ul = 1;
-			}
+		    dp = bp->next;
+		    if (!strncmp(dp->line, "<ul", 3)) {
+			fprintf(fp, "%s", dp->line);
+			ul = 1;
 		    }
 		    fprintf(fp, "<li><strong>%s:</strong> ",
 			    lang[MSG_NEXT_MESSAGE]);
