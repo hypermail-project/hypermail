@@ -1,9 +1,9 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-============================
-HYPERMAIL VERSION PRE-2.1.8:
-============================
+========================
+HYPERMAIL VERSION 2.1.8:
+========================
 
  Kent Landfield (Jun 28, 2003)
   - Updated pcre library with pcre-4.3 sources. We were distributing a 
