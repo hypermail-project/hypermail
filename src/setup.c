@@ -266,7 +266,7 @@ struct Config cfg[] = {
 
     {"showhr", &set_showhr, BFALSE, CFG_SWITCH,
      "# Set this to On to place horizontal rules before and after articles.\n"
-     "NOTE: THIS OPTION HAS BEEN DEPRECATED BY THE WAY CHANGES. IT WILL BE\n"
+     "NOTE: THIS OPTION HAS BEEN DEPRECATED BY THE WAI CHANGES. IT WILL BE\n"
      "IGNORED.\n", FALSE},
 
     {"showreplies", &set_showreplies, BTRUE, CFG_SWITCH,
@@ -293,7 +293,7 @@ struct Config cfg[] = {
      "# an index menu at the top and bottom of each page in a table\n"
      "# format. Set to Off if you want the standard Hypermail page look\n"
      "# and feel\n"
-     "NOTE: THIS OPTION HAS BEEN DEPRECATED BY THE WAY CHANGES. IT WILL BE\n"
+     "NOTE: THIS OPTION HAS BEEN DEPRECATED BY THE WAI CHANGES. IT WILL BE\n"
      "IGNORED.\n", FALSE},
 
     {"indextable", &set_indextable, BFALSE, CFG_SWITCH,

@@ -1903,10 +1903,6 @@ void writearticles(int startnum, int maxnum)
 	if (ptr)
 	    free(ptr);
 
-	if (set_usetable) {
-			fprint_menu(fp, NO_INDEX, "", email->msgid, email->subject, PAGE_TOP, email->subdir);
-	}
-
 	/*
 	 * This is here because it looks better here. The table looks
 	 * better before the Author info. This stuff should be in 
@@ -1944,18 +1940,7 @@ void writearticles(int startnum, int maxnum)
 	
 	print_links(fp, email, PAGE_BOTTOM, FALSE);
 
-	if (set_show_msg_links && set_show_msg_links != 3) {
-	  if (set_usetable) {
-	    fprintf(fp, "</ul>\n");
-	  }
-	}
-
-	if (set_usetable) {
-	  fprint_menu(fp, NO_INDEX, "", email->msgid, email->subject, PAGE_BOTTOM, email->subdir);
-	}
-	else {
-	  fprint_menu0(fp, email, PAGE_BOTTOM);
-	}
+	fprint_menu0(fp, email, PAGE_BOTTOM);
 
 	fprintf(fp, "</map>\n");
 	fprintf(fp, "</div>\n");
@@ -2081,15 +2066,9 @@ void writedates(int amountmsgs, struct emailinfo *email)
     /* 
      * Print out archive information links at the top of the index
      */
-    if (!set_usetable) {
-      print_index_header_links(fp, DATE_INDEX, start_date_num, end_date_num,
-			       amountmsgs, email ? email->subdir : NULL);
-      fprintf (fp, "</div>\n");
-    }
-    else {
-      fprint_menu(fp, DATE_INDEX, set_archives, "", "", PAGE_TOP, email ? email->subdir : NULL);
-      fprint_summary(fp, PAGE_TOP, start_date_num, end_date_num, amountmsgs);
-    }
+    print_index_header_links(fp, DATE_INDEX, start_date_num, end_date_num,
+			     amountmsgs, email ? email->subdir : NULL);
+    fprintf (fp, "</div>\n");
 
     /*
      * Print out the actual message index lists. Here's the beef.
@@ -2114,17 +2093,11 @@ void writedates(int amountmsgs, struct emailinfo *email)
 	fprintf (fp, "</div>\n");
       }
 
-    if (!set_usetable) {
-	/* 
-	 * Print out archive information links at the bottom of the index
-	 */
-      print_index_footer_links(fp, DATE_INDEX, end_date_num, amountmsgs,
-			       email ? email->subdir : NULL);
-    }
-    else {
-	fprint_summary(fp, PAGE_BOTTOM, start_date_num, end_date_num, amountmsgs);
-	fprint_menu(fp, DATE_INDEX, set_archives, "", "", PAGE_BOTTOM, email ? email->subdir : NULL);
-    }
+    /* 
+     * Print out archive information links at the bottom of the index
+     */
+    print_index_footer_links(fp, DATE_INDEX, end_date_num, amountmsgs,
+			     email ? email->subdir : NULL);
 
     /* 
      * Print the index page footer.
@@ -2180,15 +2153,9 @@ void writeattachments(int amountmsgs, struct emailinfo *email)
     /* 
      * Print out archive information links at the top of the index
      */
-    if (!set_usetable) {
-      print_index_header_links(fp, ATTACHMENT_INDEX, start_date_num, end_date_num,
-			       amountmsgs, email ? email->subdir : NULL);
-      fprintf (fp, "</div>\n");
-    }
-    else {
-	fprint_menu(fp, ATTACHMENT_INDEX, set_archives, "", "", PAGE_TOP, email ? email->subdir : NULL);
-	fprint_summary(fp, PAGE_TOP, start_date_num, end_date_num, amountmsgs);
-    }
+    print_index_header_links(fp, ATTACHMENT_INDEX, start_date_num, end_date_num,
+			     amountmsgs, email ? email->subdir : NULL);
+    fprintf (fp, "</div>\n");
 
     /*
      * Print out the actual message index lists. Here's the beef.
@@ -2208,19 +2175,13 @@ void writeattachments(int amountmsgs, struct emailinfo *email)
 	fprintf(fp, "</div>\n");
     }
 
-    if (!set_usetable) {
-	/* 
-	 * Print out archive information links at the bottom of the index
-	 */
-        printlaststats (fp, end_date_num);
-        print_index_footer_links(fp, ATTACHMENT_INDEX, end_date_num, amountmsgs,
-				 email ? email->subdir : NULL);
-    }
-    else {
-	fprint_summary(fp, PAGE_BOTTOM, start_date_num, end_date_num, amountmsgs);
-	fprint_menu(fp, ATTACHMENT_INDEX, set_archives, "", "", PAGE_BOTTOM, email ? email->subdir : NULL);
-    }
-
+    /* 
+     * Print out archive information links at the bottom of the index
+     */
+    printlaststats (fp, end_date_num);
+    print_index_footer_links(fp, ATTACHMENT_INDEX, end_date_num, amountmsgs,
+			     email ? email->subdir : NULL);
+    
     /* 
      * Print the index page footer.
      */
@@ -2278,18 +2239,12 @@ void writethreads(int amountmsgs, struct emailinfo *email)
 
     print_index_header(fp, set_label, set_dir, lang[MSG_BY_THREAD], thrdname);
 
-    if (!set_usetable) {
-	/* 
-	 * Print out the index page links 
-	 */
-	print_index_header_links(fp, THREAD_INDEX, start_date_num, end_date_num,
-				 amountmsgs, email ? email->subdir : NULL);
-	fprintf (fp, "</div>\n");
-    }
-    else {
-	fprint_menu(fp, THREAD_INDEX, set_archives, "", "", PAGE_TOP, email ? email->subdir : NULL);
-	fprint_summary(fp, PAGE_TOP, start_date_num, end_date_num, amountmsgs);
-    }
+    /* 
+     * Print out the index page links 
+     */
+    print_index_header_links(fp, THREAD_INDEX, start_date_num, end_date_num,
+			     amountmsgs, email ? email->subdir : NULL);
+    fprintf (fp, "</div>\n");
 
     if (set_indextable) {
 	fprintf(fp, "<div class=\"center\">\n<table>\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong> %s</strong></td></tr>\n", lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
@@ -2304,19 +2259,13 @@ void writethreads(int amountmsgs, struct emailinfo *email)
 	fprintf (fp, "</div>");
     }
 
-    if (!set_usetable) {
-	/* 
-	 * Print out archive information links at the bottom of the index
-	 */
-      printlaststats (fp, end_date_num);
-      print_index_footer_links(fp, THREAD_INDEX, end_date_num, amountmsgs,
-			       email ? email->subdir : NULL);
-    }
-    else {
-	fprint_summary(fp, PAGE_BOTTOM, start_date_num, end_date_num, amountmsgs);
-		fprint_menu(fp, THREAD_INDEX, set_archives, "", "", PAGE_BOTTOM, email ? email->subdir : NULL);
-    }
-
+    /* 
+     * Print out archive information links at the bottom of the index
+     */
+    printlaststats (fp, end_date_num);
+    print_index_footer_links(fp, THREAD_INDEX, end_date_num, amountmsgs,
+			     email ? email->subdir : NULL);
+    
     printfooter(fp, ihtmlfooterfile, set_label, set_dir, lang[MSG_BY_THREAD], thrdname, TRUE);
 
     fclose(fp);
@@ -2419,19 +2368,13 @@ void writesubjects(int amountmsgs, struct emailinfo *email)
 
 	print_index_header(fp, set_label, set_dir, lang[MSG_BY_SUBJECT], subjname);
 
-    /* 
-     * Print out the index page links 
-     */
-    if (!set_usetable) {
+	/* 
+	 * Print out the index page links 
+	 */
 	print_index_header_links(fp, SUBJECT_INDEX, start_date_num, end_date_num,
 				 amountmsgs, email ? email->subdir : NULL);
 	fprintf (fp, "</div>\n");
-    }
-    else {
-	fprint_menu(fp, SUBJECT_INDEX, set_archives, "", "", PAGE_TOP, email ? email->subdir : NULL);
-	fprint_summary(fp, PAGE_TOP, start_date_num, end_date_num, amountmsgs);
-    }
-
+	
     if (set_indextable) {
 	fprintf(fp, "<div class=\"center\">\n<table>\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong> %s</strong></td></tr>\n", lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
     }
@@ -2456,17 +2399,11 @@ void writesubjects(int amountmsgs, struct emailinfo *email)
      * Print out archive information links at the bottom of the index
      */
 
-    if (!set_usetable) {
-	printlaststats (fp, end_date_num);
-	print_index_footer_links(fp, SUBJECT_INDEX, end_date_num, amountmsgs,
+    printlaststats (fp, end_date_num);
+    print_index_footer_links(fp, SUBJECT_INDEX, end_date_num, amountmsgs,
 				 email ? email->subdir : NULL);
-    }
-    else {
-	fprint_summary(fp, PAGE_BOTTOM, start_date_num, end_date_num, amountmsgs);
-	fprint_menu(fp, SUBJECT_INDEX, set_archives, "", "", PAGE_BOTTOM, email ? email->subdir : NULL);
-    }
 
-	printfooter(fp, ihtmlfooterfile, set_label, set_dir, lang[MSG_BY_SUBJECT], subjname, TRUE);
+    printfooter(fp, ihtmlfooterfile, set_label, set_dir, lang[MSG_BY_SUBJECT], subjname, TRUE);
 
     fclose(fp);
 
@@ -2568,18 +2505,12 @@ void writeauthors(int amountmsgs, struct emailinfo *email)
 
     print_index_header(fp, set_label, set_dir, lang[MSG_BY_AUTHOR], authname);
 
-    if (!set_usetable) {
-	/* 
-	 * Print out the index page links 
-	 */
-      print_index_header_links(fp, AUTHOR_INDEX, start_date_num, end_date_num,
-			       amountmsgs, email ? email->subdir : NULL);
-      fprintf (fp, "</div>\n");
-    }
-    else {
-	fprint_menu(fp, AUTHOR_INDEX, set_archives, "", "", PAGE_TOP, email ? email->subdir : NULL);
-	fprint_summary(fp, PAGE_TOP, start_date_num, end_date_num, amountmsgs);
-    }
+    /* 
+     * Print out the index page links 
+     */
+    print_index_header_links(fp, AUTHOR_INDEX, start_date_num, end_date_num,
+			     amountmsgs, email ? email->subdir : NULL);
+    fprintf (fp, "</div>\n");
 
     if (set_indextable) {
 		fprintf(fp, "<div class=\"center\">\n<table>\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong> %s</strong></td></tr>\n", lang[MSG_CAUTHOR], lang[MSG_CSUBJECT], lang[MSG_CDATE]);
@@ -2606,17 +2537,11 @@ void writeauthors(int amountmsgs, struct emailinfo *email)
      * of the index page
      */
 
-    if (!set_usetable) {
-        printlaststats (fp, end_date_num);
-	print_index_footer_links(fp, AUTHOR_INDEX, end_date_num, amountmsgs,
+    printlaststats (fp, end_date_num);
+    print_index_footer_links(fp, AUTHOR_INDEX, end_date_num, amountmsgs,
 				 email ? email->subdir : NULL);
-    }
-    else {
-	fprint_summary(fp, PAGE_BOTTOM, start_date_num, end_date_num, amountmsgs);
-	fprint_menu(fp, AUTHOR_INDEX, set_archives, "", "", PAGE_BOTTOM, email ? email->subdir : NULL);
-    }
 
-	printfooter(fp, ihtmlfooterfile, set_label, set_dir, lang[MSG_BY_AUTHOR], authname, TRUE);
+    printfooter(fp, ihtmlfooterfile, set_label, set_dir, lang[MSG_BY_AUTHOR], authname, TRUE);
 
     fclose(fp);
 
@@ -2784,17 +2709,11 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
 		}
 		snprintf(subject_title, sizeof(subject_title), "%s %s", month_str_pub, indextypename[j]);
 		print_index_header(fp1, set_label, set_dir, subject_title, filename);
-		if (!set_usetable) {
-		    /* 
-		     * Print out the index page links 
-		     */
-		    print_index_header_links(fp1, j, first_date, last_date, count, NULL);
-		}
-		else {
-		    fprint_menu(fp1, j, set_archives, "", "", PAGE_TOP, NULL);
-					fprint_summary(fp1, PAGE_TOP, first_date, last_date, count);
-		}
-
+		/* 
+		 * Print out the index page links 
+		 */
+		print_index_header_links(fp1, j, first_date, last_date, count, NULL);
+		
 		if (set_indextable) {
 		    fprintf(fp1, "<div class=\"center\">\n<table>\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong> %s</strong></td></tr>\n", lang[j == AUTHOR_INDEX ? MSG_CAUTHOR : MSG_CSUBJECT], lang[j == AUTHOR_INDEX ? MSG_CSUBJECT : MSG_CAUTHOR], lang[MSG_CDATE]);
 		}
@@ -2834,12 +2753,7 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
 		 * of the index page
 		 */
 
-		if (!set_usetable)
-		    print_index_footer_links(fp1, j, last_date, count, NULL);
-		else {
-		    fprint_summary(fp1, PAGE_BOTTOM, first_date, last_date, count);
-		    fprint_menu(fp1,j, set_archives, "", "", PAGE_BOTTOM, NULL);
-		}
+		print_index_footer_links(fp1, j, last_date, count, NULL);
 
 		printfooter(fp1, ihtmlfooterfile, set_label, set_dir, subject_title, 
 			    save_name[j], FALSE);
@@ -2923,14 +2837,8 @@ void write_toplevel_indices(int amountmsgs)
     }
     if (fp) {
 	print_index_header(fp, set_label, set_dir, subject, filename);
-	if (!set_usetable) {
-	  print_index_header_links(fp, FOLDERS_INDEX, firstdatenum, lastdatenum, amountmsgs, NULL);
-	  fprintf (fp, "</div>\n");
-	}
-	else {
-	    fprint_menu(fp, FOLDERS_INDEX, set_archives, "", "", PAGE_TOP, NULL);
-	    fprint_summary(fp, PAGE_TOP, firstdatenum, lastdatenum, amountmsgs);
-	}
+	print_index_header_links(fp, FOLDERS_INDEX, firstdatenum, lastdatenum, amountmsgs, NULL);
+	fprintf (fp, "</div>\n");
 	fprintf(fp, "<table>\n");
     }
     sd = folders;
@@ -2987,24 +2895,19 @@ void write_toplevel_indices(int amountmsgs)
 	    fprintf(fp, "</tr>\n");
     }
     if (fp) {
-		fprintf(fp, "</table>\n");
-
-	if (!set_usetable) {
-	    /* 
-	     * Print out archive information links at the bottom of the index
-	     */
-	   print_index_footer_links(fp, FOLDERS_INDEX, lastdatenum, amountmsgs, NULL);
-	}
-	else {
-	    fprint_summary(fp, PAGE_BOTTOM, firstdatenum, lastdatenum, amountmsgs);
-	    fprint_menu(fp, FOLDERS_INDEX, set_archives, "", "", PAGE_BOTTOM, NULL);
-	}
-	printfooter(fp, ihtmlfooterfile, set_label, set_dir, subject, filename, TRUE);
-	fclose(fp);
-
-	if (newfile && chmod(filename, set_filemode) == -1) {
-	    snprintf(errmsg, sizeof(errmsg), "%s \"%s\": %o.", lang[MSG_CANNOT_CHMOD], filename, set_filemode);
-	    progerr(errmsg);
+      fprintf(fp, "</table>\n");
+      
+      /* 
+       * Print out archive information links at the bottom of the index
+       */
+      print_index_footer_links(fp, FOLDERS_INDEX, lastdatenum, amountmsgs, NULL);
+      printfooter(fp, ihtmlfooterfile, set_label, set_dir, subject, filename, TRUE);
+      fclose(fp);
+      
+      if (newfile && chmod(filename, set_filemode) == -1) {
+	snprintf(errmsg, sizeof(errmsg), "%s \"%s\": %o.", lang[MSG_CANNOT_CHMOD], filename,
+		 set_filemode);
+	progerr(errmsg);
 	}
     }
     free(filename);

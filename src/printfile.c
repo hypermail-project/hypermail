@@ -327,22 +327,6 @@ void print_msg_header(FILE *fp, char *label, char *subject,
     else {
 	print_main_header(fp, FALSE, set_label, name, email, subject,
 			  charset, secs_to_iso_meta(date), filename);
-#if 0 /* JK modified this */       
-	fprintf(fp, "<h1 class=\"center\">%s</h1>\n",
-		ptr = convchars(subject, charset));
-	free(ptr);
-#endif
-
-#if 0 /* JK: moved it to the generation of the body */
-	fprintf(fp, "<h1>%s</h1>\n",
-		ptr = convchars(subject, charset));
-	free(ptr);
-#endif 
-
-#if 0 /* JK: and removed this as it looked a bit strange */
-	if (!set_usetable)
-	    fprintf(fp, "<hr />\n<p />\n");
-#endif
     }
 }
 
@@ -366,10 +350,6 @@ void print_index_header(FILE *fp, char *label, char *dir, char *subject,
 		  lang[MSG_NAVBAR2UPPERLEVELS], ihtmlnavbar2upfile);
 
 	fprintf(fp, "<h1>%s %s</h1>\n", label, subject);
-#if 0 /*@@ JK: removed it */	
-	if (!set_usetable)
-	  fprintf(fp, "<hr />\n");
-#endif
     }
 }
 

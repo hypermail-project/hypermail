@@ -210,11 +210,7 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 	    }
 	    print_index_header(fp_body, set_label, set_dir,
 			       lang[MSG_BY_THREAD], filenameb);
-	    if (set_usetable) {
-	        fprint_menu(fp_body, NO_INDEX, "", rp->data->msgid,
-			    rp->data->subject, PAGE_TOP, rp->data->subdir);
-	    }
-	    else fprint_menu0(fp_body, rp->data, PAGE_TOP);
+	    fprint_menu0(fp_body, rp->data, PAGE_TOP);
 	}
 	/* Now print this mail */
 	if ((year == -1 || year_of_datenum(rp->data->date) == year)
@@ -318,11 +314,7 @@ int isreplyto(int msgnum, int parent)
 static void
 finish_thread_file(FILE *fp_body, struct emailinfo *email, char *filenameb)
 {
-	if (set_usetable) {
-	    fprint_menu(fp_body, NO_INDEX, "", email->msgid,
-			email->subject, PAGE_BOTTOM, email->subdir);
-	}
-	else fprint_menu0(fp_body, email, PAGE_BOTTOM);
+	fprint_menu0(fp_body, email, PAGE_BOTTOM);
 	printfooter(fp_body, mhtmlfooterfile, set_label, set_dir,
 		    email->subject, filenameb, TRUE);
 	fclose(fp_body);
