@@ -386,10 +386,6 @@ void printfooter(FILE *fp, char *htmlfooter, char *label, char *dir,
 	printfile(fp, htmlfooter, label, subject,
 		  dir, NULL, NULL, NULL, NULL, NULL, filename);
     else {
-      /*
-	if (set_showhr && !set_usetable)
-	    fprintf(fp, "<hr />\n");
-      */
 	fprintf(fp, "<p><small><em>\n");
 	fprintf(fp, "%s ", lang[MSG_ARCHIVE_GENERATED_BY]);
 	fprintf(fp, "<a href=\"%s\">%s %s</a> \n", HMURL, PROGNAME, VERSION);

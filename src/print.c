@@ -468,9 +468,6 @@ void print_index_header_links(FILE *fp, mindex_t called_from, long startdatenum,
 
     fprintf (fp, "</ul>\n</map>\n");
 
-    if (set_showhr)
-      fprintf(fp, "<hr />\n");
-
     /*
      * Printout the Dates for the Starting and Ending messages 
      * in the archive, along with a count of the messages.
@@ -1928,8 +1925,6 @@ void writearticles(int startnum, int maxnum)
 	 * Finally...print the body!
 	 */
 
-	if (set_showhr)
-	  fprintf(fp, "<hr />\n");
 	printcomment(fp, "body", "start");
 	fprintf (fp, "<div class=\"mail\">\n");
 	print_headers(fp, email, FALSE);
@@ -1938,8 +1933,6 @@ void writearticles(int startnum, int maxnum)
 		 lang[MSG_RECEIVED_ON], email->fromdatestr);
 	fprintf (fp, "</div>\n");
 	printcomment(fp, "body", "end");
-	if (set_showhr)
-	  fprintf(fp, "<hr />\n");
 
 	/*
 	 * Should we print out the message links ?
@@ -2096,8 +2089,6 @@ void writedates(int amountmsgs, struct emailinfo *email)
     else {
       fprint_menu(fp, DATE_INDEX, set_archives, "", "", PAGE_TOP, email ? email->subdir : NULL);
       fprint_summary(fp, PAGE_TOP, start_date_num, end_date_num, amountmsgs);
-      if (set_showhr)
-	fprintf(fp, "<hr />\n"); 
     }
 
     /*
@@ -2131,8 +2122,6 @@ void writedates(int amountmsgs, struct emailinfo *email)
 			       email ? email->subdir : NULL);
     }
     else {
-	if (set_showhr)
-	    fprintf(fp, "<hr />\n");
 	fprint_summary(fp, PAGE_BOTTOM, start_date_num, end_date_num, amountmsgs);
 	fprint_menu(fp, DATE_INDEX, set_archives, "", "", PAGE_BOTTOM, email ? email->subdir : NULL);
     }
@@ -2199,8 +2188,6 @@ void writeattachments(int amountmsgs, struct emailinfo *email)
     else {
 	fprint_menu(fp, ATTACHMENT_INDEX, set_archives, "", "", PAGE_TOP, email ? email->subdir : NULL);
 	fprint_summary(fp, PAGE_TOP, start_date_num, end_date_num, amountmsgs);
-	if (set_showhr)
-	    fprintf(fp, "<hr />\n"); 
     }
 
     /*
@@ -2230,8 +2217,6 @@ void writeattachments(int amountmsgs, struct emailinfo *email)
 				 email ? email->subdir : NULL);
     }
     else {
-	if (set_showhr)
-	    fprintf(fp, "<hr />\n");
 	fprint_summary(fp, PAGE_BOTTOM, start_date_num, end_date_num, amountmsgs);
 	fprint_menu(fp, ATTACHMENT_INDEX, set_archives, "", "", PAGE_BOTTOM, email ? email->subdir : NULL);
     }
@@ -2304,8 +2289,6 @@ void writethreads(int amountmsgs, struct emailinfo *email)
     else {
 	fprint_menu(fp, THREAD_INDEX, set_archives, "", "", PAGE_TOP, email ? email->subdir : NULL);
 	fprint_summary(fp, PAGE_TOP, start_date_num, end_date_num, amountmsgs);
-	if (set_showhr)
-	    fprintf(fp, "<hr />\n");
     }
 
     if (set_indextable) {
@@ -2330,8 +2313,6 @@ void writethreads(int amountmsgs, struct emailinfo *email)
 			       email ? email->subdir : NULL);
     }
     else {
-	if (set_showhr)
-	    fprintf(fp, "<hr />\n");
 	fprint_summary(fp, PAGE_BOTTOM, start_date_num, end_date_num, amountmsgs);
 		fprint_menu(fp, THREAD_INDEX, set_archives, "", "", PAGE_BOTTOM, email ? email->subdir : NULL);
     }
@@ -2449,8 +2430,6 @@ void writesubjects(int amountmsgs, struct emailinfo *email)
     else {
 	fprint_menu(fp, SUBJECT_INDEX, set_archives, "", "", PAGE_TOP, email ? email->subdir : NULL);
 	fprint_summary(fp, PAGE_TOP, start_date_num, end_date_num, amountmsgs);
-	if (set_showhr)
-	    fprintf(fp, "<hr />\n");
     }
 
     if (set_indextable) {
@@ -2483,8 +2462,6 @@ void writesubjects(int amountmsgs, struct emailinfo *email)
 				 email ? email->subdir : NULL);
     }
     else {
-	if (set_showhr)
-	    fprintf(fp, "<hr />\n");
 	fprint_summary(fp, PAGE_BOTTOM, start_date_num, end_date_num, amountmsgs);
 	fprint_menu(fp, SUBJECT_INDEX, set_archives, "", "", PAGE_BOTTOM, email ? email->subdir : NULL);
     }
@@ -2602,8 +2579,6 @@ void writeauthors(int amountmsgs, struct emailinfo *email)
     else {
 	fprint_menu(fp, AUTHOR_INDEX, set_archives, "", "", PAGE_TOP, email ? email->subdir : NULL);
 	fprint_summary(fp, PAGE_TOP, start_date_num, end_date_num, amountmsgs);
-	if (set_showhr)
-	    fprintf(fp, "<hr />\n");
     }
 
     if (set_indextable) {
@@ -2637,8 +2612,6 @@ void writeauthors(int amountmsgs, struct emailinfo *email)
 				 email ? email->subdir : NULL);
     }
     else {
-	if (set_showhr)
-	    fprintf(fp, "<hr />\n");
 	fprint_summary(fp, PAGE_BOTTOM, start_date_num, end_date_num, amountmsgs);
 	fprint_menu(fp, AUTHOR_INDEX, set_archives, "", "", PAGE_BOTTOM, email ? email->subdir : NULL);
     }
@@ -2820,8 +2793,6 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
 		else {
 		    fprint_menu(fp1, j, set_archives, "", "", PAGE_TOP, NULL);
 					fprint_summary(fp1, PAGE_TOP, first_date, last_date, count);
-		    if (set_showhr)
-		        fprintf(fp1, "<hr />\n");
 		}
 
 		if (set_indextable) {
@@ -2866,8 +2837,6 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
 		if (!set_usetable)
 		    print_index_footer_links(fp1, j, last_date, count, NULL);
 		else {
-		    if (set_showhr)
-		        fprintf(fp1, "<hr />\n");
 		    fprint_summary(fp1, PAGE_BOTTOM, first_date, last_date, count);
 		    fprint_menu(fp1,j, set_archives, "", "", PAGE_BOTTOM, NULL);
 		}
@@ -2961,8 +2930,6 @@ void write_toplevel_indices(int amountmsgs)
 	else {
 	    fprint_menu(fp, FOLDERS_INDEX, set_archives, "", "", PAGE_TOP, NULL);
 	    fprint_summary(fp, PAGE_TOP, firstdatenum, lastdatenum, amountmsgs);
-	    if (set_showhr)
-	        fprintf(fp, "<hr />\n"); 
 	}
 	fprintf(fp, "<table>\n");
     }
@@ -3029,8 +2996,6 @@ void write_toplevel_indices(int amountmsgs)
 	   print_index_footer_links(fp, FOLDERS_INDEX, lastdatenum, amountmsgs, NULL);
 	}
 	else {
-	    if (set_showhr)
-	        fprintf(fp, "<hr />\n");
 	    fprint_summary(fp, PAGE_BOTTOM, firstdatenum, lastdatenum, amountmsgs);
 	    fprint_menu(fp, FOLDERS_INDEX, set_archives, "", "", PAGE_BOTTOM, NULL);
 	}

@@ -2488,9 +2488,7 @@ int parsemail(char *mbox,	/* file name */
 					   as-is, we make a <img> tag instead of <a href>! */
 
 					trio_snprintf(buffer, sizeof(buffer),
-						 "%s<img src=\"%s%s%c%s\" alt=\"%s\" />\n",
-						 (set_showhr ? "<hr />\n" :
-						  ""),
+						 "<img src=\"%s%s%c%s\" alt=\"%s\" />\n",
 						 subdir ? subdir->rel_path_to_top : "",
 						 &att_dir[strlen(dir) + 1],
 						 PATH_SEPARATOR, file,
@@ -2507,9 +2505,8 @@ int parsemail(char *mbox,	/* file name */
 					    NULL) *sp = '\0';
 
 					trio_snprintf(buffer, sizeof(buffer),
-						 "%s<ul>\n<li>%s %s: <a href=\"%s%s\">%s</a></li>\n</ul>\n",
-						 (set_showhr ? "<hr />\n" :
-						  ""), type,
+						 "<ul>\n<li>%s %s: <a href=\"%s%s\">%s</a></li>\n</ul>\n",
+						 type,
 						 lang[MSG_ATTACHMENT],
 						 subdir ? subdir->rel_path_to_top : "",
 						 created_link, desc);
