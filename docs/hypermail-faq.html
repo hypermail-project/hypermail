@@ -35,6 +35,7 @@ little here.  That will change shortly.
 <LI><A HREF="#17">How does hypermail decide whether messages are in the same thread?</A>
 <LI><A HREF="#18">How can I have multiple mailboxes produce one archive?</A>
 <LI><A HREF="#19">I have received an email with attachment that needs octet-stream. What should I do?</A>
+<LI><A HREF="#20">Why is Hypermail ignoring some messages?</A>
 </OL>
 
 <P ALIGN=CENTER><IMG SRC="hr.yellow.png" WIDTH=400 HEIGHT=2 ALT="----"></P>
@@ -54,15 +55,15 @@ you can charge for their distribution).  More details are available at
 <H3><A HREF="#" NAME="2">2. Will hypermail run on my system ?</A></H3>
 <P>
 Hypermail can compile and run as-is on most of the more popular UNIX systems 
-today. There is no version for the Macintosh, however. If you're not sure if 
+today. If you're not sure if 
 hypermail will run on your UNIX system, try compiling it and see!
+<p>
+Hypermail has been reported to work on MacOSX (X.2.6), with the advice
+to use --disable-shared and manually execute make in src/pcre.
 <P>
 People have indeed ported hypermail to DOS, Windows 95, and Windows NT (but 
-not Java ...yet). Unfortunately, the information as to who actually did this 
-free work, and the source to these ports, has sadly been lost in time. If you 
-have information about such a port and/or would like to contribute, please
-send your things to <A HREF="mailto:kent@hypermail.org">Kent Landfield</A> 
-and he will make them available via the Hypermail development site.
+not Java ...yet). Installation advice for some Windows systems is available at
+<A HREF="http://www.hypermail.org/win32.html">win32.html</A>.
 
 <P ALIGN=CENTER><IMG SRC="hr.yellow.png" WIDTH=300 HEIGHT=2 ALT="----"></P>
 <P>
@@ -93,7 +94,7 @@ these days as a Hypermedia Engineer at Veo Systems.
 <P>
 <H3><A HREF="#" NAME="5">5. What is the latest version of Hypermail ?</A></H3>
 <P>
-The latest version of Hypermail is Version 2.1.7. It is available from
+The latest stable version of Hypermail is Version 2.1.8. It is available from
 <A HREF="http://www.hypermail.org/dist/">http://www.hypermail.org/dist/</A>
 
 <P ALIGN=CENTER><IMG SRC="hr.yellow.png" WIDTH=300 HEIGHT=2 ALT="----"></P>
@@ -112,6 +113,9 @@ and/or at
 It and past versions are also available via FTP from
 
 <P ALIGN=CENTER><A HREF="ftp://ftp.hypermail.org/hypermail/">ftp://ftp.hypermail.org/hypermail/</A></P>
+<p>
+The cvs server at <a href="http://cvs.hypermail.org">:pserver:cvs@cvs.hypermail.org:/CVS</a>
+usually has a more recent but less tested version.
 
 <P ALIGN=CENTER><IMG SRC="hr.yellow.png" WIDTH=300 HEIGHT=2 ALT="----"></P>
 <P>
@@ -242,21 +246,16 @@ List." I read through the documentation on your website, and I think I
 know what I have to do. However, I cannot find an example of what a .hyp 
 template file should look like. </EM>
 <P>
-That's what "New Message" on the menubar does. It allows a person so send
-a new message to the list.  And "Reply" on the menubar allows a user
+That's what "Respond" on the menubar does. It allows a person
 to reply to the existing message, with the reply sent to the list address.
+And "mail a new topic" on the menubar allows a user to send
+a new message to the list.
 <P>
 To enable this feature set
 <P>
 <STRONG><SMALL>
-hm_usetable = 1
 <BR>hm_hmail = listaddr@your-site.domain
 </SMALL></STRONG>
-<P>
-I am going to be making them available without using the menubar shortly.
-Maybe different terms "New List Message" and "Reply to List" instead of
-the current New Message and Reply would make it clearer.
-
 <P ALIGN=CENTER><IMG SRC="hr.yellow.png" WIDTH=400 HEIGHT=2 ALT="----"></P>
 <H3><A HREF="#" NAME="11">Can I build and run this on Windows 98/2000/NT ?</A></H3>
 <P>
@@ -264,7 +263,7 @@ the current New Message and Reply would make it clearer.
 I build the latest version ?</EM>  
 <P>
 There is a complete description on how to build hypermail on a Windows
-    system at <A HREF="win32.html">win32.html</A>.  This was written by
+    system at <A HREF="http://www.hypermail.org/win32.html">win32.html</A>.  This was written by
 Bob Crispen &lt;bob.crispen@boeing.com&gt;. (Thanks Bob!)
 
 
@@ -450,7 +449,7 @@ it a second mailbox without using the -u flag or the increment=1 or
 increment=-1 option.
 
 <P ALIGN=CENTER><IMG SRC="hr.yellow.png" WIDTH=400 HEIGHT=2 ALT="----"></P>
-<H3><A NAME="19">I have received an email with attachment that needs octet-stream. What should I do?</A></H3>
+<H3><A HREF="#" NAME="19">I have received an email with attachment that needs octet-stream. What should I do?</A></H3>
 <p>
 No attachment "needs" octet-stream. octet-stream is a label that describes
 the attachment as being "a stream of octets". What is that you say? Well, the
@@ -464,6 +463,24 @@ hope that the mail it came with describes what the attachment was about.
 <p>
 "octet-stream" could just as well be named "I haven't got the slightest idea
 what this is, but I know it is built up with a series of bytes".
+
+<P ALIGN=CENTER><IMG SRC="hr.yellow.png" WIDTH=400 HEIGHT=2 ALT="----"></P>
+<H3><A HREF="#" NAME="20">Why is Hypermail ignoring some messages?</A></H3>
+<p>One possibility is that those messages have a header saying
+<blockquote>
+X-No-Archive: yes
+</blockquote>
+which seems to indicate that the author doesn't want them included in any
+archive. This is controlled by a configure option which defaults to:
+<blockquote>
+deleted = "X-Hypermail-Deleted X-No-Archive"
+</blockquote>
+To get Hypermail to treat these as normal messages, add this to your
+config file (which is ~/.hmrc by default) or alter the "deleted" line
+in your existing config file to:
+<blockquote>
+deleted = "X-Hypermail-Deleted"
+</blockquote>
 
 <P ALIGN=CENTER><IMG SRC="hr.yellow.png" WIDTH=400 HEIGHT=2 ALT="----"></P>
 <BR>
