@@ -872,7 +872,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
 			d_index = MSG_EXPIRED;
 	if (email->is_deleted == 4 || email->is_deleted == 8)
 	    d_index = MSG_FILTERED_OUT;
-		fprintf(fp, "%s", lang[d_index]);	// AUDIT biege: No more warnings about format-bug
+		fprintf(fp, "%s", lang[d_index]);	/* AUDIT biege: No more warnings about format-bug */
 	fprintf(fp, "</p>\n");
 	printcomment(fp, "body", "end");
 	if (set_showhr)
@@ -2405,7 +2405,7 @@ void write_summary_indices(int amount_new)
 		char *filename;
 		FILE *fp;
 		filename = htmlfilename("summary", NULL, set_htmlsuffix);
-		fp = fopen(filename, "w");	// AUDIT biege: where?
+		fp = fopen(filename, "w");	/* AUDIT biege: where? */
 		if (!fp) {
 			snprintf(errmsg, sizeof(errmsg), "Couldn't write \"%s\".", filename);
 			progerr(NULL);
