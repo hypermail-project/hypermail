@@ -172,7 +172,8 @@ struct emailinfo *addhash(int num, char *date, char *name, char *email, char *ms
 	}
     }
 
-    if ((msgid_dup && set_discard_dup_msgids) && set_showprogress) {
+    if (msgid_dup && set_discard_dup_msgids) {
+	if (set_showprogress)
 		printf("%d: Message-ID collision, '%s' already present - discarding message.\n", num, msgid);
 	return NULL;
     }

@@ -1,7 +1,12 @@
 Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Peter McCluskey (April 3, 2003)
+
+ Peter McCluskey (May 12, 2003)
+   - fix txtsuffix to not crash on null pointer.
+   - fix discard_dup_msgids to work when showprogress = 0.
+
+ Peter McCluskey (April 24, 2003)
    - spam encoding from Peter Karlsson. Currently enabled via the
     spamprotect option.
 
