@@ -94,6 +94,7 @@ char *PushByte(struct Push *, char);
 char *PushString(struct Push *, const char *);
 char *PushNString(struct Push *, const char *, int);
 
+char *strcasestr (char *, const char *);
 char *strsav(const char *);
 char *strreplace(char *, char *);
 void strcpymax(char *, const char *, int);
