@@ -54,8 +54,6 @@ ignore_types = text/x-vcard
 ignore_types = application/x-msdownload
 prefered_types = text/plain text/html 
 
-#body=<BODY BGCOLOR="#F4D659" TEXT="#333333">
-#body=NONE
 #ihtmlheaderfile = test-index.hyp
 #ihtmlfooterfile = test-footer.hyp
 #mhtmlheaderfile = test-msg.hyp
