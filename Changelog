@@ -2,8 +2,11 @@ Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ============================
-HYPERMAIL VERSION pre-2.1.9:
+HYPERMAIL VERSION 2.1.9:
 ============================
+ Peter McCluskey (Feb 23, 2004)
+  Released version 2.1.9 tar file.
+
  Peter McCluskey (Feb 17, 2004)
   Add use_sender_date option.
   Fix instructions for doing "make install" so that the documentation will
