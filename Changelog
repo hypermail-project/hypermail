@@ -1,5 +1,12 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Peter McCluskey (Apr 12 2001)
+  - convert html tags for monthly_index, yearly_index to lowercase.
+  - fixed indexing error in getname reported by David Eisner <cradle@glue.umd.edu>
+  - fixed set_usegdbm compile error reported by Daniel.
+  - fixed parentheses in printattachments
+ 
+
 Peter McCluskey (Apr 10 2001)
   - Add check for *html deleted, gdbm index still present.
   - fix count of messages.
