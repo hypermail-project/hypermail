@@ -6,6 +6,7 @@ Peter McCluskey (Apr 3 2001)
     important options and refer to hmrc.html for a full description.
     Changed style of hmrc.html, added folder_by_date mention to
     hypermail-faq.html.
+  - fixed typo in FILES.
 
 Peter McCluskey (Mar 31 2001)
   - fixed core dump with showhtml=2 created by yesterday's checkin.
