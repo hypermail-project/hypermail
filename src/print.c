@@ -2904,14 +2904,12 @@ void write_toplevel_indices(int amountmsgs)
     char *subject = lang[MSG_FOLDERS_INDEX];
     static char verbose_period_name[DATESTRLEN*2 + 1];
     static char abbr_period_name[DATESTRLEN*2 + 1];
-    static char timezone[DATESTRLEN + 10];
     char *end_date;
     char *index_title;
     char *filename;
     char *saved_set_dateformat;
     char *abbr_dateformat = "%e %b %Y";
     char *verbose_dateformat = "%A, %e %B %Y";
-    char *timezone_dateformat = "GMT+0000";
 
     FILE *fp;
 
@@ -3006,17 +3004,13 @@ void write_toplevel_indices(int amountmsgs)
 		strcat (verbose_period_name, lang[MSG_TO]);
 		strcat (verbose_period_name, end_date);
 	      }
-	      /* finally, get the time zone */
-	      set_dateformat = timezone_dateformat;
-	      strcpy (timezone, getdatestr (sd->last_email->fromdate));
-
 	      fprintf(fp, "<tr%s><th scope=\"row\" align=\"left\">%s",
 		      (first) ? " class=\"first\"" : "",
 		      (first) ? "<a name=\"first\" id=\"first\"></a>" : "");
 	      /* only add a link to the index if it is not empty */
 	      if (sd->count > 0)
-		fprintf (fp, "<a title=\"%s %s %s\" href=\"%s%s\">",
-			 verbose_period_name, timezone, index_title, 
+		fprintf (fp, "<a title=\"%s %s\" href=\"%s%s\">",
+			 verbose_period_name, index_title, 
 			 sd->subdir, index_name[1][j]);
 	      fprintf (fp, "%s", abbr_period_name);
 	      if (sd->count > 0)
@@ -3030,8 +3024,8 @@ void write_toplevel_indices(int amountmsgs)
 	      fprintf(fp, "<td>");
 	      /* only add a link to the index if it is not empty */
 	      if (sd->count > 0)
-		fprintf (fp, "<a title=\"%s %s %s\" href=\"%s%s\">",
-			 verbose_period_name, timezone, index_title, 
+		fprintf (fp, "<a title=\"%s %s\" href=\"%s%s\">",
+			 verbose_period_name, index_title, 
 			 sd->subdir, index_name[1][j]);
 	      fprintf (fp, "%s", indextypename[j]);
 	      if (sd->count > 0)
