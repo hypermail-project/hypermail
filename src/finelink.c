@@ -357,9 +357,11 @@ static char *url_replying_to(struct emailinfo *email, char *line1,	/* first line
 	    free(parsed);
 	    if (add_anchor(match_info.msgnum, *quoting_msgnum, quote_num, anchor, parsed2, 1, count_quoted_lines, &match_info)) {
 	        struct emailinfo *ep2;
-		struct body *bp0 = hashnumlookup(match_info.msgnum, &ep2);
-		char *path = get_path(ep, ep2);
-		char *buf;
+                char *path;
+                char *buf;
+                hashnumlookup(match_info.msgnum, &ep2);
+                path = get_path(ep, ep2);
+
 		trio_asprintf(&buf, "%s%.4d.%s#%s", path, match_info.msgnum, set_htmlsuffix, anchor);
 		set_new_reply_to(match_info.msgnum, match_info.match_len_bytes);
 		free(parsed2);
