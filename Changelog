@@ -2,6 +2,12 @@ Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+ Peter McCluskey (Feb 14, 2003)
+   Disabled conversion of file:// into href - it seemed to allow anyone
+  who could access the web server via local host could read any file
+  that the web server had permission to read rather than just files
+  in the archive directory.
+
  Peter McCluskey (Feb 13, 2003)
    Add -DTRIO_MINIMAL. Solves a trio compile problem in SunOS and makes
   binary a little smaller.

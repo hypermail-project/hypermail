@@ -927,7 +927,9 @@ static char *url[] = {
     "https://",
     "news:",
     "ftp://",
-    "file://",
+#if 0
+    "file://",/* can expose private files outside the archive in some cases? */
+#endif
     "gopher://",
     "nntp://",
     "wais://",
