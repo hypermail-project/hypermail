@@ -1,5 +1,9 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Peter McCluskey (Jul 25 2001)
+  - fix to abort before unlinking gdbm file if need it and cannot open it.
+  - fix latest_folder option (didn't work in incremental mode).
+
 Peter McCluskey (Jul 17 2001)
   - patch from Brian Kirkby to fix links between folders with usetable.
 

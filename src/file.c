@@ -273,6 +273,8 @@ void symlink_latest()
     char dirname[MAXFILELEN];
     struct stat stbuf;
 
+    if (!latest_folder_path)
+	return;			/* haven't created new folder this time? */
     trio_snprintf(filename, MAXFILELEN, "%s%s",
                   set_dir, set_latest_folder);
 
