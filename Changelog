@@ -5,6 +5,8 @@ Version Changes for Hypermail
  Peter McCluskey (Feb 13, 2003)
    Add -DTRIO_MINIMAL. Solves a trio compile problem in SunOS and makes
   binary a little smaller.
+   Strip mail.c down to minimal warning message so we don't have to worry
+  about analyzing it's security problems.
 
  Kent Landfield (kent@hypermail.org) (February 12, 2003)
   - Converted msg2archive.c to use Thomas Biege's <thomas@suse.de>
