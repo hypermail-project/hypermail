@@ -2,6 +2,16 @@ Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  Jose Kahan (jose@w3.org) (October 2, 2002)
+  In order to avoid hashed filename collisions, the filename
+  is now built with a hash of the msgid concatenated to the
+  Epoch seconds of the From date. This gives a total of
+  16 characters (all data is represented in hex). Only messages
+  that have the same msgid and that arrive in the same second
+  will have a collision.
+  I also compiled with the Warning flags and removed some
+  warnings.
+
+ Jose Kahan (jose@w3.org) (October 2, 2002)
   The access righs of the msgindex file (for the hashed filenames)
   were not being set at all.
 

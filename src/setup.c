@@ -334,8 +334,8 @@ struct Config cfg[] = {
      "#specified in the -d or dir option.\n"},
 
     {"nonsequential",  &set_nonsequential,  BFALSE,    CFG_SWITCH,
-     "# Set this to On to generate filenames that are not sequential, but 
-        rather a hash of the message properties.\n"},
+     "# Set this to On to generate filenames that are not sequential, but\n"
+     "rather a hash of the message properties.\n"},
 
     {"thrdlevels", &set_thrdlevels, INT(4), CFG_INTEGER,
      "# This specifies the number of thread levels to outline\n"

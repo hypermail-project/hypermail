@@ -18,6 +18,8 @@ void writedates(int, struct emailinfo *);
 void writesubjects(int, struct emailinfo *);
 void writethreads(int, struct emailinfo *);
 void writeauthors(int, struct emailinfo *);
+void writehaof(int, struct emailinfo *);
+
 void writeattachments(int, struct emailinfo *);
 
 void printdates(FILE *, struct header *, int, int, struct emailinfo *);

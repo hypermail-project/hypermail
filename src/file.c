@@ -385,7 +385,6 @@ char *messageindex_name(void)
 int find_max_msgnum_id()
 {
     int max_num = -1;
-    int num;
 
     FILE *fp;
     char line[MAXLINE];
@@ -584,7 +583,7 @@ struct emailsubdir *msg_subdir(int msgnum, time_t date)
 */
 char *message_name (struct emailinfo *email)
 {
-  static char buffer[9];
+  static char buffer[8 + sizeof (time_t) * 2 + 1];
 
   if (set_nonsequential && email->msgid)
     {
@@ -593,8 +592,11 @@ char *message_name (struct emailinfo *email)
       Fnv32_t hash_val; 
 
       hash_val = fnv_32_buf(email->msgid, strlen (email->msgid), FNV1_32_INIT);
-      hash_val = fnv_32_str(email->fromdatestr, hash_val);
-      sprintf (buffer, "%08x", hash_val);
+      /* the line below is what we used before when the hash included
+	 the fromdate string, and we didn't concatenate the mail date.
+	 However, we changed strategies to avoid collisions. */
+      /* hash_val = fnv_32_str(email->fromdatestr, hash_val); */
+      sprintf (buffer, "%08x%08x", hash_val, email->fromdate);
 
       return buffer;
 #endif /* HAVE_LIBFNV */
