@@ -2704,12 +2704,12 @@ static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
 	if (!num_from_gdbm)
 	    return 0;
 	if (!hashnumlookup(first_read_body, &e0)) {
+#ifdef GDBM
 	    if (set_usegdbm)
 	        sprintf(errmsg,
 			"set_folder_by_date error old msg %d num_from_gdbm %d",
 			first_read_body, num_from_gdbm);
 	    else
-#ifdef GDBM
 	        sprintf(errmsg, "folder_by_date requires usegdbm option");
 #else
 	        sprintf(errmsg, "folder_by_date requires usegdbm option"
