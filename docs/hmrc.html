@@ -92,6 +92,7 @@ on or off.
     <li><a href="#iquotes">iquotes</a> italicize quotes
     <li><a href="#mcss_url">mcss_url</a> stylesheet
     <li><a href="#quote_hide_threshold">quote_hide_threshold</a> cut excessive quoting
+    <li><a href="#files_by_thread">files_by_thread</a> add file with all messages in 1 thread
     </ul>
   <li><a href="#links">Links</a>
     <ul>
@@ -623,6 +624,17 @@ message body (exluding the signature) consisting of
 quoted text exceeds the number indicated by this option.
 <br>
 <br><i>quote_hide_threshold = 100</i>
+</dd>
+
+<a name="files_by_thread"></a>
+<dt><strong>files_by_thread = [ 0 | 1]</strong></dt><dd>
+ Set this to 1 to generate (in addition to the usual files),
+a file for each thread that contains all the messages in that
+thread. The first line in each thread of the thread index page
+links to this file instead of to a single message. This option
+should still be considered experimental.
+<br>
+<br><i>files_by_thread = 0</i>
 </dd>
 
 <h3><a name="links">Message page links</a></h3>

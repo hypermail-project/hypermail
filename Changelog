@@ -1,5 +1,10 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (August 30, 2002)
+  Fix segfaults in mdecodeRFC2047 (with headers encoded as quoted printable),
+  and in ConvURLsString.
+  Add files_by_thread option.
+
  Peter McCluskey (August 20, 2002)
   Change preferedcontent to fall back on type "text/" or on encoding if
   it can't find any prefered types.
