@@ -2911,7 +2911,7 @@ void write_toplevel_indices(int amountmsgs)
     char *saved_set_dateformat;
     char *abbr_dateformat = "%e %b %Y";
     char *verbose_dateformat = "%A, %e %B %Y";
-    char *timezone_dateformat = "GMT%z";
+    char *timezone_dateformat = "GMT+0000";
 
     FILE *fp;
 
