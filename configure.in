@@ -274,7 +274,7 @@ fi
 
 AC_MSG_CHECKING(for GDBM support)
 
-if test "$GDBM_LIB" = ""; then
+if test "$GDBM_LIB" = "" && test "$given_gdbm" != "no"; then
   AC_CHECK_LIB(gdbm, gdbm_open,[AC_DEFINE(GDBM,1, [Whether you have GDBM]) DBM_TYPE=gdbm; GDBM_LIB=-lgdbm],
      [DBM_TYPE=""])
   AC_MSG_CHECKING([gdbm library])
@@ -284,6 +284,8 @@ if test "$GDBM_LIB" = ""; then
   else
     AC_MSG_RESULT($DBM_TYPE found)
   fi
+else
+    AC_MSG_RESULT(no)
 fi
 
 if test "$GDBM_LIB" = "-lgdbm" && test "$GDBM_INCLUDE" = ""; then
