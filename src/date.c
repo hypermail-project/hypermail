@@ -132,7 +132,7 @@ void getthisyear(void)
 ** a date for you. 
 */
 
-char *getdatestr(long yearsecs)
+char *getdatestr(time_t yearsecs)
 {
     static char date[DATESTRLEN];
 

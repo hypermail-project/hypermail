@@ -11,7 +11,7 @@ long convtoyearsecs(char *);
 char *getlocaltime(void);
 void gettimezone(void);
 void getthisyear(void);
-char *getdatestr(long);
+char *getdatestr(time_t);
 char *secs_to_iso(time_t);
 time_t iso_to_secs(char *);
 

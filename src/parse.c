@@ -1781,7 +1781,7 @@ int parsemail(char *mbox,	/* file name */
 				/* reset the alternative variables (I think we can skip
 				   this step without problems */
 				alternative_weight = -1;
-				alternative_bp = alternative_bp = NULL;
+				alternative_bp = NULL;
 				alternative_lastfile_created = NO_FILE;
 				alternative_file[0] =
 				    alternative_lastfile[0] = '\0';
