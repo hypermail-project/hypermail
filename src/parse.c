@@ -1737,6 +1737,16 @@ int parsemail(char *mbox,	/* file name */
 				    /* save lines in case no boundary found */
 				    bp = addbody(bp, &lp, line_buf, bodyflags);
 				}
+				if (!strncmp(line_buf + set_ietf_mbox + 2 + strlen(boundary), "--", 2)
+				    && bp != origbp) {
+				    /* end of mime found before mime start */
+				    /* probably a Microsoft Outlook bug */
+				    origbp = append_body(origbp, &origlp, bp);
+				    bp = origbp;
+				    lp = origlp;
+				    boundary = NULL;
+				    goto leave_header;
+				}
 				free_body(bp);
 				bp = origbp;
 				lp = origlp;
