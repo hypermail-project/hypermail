@@ -879,3 +879,13 @@ show_index_links = 1
 # in the future.
 
 # use_sender_date = 0
+
+# filename_base = string
+#
+# This option overrides the normal rules for creating attachment
+# file names, and creates file names from the string that this
+# option is set to plus a file name extension if one can be found
+# in the name supplied by the message. This option is mainly for
+# languages that use different character sets from English.
+
+# filename_base = 

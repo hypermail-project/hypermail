@@ -302,6 +302,26 @@ char *safe_filename(char *name)
     return name;
 }
 
+static void
+create_attachname(char *attachname, int max_len)
+{
+    int i, max_i;
+    char suffix[8];
+    max_i = strlen(attachname);
+    if(max_i >= max_len)
+	max_i = max_len - 1;
+    i = max_i;
+    while(i >= 0 && i > max_i - sizeof(suffix) && attachname[i] != '.')
+	--i;
+    if(i >= 0 && attachname[i] == '.')
+	strncpy(suffix, attachname + i, sizeof(suffix) - 1);
+    else
+	suffix[0] = 0;
+    strncpy(attachname, set_filename_base, max_len);
+    strncat(attachname, suffix, max_len - strlen(attachname) - 1);
+    safe_filename(attachname);
+}
+
 /*
 ** Cross-indexes - adds to a list of replies. If a message is a reply to
 ** another, the number of the message it's replying to is added to the list.
@@ -2395,6 +2415,8 @@ msgid);
 			    if (att_counter > 99)
 				binname = NULL;
 			    else {
+				if (set_filename_base)
+				    create_attachname(attachname, sizeof(attachname));
 				if (attachname[0])
 				    fname = attachname;
 				else

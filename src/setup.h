@@ -145,6 +145,7 @@ extern char *set_mhtmlfooter;
 
 extern char *set_attachmentlink;
 extern char *set_unsafe_chars;
+extern char *set_filename_base;
 extern bool set_linkquotes;
 
 extern char *set_antispamdomain;

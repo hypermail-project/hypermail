@@ -129,6 +129,7 @@ on or off.
   <li><a href="#unsafe_chars">unsafe_chars</a> restrict filename chars
   <li><a href="#save_alts">save_alts</a> multipart/alternative handling
   <li><a href="#alts_text">alts_text</a> text for some save_alts choices
+  <li><a href="#filename_base">filename_base</a> attachment file name
   </ul>
 
 <li><a href="#sysadmin">System Administration</a>
@@ -157,6 +158,7 @@ on or off.
     <li><a href="#htmlsuffix">htmlsuffix</a> .html, .htm, etc
     <li><a href="#dirmode">dirmode</a> chmod directories
     <li><a href="#filemode">filemode</a> chmod html files
+    <li><a href="#filename_base">filename_base</a> attachment file name
     </ul>
   <li><a href="#sysmisc">Miscellaneous</a>
     <ul>
@@ -1115,6 +1117,17 @@ available, it's a good idea to define this as 0644. This must be an octal
 number.
 <br>
 <br><i>filemode = 0644</i>
+</dd>
+
+<a name="filename_base"></a>
+<dt><strong>filename_base = [ string ]</strong></dt><dd>
+This option overrides the normal rules for creating attachment
+file names, and creates file names from the string that this
+option is set to plus a file name extension if one can be found
+in the name supplied by the message. This option is mainly for
+languages that use different character sets from English.
+<br>
+<br><i>filename_base = attachment</i> (disabled by default)
 </dd>
 
 <h3><a name="sysmisc">System miscellaneous</a></h3>

@@ -1,5 +1,8 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (Nov 28, 2004)
+  Add filename_base option.
+
  Peter McCluskey (Sep 29, 2004)
   Add support for JAVT timezone.
   Add mailbox_date_trimmer to contrib, faq.

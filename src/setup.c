@@ -130,6 +130,7 @@ char *set_mhtmlheader;
 char *set_mhtmlfooter;
 char *set_attachmentlink;
 char *set_unsafe_chars;
+char *set_filename_base;
 
 char *set_folder_by_date;
 char *set_latest_folder;
@@ -774,6 +775,13 @@ struct Config cfg[] = {
      "# message was received, for purposes such as putting in folders\n"
      "# or sorting. Details of which purposes this affects may change\n"
      "# in the future.\n", FALSE},
+
+    {"filename_base", &set_filename_base, NULL, CFG_STRING,
+     "# This option overrides the normal rules for creating attachment\n"
+     "# file names, and creates file names from the string that this\n"
+     "# option is set to plus a file name extension if one can be found\n"
+     "# in the name supplied by the message. This option is mainly for\n"
+     "# languages that use different character sets from English.\n", FALSE},
 };
 
 /* ---------------------------------------------------------------- */
