@@ -1,5 +1,8 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Peter McCluskey (Apr 18 2001)
+  - changed configure script to check several directories for gdbm.h,
+    provide --with-gdbm=DIR option.
 
 Peter McCluskey (Apr 16 2001)
   - added patch from David Eisner <cradle@glue.umd.edu> to prevent subject
@@ -10,7 +13,8 @@ Peter McCluskey (Apr 16 2001)
    prefixes as quote prefixes (affects linkquotes and showhtml=2 options).
 
 Peter McCluskey (Apr 14 2001)
-  - add missing <ul> when set_show_msg_links == 0. Emre Bastuz <info@emre.de>
+  - add missing <ul> when set_show_msg_links == 0, pointed out by
+   Emre Bastuz <info@emre.de>
 
 Peter McCluskey (Apr 13 2001)
   - fixed portability problem in strcasestr.

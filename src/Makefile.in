@@ -27,7 +27,7 @@ INSTALL_PROG=@INSTALL@
 #WNOERROR=-Werror
 #WARNINGS=$(WNOERROR) -ansi -pedantic -Wall -Wtraditional -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Dlint
 
-CFLAGS=@CFLAGS@ $(WARNINGS)
+CFLAGS=@CFLAGS@ @INCLUDES@ $(WARNINGS)
 YACC=@YACC@
 NETLIBS=@LIBS@
 LDFLAGS=@LDFLAGS@
