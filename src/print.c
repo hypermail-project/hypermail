@@ -537,6 +537,37 @@ void print_index_footer_links(FILE *fp, mindex_t called_from,
 #endif
 }
 
+/*----------------------------------------------------------------------------*/
+
+void print_haof_indices(FILE *fp, struct emailsubdir *subdir)
+{
+    int dlev = (subdir != NULL);
+
+    fprintf(fp, "    <indices>\n");
+
+    if (show_index[dlev][DATE_INDEX])
+    	fprintf(fp,"       <dateindex>%s</dateindex>\n",
+				index_name[dlev][DATE_INDEX]);
+
+    if (show_index[dlev][AUTHOR_INDEX])
+    	fprintf(fp,"       <subjectindex>%s</subjectindex>\n",
+				index_name[dlev][AUTHOR_INDEX]);
+
+    if (show_index[dlev][THREAD_INDEX])
+        fprintf(fp,"       <threadindex>%s</threadindex>\n",
+				index_name[dlev][THREAD_INDEX]);
+
+    if (show_index[dlev][SUBJECT_INDEX])
+    	fprintf(fp,"       <authorindex>%s</authorindex>\n",
+				index_name[dlev][AUTHOR_INDEX]);
+
+    if (show_index[dlev][ATTACHMENT_INDEX])
+    	fprintf(fp,"       <attachmentindex>%s</attachmentindex>\n",
+				index_name[dlev][ATTACHMENT_INDEX]);
+
+    fprintf(fp, "    </indices>\n\n");
+}
+
 /*
 ** Prints a comment in the file.
 */
@@ -2402,6 +2433,107 @@ void writeauthors(int amountmsgs, struct emailinfo *email)
 	putchar('\n');
 }
 
+/*
+** Pretty-prints the items for the haof
+*/
+void printhaofitems(FILE *fp, struct header *hp, int year, int month,
+	       struct emailinfo *subdir_email)
+{
+  char *subj, *from_name, *from_emailaddr;
+
+  if (hp != NULL) {
+    struct emailinfo *em=hp->data;
+    printhaofitems(fp, hp->left, year, month, subdir_email);
+    if ((year == -1 || year_of_datenum(em->date) == year)
+	&& (month == -1 || month_of_datenum(em->date) == month)
+	&& !em->is_deleted
+	&& (!subdir_email || subdir_email->subdir == em->subdir)) {
+
+      subj = convchars(em->subject);
+      from_name = convchars(em->name);
+      from_emailaddr = convchars(em->emailaddr);
+
+      fprintf(fp,
+         "      <mail>\n"
+         "        <subject>%s</subject>\n"
+         "        <date>%s</date>\n"
+         "        <fromname>%s</fromname>\n"
+         "        <fromemail>%s</fromemail>\n" 
+         "        <message-id>%s</message-id>\n"
+         "        <file>\"%s\"</file>\n"
+         "      </mail>\n\n"
+         ,subj, getdatestr(em->date), from_name, from_emailaddr, em->msgid,
+         msg_relpath(em,subdir_email));
+
+      free(subj);
+      free(from_name);
+      free(from_emailaddr);
+    }
+    printhaofitems(fp, hp->right, year, month, subdir_email);
+  }
+}
+
+/*
+** Write the XML based hypermail archive overview file
+*/
+
+void writehaof(int amountmsgs, struct emailinfo *email)
+{
+    int newfile;
+    char *filename;
+    FILE *fp;
+    char *authname = index_name[email && email->subdir != NULL][AUTHOR_INDEX];
+
+    filename = haofname(email);
+    printf("haofname %s\n", filename);
+
+    if (isfile(filename))
+	newfile = 0;
+    else
+	newfile = 1;
+
+    if ((fp = fopen(filename, "w")) == NULL) {
+	sprintf(errmsg, "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
+	progerr(errmsg);
+    }
+
+    if (set_showprogress)
+	printf("%s \"%s\"...", lang[MSG_WRITING_HAOF], filename);
+
+    fprintf(fp,"<?xml version=\"1.0\" encoding=\"ISO-8859-15\"?>\n\n");
+    fprintf(fp,"  <!DOCTYPE haof PUBLIC "
+        "\"-//Bernhard Reiter//DTD HOAF 0.2//EN\"\n" 
+        "\"http://ffii.org/~breiter/probe/haof-0.2.dtd\">\n\n"
+          );
+    fprintf(fp,"  <haof version=\"0.2\">\n\n");
+    fprintf(fp,"      <archiver name=\"hypermail\" version=\"" 
+		    		VERSION ".pl" PATCHLEVEL "\" />\n\n");
+
+    print_haof_indices(fp, email ? email->subdir : NULL);
+
+	    
+    fprintf(fp,"  <mails>\n");
+    printhaofitems(fp, datelist, -1, -1, email);
+    fprintf(fp,"  </mails>\n");
+
+    fprintf(fp,"  </haof>\n");
+
+    fclose(fp);
+
+    if (newfile && chmod(filename, set_filemode) == -1) {
+	sprintf(errmsg, "%s \"%s\": %o.",
+		lang[MSG_CANNOT_CHMOD], filename, set_filemode);
+	progerr(errmsg);
+    }
+    free(filename);
+
+    if (set_showprogress)
+	putchar('\n');
+}
+
+
+
+
 static int count_messages(struct header *hp, int year, int mo,
 			  long *first_date, long *last_date)
 {
@@ -2661,6 +2793,8 @@ void write_toplevel_indices(int amountmsgs)
 		    writeattachments(sd->count, sd->first_email);
 		    break;
 	    }
+	if (set_writehaof)
+			writehaof(sd->count, sd->first_email);
 
 	    if (!fp) continue;
 	    if (!sd->count) {

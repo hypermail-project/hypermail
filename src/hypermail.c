@@ -149,6 +149,7 @@ void usage(void)
     printf("  -v            : %s\n", lang[MSG_OPTION_VERBOSE]);
     printf("  -V            : %s\n", lang[MSG_OPTION_VERSION]);
     printf("  -x            : %s\n", lang[MSG_OPTION_X]);
+    printf("  -X            : %s\n", lang[MSG_OPTION_XML]);
     printf("  -1            : %s\n", lang[MSG_OPTION_1]);
     printf("  -L lang       : %s (", lang[MSG_OPTION_LANG]);
 
@@ -193,10 +194,10 @@ int main(int argc, char **argv)
 
     opterr = 0;
 
+#define GETOPT_OPTSTRING ("a:Ab:c:d:gil:L:m:n:o:ps:tTuvVxX0:1M?")
+
     /* get pre config options here */
-    while ((i = getopt(argc,argv,
-			    "a:Ab:c:d:gil:L:m:n:o:ps:tTuvVx0:1M?"
-			    )) != -1) {
+    while ((i = getopt(argc,argv, GETOPT_OPTSTRING )) != -1) {
         switch((char) i) {
 	case 'c':
 	    configfile = strreplace(configfile, optarg);
@@ -206,7 +207,8 @@ int main(int argc, char **argv)
 	    break;
 	case 'V':
 	    version();
-	 /*NOTREACHED*/ case 'a':
+	 /*NOTREACHED*/ 
+	case 'a':
 	case 'A':
 	case 'b':
 	case 'd':
@@ -223,6 +225,7 @@ int main(int argc, char **argv)
 	case 'T':
 	case 'u':
 	case 'x':
+	case 'X':
 	case '0':
 	case '1':
 	case 'M':
@@ -250,9 +253,7 @@ int main(int argc, char **argv)
 
     /* now get the post-config options! */
 
-    while ((i = getopt(argc,argv,
-			    "a:Ab:c:d:gil:L:m:n:o:ps:tTuvx0:1M?"
-      )) != -1) {
+    while ((i = getopt(argc,argv, GETOPT_OPTSTRING)) != -1) {
         switch((char) i) {
 	case 'A':
 	    set_append = 1;
@@ -311,6 +312,9 @@ int main(int argc, char **argv)
 	case 'x':
 	    set_overwrite = TRUE;
 	    break;
+	case 'X':
+	    set_writehaof = TRUE;
+	    break;
 	case '0':
 	    set_delete_msgnum = add_list(set_delete_msgnum, optarg);
 	    break;
@@ -364,8 +368,6 @@ int main(int argc, char **argv)
 #endif
 	
     lang = tlang;		/* A good language, make it so. */
-
-
 
     if (print_usage)		/* Print the usage message and terminate */
 	usage();
@@ -636,6 +638,8 @@ int main(int argc, char **argv)
 	if (set_attachmentsindex) {
 	    writeattachments(amount_new, NULL);
 	}
+	if (set_writehaof) 
+		writehaof(amount_new,NULL);
 	if (set_folder_by_date || set_msgsperfolder)
 	    write_toplevel_indices(amount_new);
 	if (set_monthly_index || set_yearly_index)

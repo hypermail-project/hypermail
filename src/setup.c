@@ -50,6 +50,7 @@ bool set_spamprotect;
 bool set_spamprotect_id;
 bool set_attachmentsindex;
 bool set_usegdbm;
+bool set_writehaof;
 bool set_append;
 char *set_append_filename;
 bool set_warn_surpressions;
@@ -307,6 +308,10 @@ struct Config cfg[] = {
      "#(This particular binary has been build with GDBM disabled.)\n"
 #endif
     },
+
+    {"writehaof", &set_writehaof, BFALSE, CFG_SWITCH,
+     "# Set this to On to let hypermail write an XML archive overview file\n"
+     "# in each directory. The filename is " HAOF_NAME ".\n"},
 
     {"append",  &set_append,  BFALSE,    CFG_SWITCH,
      "# Set this to On to maintain a parallel mbox archive. The file\n"
@@ -1046,6 +1051,7 @@ void dump_config(void)
     printf("set_locktime = %d\n",set_locktime);
     printf("set_ietf_mbox = %d\n",set_ietf_mbox);
     printf("set_usegdbm = %d\n",set_usegdbm);
+    printf("set_writehaof = %d\n",set_writehaof);
     printf("set_append = %d\n",set_append);
     printf("set_thrdlevels = %d\n",set_thrdlevels);
     printf("set_dirmode = %04o\n",set_dirmode);

@@ -44,8 +44,10 @@ int is_empty_archive(void);
 void symlink_latest(void);
 struct emailsubdir *msg_subdir(int, time_t);
 char *msg_href(struct emailinfo *, struct emailinfo *);
+char *msg_relpath(struct emailinfo *, struct emailinfo *);
 char *articlehtmlfilename(struct emailinfo *);
 char *htmlfilename(const char *, struct emailinfo *, const char *);
+char *haofname(struct emailinfo *);
 int matches_existing(int);
 
 /*

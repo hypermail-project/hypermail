@@ -56,7 +56,7 @@ MAILOBJS=	mail.o ../libcgi/libcgi.a
 .c.o:
 	$(CC) -c $(CFLAGS) $<
 
-all:    pcre/libpcre.a hypermail$(SUFFIX) mail$(SUFFIX)
+all:    pcre/libpcre.a hypermail$(SUFFIX) mail$(SUFFIX) lang$(SUFFIX)
 
 pcre/libpcre.a:
 	@cd pcre; $(MAKE) libtool libpcre.a CC="$(CC)" CFLAGS="$(CFLAGS)"
@@ -69,8 +69,8 @@ mail$(SUFFIX):	$(MAILOBJS)
 	$(CC) -o $@ $(CFLAGS) $(MAILOBJS) $(NETLIBS)
 	chmod 0755 $@
 
-lang$(SUFFIX): lang.c lang.h
-	$(CC) -DLANG_PROG $(CFLAGS) -o $@ lang.c 
+lang$(SUFFIX): trio.o strio.o trionan.o lang.c lang.h
+	$(CC) -DLANG_PROG $(CFLAGS) -o $@ trio.o strio.o trionan.o lang.c $(LDFLAGS) $(MISC_LIBS)
 
 ../libcgi/libcgi.a:
 	@cd ../libcgi; $(MAKE) all CC="$(CC)" CFLAGS="$(CFLAGS)"

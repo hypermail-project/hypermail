@@ -476,16 +476,31 @@ struct emailsubdir *msg_subdir(int msgnum, time_t date)
  */
 
 char *msg_href(struct emailinfo *to_email, struct emailinfo *from_email)
+/* note: you probably have to make a copy of
+ * the buffer returned before the next call to this function.
+ */
+{
+    static char buffer[MAXFILELEN+11];
+    trio_snprintf(buffer,MAXFILELEN+11, "<a href=\"%s\">",
+		    msg_relpath(to_email, from_email));
+    return buffer;
+}
+
+
+char *msg_relpath(struct emailinfo *to_email, struct emailinfo *from_email)
+/* called by msg_href() : note: you probably have to make a copy of
+ * the buffer returned before the next call to this function.
+ */
 {
     static char buffer[MAXFILELEN];
     if (!from_email && to_email->subdir)
-        trio_snprintf(buffer, MAXFILELEN, "<a href=\"%s%.4d.%s\">",
+        trio_snprintf(buffer, MAXFILELEN, "%s%.4d.%s",
 		  to_email->subdir->subdir, to_email->msgnum, set_htmlsuffix);
     else if(!to_email->subdir || to_email->subdir == from_email->subdir)
-        trio_snprintf(buffer, MAXFILELEN, "<a href=\"%.4d.%s\">",
+        trio_snprintf(buffer, MAXFILELEN, "%.4d.%s",
 		  to_email->msgnum, set_htmlsuffix);
     else
-        trio_snprintf(buffer, MAXFILELEN, "<a href=\"%s%s%.4d.%s\">",
+        trio_snprintf(buffer, MAXFILELEN, "%s%s%.4d.%s",
 		  to_email->subdir->rel_path_to_top,
 		  to_email->subdir->subdir, to_email->msgnum, set_htmlsuffix);
     return buffer;
@@ -508,6 +523,17 @@ char *htmlfilename(const char *file, struct emailinfo *email,
 		  file, *suffix ? "." : "", suffix);
     return buf;
 }
+
+char *haofname(struct emailinfo *email)
+{
+    char *buf;
+	trio_asprintf(&buf,"%s%s", 
+		email && email->subdir ? email->subdir->full_path : set_dir, 
+		HAOF_NAME);
+    return buf;
+
+}
+
 
 /* matches_existing returns 0 if it finds a file with the same msgnum as
  argument eptr but different contents. A return value of 1 does not

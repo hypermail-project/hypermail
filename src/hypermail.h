@@ -105,6 +105,13 @@
 
 #define GDBM_INDEX_NAME ".hm2index"
 
+/* Name of the Hypertext Archive Overview File an XML file
+ * which contains pointers to the various index files
+ * and some header information about each mail
+ * to allow further processing
+ */
+#define HAOF_NAME "archive_overview.haof"
+
 #define NUMSTRLEN    10
 #define MAXLINE	     1024
 #define MAXFILELEN   256

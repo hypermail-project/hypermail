@@ -175,6 +175,9 @@ struct language_entry {
 #define MSG_FILTERED_OUT                         118
 #define MSG_FROM                                 119
 
+#define MSG_OPTION_XML				 120
+#define MSG_WRITING_HAOF			 121
+
 #ifdef MAIN_FILE
 
 /*
@@ -317,8 +320,10 @@ char *de[] = {       /* German */
   "(gelöschte Nachricht)",          /* MSG_DEL_SHORT            -HTML */
   "Ursprünglicher Text dieser Nachricht", /* MSG_TXT_VERSION    -HTML */
   "Diese Nachricht wurde herausgefiltert",  /* MSG_FILTERED_OUT -HTML */
-  "Autor",                                /* MSG_FROM              -HTML*/
-  NULL,                                   /* End Of Message Table - NOWHERE*/
+  "Autor",                              /* MSG_FROM              -HTML*/
+  "Erstelle haof XML Dateien",  /* Write hoaf XML files       -STDOUT */
+  "Schreibe Hoaf in",           /* Writing haof to               -HTML*/
+  NULL,                              /* End Of Message Table - NOWHERE*/
 };
 
 /*
@@ -448,6 +453,8 @@ char *pl[] = {                      /* English */
   "Tekst tej zawarto¶ci",            /* MSG_TXT_VERSION     -HTML */
   "Ta wiadomo¶æ zosta³a odfiltrowana",        /* MSG_FILTERED_OUT -HTML */
   "Autor",                          /* MSG_FROM              -HTML*/
+  "Write haof XML files",       /* Write hoaf XML files       -STDOUT */
+  "Writing haof to",            /* Writing haof to               -HTML*/
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -578,8 +585,10 @@ char *en[] = {       /* English */
   "(deleted message)", /* MSG_DEL_SHORT                            -HTML */
   "Original text of this message", /* MSG_TXT_VERSION                          -HTML */
   "This message has been filtered out",        /* MSG_FILTERED_OUT -HTML */
-  "From",                        /* MSG_FROM                      -HTML*/
-  NULL,                          /* End Of Message Table      - NOWHERE*/
+  "From",                       /* MSG_FROM                    	 -HTML*/
+  "Write haof XML files",       /* Write hoaf XML files       -STDOUT */
+  "Writing haof to",            /* Writing haof to               -HTML*/
+  NULL,                         /* End Of Message Table      - NOWHERE*/
 };
 
 /*
@@ -720,6 +729,8 @@ char *es[] = {       /* Espanol/Spanish */
   "Texto original del mensaje",       /* MSG_TXT_VERSION   	      - HTML  */
   "El mensaje ha sido filtrado",      /* MSG_FILTERED_OUT 	      - HTML  */
   "Autor",                            /* MSG_FROM 		      - HTML  */
+  "Write haof XML files",       /* Write hoaf XML files       -STDOUT */
+  "Writing haof to",            /* Writing haof to               -HTML*/
   NULL,                               /* End Of Message Table */
 };
 
@@ -849,6 +860,8 @@ char *fi[] = {       /* Finnish */
   "Original text of this message", /* MSG_TXT_VERSION                          -HTML */
   "This message has been filtered out",        /* MSG_FILTERED_OUT -HTML */
   "Kirjoittajan mukaan",                 /* MSG_FROM                  -HTML*/
+  "Write haof XML files",       /* Write hoaf XML files       -STDOUT */
+  "Writing haof to",            /* Writing haof to               -HTML*/
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -980,6 +993,8 @@ char *fr[] = {       /* French */
   "Texte original de ce message",          /* MSG_TXT_VERSION                          -HTML */
   "Ce message a &eacute;t&eacute; supprimé par filtrage",    /* MSG_FILTERED_OUT -HTML */
   "Auteur",                                /* MSG_FROM              -HTML*/
+  "Write haof XML files",       /* Write hoaf XML files       -STDOUT */
+  "Writing haof to",            /* Writing haof to               -HTML*/
   NULL,                                    /* End Of Message Table  - NOWHERE*/
 };
 
@@ -1113,6 +1128,8 @@ char *is[] = {       /* Icelandic */
   "Original text of this message", /* MSG_TXT_VERSION                          -HTML */
   "This message has been filtered out",        /* MSG_FILTERED_OUT -HTML */
   "Höfundur",                         /* MSG_FROM              -HTML*/
+  "Write haof XML files",       /* Write hoaf XML files       -STDOUT */
+  "Writing haof to",            /* Writing haof to               -HTML*/
   NULL,                               /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1249,6 +1266,8 @@ char *sv[] = {
   "Ursprunglig brevtext", /* MSG_TXT_VERSION                          -HTML */
   "This message has been filtered out",        /* MSG_FILTERED_OUT -HTML */
   "Författare",                     /* MSG_FROM             -HTML*/
+  "Write haof XML files",       /* Write hoaf XML files       -STDOUT */
+  "Writing haof to",            /* Writing haof to               -HTML*/
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 
