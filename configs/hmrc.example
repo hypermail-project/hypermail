@@ -275,7 +275,7 @@ eurodate = 0
 # Format used in strftime(3) call for displaying dates.
 # See strftime(3)) for the valid conversion specifications.
 
-dateformat = %D
+dateformat = %c
 
 # attachmentlink = attachment link format 
 #
