@@ -1903,6 +1903,8 @@ int parsemail(char *mbox,	/* file name */
 		    bp = append_body(bp, &lp, append_bp);
 		    append_bp = append_lp = NULL;
 		}
+		else if(!bp)
+		    bp = addbody(bp, &lp, "Hypermail was not able to parse this message correctly.\n", bodyflags);
 
 		while (rmlastlines(bp));
 

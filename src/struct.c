@@ -584,15 +584,19 @@ int hashreplynumlookup(int msgnum, char *inreply, char *subject,
 struct body *hashnumlookup(int num, struct emailinfo **emailp)
 {
     struct hashemail *ep;
+    struct body *lp_tmp;
     char numstr[NUMSTRLEN];
 
     sprintf(numstr, "%d", num);
-    for (ep = etable[hash(numstr)]; ep != NULL; ep = ep->next)
+    for (ep = etable[hash(numstr)]; ep != NULL; ep = ep->next) {
 	if (ep->data && (num == ep->data->msgnum)) {
 	    /* return a mere pointer to it! */
 	    *emailp = ep->data;
+	    if (!ep->data->bodylist)
+	        ep->data->bodylist = addbody(NULL, &lp_tmp, "\n", 0);
 	    return ep->data->bodylist;
 	}
+    }
     return NULL;
 }
 
