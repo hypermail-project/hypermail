@@ -517,7 +517,7 @@ struct Config cfg[] = {
      "# %d for the directory name only\n"
      "# %n for the message number\n" "# %c for the content type string\n", FALSE},
 
-    {"spamprotect", &set_spamprotect, BFALSE, CFG_SWITCH,
+    {"spamprotect", &set_spamprotect, BTRUE, CFG_SWITCH,
      "# Set this to On to make hypermail not output real email addresses\n"
      "# in the output HTML but instead it will obfuscate them a little.\n"
      "# You can control the obfuscation with set_antispamdomain.\n", FALSE},
@@ -529,7 +529,7 @@ struct Config cfg[] = {
      "# with some string to confuse screen-scraping programs.\n"
      "# It is probably wise to make this an invalid mail domain.\n", FALSE}, 
 
-    {"spamprotect_id", &set_spamprotect_id, BFALSE, CFG_SWITCH,
+    {"spamprotect_id", &set_spamprotect_id, BTRUE, CFG_SWITCH,
      "# Set this to On to make hypermail not output real email message\n"
      "# ids in HTML comments (sometimes used internally by hypermail) but\n"
      "# instead it will obfuscate them a little so they don't look like\n"
@@ -597,7 +597,7 @@ struct Config cfg[] = {
     {"startmsgnum", &set_startmsgnum, INT(0), CFG_INTEGER,
      "# Sets the number of the first message of an archive. This option is\n"
      "# only active when adding new messages to brand new archive.\n"
-     "# If not set, the default number will be 0000.\n"\
+     "# If not set, the default number will be 0000.\n"
      "# Note that if you change this setting, you are stuck with it. If you\n"
      "# rebuild your archive, you must use the same value or you'll break any\n"
      "# link pointing to your archive.\n", FALSE},
@@ -739,7 +739,7 @@ struct Config cfg[] = {
 
     {"href_detection", &set_href_detection, BTRUE, CFG_SWITCH,
      "# Set this to On to assume that any string on the body of the message\n"
-     "# that says <A HREF=\"     </A> is a URL, together with its markup\n"
+     "# that says <A HREF=\" ... </A> is a URL, together with its markup\n"
      "# and treat it as such.", TRUE},
 
     {"mbox_shortened", &set_mbox_shortened, BFALSE, CFG_SWITCH,
