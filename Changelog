@@ -1,5 +1,9 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Peter McCluskey (May 31 2001)
+  - patches from Moritz Willers to surpress empty "messages sorted by:" line,
+   add | after "Previous Folder, Thread view", etc.
+
 Peter McCluskey (May 30 2001)
   - changes to Swedish from peter karlsson.
 

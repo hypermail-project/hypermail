@@ -324,8 +324,12 @@ void print_index_header_links(FILE *fp, mindex_t called_from,
 	fprintf(fp, "<strong><a href=\"#end\">%s</a></strong><br>\n",
 		lang[MSG_MOST_RECENT_MESSAGES]);
 
-    fprintf(fp, "<strong>%d %s %s:</strong> \n", amountmsgs,
-	    lang[MSG_ARTICLES], lang[MSG_SORTED_BY]);
+    if (called_from != AUTHOR_INDEX && show_index[dlev][AUTHOR_INDEX] ||
+        called_from != DATE_INDEX &&  show_index[dlev][DATE_INDEX] ||
+        called_from != THREAD_INDEX && show_index[dlev][THREAD_INDEX] ||
+        called_from != SUBJECT_INDEX && show_index[dlev][SUBJECT_INDEX])
+           fprintf(fp, "<strong>%d %s %s:</strong> \n", amountmsgs,
+               lang[MSG_ARTICLES], lang[MSG_SORTED_BY]);
 
     if (called_from != AUTHOR_INDEX && show_index[dlev][AUTHOR_INDEX])
 	fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", 
@@ -353,12 +357,12 @@ void print_index_header_links(FILE *fp, mindex_t called_from,
     if (subdir) {
 	fprintf(fp, "<br>");
 	if (subdir->prior_subdir)
-	    fprintf(fp, " <a href=\"%s%s%s\">%s, %s</a>",
+	    fprintf(fp, " <a href=\"%s%s%s\">%s, %s</a> | ",
 		    subdir->rel_path_to_top, subdir->prior_subdir->subdir,
 		    index_name[dlev][called_from], lang[MSG_PREV_DIRECTORY],
 		    lang[MSG_DATE_VIEW + called_from]);
 	if (subdir->next_subdir)
-	    fprintf(fp, " <a href=\"%s%s%s\">%s, %s</a>",
+            fprintf(fp, " <a href=\"%s%s%s\">%s, %s</a> | ",
 		    subdir->rel_path_to_top, subdir->next_subdir->subdir,
 		    index_name[dlev][called_from], lang[MSG_NEXT_DIRECTORY],
 		    lang[MSG_DATE_VIEW + called_from]);
@@ -435,8 +439,12 @@ void print_index_footer_links(FILE *fp, mindex_t called_from,
          fprintf(fp, "<hr noshade>\n");
 
     fprintf(fp, "\n");
-    fprintf(fp, "<strong>%d %s %s:</strong> \n", amountmsgs,
-	    lang[MSG_ARTICLES], lang[MSG_SORTED_BY]);
+    if (called_from != AUTHOR_INDEX && show_index[dlev][AUTHOR_INDEX] ||
+        called_from != DATE_INDEX &&  show_index[dlev][DATE_INDEX] ||
+        called_from != THREAD_INDEX && show_index[dlev][THREAD_INDEX] ||
+        called_from != SUBJECT_INDEX && show_index[dlev][SUBJECT_INDEX])
+           fprintf(fp, "<strong>%d %s %s:</strong> \n", amountmsgs,
+               lang[MSG_ARTICLES], lang[MSG_SORTED_BY]);
 
     if (called_from != AUTHOR_INDEX && show_index[dlev][AUTHOR_INDEX])
 	fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n",
