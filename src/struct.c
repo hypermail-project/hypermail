@@ -957,7 +957,7 @@ struct emailsubdir *new_subdir(char *subdir, struct emailsubdir *last_subdir,
     if (!isdir(new_sd->full_path)) {
 	checkdir(new_sd->full_path);	/* make subdir(s) if needed */
 	if (set_latest_folder)
-	    latest_folder_path = new_sd->full_path;
+	    latest_folder_path = new_sd->subdir;
     }
     return new_sd;
 }

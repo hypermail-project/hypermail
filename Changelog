@@ -1,5 +1,13 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Peter McCluskey (Jun 26 2001)
+  - fixed parsing of integer/octal/switch environment variable values.
+  - fixed bugs in latest_folder option (includes fix from David Bau
+     <davidbau@hotmail.com>).
+
+Peter McCluskey (Jun 23 2001)
+  - fixed FILES so that hypermail.html gets into tarballs.
+
 Peter McCluskey (May 31 2001)
   - patches from Moritz Willers to surpress empty "messages sorted by:" line,
    add | after "Previous Folder, Thread view", etc.

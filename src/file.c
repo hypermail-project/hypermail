@@ -272,10 +272,9 @@ void symlink_latest()
     char filename[MAXFILELEN];
     char dirname[MAXFILELEN];
     struct stat stbuf;
-    trio_snprintf(filename, MAXFILELEN, "%s%s.%s",
-		  set_dir, set_latest_folder, set_htmlsuffix);
-    trio_snprintf(dirname, MAXFILELEN, "%sindex.%s",
-		  latest_folder_path, set_htmlsuffix);
+
+    trio_snprintf(filename, MAXFILELEN, "%s%s",
+                  set_dir, set_latest_folder);
 
     if (!stat(filename, &stbuf) && unlink(filename)) {
 	sprintf(errmsg, "%s \"%s\" (latest_folder option).",
@@ -284,7 +283,7 @@ void symlink_latest()
 	return;
     }
 
-    if (symlink(dirname, filename)) {
+    if (symlink(latest_folder_path, filename)) {
 	sprintf(errmsg, "%s \"%s\" (latest_folder option).",
 		lang[MSG_CANNOT_CREATE_SYMLINK], filename);
 	progerr(errmsg);
