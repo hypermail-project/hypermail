@@ -6,7 +6,7 @@
 <LINK REV="made" HREF="mailto:webmaster@hypermail.org">
 </HEAD>
 <BODY BGCOLOR="#ffffff" TEXT="#000000">
-<H1 ALIGN=CENTER><IMG SRC="hypermail.png" ALIGN="middle" WIDTH="60" HEIGHT="60" ALT="">&nbsp;&nbsp;Hypermail 2.0</H1>
+<H1 ALIGN=CENTER><IMG SRC="hypermail.png" ALIGN="middle" WIDTH="60" HEIGHT="60" ALT="">&nbsp;&nbsp;Hypermail</H1>
 
 <HR>
 
@@ -25,6 +25,7 @@
 <LI><A HREF="#4">Configuration Options</A>
 <LI><A HREF="#5">Order of Options Processing</A>
 <LI><A HREF="#6">Other Things</A>
+<LI><A HREF="#6b">Running Hypermail Automatically</A>
 <LI><A HREF="#7">Getting Help With Hypermail</A>
 <LI><A HREF="#8">Getting Hypermail Software</A>
 <LI><A HREF="#9">Credits</A>
@@ -165,7 +166,7 @@ variable = number
 </STRONG>
 </BLOCKQUOTE>
 
-The complete set of variables that Hypermail recognizes is described in the <A HREF="#4">Configuration Options</A> section.
+The complete set of variables that Hypermail recognizes is described in the <A HREF="hmrc.html">Configuration Options</A> page.
 <P>
 
 <A NAME="3.2" HREF="#"><STRONG>Archive Interface Options:</STRONG></A>
@@ -261,7 +262,7 @@ so it's easy to tell when the archive was last updated.
 <P>
 The <STRONG>-p</STRONG> option shows a progress report as Hypermail reads in and writes out messages - the number of files that Hypermail is reading and writing and the file names of the directory and files created are shown. This information is written to standard output.
 <P>
-The <STRONG>-v</STRONG> option shows the configuration variables and their values that Hypermail would use if it was run with the same <A HREF="hmrc.html">configuration file</A> and command line options. This is useful when starting up a new list or modifying a list configuration file. Once the information is displayed, Hypermail terminates and not actual processing occurs.
+The <STRONG>-v</STRONG> option shows the configuration variables and their values that Hypermail would use if it was run with the same <A HREF="hmrc.html">configuration file</A> and command line options. This is useful when starting up a new list or modifying a list configuration file. Once the information is displayed, Hypermail terminates and no actual processing occurs.
 <P>
 The <STRONG>-V</STRONG> option prints the Hypermail version information. Once the information is displayed, Hypermail terminates and not actual processing occurs.
 <p>
@@ -416,9 +417,6 @@ the <a href="hmrc.html#searchbackmsgnum">searchbackmsgnum</a> option to alter th
 </DL>
      The &lt;LINK...&gt; header can be  disabled  by  default  by setting HM_MAILTO to "NONE".
 <P>
-<DT> <STRONG>HM_USETABLE boolean_number</STRONG>
-<DD> Defining  this will cause Hypermail to generate an index menu in HTML table format at the top and bottom of each page.
-<P>
 <DT><STRONG>HM_INDEXTABLE boolean_number</STRONG>
 <DD>Setting this variable to 1 will tell Hypermail to  generate  
     a message index Subject/Author/Date listings using a table 
@@ -483,13 +481,12 @@ Settings are processed in this order:
 <OL>
 <LI>From the program's hard-wired internal defaults (specified in options.h),
 <LI>From runtime environment variables,
-<LI>From command-line options,
-<LI>From the configuration file.
+<LI>From the configuration file,
+<LI>From command-line options.
 </OL>
 <P>
-It is important to note that this is different from many programs. In Hypermail's
-case what you put on the command line <STRONG>DOES NOT</STRONG> override what is
-specified in the configuration file. This may change in the future.
+Early versions of Hypermail read the command line before reading the
+configuration file.
 <P>
 <HR>
 
@@ -509,7 +506,9 @@ specified in the configuration file. This may change in the future.
 <STRONG>Sorting:</STRONG> In the date and thread index files, note that these lists are sorted by the date the articles were received by the system's mail daemon, not by the date they were written on. The order of articles in the date index may not necessarily match the order in which the article files are written and linked together. Because of this, it is a good idea to make sure the mailbox is sorted by date with the most recent messages towards the bottom.
 <P>
 
-<STRONG>Running Hypermail automatically:</STRONG> All that's needed to start archiving email messages is to set up Hypermail to do incremental updates in your <STRONG>/etc/aliases</STRONG> file. Here's what an entry might look like (the last line is one unbroken line):
+<a name="6b"></a>
+<STRONG>Running Hypermail automatically:</STRONG> All that's needed to start archiving email messages is to set up Hypermail to do incremental updates in your <STRONG>/etc/aliases</STRONG> file (assuming that you use <strong>sendmail</strong> or something that works like it to deliver mail).
+ Here's what an entry might look like (the last line is one unbroken line):
 <BLOCKQUOTE>
 <STRONG>
 #
@@ -527,9 +526,14 @@ want to make sure that archive directories and files are made readable and write
 by a trusted sendmail user (or read/writable by everyone if you can't do that)
 when they are created. This will ensure that there will be no problems incrementally 
 updating the archive.
+<P>If you use qmail instead of sendmail, you probably want to create a file
+/var/qmail/alias/.qmail-&lt;mylistemailaddress&gt; containing something like this:
+<blockquote>
+|/usr/local/bin/hypermail -i -u -d /wu-ftpd/mail-archive -l \"WU-FTPD Mailing List Archive\"
+</blockquote>
 <P>
  If you are running Linux kernel version 2.4 or higher, 
-<a href="http://www.student.lu.se/~nbi98oli/src/dnotify-0.4.0.tar.gz">dnotify</a>
+<a href="http://www.student.lu.se/~nbi98oli/dnotify.html">dnotify</a>
 looks like it provides another way to automate Hypermail.
 
 <P>
