@@ -373,10 +373,10 @@ void printfooter(FILE *fp, char *htmlfooter, char *label, char *dir,
 	fprintf(fp, "<a href=\"%s\">%s %s</a> \n", HMURL, PROGNAME, VERSION);
 	fprintf(fp, ": %s\n", getlocaltime());
 	fprintf(fp, "</em></small></p>\n");
-	if (close_div)
-	  fprintf (fp, "</div>\n");
-	fprintf(fp, "</body>\n</html>\n");
     }
+    if (close_div)
+      fprintf (fp, "</div>\n");
+    fprintf(fp, "</body>\n</html>\n");
 }
 
 /*
