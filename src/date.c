@@ -127,6 +127,18 @@ void getthisyear(void)
     strftime(thisyear, YEARLEN, "%Y", localtime(&tp));
 }
 
+int year_of_datenum(time_t t)
+{
+  struct tm *tptr = localtime(&t);
+  return tptr->tm_year + 1900;
+}
+
+int month_of_datenum(time_t t)
+{
+  struct tm *tptr = localtime(&t);
+  return tptr->tm_mon;
+}
+
 /* 
 ** From the number of seconds since BASEYEAR, this pretty-prints
 ** a date for you. 

@@ -166,11 +166,18 @@ and
 .B "Subject:"
 information found in most email messages.
 .TP
-.B showhtml = boolean_number
+.B showhtml = [ 0 | 1 | 2 ]
 Set this to
 .B 1
 to show the articles in a proportionally-spaced font rather than a 
 fixed-width (monospace) font.
+Set this to
+.B 2
+for more complex conversion to html similar to that in
+.B txt2html.pl.
+Showhtml = 2 will normally produce nicer looking results than
+showhtml = 1, and showhtml = 0 will look pretty dull, but
+1 and 2 run risks of altering the appearance in undesired ways.
 .TP
 .B showbr = boolean_number
 Set this to
@@ -506,6 +513,61 @@ This is the list of MIME attachment types that you do not want to
 do anything with.  They are quietly ignored.  They can be listed 
 individually on multiple lines or comma or space separated on a 
 single line.
+.TP
+.B linkquotes = [ 0 | 1 ]
+Set this to On to create fine-grained links from quoted
+text to the text where the quote originated. It also improves
+the threads index file by more accurately matching messages
+with replies. Note that this may be rather cpu intensive (see
+the searchbackmsgnum option to alter the performance).
+.TP
+.B searchbackmsgnum = postive integer
+If the linkquotes option is on and an incremental update is being
+done (-u option), this controls the tradeoff between speed and
+the reliability of finding the right source for quoted text.
+Try to set it to the largest number of messages between a
+message and the final direct reply to that message.
+.TP
+.B link_to_replies = [ string | NONE]
+If the linkquotes option is on, specifying a string here
+causes it to generate links from original quoted text the
+location(s) in replies which quote them. The string
+is used to display the link.
+.TP
+.B quote_hide_threshold = percent (integer)
+If the linkquotes option is on, setting this to an
+integer less than 100 will cause it to replace quoted
+text with one-line links if the percent of lines in the
+message body (exluding the signature) consisting of
+quoted text exceeds the number indicated by this option.
+.TP
+.B quote_link_string = [ string | NONE ]
+If the quote_hide_threshold option is being used, the
+quote_link_string will be used if available to display the
+link that replaces the quoted text. If no string is specified
+here, the first line of each section of quoted text will used.
+.TP
+.B monthly_index = [ 0 | 1 ]
+Set this to On to create additional index files broken up
+by month. A summary.html file will provide links to all the
+monthly indices.
+.TP
+.B yearly_index = [ 0 | 1 ]
+Set this to On to create additional index files broken up
+by year. A summary.html file will provide links to all the
+yearly indices.
+.TP
+.B thread_file_depth = [ 0 | 1 ]
+If nonzero, break the threads index file into multiple files,
+with the initial message of each thread in the main index file
+along with links to files containing the replies. Setting this
+to 1 creates one file for each thread that has replies, and is
+recommended for archives with over a few hundred messages.
+Setting this greater than 1 will produce multiple levels of files
+for each thread whose replies are nested by more than 1 level,
+but that is rarely useful. This option is currently disabled
+if the indextable option is turned on, and probably needs to
+be less than thrdlevels.
 .LP
 .SH HTML TEMPLATE FILE SUBSTITUTION COOKIES
 .LP

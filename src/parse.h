@@ -19,7 +19,7 @@ void crossindex(void);
 void crossindexthread1(struct header *);
 void crossindexthread2(int);
 void fixnextheader(char *, int);
-void fixreplyheader(char *, int);
+void fixreplyheader(char *, int, int);
 void fixthreadheader(char *, int);
 int isre(char *, char **);
 char *findre(char *, char **);

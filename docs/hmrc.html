@@ -205,12 +205,16 @@ specific</EM> information to hypermail.  Comments are denoted by the
 <BR>#
 <BR>showreplies = 1
 <BR>
-<BR># <STRONG>showhtml = [ 0 | 1 ]</STRONG>
-<BR>#
-<BR># Set this to 1 to show the articles in a proportionally-spaced  
+<BR># <STRONG>showhtml = [ 0 | 1 | 2 ]</STRONG>
+<BR># Set this to 1 to show the articles in a proportionally-spaced
 <BR># font rather than a fixed-width (monospace) font. Setting this 
 <BR># option to 1 also tells Hypermail to attempt to italicize quoted 
 <BR># passages in articles.
+<BR># Set this to 2 for more complex conversion to html
+<BR># similar to that in <a href="http://www.cs.wustl.edu/~seth/txt2html/">txt2html.pl</a>.
+<BR># Showhtml = 2 will normally produce nicer looking results than
+<BR># showhtml = 1, and showhtml = 0 will look pretty dull, but
+<BR># 1 and 2 run risks of altering the appearance in undesired ways.
 <BR>#
 <BR>showhtml = 0
 <BR>
@@ -492,6 +496,69 @@ specific</EM> information to hypermail.  Comments are denoted by the
 <BR>#
 <BR>spamprotect = Off
 <BR>
+<BR># <STRONG>linkquotes = [ 0 | 1 ]</STRONG>
+<BR># Set this to On to create fine-grained links from quoted
+<BR># text to the text where the quote originated. It also improves
+<BR># the threads index file by more accurately matching messages
+<BR># with replies. Note that this may be rather cpu intensive (see
+<BR># the searchbackmsgnum option to alter the performance).
+<BR>linkquotes = 0
+
+<BR># <STRONG>searchbackmsgnum = postive integer</STRONG>
+<BR># If the linkquotes option is on and an incremental update is being
+<BR># done (-u option), this controls the tradeoff between speed and
+<BR># the reliability of finding the right source for quoted text.
+<BR># Try to set it to the largest number of messages between a
+<BR># message and the final direct reply to that message.
+<BR>searchbackmsgnum = 500
+
+<BR># <STRONG>link_to_replies = [ string | NONE]</STRONG>
+<BR># If the linkquotes option is on, specifying a string here
+<BR># causes it to generate links from original quoted text the
+<BR># location(s) in replies which quote them. The string
+<BR># is used to display the link.
+<BR>link_to_replies = NONE
+
+<BR># <STRONG>quote_hide_threshold = percent (integer)</STRONG>
+<BR># If the linkquotes option is on, setting this to an
+<BR># integer less than 100 will cause it to replace quoted
+<BR># text with one-line links if the percent of lines in the
+<BR># message body (exluding the signature) consisting of
+<BR># quoted text exceeds the number indicated by this option.
+<BR>quote_hide_threshold = 100
+
+<BR># <STRONG>quote_link_string = [ string | NONE ]</STRONG>
+<BR># If the quote_hide_threshold option is being used, the
+<BR># quote_link_string will be used if available to display the
+<BR># link that replaces the quoted text. If no string is specified
+<BR># here, the first line of each section of quoted text will used.
+<BR>quote_link_string = NONE
+
+<BR># <STRONG>monthly_index = [ 0 | 1 ]</STRONG>
+<BR># Set this to On to create additional index files broken up
+<BR># by month. A summary.html file will provide links to all the
+<BR># monthly indices.
+<BR>monthly_index = 0
+
+<BR># <STRONG>yearly_index = [ 0 | 1 ]</STRONG>
+<BR># Set this to On to create additional index files broken up
+<BR># by year. A summary.html file will provide links to all the
+<BR># yearly indices.
+<BR>yearly_index = 0
+
+<BR># <STRONG>thread_file_depth = [ 0 | 1 ]</STRONG>
+<BR># If nonzero, break the threads index file into multiple files,
+<BR># with the initial message of each thread in the main index file
+<BR># along with links to files containing the replies. Setting this
+<BR># to 1 creates one file for each thread that has replies, and is
+<BR># recommended for archives with over a few hundred messages.
+<BR># Setting this greater than 1 will produce multiple levels of files
+<BR># for each thread whose replies are nested by more than 1 level,
+<BR># but that is rarely useful. This option is currently disabled
+<BR># if the indextable option is turned on, and probably needs to
+<BR># be less than thrdlevels.
+<BR>thread_file_depth = 0
+
 <BR># <STRONG>attachmentsindex = [ 0 | 1 ]</STRONG>
 <BR>#
 <BR># Set this to Off to make hypermail not output an index of messages
@@ -518,7 +585,7 @@ and
 
 <HR NOSHADE>
 <SMALL><EM><STRONG>
-Last updated October 8, 1999
+Last updated June 24, 2000
 </STRONG></EM></SMALL>
 
 </BODY>

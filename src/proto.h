@@ -14,6 +14,8 @@ void getthisyear(void);
 char *getdatestr(time_t);
 char *secs_to_iso(time_t);
 time_t iso_to_secs(char *);
+int year_of_datenum(time_t);
+int month_of_datenum(time_t);
 
 /*
 ** domains.c
@@ -74,21 +76,20 @@ void dump_config(void);
 ** string.c functions
 */
 char *PushByte(struct Push *, char);
-char *PushString(struct Push *, char *);
-char *PushNString(struct Push *, char *, int);
+char *PushString(struct Push *, const char *);
+char *PushNString(struct Push *, const char *, int);
 
-char *strsav(char *);
+char *strsav(const char *);
 char *strreplace(char *, char *);
 void strcpymax(char *, const char *, int);
-char *strcasestr(char *, char *);
+char *strcasestr(char *, const char *);
 char *stripzone(char *);
 int numstrchr(char *, char);
 char *getvalue(char *);
 char *getconfvalue(char *, char *, char *);
 char *unre(char *);
 char *oneunre(char *);
-char *rmcr(char *);
-int isquote(char *);
+int isquote(const char *);
 char *replace(char *, char *, char *);
 char *replacechar(char *, char, char *);
 char *convchars(char *);
@@ -96,6 +97,16 @@ char *unconvchars(char *);
 char *makemailcommand(char *, char *, char *, char *);
 char *parseemail(char *, char *, char *);
 char *parseurl(char *);
+
+/*
+** quotes.c
+*/
+const char *get_quote_prefix(void);
+const char *find_quote_prefix(struct body *bp, int is_reply);
+char *unquote(char *line);
+char *remove_hypermail_tags(char *line);
+int compute_quoted_percent(struct body *bp);
+int is_sig_start(const char *line);
 
 #ifdef lint
 int isspace(int);

@@ -26,6 +26,8 @@
 #include "setup.h"
 #include "parse.h"
 #include "print.h"
+#include "finelink.h"
+#include "search.h"
 
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
@@ -33,7 +35,7 @@
 
 /* #include <stdlib.h> */
 
-extern int getopt(int, char * const *, const char *);
+extern int getopt(int, char *const *, const char *);
 extern char *optarg;
 extern int optind;
 extern int opterr;
@@ -445,7 +447,7 @@ int main(int argc, char **argv)
 	if (!set_mbox)
 	    set_mbox = "NONE";
 	MakeConfig(TRUE);
-        free(configfile);
+	free(configfile);
 	return (0);
     }
 
@@ -474,29 +476,47 @@ int main(int argc, char **argv)
 	lock_archive(set_dir);
 
     if (set_increment) {
+	if (set_linkquotes)
+	    replylist = NULL;
 	amount_old = loadoldheaders(set_dir);
 
-        /* start numbering at this number */
+	/* start numbering at this number */
 	amount_new = parsemail(set_mbox, use_stdin, set_readone,
-		       set_increment, set_dir, set_inlinehtml, amount_old);
+			       set_increment, set_dir, set_inlinehtml,
+			       amount_old);
+	if (set_linkquotes)
+	    analyze_headers(amount_new);
 
 	writearticles(amount_old, amount_new);
 
 	if (set_show_msg_links) {
 	    fixnextheader(set_dir, amount_old - 1);
 	    if (set_showreplies)
-		fixreplyheader(set_dir, amount_old);
+		fixreplyheader(set_dir, amount_old, 0);
 	    fixthreadheader(set_dir, amount_old);
 	}
     }
     else {
-	amount_new = parsemail(set_mbox, use_stdin, set_readone, set_increment,
-                     set_dir, set_inlinehtml, 0);	/* number from 0 */
-	if (amount_new) /* this is the amount of mails to write */
-	    writearticles(0, amount_new); 
+	amount_new =
+	    parsemail(set_mbox, use_stdin, set_readone, set_increment,
+		      set_dir, set_inlinehtml, 0);	/* number from 0 */
+	if (set_linkquotes)
+	    analyze_headers(amount_new);
+	if (amount_new) {	/* this is the amount of mails to write */
+	    writearticles(0, amount_new);
+	    if (set_linkquotes) {
+		for (i = 1; i < amount_old; ++i)
+		    fixreplyheader(set_dir, i, 1);
+	    }
+	}
     }
 
-    if (amount_new) { /* Always write the index files */
+    if (amount_new) {		/* Always write the index files */
+	if (set_linkquotes) {
+	    threadlist = NULL;
+	    printedthreadlist = NULL;
+	    crossindexthread1(datelist);
+	}
 	writedates(amount_new);
 	writethreads(amount_new);
 	writesubjects(amount_new);
@@ -506,6 +526,8 @@ int main(int argc, char **argv)
 	    writeattachments(amount_new);
 	}
 #endif
+	if (set_monthly_index || set_yearly_index)
+	    write_summary_indices(amount_new);
     }
     else {
 	printf("No mails to output!\n");

@@ -76,7 +76,7 @@
 /*
 * this redefines the standard *printf() to use ours 
 */
-#define _MPRINTF_REPLACE	
+#define _MPRINTF_REPLACE
 #include "mprintf.h"
 
 #undef FALSE
@@ -118,10 +118,12 @@
 #define SECSPERDAY     86400
 #define IS_LEAP(y) (y > 1752 && (y % 4 == 0 && (y % 100 != 0 || y % 400 == 0)))
 
+#if 0				/* replaced with mindex_t */
 #define FROM_AUTHOR  0
 #define FROM_DATE    1
 #define FROM_THREAD  2
 #define FROM_SUBJECT 3
+#endif
 
 #ifdef CHANGE_12DEC2000_BC
 #define FROM_ATTACHMENT 4
@@ -173,6 +175,7 @@ struct body {
     char attached;		/* part of attachment */
     char demimed;		/* if this is a header, this is set to TRUE if
 				   it has passed the decoderfc2047() function */
+    int msgnum;
     struct body *next;
 };
 

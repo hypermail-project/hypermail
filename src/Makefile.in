@@ -34,15 +34,17 @@ LDFLAGS=@LDFLAGS@
 
 INCS=		domains.h hypermail.h lang.h proto.h \
 		../config.h ../patchlevel.h dsprintf.h threadprint.h \
-		getdate.h getname.h
+		getdate.h getname.h finelink.h txt2html.h search.h
 
 SRCS=		base64.c date.c domains.c file.c hypermail.c lang.c lock.c \
 		mem.c parse.c print.c printfile.c string.c struct.c uudecode.c\
-		mprintf.c dmatch.c setup.c threadprint.c getdate.c getname.c
+		mprintf.c dmatch.c setup.c threadprint.c getdate.c getname.c\
+		finelink.c txt2html.c search.c quotes.c
 
 OBJS=		base64.o date.o domains.o file.o hypermail.o lang.o lock.o \
 		mem.o parse.o print.o printfile.o string.o struct.o uudecode.o\
-		mprintf.o dmatch.o setup.o threadprint.o getdate.o getname.o
+		mprintf.o dmatch.o setup.o threadprint.o getdate.o getname.o\
+		finelink.o txt2html.o search.o quotes.o
 
 MAILOBJS=	mail.o ../libcgi/libcgi.a
 

@@ -75,7 +75,7 @@ char *PushByte(struct Push *push, char byte)
 **
 ** Returns the (new) buffer pointer.
 */
-char *PushString(struct Push *push, char *append)
+char *PushString(struct Push *push, const char *append)
 {				/* string to append */
     char *string = NULL;
 
@@ -92,7 +92,7 @@ char *PushString(struct Push *push, char *append)
 **
 ** Returns the (new) buffer pointer.
 */
-char *PushNString(struct Push *push, char *append,	/* string to append */
+char *PushNString(struct Push *push, const char *append,/* string to append */
 		  int size)
 {				/* maximum number of bytes to copy */
     char *string = NULL;
@@ -110,7 +110,7 @@ char *PushNString(struct Push *push, char *append,	/* string to append */
 ** Malloc() out a string, give it to whoever asked for it.
 */
 
-char *strsav(char *s)
+char *strsav(const char *s)
 {
     char *p;
 
@@ -160,7 +160,7 @@ void strcpymax(char *dest, const char *src, int n)
 ** strcasestr() - case insensitive strstr()
 */
 
-char *strcasestr(char *haystack, char *needle)
+char *strcasestr(char *haystack, const char *needle)
 {
     int nlen = strlen(needle);
     int hlen = strlen(haystack);
@@ -320,13 +320,17 @@ char *oneunre(char *subject)
 ** Is a line in an article body part of a quoted passage?
 */
 
-int isquote(char *line)
+int isquote(const char *line)
 {
-    char *lp;
+    const char *lp;
+    const char *quote_prefix = get_quote_prefix();
 
     if (!line)
 	return (0);
 
+    if (*quote_prefix) {
+	return !strncmp(quote_prefix, line, strlen(quote_prefix));
+    }
     if (*line == '>')
 	return 1;
 
@@ -338,7 +342,7 @@ int isquote(char *line)
        ** it means the text is quoted. 
      */
     if (*lp == ':') {
-	char *cp;
+	const char *cp;
 	/* 
 	   ** Check to make sure that smileys are not
 	   ** intrepreted as Supercite Quotes.

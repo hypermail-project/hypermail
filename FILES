@@ -86,6 +86,8 @@ src/dmatch.h
 src/domains.c
 src/domains.h
 src/file.c
+src/finelink.c
+src/finelink.h
 src/getdate.h
 src/getdate.texi
 src/getdate.y
@@ -108,6 +110,9 @@ src/print.h
 src/printfile.c
 src/printfile.h
 src/proto.h
+src/quotes.c
+src/search.c
+sec/search.h
 src/setup.c
 src/setup.h
 src/string.c
@@ -115,12 +120,15 @@ src/struct.c
 src/struct.h
 src/threadprint.c
 src/threadprint.h
+src/txt2html.c
+src/txt2html.h
 src/uudecode.c
 src/uudecode.h
 #
 # Tests 
 #
 tests/README
+tests/diff_hypermail.pl
 tests/stdintest.pl
 tests/test-footer.hyp
 tests/test-index.hyp
@@ -128,6 +136,7 @@ tests/test-msg.hyp
 tests/test.rc
 tests/testhm.in
 tests/mboxes/1msg.mbox
+tests/mboxes/critmail.mbox
 tests/mboxes/embedded.msg
 tests/mboxes/t1
 tests/mboxes/t2

@@ -24,6 +24,7 @@
 #include "struct.h"
 #include "uudecode.h"
 #include "base64.h"
+#include "search.h"
 #include "getname.h"
 #include "parse.h"
 
@@ -325,14 +326,27 @@ void crossindex(void)
     struct emailinfo *email;
 
     num = 0;
-    replylist = NULL;
+    if(!set_linkquotes)
+        replylist = NULL;
 
     while (hashnumlookup(num, &email)) {
 	status = hashreplynumlookup(email->msgnum,
 				    email->inreplyto, email->subject,
 				    &maybereply);
 	if (status != -1)
-	    replylist = addreply(replylist, status, email, maybereply);
+	    if (set_linkquotes) {
+	        struct reply *rp;
+		int found_num = 0;
+		for (rp = replylist; rp != NULL; rp = rp->next)
+		    if(rp->msgnum == status && rp->frommsgnum == num) {
+		        found_num = 1;
+			break;
+		    }
+		if (!found_num && !(maybereply || num <= status))
+		  replylist = addreply(replylist, status, email, maybereply);
+	    }
+	    else
+	        replylist = addreply(replylist, status, email, maybereply);
 	num++;
     }
 #if DEBUG_THREAD
@@ -1215,6 +1229,9 @@ int parsemail(char *mbox,	/* file name */
 			 */
 			if (!inreply)
 			    inreply = getid(head->line);
+			if (set_linkquotes) {
+			    bp = addbody(bp, &lp, line, 0);
+			}
 		    }
 		}
 
@@ -1754,6 +1771,12 @@ int parsemail(char *mbox,	/* file name */
 		char *data;
 		int datalen = -1;	/* -1 means use strlen to get length */
 
+		if (set_linkquotes && !inreply) { /* why only if set_linkquotes? pcm */
+		    char *new_inreply = getreply(line);
+		    if (new_inreply && !*new_inreply) free(new_inreply);
+		    else inreply = new_inreply;
+		}
+    
 		if (Mime_B) {
 		    if (boundp &&
 			!strncmp(line, "--", 2) &&
@@ -2260,7 +2283,8 @@ int parsemail(char *mbox,	/* file name */
     crossindex();
     threadlist = NULL;
     printedthreadlist = NULL;
-    crossindexthread1(datelist);
+    if (!set_linkquotes)	/* postpone until later if set_linkquotes */
+	crossindexthread1(datelist);
 #if DEBUG_THREAD
     {
 	struct reply *r;
@@ -2324,11 +2348,40 @@ int loadoldheaders(char *dir)
     struct body *bp = NULL;
     struct body *lp = NULL;
 
+    struct reply *replylist_tmp = NULL;
+    int first_read_body = 0;
+    char inreply_start[256];
+    static char *inreply_start_old = "<b>In reply to:</b> <a href=\"";
+    if (set_linkquotes) {
+	sprintf(inreply_start, "<STRONG>%s:</STRONG> <A HREF=\"",
+		lang[MSG_IN_REPLY_TO]);
+    }
+
+    if (set_searchbackmsgnum && set_increment) { /* search for biggest message number */
+      int jump = 1000;
+      while (jump && first_read_body >= 0) {
+	filename = maprintf("%s%s%.4d.%s", dir, 
+			    (dir[strlen(dir) - 1] == '/') ? "" : "/", 
+			    first_read_body, set_htmlsuffix);
+	if ((fp = fopen(filename, "r")) != NULL) {
+	  fclose(fp);
+	  if (jump < 0) jump = -jump/2;
+	  first_read_body += jump;
+	}
+	else {
+	  if (jump > 0) jump = -jump/2;
+	  first_read_body += jump;
+	}
+	free(filename);
+      }
+      first_read_body -= set_searchbackmsgnum + 1;
+    }
     filename = maprintf("%s%s%.4d.%s", dir,
 			(dir[strlen(dir) - 1] == '/') ? "" : "/",
 			num, set_htmlsuffix);
 
-    bp = addbody(bp, &lp, "\0", 0);
+    if (!set_linkquotes)
+      bp = addbody(bp, &lp, "\0", 0);
 
     authorlist = subjectlist = datelist = NULL;
 
@@ -2355,6 +2408,7 @@ int loadoldheaders(char *dir)
     while ((fp = fopen(filename, "r")) != NULL) {
 	char *valp;
 	char legal = FALSE;
+	int reply_msgnum = -1;
 
 	while (fgets(line, sizeof(line), fp)) {
 
@@ -2375,8 +2429,12 @@ int loadoldheaders(char *dir)
 			free(valp);
 		    }
 		}
-		else if (!strcasecmp(command, "id"))
+		else if (!strcasecmp(command, "id")) {
 		    msgid = getvalue(line);
+		    if (msgid && (!isalnum(*msgid) || !strchr(msgid,'.')
+				  || !strstr(line,"-->")) && set_linkquotes)
+		        msgid = NULL;/* old version of Hypermail wrote junk? */
+		}
 		else if (!strcasecmp(command, "charset"))
 		    charset = getvalue(line);
 		else if (!strcasecmp(command, "isosent"))
@@ -2395,9 +2453,44 @@ int loadoldheaders(char *dir)
 		     * When we reach the mail body, we know we've got all the headers
 		     * there were!
 		     */
+		    if (set_linkquotes) {
+			while (fgets(line, MAXLINE, fp)) {
+			    char *ptr;
+			    char *line2;
+			    if (num < first_read_body
+				&& !strcmp(line,"<!-- nextthread=\"start\" -->\n"))
+			        break;
+			    if (!strcmp(line,"<!-- body=\"end\" -->\n"))
+			        break;
+			    line2 = remove_hypermail_tags(line);
+			    if (line2) {
+			        if (!bp && *line2 != '\n')
+				    bp = addbody(bp, &lp, "\n", 0);
+				ptr = unconvchars(line2);
+				bp = addbody(bp, &lp, ptr ? ptr : "", 0);
+				if(0) fprintf(stderr,"addbody %sfrom %s",ptr,line);
+				free(ptr);
+				if (set_linkquotes && !inreply) {
+				    char *new_inreply = getreply(line2);
+				    if (!*new_inreply) free(new_inreply);
+				    else inreply = new_inreply;
+				}
+				free(line2);
+			    }
+			}
+			if (!bp)
+			    bp = addbody(bp, &lp, "\0", 0);
+		    }
 		    fclose(fp);
 		    legal = TRUE;	/* with a body tag we consider this a valid syntax */
 		    break;
+		}
+		else if (set_linkquotes) {
+		    char *ptr;
+		    if ((ptr = strstr(line, inreply_start)) != NULL)
+		        reply_msgnum = atoi(ptr + strlen(inreply_start));
+		    else if ((ptr = strstr(line, inreply_start_old)) != NULL)
+		        reply_msgnum = atoi(ptr + strlen(inreply_start_old));
 		}
 	    }
 	}
@@ -2405,13 +2498,18 @@ int loadoldheaders(char *dir)
 	if (legal) {
 	    struct emailinfo *emp;
 	    /* only do this if the input was reliable */
-	    emp = addhash(num, date, name, email, msgid, subject, inreply,
+	    emp = addhash(num, date ? date : NODATE,
+			  name, email, msgid, subject, inreply,
 			  fromdate, charset, isodate, isofromdate, bp);
 	    if (emp != NULL) {
 		authorlist = addheader(authorlist, emp, 1);
 		emp->unre_subject = unre(subject);
 		subjectlist = addheader(subjectlist, emp, 0);
 		datelist = addheader(datelist, emp, 2);
+		if(set_linkquotes && reply_msgnum != -1) {
+		    replylist_tmp = addreply(replylist_tmp, reply_msgnum, emp,
+					     0);
+		}
 	    }
 	}
 	if (charset) {
@@ -2456,6 +2554,10 @@ int loadoldheaders(char *dir)
 	}
 
 	num++;
+	if (set_linkquotes) {
+	    bp = NULL;
+	}
+
 	if (!(num % 10) && set_showprogress) {
 	    printf("\r%4d", num);
 	    fflush(stdout);
@@ -2471,6 +2573,8 @@ int loadoldheaders(char *dir)
     if (set_showprogress)
 	printf("\b\b\b\b%4d %s.\n", num, lang[MSG_ARTICLES]);
 
+    if (set_linkquotes)
+      set_alt_replylist(replylist_tmp);
 
     /* can we clean up a bit please... */
     if (bp != NULL) {
@@ -2566,7 +2670,7 @@ void fixnextheader(char *dir, int num)
 ** incrementally updated.
 */
 
-void fixreplyheader(char *dir, int num)
+void fixreplyheader(char *dir, int num, int remove_maybes)
 {
     char filename[256];
     char line[MAXLINE];
@@ -2582,17 +2686,59 @@ void fixreplyheader(char *dir, int num)
     struct emailinfo *email;
     struct emailinfo *email2;
 
+    const char *last_reply = "";
+    int next_in_thread = -1;
+    const char *old_maybe_pattern = "<li> <b>Maybe reply:</b> <a href=";
+    const char *old_reply_pattern = "<b>Reply:</b> ";
+    const char *old_nextinthread_pattern = "<b>Next in thread:</b> <a href=\"";
+    const char *old_next_pattern = "<li> <b>Next message:</b>";
+    char current_maybe_pattern[MAXLINE];
+    char current_reply_pattern[MAXLINE];
+    char current_nextinthread_pattern[MAXLINE];
+    char current_next_pattern[MAXLINE];
+    
     status = hashnumlookup(num, &email);
 
     if (status == NULL || (email->inreplyto && !email->inreplyto[0]))
 	return;
 
-    if (email->inreplyto && email->inreplyto[0]) {
-	email2 =
-	    hashreplylookup(email->msgnum, email->inreplyto, &subjmatch);
+    if (remove_maybes || set_linkquotes) {
+	sprintf(current_maybe_pattern,
+		"<LI><STRONG>%s:</STRONG> <A HREF=", lang[MSG_MAYBE_REPLY]);
+	sprintf(current_reply_pattern,
+		"<LI><STRONG>%s:</STRONG> <A HREF=", lang[MSG_REPLY]);
+	sprintf(current_nextinthread_pattern,
+		"<LI><STRONG>%s:</STRONG> <A HREF=", lang[MSG_NEXT_IN_THREAD]);
+	sprintf(current_next_pattern,
+		"<LI><STRONG>%s:</STRONG> <A HREF=", lang[MSG_NEXT_MESSAGE]); 
+    }
+    if (set_linkquotes) {
+      struct reply *rp;
+      for (rp = replylist; rp != NULL; rp = rp->next) {
+	if (rp->frommsgnum == num && !rp->maybereply) {
+	  replynum = rp->msgnum;
+	  break;
+	}
+      }
+      if (!set_showreplies && replynum != num - 1)
+	return;
+      if (replynum == -1 && email->inreplyto && email->inreplyto[0]) {
+	email2 = hashreplylookup(email->msgnum, email->inreplyto, &subjmatch);
 	if (!email2)
-	    return;
+	  return;
 	replynum = email2->msgnum;
+	if (subjmatch && remove_maybes)
+	  return;
+      }
+    }
+    else {
+	if (email->inreplyto && email->inreplyto[0]) {
+	    email2 =
+	        hashreplylookup(email->msgnum, email->inreplyto, &subjmatch);
+	    if (!email2)
+	        return;
+	    replynum = email2->msgnum;
+	}
     }
 
     msnprintf(filename, sizeof(filename), "%s%s%.4d.%s", dir,
@@ -2602,8 +2748,19 @@ void fixreplyheader(char *dir, int num)
     bp = NULL;
     fp = fopen(filename, "r");
     if (fp) {
-	while ((fgets(line, MAXLINE, fp)) != NULL)
+	while ((fgets(line, MAXLINE, fp)) != NULL) {
+	    if (set_linkquotes) {
+	        const char *ptr = strstr(line, old_nextinthread_pattern);
+		if (ptr)
+		    next_in_thread = atoi(ptr+strlen(old_nextinthread_pattern));
+		else {
+		    ptr = strstr(line, current_nextinthread_pattern);
+		    if (ptr)
+		        next_in_thread = atoi(ptr+strlen(current_nextinthread_pattern));
+		}
+	    }
 	    bp = addbody(bp, &lp, line, 0);
+	}
     }
     else
 	return;
@@ -2615,13 +2772,37 @@ void fixreplyheader(char *dir, int num)
     if (fp) {
 	while (bp) {
 	    if (!strncmp(bp->line, "<!-- reply", 10)) {
-		fprintf(fp, "<li><strong>%s:</strong> ", lang[MSG_REPLY]);
-		fprintf(fp, "<a href=\"%.4d.%s\">", num, set_htmlsuffix);
-		fprintf(fp, "%s: \"%s\"</a>\n", email->name,
-			ptr = convchars(email->subject));
-		free(ptr);
+	        if (last_reply) {
+		  char buf1[MAXLINE];
+		  ptr = convchars(email->subject);
+		  sprintf(buf1,
+			  "<li><strong>%s:</strong> <a href=\"%.4d.%s\">%s: \"%s\"</a>\n",
+			  lang[MSG_REPLY], num, set_htmlsuffix, email->name, ptr);
+
+		  if (strcmp(buf1, last_reply))
+		      fputs(buf1, fp);
+		}
+		else {
+		    fprintf(fp, "<li><strong>%s:</strong> ", lang[MSG_REPLY]);
+		    fprintf(fp, "<a href=\"%.4d.%s\">", num, set_htmlsuffix);
+		    fprintf(fp, "%s: \"%s\"</a>\n", email->name,
+			    ptr = convchars(email->subject));
+		    free(ptr);
+		}
 	    }
-	    fprintf(fp, "%s", bp->line);
+	    if (next_in_thread - 1 == replynum
+		&& (strstr(bp->line, current_next_pattern)
+		    || strstr(bp->line, old_next_pattern))) {
+	        bp = bp->next;
+		continue; /* line duplicates next in thread; surpress */
+	    }
+	    if (!remove_maybes
+		|| strncasecmp(bp->line, current_maybe_pattern, strlen(current_maybe_pattern))
+		|| strncasecmp(bp->line, old_maybe_pattern, strlen(old_maybe_pattern)))
+	        fprintf(fp, "%s", bp->line); /* not redundant or disproven */
+	    if (set_linkquotes && (strstr(bp->line, current_reply_pattern)
+				   || strstr(bp->line, old_reply_pattern)))
+	        last_reply = bp->line;
 	    bp = bp->next;
 	}
     }

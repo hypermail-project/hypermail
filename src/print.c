@@ -24,12 +24,19 @@
 #include "struct.h"
 #include "printfile.h"
 #include "print.h"
+#include "parse.h"
+#include "txt2html.h"
+#include "finelink.h"
+
 #include "threadprint.h"
 
 #ifdef CHANGE_12DEC2000_BC
 #include "mprintf.h"
 #include "proto.h"
 #endif
+
+static char *indextypename[NO_INDEX];
+static char *indextypefilename[NO_INDEX];
 
 /* Uses threadlist to find the next message after
  * msgnum in the thread containing msgnum.
@@ -173,7 +180,9 @@ void fprint_summary(FILE *fp, int pos, long first_d, long last_d, int num)
 
 /*----------------------------------------------------------------------------*/
 
-void print_index_header_links(FILE *fp, int called, int amountmsgs)
+void print_index_header_links(FILE *fp, mindex_t called_from, 
+			      long startdatenum, long enddatenum,
+			      int amountmsgs)
 {
     /* 
      * Print out the links for
@@ -187,26 +196,34 @@ void print_index_header_links(FILE *fp, int called, int amountmsgs)
      */
     char *ptr;
 
-    if (!set_reverse && (called != FROM_AUTHOR && called != FROM_SUBJECT))
+    if (set_mailcommand && set_hmail) {
+	ptr = makemailcommand("mailto:$TO", set_hmail, "", "");
+	fprintf(fp, "<strong><a href=\"%s\">%s</A></strong>\n",
+		ptr ? ptr : "", lang[MSG_NEW_MESSAGE]);
+	if (ptr)
+	    free(ptr);
+    }
+
+    if (!set_reverse && (called_from != AUTHOR_INDEX && called_from != SUBJECT_INDEX))
 	fprintf(fp, "<strong><a href=\"#end\">%s</a></strong><br>\n",
 		lang[MSG_MOST_RECENT_MESSAGES]);
 
     fprintf(fp, "<strong>%d %s %s:</strong> \n", amountmsgs,
 	    lang[MSG_ARTICLES], lang[MSG_SORTED_BY]);
 
-    if (called != FROM_AUTHOR)
+    if (called_from != AUTHOR_INDEX)
 	fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", authname,
 		lang[MSG_AUTHOR]);
 
-    if (called != FROM_DATE)
+    if (called_from != DATE_INDEX)
 	fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", datename,
 		lang[MSG_DATE]);
 
-    if (called != FROM_THREAD)
+    if (called_from != THREAD_INDEX)
 	fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", thrdname,
 		lang[MSG_THREAD]);
 
-    if (called != FROM_SUBJECT)
+    if (called_from != SUBJECT_INDEX)
 	fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", subjname,
 		lang[MSG_SUBJECT]);
 
@@ -255,13 +272,14 @@ void print_index_header_links(FILE *fp, int called, int amountmsgs)
      */
 
     fprintf(fp, "<strong>%s:</strong> <em>%s</em><br>\n",
-            lang[MSG_STARTING], getdatestr(firstdatenum));
+            lang[MSG_STARTING], getdatestr(startdatenum));
 
     fprintf(fp, "<strong>%s:</strong> <em>%s</em><br>\n",
-            lang[MSG_ENDING], getdatestr(lastdatenum));
+            lang[MSG_ENDING], getdatestr(enddatenum));
 }
 
-void print_index_footer_links(FILE *fp, int called, int amountmsgs)
+void print_index_footer_links(FILE *fp, mindex_t called_from,
+			      long enddatenum, int amountmsgs)
 {
     /* 
      * Print out the links for
@@ -286,19 +304,19 @@ void print_index_footer_links(FILE *fp, int called, int amountmsgs)
     fprintf(fp, "<strong>%d %s %s:</strong> \n", amountmsgs,
 	    lang[MSG_ARTICLES], lang[MSG_SORTED_BY]);
 
-    if (called != FROM_AUTHOR)
+    if (called_from != AUTHOR_INDEX)
 	fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", authname,
 		lang[MSG_AUTHOR]);
 
-    if (called != FROM_DATE)
+    if (called_from != DATE_INDEX)
 	fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", datename,
 		lang[MSG_DATE]);
 
-    if (called != FROM_THREAD)
+    if (called_from != THREAD_INDEX)
 	fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", thrdname,
 		lang[MSG_THREAD]);
 
-    if (called != FROM_SUBJECT)
+    if (called_from != SUBJECT_INDEX)
 	fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", subjname,
 		lang[MSG_SUBJECT]);
 
@@ -390,30 +408,50 @@ void printhtml(FILE *fp, char *line)
 ** Pretty-prints the dates in the index files.
 */
 
-void printdates(FILE *fp, struct header *hp)
+void printdates(FILE *fp, struct header *hp, int year, int month)
 {
-    char *subj;
-    if (hp != NULL) {
-	struct emailinfo *em = hp->data;
-	printdates(fp, hp->left);
-	subj = convchars(em->subject);
-	if (set_indextable) {
-	    fprintf(fp, "<tr><td><a href=\"%.4d.%s\">%s</a></td>"
-		    "<td><em>%s</em></a></td>"
-		    "<td>%s</td></tr>\n",
-		    em->msgnum, set_htmlsuffix, subj,
-		    em->name, getdatestr(em->date));
-	}
-	else {
-	    fprintf(fp,
-		    "<li><a href=\"%.4d.%s\"><strong>%s</strong></a>&nbsp;"
-		    "<a name=\"%d\"><em>%s</em></a>&nbsp;<em>(%s)</em>\n",
-		    em->msgnum, set_htmlsuffix, subj, em->msgnum, em->name,
-		    getdatestr(em->date));
-	}
-	free(subj);
-	printdates(fp, hp->right);
+  char *subj;
+  const char *startline;
+  const char *break_str;
+  const char *endline;
+  const char *subj_tag;
+  const char *subj_end_tag;
+  char date_str[DATESTRLEN+11];
+  char line_count_str[50];
+
+  if (hp != NULL) {
+    struct emailinfo *em=hp->data;
+    printdates(fp, hp->left, year, month);
+    if ((year == -1 || year_of_datenum(em->date) == year)
+	&& (month == -1 || month_of_datenum(em->date) == month)) {
+      subj = convchars(em->subject);
+
+      line_count_str[0] = 0;
+      if(set_indextable) {
+	startline = "<tr><td>";
+	break_str = "</td><td>";
+	strcpy(date_str, getdatestr(hp->data->date));
+	endline = "</td></tr>";
+	subj_tag = "";
+	subj_end_tag = "";
+      }
+      else {
+	startline = "<li>";
+	break_str = "&nbsp;";
+	sprintf(date_str, "<em>(%s)</em>", getdatestr(hp->data->date));
+	endline = "";
+	subj_tag = "<strong>";
+	subj_end_tag = "</strong>";
+      }
+      fprintf(fp,"%s<a href=\"%.4d.%s\">%s%s%s</a>%s"
+	      "<a name=\"%d\"><em>%s</em></a>%s%s%s%s\n",
+	      startline, em->msgnum, set_htmlsuffix,
+	      subj_tag, subj, subj_end_tag, break_str, em->msgnum, em->name,
+	      break_str, date_str, line_count_str, endline);
+      free(subj);
     }
+    printdates(fp, hp->right, year, month);
+  }
 }
 
 /*
@@ -467,6 +505,84 @@ int showheader(char *header)
 }
 
 /*
+ * ConvURLsWithHrefs handles lines with URLs that are already written as
+ * href's, to avoid having ConvURLsString add a second href to those URLs.
+*/
+
+static char *ConvURLsWithHrefs(const char *line, char *mailid,
+			       char *mailsubject, char *c)
+{
+    char *p;
+    struct Push retbuf;
+    char *tmpline5;
+    char *tmpline6;
+    char *tmpline1 = (char *)emalloc(strlen(line) + 1);
+    strncpy(tmpline1, line, c - line);
+    tmpline1[c - line] = 0;
+    INIT_PUSH(retbuf);
+    p = strcasestr(c, "</A>");
+    if (!p) return NULL;
+    	/* complete href found; run ConvURLsString on text outside it*/
+    tmpline5 = ConvURLsString(tmpline1, mailid, mailsubject);
+    if (!tmpline5) return NULL;
+    PushString(&retbuf, tmpline5);
+    free(tmpline5);
+    p += 4;
+    tmpline6 = ConvURLsString(p, mailid, mailsubject);
+    if (!tmpline6) {
+	free(PUSH_STRING(retbuf));
+	return NULL;
+    }
+    strncpy(tmpline1, c, p - c);
+    tmpline1[p - c] = 0;
+    PushString(&retbuf, tmpline1);
+    PushString(&retbuf, tmpline6);
+    free(tmpline1);
+    free(tmpline6);
+    RETURN_PUSH(retbuf);
+}
+
+/*
+ * ConvMsgid converts a msgid into a link to the message it refers to if that
+ * message is in the archive, and call ConvURLsString on the rest of the line.
+*/
+
+static char *ConvMsgid(char *line, char *inreply,
+		       char *mailid, char *mailsubject)
+{
+    char *tmpline4;
+    int subjmatch;
+    char filename[MAXFILELEN];
+    char *tmpline1;
+    char *c;
+    struct Push buff;
+    struct emailinfo *ep = hashreplylookup(-1, inreply, &subjmatch);
+
+    if (ep == NULL || subjmatch)
+	return NULL;		/* not a known msgid - maybe an email addr? */
+    c = strstr(line, inreply);
+    if (!c)
+	return NULL;		/* should never happen */
+    INIT_PUSH(buff);
+    tmpline1 = (char *)emalloc(c - line + 1);
+    strncpy(tmpline1, line, c - line);
+    tmpline1[c - line] = 0;
+    tmpline4 = ConvURLsString(tmpline1, mailid, mailsubject);
+    free(tmpline1);
+    PushString(&buff, tmpline4);
+    free(tmpline4);
+    sprintf(filename, "<A HREF=\"%.4d.%s\">", ep->msgnum, set_htmlsuffix);
+    PushString(&buff, filename);
+    PushString(&buff, inreply);
+    PushString(&buff, "</A>");
+    tmpline4 = ConvURLsString(c + strlen(inreply), mailid, mailsubject);
+    PushString(&buff, tmpline4);
+    free(tmpline4);
+    RETURN_PUSH(buff);
+}
+
+
+/*
 ** Converts URLs, email addresses, and message IDs in a line to links,
 ** mail commands, and articles respectively. Write everything to the
 ** file pointed to by 'fp'.
@@ -474,10 +590,39 @@ int showheader(char *header)
 
 void ConvURLs(FILE *fp, char *line, char *mailid, char *mailsubject)
 {
+    char *parsed = ConvURLsString(line, mailid, mailsubject);
+    if (parsed) {
+	/* write it to the file! */
+	fwrite(parsed, strlen(parsed), 1, fp);
+	free(parsed);
+    }
+}
+
+char *ConvURLsString(char *line, char *mailid, char *mailsubject)
+{
     char *parsed;
     char *newparse;
+    char *c;
+
+    if ((c = strcasestr(line, "<A HREF=\"")) != NULL
+	&& !strcasestr(c + 9, "mailto")) {
+	parsed = ConvURLsWithHrefs(line, mailid, mailsubject, c);
+	if (parsed)
+	    return parsed;
+    }
+
+    if (set_linkquotes) {
+	char *inreply = getreply(line);
+	if (inreply) {
+	    parsed = ConvMsgid(line, inreply, mailid, mailsubject);
+	    free(inreply);
+	    if (parsed)
+	        return parsed;
+	}
+    }
 
     parsed = parseurl(line);
+
     if (use_mailcommand) {
 	/* Exclude headers that are not mail type headers */
 
@@ -490,26 +635,23 @@ void ConvURLs(FILE *fp, char *line, char *mailid, char *mailsubject)
 	}
     }
 
-    if (parsed) {
-	/* write it to the file! */
-	fwrite(parsed, strlen(parsed), 1, fp);
-	free(parsed);
-    }
+    return parsed;
 }
 
 
 /*
 ** The heuristics for displaying an otherwise ordinary line (a non-quote,
-** non-sig, non-inhtml, non-blank line) if 'showhtml' is true (which really
-** means we're *not* doing <pre> to format the text) have changed so that
-** indented text shows up correctly.  First, leading spaces become HTML
+** non-sig, non-inhtml, non-blank line) if 'showhtml' is 1 (which really means
+** we're *not* doing <pre> or txt2html to format the text) have changed so
+** that indented text shows up correctly.  First, leading spaces become HTML
 ** non-breaking spaces (&nbsp;).  In order for this to work, those lines
 ** must have been preceded by a <br> or <p>.  We accomplish this by checking
 ** ahead when we print each line... if we determine that the next line
 ** should be broken before, we do so.
 */
 
-void printbody(FILE *fp, struct body *bp, char *id, char *subject)
+void printbody(FILE *fp, struct body *bp, char *id, char *subject,
+	       int msgnum, char *dir, char *inreply, int maybe_reply)
 {
     int insig, inblank;
 #ifdef REMOVED_19991103
@@ -517,6 +659,16 @@ void printbody(FILE *fp, struct body *bp, char *id, char *subject)
 #endif
     char inheader = FALSE;	/* we always start in a mail header */
     int pre = FALSE;
+
+    int inquote;
+    int quote_num;
+    int quoted_percent = (set_quote_hide_threshold <= 100
+			  ? compute_quoted_percent(bp) : 100);
+    bool replace_quoted = (quoted_percent > set_quote_hide_threshold);
+
+    if(set_showprogress && replace_quoted)
+      printf("\nMessage %d quoted text (%d %%) replaced by links\n",
+	     msgnum,quoted_percent);
 
     /* JK: added an extra <p> here */
     if (set_showhr)
@@ -533,6 +685,10 @@ void printbody(FILE *fp, struct body *bp, char *id, char *subject)
     else
 	printf("SHOWHTML is ON\n");
 #endif
+    if (set_showhtml == 2)
+      init_txt2html();
+    inquote = 0;
+    quote_num = 0;
 
     inblank = 1;
     insig = 0;
@@ -606,6 +762,13 @@ void printbody(FILE *fp, struct body *bp, char *id, char *subject)
 	    continue;
 	}
 
+	if (set_showhtml == 2 && !inheader) {
+	    txt2html(fp, bp, id, subject, msgnum, inreply, dir,
+		     replace_quoted, maybe_reply);
+	    bp = bp->next;
+	    continue;
+	}
+
         if (bp->header && set_showheaders && !pre) {
             fprintf(fp, "<pre>\n");
             pre = TRUE;
@@ -656,10 +819,7 @@ void printbody(FILE *fp, struct body *bp, char *id, char *subject)
 	}
 #endif
 	if (set_showhtml) {
-	    if (!strcmp(bp->line, "--\n") ||
-		!strcmp(bp->line, "-- \n") ||
-		!strcmp(bp->line, "---\n") ||
-		!strcmp(bp->line, "----\n")) {
+	    if (is_sig_start(bp->line)) {
 		insig = 1;
 		if (!pre) {
 		    fprintf(fp, "<pre>\n");
@@ -674,23 +834,27 @@ void printbody(FILE *fp, struct body *bp, char *id, char *subject)
 		    ConvURLs(fp, bp->line, id, subject);
 		}
 		else if (isquote(bp->line)) {
-		    fprintf(fp, "%s", (set_iquotes) ? "<em>" : "");
+		    if(set_linkquotes) {
+			if(handle_quoted_text(fp, msgnum, bp, bp->line, inquote,
+					      quote_num, inreply, dir,
+					      replace_quoted, maybe_reply,
+					      id, subject)) {
+			    ++quote_num;
+			    inquote = 1;
+			}
+		    }
+		    else {
+		        fprintf(fp, "%s", (set_iquotes) ? "<em>" : "");
 
-		    ConvURLs(fp, bp->line, id, subject);
+			ConvURLs(fp, bp->line, id, subject);
 
-		    fprintf(fp, "%s<br>\n", (set_iquotes) ? "</em>" : "");
+			fprintf(fp, "%s<br>\n", (set_iquotes) ? "</em>" : "");
+		    }
 		}
 		else if ((bp->line)[0] != '\0') {
 		    char *sp;
-		    sp = bp->line;
-		    while (*sp && (*sp == ' ' || *sp == '\t')) {
-			if (*sp == '\t')
-			    fprintf(fp,
-				    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-			else
-			    fprintf(fp, "&nbsp;");
-			sp++;
-		    }
+                    sp = print_leading_whitespace(fp, bp->line);
+
 		    /* JK: avoid converting Message-Id: headers */
 		    if (bp->header && bp->parsedheader 
 			&& !strncasecmp(bp->line, "Message-Id:", 11) 
@@ -734,16 +898,33 @@ void printbody(FILE *fp, struct body *bp, char *id, char *subject)
 	  else
 	      ConvURLs(fp, bp->line, id, subject);
 	}
+	if (!isquote(bp->line))
+	  inquote = 0;
 	bp = bp->next;
     }
 
     if (pre)
 	fprintf(fp, "</pre>\n");
+    else if (set_showhtml == 2)
+        end_txt2html(fp);
 
     fprintf(fp, "<p>");
     printcomment(fp, "body", "end");
     if (set_showhr)
 	fprintf(fp, "<hr noshade>\n");
+}
+
+char *
+print_leading_whitespace(FILE *fp, char *sp)
+{
+    while (*sp && (*sp == ' ' || *sp == '\t')) {
+        if (*sp == '\t')
+	    fprintf(fp, "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+	else
+	    fprintf(fp, "&nbsp;");
+	sp++;
+    }
+    return sp;
 }
 
 /*
@@ -754,7 +935,9 @@ void printbody(FILE *fp, struct body *bp, char *id, char *subject)
 void writearticles(int startnum, int maxnum)
 {
     int num, skip, subjmatch, newfile;
-
+    int is_reply = 0;
+    int maybe_reply = 0;
+    struct emailinfo *old_reply_to = NULL;
     struct emailinfo *email;
     struct emailinfo *email2;
 
@@ -783,6 +966,9 @@ void writearticles(int startnum, int maxnum)
 	    newfile = 0;
 	else
 	    newfile = 1;
+
+	is_reply = 0;
+	set_new_reply_to(-1, -1);
 
 	skip = 0;
 	if (!newfile && !set_overwrite) {
@@ -920,11 +1106,13 @@ void writearticles(int startnum, int maxnum)
 	     * Is this message a reply to another?
 	     */
 
+	    maybe_reply = 0;
 	    if (email->inreplyto[0]) {
 		email2 =
 		    hashreplylookup(email->msgnum, email->inreplyto,
 				    &subjmatch);
 		if (email2) {
+		    is_reply = 1;
 		    if (subjmatch)
 			fprintf(fp, "<li><strong>%s:</strong>",
 				lang[MSG_MAYBE_IN_REPLY_TO]);
@@ -1034,11 +1222,17 @@ void writearticles(int startnum, int maxnum)
 	if (set_show_msg_links || !set_usetable)
 	    fprintf(fp, "</ul>\n");
 
+	if (set_linkquotes || set_showhtml == 2)
+	  /* should be changed to unconditional after tested for a while?
+	     - pcm@rahul.net 1999-09-09 */
+	    find_quote_prefix(email->bodylist, is_reply);
+
 	/*
 	 * Finally...print the body!
 	 */
 
-	printbody(fp, bp, email->msgid, email->subject);
+	printbody(fp, email->bodylist, email->msgid, email->subject,
+		  num, set_dir, email->inreplyto, maybe_reply);
 
 	/*
 	 * Should we print out the message links ?
@@ -1062,6 +1256,10 @@ void writearticles(int startnum, int maxnum)
 	    }
 
 	    status = hashnumlookup(num - 1, &email2);
+	    if (set_linkquotes && old_reply_to
+		&& num - 1 == (get_new_reply_to() == -1 ? old_reply_to->msgnum
+			       : get_new_reply_to()))
+	        status = 0;
 	    if (status) {
 		fprintf(fp, "<li><strong>%s:</strong> ",
 			lang[MSG_PREVIOUS_MESSAGE]);
@@ -1186,6 +1384,25 @@ void writearticles(int startnum, int maxnum)
 
 	fclose(fp);
 
+	if (get_new_reply_to() != -1) {
+	  	/* will only be true if set_linkquotes is */
+	    replace_maybe_replies(filename, set_dir, get_new_reply_to());
+	    for (rp = replylist; rp != NULL; rp = rp->next) {
+	        /* get rid of old guesses for where this links */
+	        if (rp->msgnum == num) {
+	            rp->frommsgnum = get_new_reply_to();
+		    rp->maybereply = 0;
+		    break;
+		}
+	    }
+	    if (!rp) {
+	        struct emailinfo *e3;
+		if(hashnumlookup(num, &e3)) {
+		    replylist = addreply(replylist, get_new_reply_to(), e3, 0);
+		}
+	    }
+	}
+
 	if (newfile && chmod(filename, set_filemode) == -1) {
 	    sprintf(errmsg, "%s \"%s\": %o.",
 		    lang[MSG_CANNOT_CHMOD], filename, set_filemode);
@@ -1239,7 +1456,8 @@ void writedates(int amountmsgs)
      * Print out archive information links at the top of the index
      */
     if (!set_usetable) 
-	print_index_header_links(fp, FROM_DATE, amountmsgs);
+        print_index_header_links(fp, DATE_INDEX, firstdatenum, lastdatenum,
+				 amountmsgs);				 
     else {
 	fprint_menu(fp, DATE_INDEX, set_archives, "", "", PAGE_TOP);
 	fprint_summary(fp, PAGE_TOP, firstdatenum, lastdatenum, amountmsgs);
@@ -1256,12 +1474,12 @@ void writedates(int amountmsgs)
 	fprintf(fp,
 		"<div align=\"center\">\n<table width=\"80%%\">\n<tr><td><u><strong>%s</strong></u></td><td><u><strong>%s</strong></u></td><td><u><strong>%s</strong></u></td></tr>\n",
 		lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
-	printdates(fp, datelist);
+    	printdates(fp, datelist, -1, -1);
 	fprintf(fp, "</table>\n</div>\n<p>\n");
     }
     else {
 	fprintf(fp, "<ul>\n");
-	printdates(fp, datelist);
+	printdates(fp, datelist, -1, -1);
 	fprintf(fp, "</ul>\n<p>\n");
     }
 
@@ -1269,7 +1487,7 @@ void writedates(int amountmsgs)
 	/* 
 	 * Print out archive information links at the bottom of the index
 	 */
-	print_index_footer_links(fp, FROM_DATE, amountmsgs);
+	print_index_footer_links(fp, DATE_INDEX, lastdatenum, amountmsgs);
     }
     else {
 	if (set_showhr)
@@ -1432,7 +1650,8 @@ void writethreads(int amountmsgs)
 	/* 
 	 * Print out the index page links 
 	 */
-	print_index_header_links(fp, FROM_THREAD, amountmsgs);
+	print_index_header_links(fp, THREAD_INDEX, firstdatenum, lastdatenum,
+				 amountmsgs);
     }
     else {
 	fprint_menu(fp, THREAD_INDEX, set_archives, "", "", PAGE_TOP);
@@ -1446,12 +1665,12 @@ void writethreads(int amountmsgs)
 	fprintf(fp,
 		"<div align=\"center\">\n<table>\n<tr><td><u><strong>%s</strong></u></td><td><u><strong>%s</strong></u></td><td><u><strong> %s</strong></u></td></tr>\n",
 		lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
-	print_all_threads(fp);
+	print_all_threads(fp, -1, -1);
 	fprintf(fp, "</table>\n</div>\n<p>\n");
     }
     else {
 	fprintf(fp, "<ul>\n");
-	print_all_threads(fp);
+	print_all_threads(fp, -1, -1);
 	fprintf(fp, "</ul>\n<p>\n");
     }
 
@@ -1459,8 +1678,7 @@ void writethreads(int amountmsgs)
 	/* 
 	 * Print out archive information links at the bottom of the index
 	 */
-	print_index_footer_links(fp, FROM_THREAD, amountmsgs);
-
+        print_index_footer_links(fp, THREAD_INDEX, lastdatenum, amountmsgs);
     }
     else {
 	if (set_showhr)
@@ -1488,14 +1706,21 @@ void writethreads(int amountmsgs)
 ** Print the subject index pointers alphabetically.
 */
 
-void printsubjects(FILE *fp, struct header *hp, char **oldsubject)
+void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
+		   int year, int month)
 {
-    char *subj;
+  char *subj;
+  const char *startline;
+  const char *break_str;
+  const char *endline;
+  char date_str[DATESTRLEN+11];
+  char line_count_str[50];
 
-    if (hp != NULL) {
-	printsubjects(fp, hp->left, oldsubject);
-
-	subj = convchars(hp->data->unre_subject);
+  if (hp != NULL) {
+    printsubjects(fp, hp->left, oldsubject, year, month);
+    if ((year == -1 || year_of_datenum(hp->data->date) == year)
+	&& (month == -1 || month_of_datenum(hp->data->date) == month)) {
+      subj = convchars(hp->data->unre_subject);
 
 	if (strcasecmp(hp->data->unre_subject, *oldsubject)) {
 	    if (set_indextable) {
@@ -1507,26 +1732,30 @@ void printsubjects(FILE *fp, struct header *hp, char **oldsubject)
 		fprintf(fp, "<li><strong>%s</strong>\n", subj);
 	    }
 	}
-	if (set_indextable) {
-	    fprintf(fp, "<tr><td>&nbsp;</td>"
-		    "<td><a href=\"%.4d.%s\">%s</a></td>"
-		    "<td><a name=\"%d\">%s</a></td></tr>\n",
-		    hp->data->msgnum, set_htmlsuffix, hp->data->name,
-		    hp->data->msgnum, getdatestr(hp->data->date));
+	line_count_str[0] = 0;
+	if(set_indextable) {
+	    startline = "<tr><td>&nbsp;</td><td>";
+	    break_str = "</td><td>";
+	    strcpy(date_str, getdatestr(hp->data->date));
+	    endline = "</td></tr>";
 	}
 	else {
-	    fprintf(fp, "<ul><li><a href=\"%.4d.%s\">%s</a> "
-		    "<a name=\"%d\"><em>(%s)</em></a></ul>\n",
-		    hp->data->msgnum, set_htmlsuffix, hp->data->name,
-		    hp->data->msgnum, getdatestr(hp->data->date));
+	    startline = "<ul><li>";
+	    break_str = "";
+	    sprintf(date_str, "<em>(%s)</em>", getdatestr(hp->data->date));
+	    endline = "</ul>";
 	}
-
+	fprintf(fp,"%s<a href=\"%.4d.%s\">%s</a>%s <a name=\"%d\">%s</a>%s%s\n",
+		startline, hp->data->msgnum,
+		set_htmlsuffix, hp->data->name, break_str,
+		hp->data->msgnum,
+		date_str, line_count_str, endline);
 	*oldsubject = hp->data->unre_subject;
-
+      
 	free(subj);
-
-	printsubjects(fp, hp->right, oldsubject);
     }
+    printsubjects(fp, hp->right, oldsubject, year, month);
+  }
 }
 
 /*
@@ -1562,7 +1791,8 @@ void writesubjects(int amountmsgs)
      * Print out the index page links 
      */
     if (!set_usetable) 
-	print_index_header_links(fp, FROM_SUBJECT, amountmsgs);
+	print_index_header_links(fp, SUBJECT_INDEX, firstdatenum, lastdatenum,
+				 amountmsgs);
     else {
 	fprint_menu(fp, SUBJECT_INDEX, set_archives, "", "", PAGE_TOP);
 	fprint_summary(fp, PAGE_TOP, firstdatenum, lastdatenum, amountmsgs);
@@ -1581,7 +1811,7 @@ void writesubjects(int amountmsgs)
     }
     {
 	char *oldsubject = "";	/* dummy to start with */
-	printsubjects(fp, subjectlist, &oldsubject);
+	printsubjects(fp, subjectlist, &oldsubject, -1, -1);
     }
     if (set_indextable) {
 	fprintf(fp, "</table>\n</div>\n<p>\n");
@@ -1595,7 +1825,7 @@ void writesubjects(int amountmsgs)
      */
 
     if (!set_usetable) 
-	print_index_footer_links(fp, FROM_SUBJECT, amountmsgs);
+	print_index_footer_links(fp, SUBJECT_INDEX, lastdatenum, amountmsgs);
     else {
 	if (set_showhr)
 	    fprintf(fp, "<hr noshade>\n");
@@ -1622,43 +1852,56 @@ void writesubjects(int amountmsgs)
 ** Prints the author index links sorted alphabetically.
 */
 
-void printauthors(FILE *fp, struct header *hp, char **oldname)
+void printauthors(FILE *fp, struct header *hp, char **oldname,
+		  int year, int month)
 {
-    char *subj;
+  char *subj;
+  const char *startline;
+  const char *break_str;
+  const char *endline;
+  char date_str[DATESTRLEN+11];
+  char line_count_str[50];
 
-    if (hp != NULL) {
-	printauthors(fp, hp->left, oldname);
+  if (hp != NULL) {
+    printauthors(fp, hp->left, oldname, year, month);
+    if ((year == -1 || year_of_datenum(hp->data->date) == year)
+	&& (month == -1 || month_of_datenum(hp->data->date) == month)) {
 
-	subj = convchars(hp->data->subject);
+      subj = convchars(hp->data->subject);
 
-	if (strcasecmp(hp->data->name, *oldname)) {
-	    if (set_indextable)
+      if (strcasecmp(hp->data->name, *oldname)) {
+
+	if(set_indextable)
 		fprintf(fp,
 			"<tr><td colspan=\"3\"><strong>%s</strong></td></tr>",
 			hp->data->name);
-	    else
+	else
 		fprintf(fp, "<li><strong>%s</strong>\n", hp->data->name);
-	}
+      }
+      line_count_str[0] = 0;
+      if(set_indextable) {
+	startline = "<tr><td>&nbsp;</td><td>";
+	break_str = "</td><td>";
+	strcpy(date_str, getdatestr(hp->data->date));
+	endline = "</td></tr>";
+      }
+      else {
+	startline = "<ul><li>";
+	break_str = "&nbsp;";
+	sprintf(date_str, "<em>(%s)</em>", getdatestr(hp->data->date));
+	endline = "</ul>";
+      }
+      fprintf(fp,"%s<a href=\"%.4d.%s\">%s</a>%s<a name=\"%d\">%s</a>%s%s\n",
+	      startline, hp->data->msgnum,
+	      set_htmlsuffix, subj, break_str,
+	      hp->data->msgnum,
+	      date_str, line_count_str, endline);
+      free(subj);
 
-	if (set_indextable) {
-	    fprintf(fp,
-		    "<tr><td>&nbsp;</td><td><a href=\"%.4d.%s\">%s</a></td>"
-		    "<td><a name=\"%d\">%s</a></td></tr>\n",
-		    hp->data->msgnum, set_htmlsuffix, subj,
-		    hp->data->msgnum, getdatestr(hp->data->date));
-	}
-	else {
-	    fprintf(fp, "<ul><li><a href=\"%.4d.%s\">%s</a>&nbsp;"
-		    "<a name=\"%d\"><em>(%s)</em></a></ul>\n",
-		    hp->data->msgnum,
-		    set_htmlsuffix, subj,
-		    hp->data->msgnum, getdatestr(hp->data->date));
-	}
-	free(subj);
-
-	*oldname = hp->data->name;	/* avoid copying */
-	printauthors(fp, hp->right, oldname);
+      *oldname = hp->data->name;	/* avoid copying */
     }
+    printauthors(fp, hp->right, oldname, year, month);
+  }
 }
 
 /*
@@ -1694,7 +1937,8 @@ void writeauthors(int amountmsgs)
 	/* 
 	 * Print out the index page links 
 	 */
-	print_index_header_links(fp, FROM_AUTHOR, amountmsgs);
+	print_index_header_links(fp, AUTHOR_INDEX, firstdatenum, lastdatenum,
+				 amountmsgs);
     }
     else {
 	fprint_menu(fp, AUTHOR_INDEX, set_archives, "", "", PAGE_TOP);
@@ -1714,7 +1958,7 @@ void writeauthors(int amountmsgs)
     }
     {
 	char *prevauthor = "";
-	printauthors(fp, authorlist, &prevauthor);
+	printauthors(fp, authorlist, &prevauthor, -1, -1);
     }
     if (set_indextable) {
 	fprintf(fp, "</table>\n</div>\n<p>\n");
@@ -1729,7 +1973,7 @@ void writeauthors(int amountmsgs)
      */
 
     if (!set_usetable) 
-	print_index_footer_links(fp, FROM_AUTHOR, amountmsgs);
+	print_index_footer_links(fp, AUTHOR_INDEX, lastdatenum, amountmsgs);
     else {
 	if (set_showhr)
 	    fprintf(fp, "<hr noshade>\n");
@@ -1750,4 +1994,207 @@ void writeauthors(int amountmsgs)
 
     if (set_showprogress)
 	putchar('\n');
+}
+
+static int count_messages(struct header *hp, int year, int mo,
+			  long *first_date, long *last_date)
+{
+    if (hp != NULL) {
+	struct emailinfo *em = hp->data;
+	int cnt = count_messages(hp->left, year, mo, first_date, last_date);
+	if ((year == -1 || year_of_datenum(em->date) == year)
+	    && (mo == -1 || month_of_datenum(em->date) == mo)) {
+	    ++cnt;
+	    if (em->date < *first_date)
+	        *first_date = em->date;
+	    if (em->date > *last_date)
+	        *last_date = em->date;
+	}
+	return cnt + count_messages(hp->right, year, mo, first_date, last_date);
+    }
+    return 0;
+}
+
+static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
+{
+    int first_year = year_of_datenum(firstdatenum);
+    int last_year = year_of_datenum(lastdatenum);
+    int y, j, m;
+    char *save_datename = datename;
+    char *save_thrdname = thrdname;
+    char *save_subjname = subjname;
+    char *save_authname = authname;
+    char *subject = lang[set_monthly_index ? MSG_MONTHLY_INDEX
+			: MSG_YEARLY_INDEX];
+    print_index_header(fp, set_label, set_dir, subject, summary_filename);
+    fprintf(fp, "<TABLE>\n");
+    for (y = first_year; y <= last_year; ++y) {
+	for(m = (set_monthly_index ? 0 : -1);
+	    m < (set_monthly_index ? 12 : 0); ++m) {
+	    char month_str[80];
+	    char month_str_pub[80];
+	    int started_line = 0;
+	    int empties = 0;
+	    char period_bufs[NO_INDEX][MAXFILELEN];
+	    long first_date = lastdatenum;
+	    long last_date = firstdatenum;
+	    int count;
+	    if (!datelist->data)
+	        continue;
+	    count = count_messages(datelist, y, m, &first_date, &last_date);
+	    if (set_monthly_index) {
+		sprintf(month_str_pub, "%s %d", months[m], y);
+		sprintf(month_str, "%d%.2d", y, m + 1);
+	    }
+	    else {
+		sprintf(month_str_pub, "%d", y);
+		sprintf(month_str, "%d", y);
+	    }
+	    for(j = 0; j <= AUTHOR_INDEX; ++j) {
+		sprintf(period_bufs[j], "%sby%s", month_str,
+			indextypefilename[j]);
+	    }
+	    datename = period_bufs[DATE_INDEX];
+	    thrdname = period_bufs[THREAD_INDEX];
+	    subjname = period_bufs[SUBJECT_INDEX];
+	    authname = period_bufs[AUTHOR_INDEX];
+	    for(j = 0; j <= AUTHOR_INDEX; ++j) {
+		char filename[MAXFILELEN];
+		FILE *fp1;
+		char *prev_text = "";
+		char subject_title[128];
+		sprintf(filename, "%s%s%sby%s", set_dir,
+			(set_dir[strlen(set_dir) - 1] == '/') ? "" : "/",
+			month_str, indextypefilename[j]);
+		fp1 = fopen(filename,"w");
+		if(!fp1) {
+		    sprintf(errmsg,"can't open %s", filename);
+		    progerr(NULL);
+		}
+		sprintf(subject_title, "%s %s", month_str_pub, indextypename[j]);
+		print_index_header(fp1, set_label, set_dir, subject_title,
+				   filename);
+		if (!set_usetable) {
+		    /* 
+		     * Print out the index page links 
+		     */
+		    print_index_header_links(fp1, j, first_date, last_date,
+					     count);
+		}
+		else {
+		    fprint_menu(fp1, j, set_archives, "", "", PAGE_TOP);
+		    fprint_summary(fp1, PAGE_TOP, first_date, last_date,
+				   count);
+		    if (set_showhr)
+		        fprintf(fp1, "<HR NOSHADE>\n");
+		}
+
+		if (set_indextable) {
+		    fprintf(fp1,
+			    "<DIV ALIGN=CENTER>\n<TABLE>\n<TR><TD><U><STRONG>%s</STRONG></U></TD><TD><U><STRONG>%s</STRONG></U></TD><TD><U><STRONG> %s</STRONG></U></TD></TR>\n",
+			    lang[j == AUTHOR_INDEX ? MSG_CAUTHOR : MSG_CSUBJECT],
+			    lang[j == AUTHOR_INDEX ? MSG_CSUBJECT : MSG_CAUTHOR],
+			    lang[MSG_CDATE]);
+		}
+		else {
+		    fprintf(fp1, "<UL>\n");
+		}
+		switch(j) {
+		    case DATE_INDEX:
+		        printdates(fp1, datelist, y, m);
+			break;
+		    case THREAD_INDEX:
+		        /*printthreads(fp1, datelist, 0, y, m); */
+		        print_all_threads(fp1, y, m);
+			break;
+		    case SUBJECT_INDEX:
+		        printsubjects(fp1, subjectlist, &prev_text, y, m);
+			break;
+		    case AUTHOR_INDEX:
+		        printauthors(fp1, authorlist, &prev_text, y, m);
+			break;
+		}
+
+		if (set_indextable) {
+		    fprintf(fp1, "</TABLE>\n</DIV>\n<P>\n");
+		}
+		else {
+		    fprintf(fp1, "</UL>\n<P>\n");
+		}
+
+		/* 
+		 * Print out archive information links at the bottom 
+		 * of the index page
+		 */
+
+		if (!set_usetable)
+		    print_index_footer_links(fp1, j, last_date, count);
+		else {
+		    if (set_showhr)
+		        fprintf(fp1, "<HR NOSHADE>\n");
+		    fprint_summary(fp1, PAGE_BOTTOM, first_date, last_date,
+				   count);
+		    fprint_menu(fp1, j, set_archives, "", "", PAGE_BOTTOM);
+		}
+
+		printfooter(fp1, ihtmlfooterfile, set_label, set_dir,
+			    subject_title, indextypefilename[j]);
+		fclose(fp1);
+		if (!count) {
+		    remove(filename);
+		    if(started_line)
+		        fprintf(fp, "<TD></TD>");
+		    else ++empties;
+		}
+		else {
+		    if (!started_line) {
+		        fprintf(fp, "<TR><TD>%s</TD><TD>%d %s</TD>",
+				month_str_pub, count, lang[MSG_ARTICLES]);
+			while(empties--)
+			    fprintf(fp, "<TD></TD>");
+			started_line = 1;
+		    }
+		    chmod(filename, set_filemode);
+		    fprintf(fp, "<TD><A HREF=\"%sby%s\">%s</A></TD>",
+			    month_str, indextypefilename[j],indextypename[j]);
+		}
+	    }
+	    if (started_line) fprintf(fp, "</TR>\n");
+	}
+    }
+    fprintf(fp,"</TABLE>\n");
+    printfooter(fp, ihtmlfooterfile, set_label, set_dir,
+		subject, summary_filename);
+    datename = save_datename;
+    thrdname = save_thrdname;
+    subjname = save_subjname;
+    authname = save_authname;
+}
+
+void write_summary_indices(int amount_new)
+{
+	indextypefilename[DATE_INDEX] = datename;
+	indextypefilename[THREAD_INDEX] = thrdname;
+	indextypefilename[SUBJECT_INDEX] = subjname;
+	indextypefilename[AUTHOR_INDEX] = authname;
+	indextypename[DATE_INDEX] = lang[MSG_BY_DATE];
+	indextypename[THREAD_INDEX] = lang[MSG_BY_THREAD];
+	indextypename[SUBJECT_INDEX] = lang[MSG_BY_SUBJECT];
+	indextypename[AUTHOR_INDEX] = lang[MSG_BY_AUTHOR];
+
+	if (set_monthly_index || set_yearly_index) {
+		char filename[512];
+		FILE *fp;
+		sprintf(filename,"%s%ssummary.%s", set_dir,
+			(set_dir[strlen(set_dir) - 1] == '/') ? "" : "/",
+			set_htmlsuffix);
+		fp = fopen(filename,"w");
+		if (!fp) {
+			sprintf(errmsg, "Couldn't write \"%s\".", filename);
+			progerr(NULL);
+		}
+		printmonths(fp, filename, amount_new);
+		fclose(fp);
+		chmod(filename, set_filemode);
+	}
 }

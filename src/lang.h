@@ -146,11 +146,14 @@ struct language_entry {
 #define MSG_MA_NEW_MESSAGE                       95
 #define MSG_MA_REPLY                             96
 
+#define MSG_MONTHLY_INDEX                        97
+#define MSG_YEARLY_INDEX                         98
+
 #ifdef CHANGE_12DEC2000_BC
 /* XXX Move these up with the others */
-#define MSG_ATTACHMENT_VIEW			 97
-#define MSG_BY_ATTACHMENT			 98
-#define MSG_WRITING_ATTACHMENT_INDEX  		 99
+#define MSG_ATTACHMENT_VIEW			 99
+#define MSG_BY_ATTACHMENT			 100
+#define MSG_WRITING_ATTACHMENT_INDEX  		 101
 #endif
 
 #ifdef MAIN_FILE
@@ -265,6 +268,8 @@ char *de[] = {       /* German */
   "Mail actions",                         /* Mail actions (MA) header -HTML*/
   "mail a new topic",                     /* MA New Message      -HTML*/
   "respond to this message",              /* MA Reply            -HTML*/
+  "Summary of Monthly Index Files",       /* monthly             -HTML*/
+  "Summary of Yearly Index Files",        /* yearly              -HTML*/
 #ifdef CHANGE_12DEC2000_BC
   "Attachement-Sicht",                    /* Attachment view       -HTML*/
   "Nach Nachtrichten mit Attachement",	  /* By messages with attachments -HTML*/
@@ -376,6 +381,8 @@ char *en[] = {       /* English */
   "Mail actions",                /* Mail actions (MA) header -HTML*/
   "mail a new topic",            /* MA New Message      -HTML*/
   "respond to this message",     /* MA Reply            -HTML*/
+  "Summary of Monthly Index Files",       /* monthly             -HTML*/
+  "Summary of Yearly Index Files",        /* yearly              -HTML*/
 #ifdef CHANGE_12DEC2000_BC
   "Attachment view",			  /* Attachment view       -HTML*/
   "By messages with attachments",	  /* By messages with attachments -HTML*/
@@ -496,6 +503,8 @@ char *es[] = {       /* Espanol/Spanish */
   "Mail actions",                     /* Mail actions (MA) header -HTML*/
   "mail a new topic",                 /* MA New Message      -HTML*/
   "respond to this message",          /* MA Reply            -HTML*/
+  "Summary of Monthly Index Files",   /* monthly             -HTML*/
+  "Summary of Yearly Index Files",    /* yearly              -HTML*/
 #ifdef CHANGE_12DEC2000_BC
   "Por Añadido",                      /* Attachment view  -HTML*/
   "Por mensajes con añadidos",	  /* By messages with attachments -HTML*/
@@ -606,6 +615,8 @@ char *fi[] = {       /* Finnish */
   "Mail actions",                    /* Mail actions (MA) header -HTML*/
   "mail a new topic",                /* MA New Message      -HTML*/
   "respond to this message",         /* MA Reply            -HTML*/
+  "Summary of Monthly Index Files",      /* monthly             -HTML*/
+  "Summary of Yearly Index Files",       /* yearly              -HTML*/
 #ifdef CHANGE_12DEC2000_BC
   "Attachment view",                      /* Attachment view  -HTML*/
   "By messages with attachments",	  /* By messages with attachments -HTML*/
@@ -718,6 +729,8 @@ char *fr[] = {       /* French */
   "Actions sur les mails",               /* Mail actions (MA) header -HTML*/
   "cr&eacute;er un nouveau th&egrave;me",     /* MA New Message      -HTML*/
   "r&eacute;pondre &agrave; ce message",      /* MA Reply            -HTML*/
+  "Summary of Monthly Index Files",      /* monthly             -HTML*/
+  "Summary of Yearly Index Files",       /* yearly              -HTML*/
 #ifdef CHANGE_12DEC2000_BC
   "Liste par attachements",               /* Attachment view  -HTML*/
   "Par messages avec attachments",	  /* By messages with attachments -HTML*/
@@ -830,6 +843,8 @@ char *is[] = {       /* Icelandic */
   "Mail actions",                     /* Mail actions (MA) header -HTML*/
   "mail a new topic",                 /* MA New Message      -HTML*/
   "respond to this message",          /* MA Reply            -HTML*/
+  "Summary of Monthly Index Files",   /* monthly             -HTML*/
+  "Summary of Yearly Index Files",    /* yearly              -HTML*/
 #ifdef CHANGE_12DEC2000_BC
   "Attachment view",                      /* Attachment view  -HTML*/
   "By messages with attachments",	  /* By messages with attachments -HTML*/
@@ -947,6 +962,8 @@ char *se[] = {
   "Mail actions",                   /* Mail actions (MA) header -HTML*/
   "mail a new topic",               /* MA New Message      -HTML*/
   "respond to this message",        /* MA Reply            -HTML*/
+  "Summary of Monthly Index Files", /* monthly             -HTML*/
+  "Summary of Yearly Index Files",  /* yearly              -HTML*/
 #ifdef CHANGE_12DEC2000_BC
   "Attachment view",                      /* Attachment view  -HTML*/
   "By messages with attachments",	  /* By messages with attachments -HTML*/

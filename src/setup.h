@@ -49,7 +49,6 @@ extern bool set_readone;
 extern bool set_reverse;
 extern bool set_showprogress;
 extern bool set_showheaders;
-extern bool set_showhtml;
 extern bool set_showbr;
 extern bool set_showhr;
 extern bool set_showreplies;
@@ -63,15 +62,22 @@ extern bool set_discard_dup_msgids;
 extern bool set_usemeta;
 extern bool set_uselock;
 extern bool set_ietf_mbox;
+extern bool set_linkquotes;
+extern bool set_monthly_index;
+extern bool set_yearly_index;
 extern bool set_spamprotect;
 #ifdef CHANGE_12DEC2000_BC
 extern bool set_attachmentsindex;
 #endif
 
+extern int set_showhtml;
 extern int set_thrdlevels;
 extern int set_dirmode;
 extern int set_filemode;
 extern int set_locktime;
+extern int set_searchbackmsgnum;
+extern int set_quote_hide_threshold;
+extern int set_thread_file_depth;
 
 extern char *set_label;
 
@@ -87,7 +93,10 @@ extern char *set_icss_url;
 extern char *set_mcss_url;
 
 extern char *set_dateformat;
+
 extern char *set_stripsubject;
+extern char *set_link_to_replies;
+extern char *set_quote_link_string;
 
 extern struct hmlist *set_text_types;
 extern struct hmlist *set_inline_types;
@@ -101,5 +110,6 @@ extern char *set_mhtmlheader;
 extern char *set_mhtmlfooter;
 
 extern char *set_attachmentlink;
+extern bool set_linkquotes;
 
 #endif

@@ -24,7 +24,6 @@ bool set_readone;
 bool set_reverse;
 bool set_showprogress;
 bool set_showheaders;
-bool set_showhtml;
 bool set_showbr;
 bool set_showhr;
 bool set_showreplies;
@@ -38,16 +37,24 @@ bool set_discard_dup_msgids;
 bool set_usemeta;
 bool set_uselock;
 bool set_ietf_mbox;
+bool set_linkquotes;
+bool set_monthly_index;
+bool set_yearly_index;
 bool set_spamprotect;
 #ifdef CHANGE_12DEC2000_BC
 bool set_attachmentsindex;
 #endif
 
+int set_showhtml;
 int set_thrdlevels;
 int set_dirmode;
 int set_filemode;
 
 int set_locktime;
+
+int set_searchbackmsgnum;
+int set_quote_hide_threshold;
+int set_thread_file_depth;
 
 char *set_mailcommand;
 char *set_newmsg_command;
@@ -64,6 +71,9 @@ char *set_label;
 
 char *set_dateformat;
 char *set_stripsubject;
+
+char *set_link_to_replies;
+char *set_quote_link_string;
 
 struct hmlist *set_text_types = NULL;
 struct hmlist *set_inline_types = NULL;
@@ -157,9 +167,14 @@ struct Config cfg[] = {
      "# files.  These lines typically include the To:, From:, and Subject:\n"
      "# information found in most email messages.\n"},
 
-    {"showhtml", &set_showhtml, BTRUE, CFG_SWITCH,
-     "# Set this to On to show the articles in a proportionally-spaced\n"
-     "# font rather than a fixed-width (monospace) font.\n"},
+    {"showhtml", &set_showhtml, INT(1), CFG_INTEGER,
+     "# Set this to 1 to show the articles in a proportionally-spaced\n"
+     "# font rather than a fixed-width (monospace) font.\n"
+     "# Set this to 2 for more complex conversion to html\n"
+     "# similar to that in <a href=\"http://www.cs.wustl.edu/~seth/txt2html/\">txt2html.pl</a>.\n"
+     "# Showhtml = 2 will normally produce nicer looking results than\n"
+     "# showhtml = 1, and showhtml = 0 will look pretty dull, but\n"
+     "# 1 and 2 run risks of altering the appearance in undesired ways."},
 
     {"showbr", &set_showbr, BTRUE, CFG_SWITCH,
      "# Set this to On to place <br> tags at the end of article lines.\n"
@@ -333,8 +348,62 @@ struct Config cfg[] = {
      "# Set this to  Off to make hypermail not output an index of\n"
      "# messages with attachments.\n"}
 #endif
+    ,
 
+    {"linkquotes", &set_linkquotes, BFALSE, CFG_SWITCH, 
+     "# Set this to On to create fine-grained links from quoted\n"
+     "# text to the text where the quote originated. It also improves\n"
+     "# the threads index file by more accurately matching messages\n"
+     "# with replies. Note that this may be rather cpu intensive (see\n"
+     "# the searchbackmsgnum option to alter the performance).\n" },
 
+    {"searchbackmsgnum", &set_searchbackmsgnum, INT(500), CFG_INTEGER,
+     "# If the linkquotes option is on and an incremental update is being"
+     "# done (-u option), this controls the tradeoff between speed and\n"
+     "# the reliability of finding the right source for quoted text.\n"
+     "# Try to set it to the largest number of messages between a\n"
+     "# message and the final direct reply to that message.\n"},
+
+    {"link_to_replies", &set_link_to_replies, NULL, CFG_STRING,
+     "# If the linkquotes option is on, specifying a string here\n"
+     "# causes it to generate links from original quoted text the\n"
+     "# location(s) in replies which quote them. The string\n"
+     "# is used to display the link.\n"},
+
+    {"quote_hide_threshold", &set_quote_hide_threshold, INT(100), CFG_INTEGER,
+     "# If the linkquotes option is on, setting this to an\n"
+     "# integer less than 100 will cause it to replace quoted\n"
+     "# text with one-line links if the percent of lines in the\n"
+     "# message body (exluding the signature) consisting of\n"
+     "# quoted text exceeds the number indicated by this option.\n"},
+
+    {"quote_link_string", &set_quote_link_string, NULL, CFG_STRING,
+     "# If the quote_hide_threshold option is being used, the\n"
+     "# quote_link_string will be used if available to display the\n"
+     "# link that replaces the quoted text. If no string is specified\n"
+     "# here, the first line of each section of quoted text will used.\n"},
+
+    {"monthly_index", &set_monthly_index, BFALSE, CFG_SWITCH,
+     "# Set this to On to create additional index files broken up\n"
+     "# by month. A summary.html file will provide links to all the\n"
+     "# monthly indices.\n"},
+
+    {"yearly_index", &set_yearly_index, BFALSE, CFG_SWITCH,
+     "# Set this to On to create additional index files broken up\n"
+     "# by year. A summary.html file will provide links to all the\n"
+     "# yearly indices.\n"},
+
+    {"thread_file_depth", &set_thread_file_depth, INT(0), CFG_INTEGER,
+     "# If nonzero, break the threads index file into multiple files,\n"
+     "# with the initial message of each thread in the main index file\n"
+     "# along with links to files containing the replies. Setting this\n"
+     "# to 1 creates one file for each thread that has replies, and is\n"
+     "# recommended for archives with over a few hundred messages.\n"
+     "# Setting this greater than 1 will produce multiple levels of files\n"
+     "# for each thread whose replies are nested by more than 1 level,\n"
+     "# but that is rarely useful. This option is currently disabled\n"
+     "# if the indextable option is turned on, and probably needs to\n"
+     "# be less than thrdlevels.\n"},
 };
 
 /* ---------------------------------------------------------------- */

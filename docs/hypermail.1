@@ -1,4 +1,4 @@
-.TH HYPERMAIL 1 "October 27, 1998"
+.TH HYPERMAIL 1 "June 24, 2000"
 .SH NAME
 hypermail \- convert mail archives in UNIX box format to HTML pages
 .SH SYNOPSIS
@@ -202,10 +202,20 @@ typically include the
 .BR "To:" , " From: " and " Subject:"
 information found in most email messages.
 .TP
-.B HM_SHOWHTML boolean_number
+.B HM_SHOWHTML 0, 1, or 2
 Define as
 .B 1
-to show the articles in a proportionally-spaced font rather than a fixed-width (monospace) font.
+to show the articles in a proportionally-spaced
+font rather than a fixed-width (monospace) font. Setting this 
+option to 1 also tells Hypermail to attempt to italicize quoted 
+passages in articles.
+Define as
+.B 2
+for more complex conversion to html
+similar to that in txt2html.pl.
+Showhtml = 2 will normally produce nicer looking results than
+showhtml = 1, and showhtml = 0 will look pretty dull, but
+1 and 2 run risks of altering the appearance in undesired ways.
 .TP
 .B HM_SHOWBR boolean_number
 Define as
@@ -409,6 +419,61 @@ on multiple lines or comma or space separated on a single line.
   ignore_types = text/x-vcard 
   ignore_types = application/x-msdownload 
 .nr
+.TP
+.B HM_LINKQUOTES boolean_number
+Set this to On to create fine-grained links from quoted
+text to the text where the quote originated. It also improves
+the threads index file by more accurately matching messages
+with replies. Note that this may be rather cpu intensive (see
+the searchbackmsgnum option to alter the performance).
+.TP
+.B HM_SEARCHBACKMSGNUM postive integer
+If the linkquotes option is on and an incremental update is being
+done (-u option), this controls the tradeoff between speed and
+the reliability of finding the right source for quoted text.
+Try to set it to the largest number of messages between a
+message and the final direct reply to that message.
+.TP
+.B HM_LINK_TO_REPLIES "text used to indicate links to replies"
+If the linkquotes option is on, specifying a string here
+causes it to generate links from original quoted text the
+location(s) in replies which quote them. The string
+is used to display the link.
+.TP
+.B HM_QUOTE_HIDE_THRESHOLD percent (integer)
+If the linkquotes option is on, setting this to an
+integer less than 100 will cause it to replace quoted
+text with one-line links if the percent of lines in the
+message body (exluding the signature) consisting of
+quoted text exceeds the number indicated by this option.
+.TP
+.B HM_QUOTE_LINK_STRING "text to appear in place of quoted text"
+If the quote_hide_threshold option is being used, the
+quote_link_string will be used if available to display the
+link that replaces the quoted text. If no string is specified
+here, the first line of each section of quoted text will used.
+.TP
+.B HM_MONTHLY_INDEX = boolean_number
+Set this to On to create additional index files broken up
+by month. A summary.html file will provide links to all the
+monthly indices.
+.TP
+.B HM_YEARLY_INDEX = boolean_number
+Set this to On to create additional index files broken up
+by year. A summary.html file will provide links to all the
+yearly indices.
+.TP
+.B HM_THREAD_FILE_DEPTH = 0 or 1
+If nonzero, break the threads index file into multiple files,
+with the initial message of each thread in the main index file
+along with links to files containing the replies. Setting this
+to 1 creates one file for each thread that has replies, and is
+recommended for archives with over a few hundred messages.
+Setting this greater than 1 will produce multiple levels of files
+for each thread whose replies are nested by more than 1 level,
+but that is rarely useful. This option is currently disabled
+if the indextable option is turned on, and probably needs to
+be less than thrdlevels.
 
 .SH BUGS
 
