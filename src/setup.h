@@ -74,9 +74,7 @@ extern bool set_yearly_index;
 extern bool set_spamprotect;
 extern bool set_spamprotect_id;
 extern bool set_attachmentsindex;
-#ifdef GDBM
 extern bool set_usegdbm;
-#endif
 extern bool set_append;
 extern char *set_append_filename;
 extern bool set_warn_surpressions;

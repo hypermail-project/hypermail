@@ -151,28 +151,29 @@ struct language_entry {
 #define MSG_YEARLY_INDEX                         98
 
 #define MSG_OPTION_G                             99
-#define MSG_CREATING_GDBM_INDEX                  100
-#define MSG_CANT_CREATE_GDBM_INDEX               101
-#define MSG_OPTION_ARCHIVE                       102
-#define MSG_CANNOT_BOTH_READ_AND_WRITE_TO_MBOX   103
+#define MSG_OPTION_G_NOT_BUILD_IN                100
+#define MSG_CREATING_GDBM_INDEX                  101
+#define MSG_CANT_CREATE_GDBM_INDEX               102
+#define MSG_OPTION_ARCHIVE                       103
+#define MSG_CANNOT_BOTH_READ_AND_WRITE_TO_MBOX   104
 
 /* XXX Move these up with the others */
-#define MSG_ATTACHMENT_VIEW			 104
-#define MSG_BY_ATTACHMENT			 105
-#define MSG_WRITING_ATTACHMENT_INDEX  		 106
-#define MSG_BYTES                                107
+#define MSG_ATTACHMENT_VIEW			 105
+#define MSG_BY_ATTACHMENT			 106
+#define MSG_WRITING_ATTACHMENT_INDEX  		 107
+#define MSG_BYTES                                108
 
-#define MSG_CANNOT_CREATE_SYMLINK                108
-#define MSG_CANNOT_UNLINK                        109
-#define MSG_PREV_DIRECTORY                       110
-#define MSG_NEXT_DIRECTORY                       111
-#define MSG_FOLDERS_INDEX                        112
-#define MSG_DELETED                              113
-#define MSG_EXPIRED                              114
-#define MSG_DEL_SHORT                            115
-#define MSG_TXT_VERSION                          116
-#define MSG_FILTERED_OUT                         117
-#define MSG_FROM                                 118
+#define MSG_CANNOT_CREATE_SYMLINK                109
+#define MSG_CANNOT_UNLINK                        110
+#define MSG_PREV_DIRECTORY                       111
+#define MSG_NEXT_DIRECTORY                       112
+#define MSG_FOLDERS_INDEX                        113
+#define MSG_DELETED                              114
+#define MSG_EXPIRED                              115
+#define MSG_DEL_SHORT                            116
+#define MSG_TXT_VERSION                          117
+#define MSG_FILTERED_OUT                         118
+#define MSG_FROM                                 119
 
 #ifdef MAIN_FILE
 
@@ -188,8 +189,8 @@ char *de[] = {       /* German */
   "Ende der Nachricht",                   /* End of Messages    -HTML*/
   "Anfang der Nachricht",                 /* Start of Messages  -HTML*/
   "Datumsansicht",                         /* Date view          -HTML*/
-  "Baumansicht",                         /* Thread view        -HTML*/
-  "Betreffansicht",                        /* Subject view       -HTML*/
+  "Themenansicht",                         /* Thread view        -HTML*/
+  "Titelansicht",                        /* Subject view       -HTML*/
   "Autorenansicht",                          /* Author view        -HTML*/
   "Weitere Gruppen",                      /* Other groups       -HTML*/
   "Nachrichten",                          /* Messages           -HTML*/
@@ -202,13 +203,13 @@ char *de[] = {       /* German */
   "Neueste Nachrichten",                  /* Most recent messages-HTML*/
   "Autor",                                /* author              -HTML*/
   "Datum",                                /* date                -HTML*/
-  "Thread",                               /* thread              -HTML*/
-  "Subject",                              /* subject             -HTML*/
+  "Themenstrang",                               /* thread              -HTML*/
+  "Titel",                              /* subject             -HTML*/
   "für Optionen",                      /* for options       -STDOUT*/
   "Schreibe Nachrichten in",              /* Writing messages to-STDOUT*/
   "Schreibe Datums-Index in",             /* Writing date index to-STDOUT*/
-  "Schreibe Thread-Index in",             /* Writing thread index to -STDOUT*/
-  "Schreibe Subject-Index in",            /* Writing subject index to-STDOUT*/
+  "Schreibe Themenstrang-Index in",       /* Writing thread index to -STDOUT*/
+  "Schreibe Titel-Index in",            /* Writing subject index to-STDOUT*/
   "Schreibe Autoren-Index in",            /* Writing author index to-STDOUT*/
   "Letztes Datum",                        /* Last message date   -HTML*/
   "Archiviert auf",                       /* Archived on         -HTML*/
@@ -218,10 +219,10 @@ char *de[] = {       /* German */
   "Vorherige Nachricht",                  /* Previous message    -HTML*/
   "Vielleicht als Antwort auf",           /* Maybe in reply to   -HTML*/
   "Als Antwort auf",                      /* In reply to         -HTML*/
-  "Nächste im Thread",                 /* Next in thread      -HTML*/
+  "Nächste zum Thema",           	  /* Next in thread      -HTML*/
   "Eventuelle Antwort",                   /* Maybe reply         -HTML*/
   "Nach Thread",                          /* By Thread           -HTML*/
-  "Nach Subject",                         /* By Subject          -HTML*/
+  "Nach Titel",                         /* By Subject          -HTML*/
   "Nach Autor",                           /* By Author           -HTML*/
   "Kann das Verzeichnis nicht erstellen", /* Can not create directory -STDERR*/
   "Erstelle Verzeichnis",                 /* Creating directory -STDOUT*/
@@ -231,8 +232,8 @@ char *de[] = {       /* German */
   "Dieses Archiv wurde generiert von",    /* This archive was generated by-HTML*/
   "Elemente",                             /* Elements          -STDOUT*/
   "Keine Elemente",                       /* No Elements       -STDOUT*/
-  "Kann Mail-Archiv nicht öffnen",     /* Cannot open mail archive */
-  "Lese neue Header...",                  /* Reading new header...-STDOUT*/
+  "Kann E-Mail-Archiv nicht öffnen",     /* Cannot open mail archive */
+  "Lese neue Kopfzeilen...",                  /* Reading new header...-STDOUT*/
   "Lade Mailbox",                         /* Loading mailbox      -STDOUT*/
   "Kodierung wird nicht unterstützt, speichere so", 
                         /* encoding is not supported, stored as-is -HTML*/
@@ -247,16 +248,17 @@ char *de[] = {       /* German */
   "Andere Archive: nicht benutzt",        /* Other archives: not used-STDOUT*/
   "Adresse nicht benutzt",                /* address not used        -STDOUT*/
   "Eingebautes <BODY> benutzt",           /* Builtin <BODY> statement used-STDOUT*/
-  "Kann nicht von Datei und stdin lesen.", /* Cannot read from both file and stdin. -STDERR*/
+  "Kann nicht gleichzeitig von Datei und Standardeingabe lesen.", 
+  			   /* Cannot read from both file and stdin. -STDERR*/
   "Optionen",                             /* Options                -STDOUT*/
-  "URL für weitere Archive",           /* URL to other archives  -STDOUT*/
+  "URL für weitere Archive",              /* URL to other archives  -STDOUT*/
   "URL für Informationen über Archiv",  
                                       /* URL to archive information -STDOUT*/
   "Konfigurationsdatei zum Einlesen", 
                                     /* Configuration file to read in -STDOUT*/
   "Das Verzeichnis, um die HTML-Dateien zu speichern", 
                               /* The directory to save HTML files in -STDOUT*/
-  "Lese Nachrichten von der Standard Eingabe",
+  "Lese Nachrichten von der Standardeingabe",
                                 /* Read messages from standard input -STDOUT*/
   "Wie soll das Archiv genannt werden",   
                                   /* What to name the output archive -STDOUT*/
@@ -267,46 +269,54 @@ char *de[] = {       /* German */
   "Jeweils einen Artikel hinzufügen",  /* Update archive by one article -STDOUT*/
   "Vorherige Nachrichten überschreiben", /* Overwrite previous messages -STDOUT*/
   "Sprache angeben",                      /* Specify language to use -STDOUT*/
-  "Usage",                                /* Usage -STDOUT*/
+  "Anleitung",                                /* Usage -STDOUT*/
   "Die Sprache wird nicht unterstützt",/* Language not supported  -STDERR*/
   "Nicht gesetzt",                        /* Not set               -STDOUT*/
   "Nicht benutzt",                        /* Not used              -STDOUT*/
-  "Attachement-Datei angelegt",           /* Created attachment file -STDOUT*/
-  "Attachement",                          /* attachment           -HTML*/
-  "Mode",                                 /* mode                 -STDOUT*/
-  "Lese alte Header",                     /* Reading old headers  -STDOUT*/
+  "Anhang in Datei gespeichert",           /* Created attachment file -STDOUT*/
+  "Anhang",                          /* attachment           -HTML*/
+  "Modus",                                 /* mode                 -STDOUT*/
+  "Lese alte Kopfzeilen",                     /* Reading old headers  -STDOUT*/
   "",       /* for alignment only -STDOUT*/
-  "ERROR",                       /* ERROR                       -STDERR*/
-  "The submission address of the list", 
+  "FEHLER",                       /* ERROR                       -STDERR*/
+  "Einsendeadresse für die Liste", 
                            /* The submission address of the list-STDERR*/
-  "Read only one mail from input",
+  "Lese nur eine E-Mail aus der Eingabe",
   "Autor",                                /* author              -HTML*/
   "Datum",                                /* date                -HTML*/
-  "Subject",                              /* subject             -HTML*/
-  "Mail actions",                         /* Mail actions (MA) header -HTML*/
-  "mail a new topic",                     /* MA New Message      -HTML*/
-  "respond to this message",              /* MA Reply            -HTML*/
-  "Summary of Monthly Index Files",       /* monthly             -HTML*/
-  "Summary of Yearly Index Files",        /* yearly              -HTML*/
-  "Build a GDBM header cache",   /* Build a GDBM header cache   -STDOUT*/
-  "Creating gdbm index... ",     /* Creating gdbm index         -STDOUT*/
-  "Can't create gdbm file... ",  /* Can't create gdbm index     -STDOUT*/
-  "Maintain an mbox archive",    /* Maintain an mbox archive    -STDOUT*/
-  "Can't both read from and write to an mbox.", /* "Can't both read from and write to an mbox." -STDOUT*/
-  "Attachement-Sicht",                    /* Attachment view       -HTML*/
-  "Nach Nachtrichten mit Attachement",	  /* By messages with attachments -HTML*/
-  "Schreibe Attachements-Index in",	  /* Writing attachment index to -STDOUT*/
-  "bytes",		    /* file size, so far only for attachments  -HTML */
-  "Cannot create symbolic link", /* MSG_CANNOT_CREATE_SYMLINK     -STDOUT */
-  "Cannot remove file", /* MSG_CANNOT_UNLINK                       -STDOUT */
-  "Previous Folder",  /* MSG_PREV_DIRECTORY                     -HTML */
-  "Next Folder",      /* MSG_NEXT_DIRECTORY                     -HTML */
-  "List of Folders",  /* MSG_FOLDERS_INDEX                      -HTML */
-  "This message has been deleted from the archive", /* MSG_DELETED -HTML */
-  "This message has expired",                       /* MSG_EXPIRED -HTML */
-  "(deleted message)", /* MSG_DEL_SHORT                            -HTML */
-  "Original text of this message", /* MSG_TXT_VERSION                          -HTML */
-  "This message has been filtered out",        /* MSG_FILTERED_OUT -HTML */
+  "Titel",                                /* subject             -HTML*/
+  "Aktionsmöglichkeiten",                 /* Mail actions (MA) header -HTML*/
+  "Sende E-Mail mit neuen Titel",         /* MA New Message      -HTML*/
+  "Antworte auf die E-Mail",              /* MA Reply            -HTML*/
+  "Zusammenfassung der monatlichen Index-Dateien", 
+  					  /* monthly             -HTML*/
+  "Zusammenfassung der jährlichen Index-Dateien",        
+  					  /* yearly              -HTML*/
+  "Lege GDBM-Zwischenspeicher für Kopfzeilen an", 
+  				/* Build a GDBM header cache   -STDOUT*/
+  "GDBM-Zwischenspeicher-Option nicht eingebaut",  
+  		     /* GDBM header cache option not build in  -STDERR*/
+  "Erstelle Gdbm Index... ",    /* Creating gdbm index         -STDOUT*/
+  "Kann Gdbm Datei nicht erstellen... ",  
+  				/* Can't create gdbm index     -STDOUT*/
+  "Pflege ein zusätzliches mbox-Archiv", /* Maintain an mbox archive -STDOUT*/
+  "Can't both read from and write to an mbox.", 
+  	       /* "Can't both read from and write to an mbox." -STDOUT*/
+  "Anhänge-Übersicht",                      /* Attachment view       -HTML*/
+  "Nach Nachtrichten mit Anhang",/* By messages with attachments -HTML*/
+  "Schreibe Anhang-Index in",	/* Writing attachment index to -STDOUT*/
+  "Bytes",		    /* file size, so far only for attachments  -HTML */
+  "Kann symoblischen Verweis nicht erstellen.", 
+  			     /* MSG_CANNOT_CREATE_SYMLINK     -STDOUT */
+  "Kann Datei nicht entfernen", /* MSG_CANNOT_UNLINK          -STDOUT */
+  "Vorheriges Verzeichnis",              /* MSG_PREV_DIRECTORY  -HTML */
+  "Nächsts Verzeichnis",                 /* MSG_NEXT_DIRECTORY  -HTML */
+  "Verzeichnisliste",  /* MSG_FOLDERS_INDEX                     -HTML */
+  "Dies Nachricht wurde auf dem Archiv entfernt",/* MSG_DELETED -HTML */
+  "Diese Nachricht ist abgelaufen",              /* MSG_EXPIRED -HTML */
+  "(gelöschte Nachricht)",          /* MSG_DEL_SHORT            -HTML */
+  "Ursprünglicher Text dieser Nachricht", /* MSG_TXT_VERSION    -HTML */
+  "Diese Nachricht wurde herausgefiltert",  /* MSG_FILTERED_OUT -HTML */
   "Autor",                                /* MSG_FROM              -HTML*/
   NULL,                                   /* End Of Message Table - NOWHERE*/
 };
@@ -417,6 +427,8 @@ char *pl[] = {                      /* English */
   "Zestawienie miesiêcy",           /* monthly             -HTML*/
   "Zestawienie lat",                /* yearly              -HTML*/
   "Utwórz cache nag³owków GDBM",    /* Build a GDBM header cache -STDOUT*/
+  "GDBM header cache option not build in",
+  		      /* GDBM header cache option not build in  -STDERR*/
   "Tworzenie indeksu GDBM... ",     /* Creating gdbm index -STDOUT*/
   "Nie mo¿na utworzyæ pliku GDBM... ",  /* Can't create gdbm index     -STDOUT*/
   "Zachowaj archiwum mbox",         /* Maintain an mbox archive    -STDOUT*/
@@ -546,6 +558,8 @@ char *en[] = {       /* English */
   "Summary of Monthly Index Files",       /* monthly             -HTML*/
   "Summary of Yearly Index Files",        /* yearly              -HTML*/
   "Build a GDBM header cache",   /* Build a GDBM header cache   -STDOUT*/
+  "GDBM header cache option not build in",
+  		      /* GDBM header cache option not build in  -STDERR*/
   "Creating gdbm index... ",     /* Creating gdbm index         -STDOUT*/
   "Can't create gdbm file... ",  /* Can't create gdbm index     -STDOUT*/
   "Maintain an mbox archive",    /* Maintain an mbox archive    -STDOUT*/
@@ -814,6 +828,8 @@ char *fi[] = {       /* Finnish */
   "Summary of Monthly Index Files",      /* monthly             -HTML*/
   "Summary of Yearly Index Files",       /* yearly              -HTML*/
   "Build a GDBM header cache",   /* Build a GDBM header cache   -STDOUT*/
+  "GDBM header cache option not build in",
+   		      /* GDBM header cache option not build in  -STDERR*/
   "Creating gdbm index... ",     /* Creating gdbm index         -STDOUT*/
   "Can't create gdbm file... ",  /* Can't create gdbm index     -STDOUT*/
   "Maintain an mbox archive",    /* Maintain an mbox archive    -STDOUT*/
@@ -943,6 +959,8 @@ char *fr[] = {       /* French */
   "Summary of Monthly Index Files",        /* monthly             -HTML*/
   "Summary of Yearly Index Files",         /* yearly              -HTML*/
   "Creation d'un cache GDBM pour les en-têtes",  /* Build a GDBM header cache   -STDOUT*/
+  "GDBM header cache option not build in",
+  		      /* GDBM header cache option not build in  -STDERR*/
   "Generation de l'index GDBM... ",               /* Creating gdbm index         -STDOUT*/
   "Impossible de créer un fichier GDBM... ",    /* Can't create gdbm index     -STDOUT*/
   "Maintenance d'une archive email (mbox)",     /* Maintain an mbox archive    -STDOUT*/
@@ -1072,6 +1090,10 @@ char *is[] = {       /* Icelandic */
   "Summary of Monthly Index Files",   /* monthly             -HTML*/
   "Summary of Yearly Index Files",    /* yearly              -HTML*/
   "Build a GDBM header cache",   /* Build a GDBM header cache   -STDOUT*/
+  "GDBM header cache option not build in",
+  		      /* GDBM header cache option not build in  -STDERR*/
+  "GDBM header cache option not build in",
+  		      /* GDBM header cache option not build in  -STDERR*/
   "Creating gdbm index... ",     /* Creating gdbm index         -STDOUT*/
   "Can't create gdbm file... ",  /* Can't create gdbm index     -STDOUT*/
   "Maintain an mbox archive",    /* Maintain an mbox archive    -STDOUT*/
@@ -1206,6 +1228,8 @@ char *sv[] = {
   "Sammanfattning över månatliga indexfiler", /* monthly             -HTML*/
   "Sammanfattning över årliga indexfiler",  /* yearly              -HTML*/
   "Bygger en GDBM-headercache",   /* Build a GDBM header cache   -STDOUT*/
+  "GDBM header cache option not build in",
+  		      /* GDBM header cache option not build in  -STDERR*/
   "Skapar gdbm-index... ",     /* Creating gdbm index         -STDOUT*/
   "Kan inte skapa gdbm-fil... ",  /* Can't create gdbm index     -STDOUT*/
   "Underhåll ett mbox-arkiv",    /* Maintain an mbox archive    -STDOUT*/

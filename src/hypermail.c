@@ -130,7 +130,11 @@ void usage(void)
     printf("  -b URL        : %s\n", lang[MSG_OPTION_B]);
     printf("  -c file       : %s\n", lang[MSG_OPTION_C]);
     printf("  -d dir        : %s\n", lang[MSG_OPTION_D]);
+#ifdef GDBM
     printf("  -g            : %s\n", lang[MSG_OPTION_G]);
+#else
+    printf("  [ -g            : %s ]\n", lang[MSG_OPTION_G_NOT_BUILD_IN]);
+#endif
     printf("  -i            : %s\n", lang[MSG_OPTION_I]);
     printf("  -l label      : %s\n", lang[MSG_OPTION_L]);
     printf("  -m mbox       : %s\n", lang[MSG_OPTION_M]);
@@ -191,11 +195,7 @@ int main(int argc, char **argv)
 
     /* get pre config options here */
     while ((i = getopt(argc,argv,
-#ifdef GDBM
 			    "a:Ab:c:d:gil:L:m:n:o:ps:tTuvVx0:1M?"
-#else
-			    "a:Ab:c:d:il:L:m:n:o:ps:tTuvVx0:1M?"
-#endif
 			    )) != -1) {
         switch((char) i) {
 	case 'c':
@@ -210,9 +210,7 @@ int main(int argc, char **argv)
 	case 'A':
 	case 'b':
 	case 'd':
-#ifdef GDBM
 	case 'g':
-#endif
 	case 'i':
 	case 'l':
 	case 'L':
@@ -253,11 +251,7 @@ int main(int argc, char **argv)
     /* now get the post-config options! */
 
     while ((i = getopt(argc,argv,
-#ifdef GDBM
 			    "a:Ab:c:d:gil:L:m:n:o:ps:tTuvx0:1M?"
-#else
-			    "a:Ab:c:d:il:L:m:n:o:ps:tTuvx0:1M?"
-#endif
       )) != -1) {
         switch((char) i) {
 	case 'A':
@@ -275,11 +269,9 @@ int main(int argc, char **argv)
 	case 'd':
 	    set_dir = strreplace(set_dir, optarg);
 	    break;
-#ifdef GDBM
 	case 'g':
 	    set_usegdbm = 1;
 	    break;
-#endif
 	case 'i':
 	    use_stdin = TRUE;
 	    break;
@@ -373,8 +365,17 @@ int main(int argc, char **argv)
 	
     lang = tlang;		/* A good language, make it so. */
 
+
+
     if (print_usage)		/* Print the usage message and terminate */
 	usage();
+
+#ifndef GDBM
+    if (set_usegdbm) {
+    fprintf(stderr, "%s: %s\n", PROGNAME, lang[MSG_OPTION_G_NOT_BUILD_IN]);
+    usage();
+    }
+#endif
 
     if (set_mbox && !strcasecmp(set_mbox, "NONE")) {
 	use_stdin = TRUE;

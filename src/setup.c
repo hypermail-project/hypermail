@@ -49,9 +49,7 @@ bool set_yearly_index;
 bool set_spamprotect;
 bool set_spamprotect_id;
 bool set_attachmentsindex;
-#ifdef GDBM
 bool set_usegdbm;
-#endif
 bool set_append;
 char *set_append_filename;
 bool set_warn_surpressions;
@@ -301,12 +299,14 @@ struct Config cfg[] = {
     {"uselock", &set_uselock, BTRUE, CFG_SWITCH,
      "# Set this to On to use hypermail's internal locking mechanism.\n"},
 
-#ifdef GDBM
     {"usegdbm",  &set_usegdbm,  BFALSE,    CFG_SWITCH,
      "# Set this to On to use gdbm to implement a header cache.\n"
      "#This will speed up hypermail, especially if your filesystem is slow.\n"
-     "#It will not provide any speedup with the linkquotes option.\n"},
+     "#It will not provide any speedup with the linkquotes option.\n"
+#ifndef GDBM
+     "#(This particular binary has been build with GDBM disabled.)\n"
 #endif
+    },
 
     {"append",  &set_append,  BFALSE,    CFG_SWITCH,
      "# Set this to On to maintain a parallel mbox archive. The file\n"
@@ -1045,9 +1045,7 @@ void dump_config(void)
     printf("set_uselock = %d\n",set_uselock);
     printf("set_locktime = %d\n",set_locktime);
     printf("set_ietf_mbox = %d\n",set_ietf_mbox);
-#ifdef GDBM
     printf("set_usegdbm = %d\n",set_usegdbm);
-#endif
     printf("set_append = %d\n",set_append);
     printf("set_thrdlevels = %d\n",set_thrdlevels);
     printf("set_dirmode = %04o\n",set_dirmode);

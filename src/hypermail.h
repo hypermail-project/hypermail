@@ -103,9 +103,7 @@
 #define NOEMAIL     "(no email)"
 #define NOSUBJECT   "(no subject)"
 
-#ifdef GDBM
 #define GDBM_INDEX_NAME ".hm2index"
-#endif
 
 #define NUMSTRLEN    10
 #define MAXLINE	     1024
