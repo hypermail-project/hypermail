@@ -2,6 +2,9 @@ Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+ Kent Landfield (Feb 20, 2003)
+   - added wait.h to msg2archive that was needed for s_popen()
+
  Jose Kahan (jose@w3.org) (Feb 20, 2003)
    - makemailcommand wasn't escaping non-ascii characters in the URLS
      that it generated.
