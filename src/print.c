@@ -1795,7 +1795,7 @@ void update_deletions(int num_old)
 	    if (set_delete_level != DELETE_REMOVES_FILES) {
 		struct body *bp = ep->bodylist;
 		if (bp == NULL)
-		    parse_old_html(num, ep, 1, 0, NULL);
+		    parse_old_html(num, ep, 1, 0, NULL, 0);
 		writearticles(num, num + 1);
 	    }
 	    else if (isfile(filename)) {
@@ -1810,7 +1810,7 @@ void update_deletions(int num_old)
 	        int rnum = rp->data->msgnum;
 		if (rnum < num_old) {
 		    if (!rp->data->bodylist || !rp->data->bodylist->line[0])
-		        parse_old_html(rnum, rp->data, TRUE, FALSE, NULL);
+		        parse_old_html(rnum, rp->data, TRUE, FALSE, NULL, 0);
 			writearticles(rnum, rnum + 1);	/* update MSG_IN_REPLY_TO line */
 		}
 	    }

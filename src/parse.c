@@ -1080,6 +1080,36 @@ void emptydir(char *directory)
     }
 }
 
+static int do_uudecode(FILE *fp, char *line, char *line_buf,
+		       struct Push *raw_text_buf, FILE *fpo)
+{
+    struct Push pbuf;
+    char *p2;
+    INIT_PUSH(pbuf);
+
+    if (uudecode(fp, line, line, NULL, &pbuf))
+      /*
+       * oh gee, we failed this is chaos 
+       */
+        return 0;
+    p2 = PUSH_STRING(pbuf);
+    if (p2) {
+        if (set_append) {
+	    if(fputs(p2, fpo) < 0) {
+	        progerr("Can't write to \"mbox\"");
+	    }
+	}
+	if (set_txtsuffix) {
+	    PushString(raw_text_buf, line_buf);
+	    line_buf[0] = 0; /*avoid dup at next for iter*/
+	    PushString(raw_text_buf, p2);
+	}
+	free(p2);
+    }
+    return 1;
+}
+
+
 static void write_txt_file(struct emailinfo *emp, struct Push *raw_text_buf)
 {
     char *txt_filename;
@@ -1882,30 +1912,10 @@ int parsemail(char *mbox,	/* file name */
 			    decode = ENCODE_NORMAL;
 			}
 			else if (!strncasecmp(ptr, "x-uue", 5)) {
-			    struct Push pbuf;
-			    char *p2;
-			    INIT_PUSH(pbuf);
 			    decode = ENCODE_UUENCODE;
-
-			    if (uudecode(fp, line, line, NULL, &pbuf))
-				/*
-				 * oh gee, we failed this is chaos 
-                                 */
-				break;
-			    p2 = PUSH_STRING(pbuf);
-			    if (p2) {
-			        if (set_append) {
-				    if(fputs(p2, fpo) < 0) {
-				        progerr("Can't write to \"mbox\"");
-				    }
-				}
-				if (set_txtsuffix) {
-				    PushString(&raw_text_buf, line_buf);
-				    line_buf[0] = 0; /*avoid dup at next for iter*/
-				    PushString(&raw_text_buf, p2);
-				}
-				free(p2);
-			    }
+			    if (!do_uudecode(fp, line, line_buf,
+					     &raw_text_buf, fpo))
+			        break;
 			}
 			else {
 			    /* Unknown format, we use default decoding */
@@ -2052,7 +2062,7 @@ msgid);
 		    require_filter[pos] = FALSE;
 		for (pos = 0; pos < require_filter_full_len; ++pos)
 		    require_filter_full[pos] = FALSE;
-		if (set_txtsuffix && emp)
+		if (set_txtsuffix && emp && set_increment != -1)
 		    write_txt_file(emp, &raw_text_buf);
 
 		if (hasdate)
@@ -2352,7 +2362,8 @@ msgid);
 				trio_asprintf(&att_dir,"%s%c" DIR_PREFIXER "%04d",
 					      dir, PATH_SEPARATOR, num);
 #endif
-				check1dir(att_dir);
+				if (set_increment != -1)
+				    check1dir(att_dir);
 				/* If this is a repeated run on the same archive we already
 				 * have HTML'ized, we risk extracting the same attachments
 				 * several times and therefore we need to remove all the 
@@ -2363,7 +2374,7 @@ msgid);
 #if DEBUG_PARSE
 				emptydir(att_dir);
 #endif
-				if (set_usemeta) {
+				if (set_usemeta && set_increment != -1) {
 				    /* make the meta dir where we'll store the meta info,
 				       such as content-type */
 				    trio_asprintf(&meta_dir, "%s%c" META_DIR,
@@ -2617,7 +2628,7 @@ msgid);
 	    if (insert_in_lists(emp, require_filter,
 				require_filter_len + require_filter_full_len))
 	        ++num_added;
-	    if (set_txtsuffix)
+	    if (set_txtsuffix && set_increment != -1)
 	        write_txt_file(emp, &raw_text_buf);
 	    num++;
 	}
@@ -2770,7 +2781,7 @@ static void check_expiry(struct emailinfo *emp)
 }
 
 int parse_old_html(int num, struct emailinfo *ep, int parse_body,
-		   int do_insert, struct reply **replylist_tmp)
+		   int do_insert, struct reply **replylist_tmp, int cmp_msgid)
 {
     char line[MAXLINE];
     char *name = NULL;
@@ -2792,6 +2803,7 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
     int num_added = 0;
     struct body *bp = NULL;
     struct body *lp = NULL;
+    int msgids_are_same = 0;
 
     struct emailsubdir *subdir = ep ? ep->subdir : msg_subdir(num, 0);
     char *filename;
@@ -2945,6 +2957,8 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
 	    }
 	}
     }
+    else if (cmp_msgid)
+	return -1;
 
     if (legal) {	    /* only do this if the input was reliable */
 	struct emailinfo *emp;
@@ -2954,6 +2968,8 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
 	    emp = addhash(num, date ? date : NODATE,
 			  name, email, msgid, subject, inreply,
 			  fromdate, charset, isodate, isofromdate, bp);
+	if (cmp_msgid)
+	    msgids_are_same = !strcmp(ep->msgid, msgid);
 	if (emp != NULL && replylist_tmp != NULL) {
 	    if (do_insert) {
 	        emp->exp_time = exp_time;
@@ -3014,7 +3030,7 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
 	free(bp);
     }
 #endif
-    return num_added;
+    return (cmp_msgid ? msgids_are_same : num_added);
 }
 
 /*
@@ -3145,7 +3161,7 @@ static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
 	    }
 	}
 	num_added += parse_old_html(num, ep0, parse_body, num_from_gdbm == -1,
-				    &replylist_tmp);
+				    &replylist_tmp, 0);
 
 	num++;
 

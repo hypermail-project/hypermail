@@ -221,8 +221,15 @@ struct Config cfg[] = {
      "# cause an HTML-part to be stored as a separate file even if this\n"
      "# option is On.\n", FALSE},
 
-    {"increment", &set_increment, BFALSE, CFG_SWITCH,
-     "# Set this to On to append the input to existing archive.\n", FALSE},
+    {"increment", &set_increment, BFALSE, CFG_INTEGER,
+     "# Set this to -1 to have hypermail figure out whether the input\n"
+     "# is entirely new messages to be appended or whether it contains\n"
+     "# messages that are already in the archive. A value of -1 cannot be\n"
+     "# used with the mbox_shortened option or with the -i command line\n"
+     "# option or with mbox = NONE. Set this to 0 to always treat\n"
+     "# the input as an mbox that contains messages in the archive if the\n"
+     "# existing archive is not empty.\n"
+     "# Set this to 1 to append the input to existing archive.\n", FALSE},
 
     {"readone", &set_readone, BFALSE, CFG_SWITCH,
      "# Set this to On to specify there is only one message in the input.\n", FALSE},
@@ -735,12 +742,11 @@ struct Config cfg[] = {
 
     {"mbox_shortened", &set_mbox_shortened, BFALSE, CFG_SWITCH,
      "# Set this to On to enable use of mbox that has had some of its\n"
-     "# initial messages deleted. Requires usegdbm = 1.\n"
+     "# initial messages deleted. Requires usegdbm = 1 and increment = 0.\n"
      "# The first message in the mbox must have a Message-ID header.\n"
      "# The mbox may not be altered in any way other than deleting from\n"
      "# beginning of the mbox or appending new messages to the end (unless\n"
-     "# you rebuild the archive from scratch using a complete mbox).\n"
-     "# Experimental as of 2003-12-01.", FALSE},
+     "# you rebuild the archive from scratch using a complete mbox).\n", FALSE},
 
 };
 

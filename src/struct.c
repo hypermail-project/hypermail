@@ -58,6 +58,17 @@ unsigned hash(char *s)
     return (hashval % HASHSIZE);
 }
 
+void reinit_structs()
+{
+    int i;
+    for (i = 0; i < HASHSIZE; ++i) {
+	if (etable[i]) {
+	    free(etable[i]);
+	    etable[i] = NULL;
+	}
+    }
+}
+
 void fill_email_dates(struct emailinfo *e, char *date, char *fromdate, char *isodate, char *isofromdate)
 {
     bool fromdate_valid = 1, date_valid = 1;
@@ -241,7 +252,7 @@ struct emailinfo *addhash(int num, char *date, char *name, char *email, char *ms
 
     fill_email_dates(e, date, fromdate, isodate, isofromdate);
     e->subdir = msg_subdir(e->msgnum, e->date);
-    if (e->subdir) {
+    if (e->subdir && set_increment != -1) {
 	if (!e->subdir->first_email)
 	    e->subdir->first_email = e;
 	e->subdir->last_email = e;
@@ -1009,7 +1020,7 @@ struct emailsubdir *new_subdir(char *subdir, struct emailsubdir *last_subdir, ch
     if (insert_point == NULL)
 	insert_point = sd;
     if (insert_point == NULL)
-	folders = new_sd;
+	folders = (set_increment == -1 ? NULL : new_sd);
     else if (date < folders->a_date) {
 	new_sd->next_subdir = folders;
 	folders->prior_subdir = new_sd;

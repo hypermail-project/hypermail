@@ -3,6 +3,7 @@
 */
 
 unsigned hash(char *);
+void reinit_structs(void);
 void fill_email_dates(struct emailinfo *, char *, char *, char *, char *);
 
 struct emailinfo *addhash(int, char *, char *, char *, char *, char *, char *,

@@ -405,7 +405,10 @@ int main(int argc, char **argv)
      * the options.h or environment values.
      */
     if (!use_stdin) {
-	if (!set_mbox || !strcasecmp(set_mbox, "NONE"))
+	if (optind < argc && set_increment == -1 && !set_mbox) {
+	    set_mbox = strsav(argv[optind]);
+	}
+	else if (!set_mbox || !strcasecmp(set_mbox, "NONE"))
 	    use_stdin = TRUE;
 	else
 	    use_stdin = FALSE;
@@ -454,13 +457,13 @@ int main(int argc, char **argv)
 	set_dir = strreplace(set_dir, DIRNAME);
 
     if (!set_dir || !strcasecmp(set_dir, "NONE"))
-		set_dir = strreplace(set_dir, (strrchr(set_mbox, '/')) ? strrchr(set_mbox, '/') + 1 : set_mbox);
+	set_dir = strreplace(set_dir, (strrchr(set_mbox, '/')) ? strrchr(set_mbox, '/') + 1 : set_mbox);
 
     if (set_dir[strlen(set_dir) - 1] != PATH_SEPARATOR)
 	trio_asprintf(&set_dir, "%s%c", set_dir, PATH_SEPARATOR);
 
     if (!set_label || !strcasecmp(set_label, "NONE"))
-		set_label = set_mbox ? (strreplace(set_label, (strrchr(set_mbox, '/')) ? strrchr(set_mbox, '/') + 1 : set_mbox)) : "stdin";
+	set_label = set_mbox ? (strreplace(set_label, (strrchr(set_mbox, '/')) ? strrchr(set_mbox, '/') + 1 : set_mbox)) : "stdin";
 
     /*
      * Which index file will be called "index.html"?
@@ -475,14 +478,14 @@ int main(int argc, char **argv)
 	    = setindex(set_defaultindex, "attachment", set_htmlsuffix);
     }
     if (set_folder_by_date || set_msgsperfolder) {
-		index_name[0][DATE_INDEX] = setindex(set_default_top_index, "date", set_htmlsuffix);
-		index_name[0][THREAD_INDEX] = setindex(set_default_top_index, "thread", set_htmlsuffix);
-		index_name[0][SUBJECT_INDEX] = setindex(set_default_top_index, "subject", set_htmlsuffix);
-		index_name[0][AUTHOR_INDEX] = setindex(set_default_top_index, "author", set_htmlsuffix);
+	index_name[0][DATE_INDEX] = setindex(set_default_top_index, "date", set_htmlsuffix);
+	index_name[0][THREAD_INDEX] = setindex(set_default_top_index, "thread", set_htmlsuffix);
+	index_name[0][SUBJECT_INDEX] = setindex(set_default_top_index, "subject", set_htmlsuffix);
+	index_name[0][AUTHOR_INDEX] = setindex(set_default_top_index, "author", set_htmlsuffix);
 	if (set_attachmentsindex) {
-			index_name[0][ATTACHMENT_INDEX] = setindex(set_default_top_index, "attachment", set_htmlsuffix);
+	    index_name[0][ATTACHMENT_INDEX] = setindex(set_default_top_index, "attachment", set_htmlsuffix);
 	}
-		index_name[0][FOLDERS_INDEX] = setindex(set_default_top_index, "folders", set_htmlsuffix);
+	index_name[0][FOLDERS_INDEX] = setindex(set_default_top_index, "folders", set_htmlsuffix);
     }
     else {
 	index_name[0][DATE_INDEX] = index_name[1][DATE_INDEX];
@@ -563,7 +566,7 @@ int main(int argc, char **argv)
     if (use_mbox && use_stdin) {
 	cmderr(lang[MSG_CANNOT_READ_FROM_BOTH_FILE_AND_STDIN]);
     }
-	if (set_append && use_mbox) {
+    if (set_append && use_mbox) {
         cmderr(lang[MSG_CANNOT_BOTH_READ_AND_WRITE_TO_MBOX]);
     }
 
@@ -585,6 +588,18 @@ int main(int argc, char **argv)
     if (set_uselock)
 	lock_archive(set_dir);
 
+    if (set_increment == -1) {
+	int save_append = set_append;
+	set_append = 0;
+	if (set_mbox_shortened)
+	    progerr("can not use increment = -1 option with mbox_shortened option\n");
+	amount_new = parsemail(set_mbox, use_stdin, 1, -1, set_dir, set_inlinehtml, 0);
+	set_increment = !matches_existing(set_startmsgnum);
+	if (set_increment && set_folder_by_date && !set_usegdbm)
+	    progerr("folder_by_date with incremental update requires usegdbm option");
+	reinit_structs();
+	set_append = save_append;
+    }
     if (set_increment) {
 	int num_displayable;
 	if (set_linkquotes)

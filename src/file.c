@@ -586,6 +586,7 @@ static char *msgsperfolder_label(char *frmptr, int subdir_no)
 struct emailsubdir *msg_subdir(int msgnum, time_t date)
 {
     static struct emailsubdir *last_subdir;
+    static struct emailsubdir *subdir;
     char s[DATESTRLEN];
     char desc_buf[DATESTRLEN];
     char *desc = NULL;
@@ -609,12 +610,15 @@ struct emailsubdir *msg_subdir(int msgnum, time_t date)
     }
     else
 	return NULL;
+    subdir = last_subdir;
     if (!last_subdir || strcmp(s, last_subdir->subdir)) {
-	last_subdir = new_subdir(s, last_subdir, desc, date);
+	subdir = new_subdir(s, last_subdir, desc, date);
+	if (set_increment != -1)
+	    last_subdir = subdir;
     }
     if (desc)
       free(desc);
-    return last_subdir;
+    return subdir;
 }
 
 /*
@@ -726,15 +730,17 @@ char *haofname(struct emailinfo *email)
 
 /* matches_existing returns 0 if it finds a file with the same msgnum as
  argument eptr but different contents. A return value of 1 does not
- guarantee that they match, it only says a difference wasn't found. */
+ guarantee that they match, it only says a difference wasn't found
+ (which can mean that no file was found). 
+*/
 
 int matches_existing(int msgnum)
 {
-#ifdef GDBM
   struct emailinfo *eptr;
   if (hashnumlookup(msgnum, &eptr) == NULL)
       return -1;
 
+#ifdef GDBM
   if (set_usegdbm) {
       char *indexname;
       GDBM_FILE gp;
@@ -797,5 +803,10 @@ int matches_existing(int msgnum)
       free(indexname);
   }  
 #endif
+  if (!set_usegdbm) {
+	int msgids_are_same;
+	msgids_are_same = parse_old_html(msgnum, eptr, 0, 0, NULL, 1);
+	return msgids_are_same != 0;
+  }
   return 1;
 }

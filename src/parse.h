@@ -13,7 +13,7 @@ char *getsubject(char *);
 char *getreply(char *);
 void print_progress(int, char *, char *);
 int parsemail(char *, int, int, int, char *, int, int);
-int parse_old_html(int, struct emailinfo *, int, int, struct reply **);
+int parse_old_html(int, struct emailinfo *, int, int, struct reply **, int);
 int loadoldheaders(char *);
 int loadoldheadersfromGDBMindex(char *, int);
 void crossindex(void);

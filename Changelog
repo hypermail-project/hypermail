@@ -4,6 +4,10 @@ Version Changes for Hypermail
 ============================
 HYPERMAIL VERSION pre-2.1.9:
 ============================
+ Peter McCluskey (Dec 26, 2003)
+  Add increment = -1 mode to enable automatic determination of whether
+ to update or append in most cases.
+
  Peter McCluskey (Dec 3, 2003)
   Added a mbox_shortened option to handle mboxes that have had messages
  deleted from the start of the mbox.
