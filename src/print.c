@@ -400,7 +400,7 @@ void print_index_header_links(FILE *fp, mindex_t called_from,
 #endif
     /* JK: added a <p> */
     if (set_showhr)
-        fprintf(fp, "<hr noshade><p>\n");
+        fprintf(fp, "<hr><p>\n");
 
     /*
      * Printout the Dates for the Starting and Ending messages 
@@ -436,7 +436,7 @@ void print_index_footer_links(FILE *fp, mindex_t called_from,
              lang[MSG_ARCHIVED_ON], getlocaltime());
 
      if (set_showhr)
-         fprintf(fp, "<hr noshade>\n");
+         fprintf(fp, "<hr>\n");
 
     fprintf(fp, "\n");
     if (called_from != AUTHOR_INDEX && show_index[dlev][AUTHOR_INDEX] ||
@@ -874,7 +874,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply)
 
     /* JK: added an extra <p> here */
     if (set_showhr)
-	fprintf(fp, "<hr noshade><p>\n");
+	fprintf(fp, "<hr><p>\n");
 
     printcomment(fp, "body", "start");
     if (email->is_deleted && set_delete_level != DELETE_LEAVES_TEXT
@@ -887,7 +887,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply)
         fprintf(fp, lang[d_index]);
 	printcomment(fp, "body", "end");
 	if (set_showhr)
-	    fprintf(fp, "<hr noshade>\n");
+	    fprintf(fp, "<hr>\n");
 	return;
     }
 
@@ -1129,7 +1129,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply)
     fprintf(fp, "<p>");
     printcomment(fp, "body", "end");
     if (set_showhr)
-	fprintf(fp, "<hr noshade>\n");
+	fprintf(fp, "<hr>\n");
 }
 
 char *
@@ -1852,7 +1852,7 @@ void writedates(int amountmsgs, struct emailinfo *email)
 	fprint_summary(fp, PAGE_TOP, firstdatenum, lastdatenum, amountmsgs);
 	/* JK: added an extra <p> here */
 	if (set_showhr)
-	    fprintf(fp, "<hr noshade><p>\n"); 
+	    fprintf(fp, "<hr><p>\n"); 
     }
 
     /*
@@ -1881,7 +1881,7 @@ void writedates(int amountmsgs, struct emailinfo *email)
     }
     else {
 	if (set_showhr)
-	    fprintf(fp, "<hr noshade>\n");
+	    fprintf(fp, "<hr>\n");
 	fprint_summary(fp, PAGE_BOTTOM, firstdatenum, lastdatenum, amountmsgs);
 	fprint_menu(fp, DATE_INDEX, set_archives, "", "", PAGE_BOTTOM,
 		    email ? email->subdir : NULL);
@@ -1949,7 +1949,7 @@ void writeattachments(int amountmsgs, struct emailinfo *email)
 	fprint_summary(fp, PAGE_TOP, firstdatenum, lastdatenum, amountmsgs);
 	/* JK: added an extra <p> here */
 	if (set_showhr)
-	    fprintf(fp, "<hr noshade><p>\n"); 
+	    fprintf(fp, "<hr><p>\n"); 
     }
 
     /*
@@ -1978,7 +1978,7 @@ void writeattachments(int amountmsgs, struct emailinfo *email)
     }
     else {
 	if (set_showhr)
-	    fprintf(fp, "<hr noshade>\n");
+	    fprintf(fp, "<hr>\n");
 	fprint_summary(fp, PAGE_BOTTOM, firstdatenum, lastdatenum, amountmsgs);
 	fprint_menu(fp, DATE_INDEX, set_archives, "", "", PAGE_BOTTOM,
 		    email ? email->subdir : NULL);
@@ -2054,7 +2054,7 @@ void writethreads(int amountmsgs, struct emailinfo *email)
 	fprint_summary(fp, PAGE_TOP, firstdatenum, lastdatenum, amountmsgs);
 	/* JK: added an extra <p> here */
 	if (set_showhr)
-	    fprintf(fp, "<hr noshade><p>\n");
+	    fprintf(fp, "<hr><p>\n");
     }
 
     if (set_indextable) {
@@ -2079,7 +2079,7 @@ void writethreads(int amountmsgs, struct emailinfo *email)
     }
     else {
 	if (set_showhr)
-	    fprintf(fp, "<hr noshade>\n");
+	    fprintf(fp, "<hr>\n");
 	fprint_summary(fp, PAGE_BOTTOM, firstdatenum, lastdatenum, amountmsgs);
 	fprint_menu(fp, THREAD_INDEX, set_archives, "", "", PAGE_BOTTOM,
 		    email ? email->subdir : NULL);
@@ -2198,7 +2198,7 @@ void writesubjects(int amountmsgs, struct emailinfo *email)
 	fprint_summary(fp, PAGE_TOP, firstdatenum, lastdatenum, amountmsgs);
 	/* JK: added this <p> here */
 	if (set_showhr)
-	    fprintf(fp, "<hr noshade><p>\n");
+	    fprintf(fp, "<hr><p>\n");
     }
 
     if (set_indextable) {
@@ -2229,7 +2229,7 @@ void writesubjects(int amountmsgs, struct emailinfo *email)
 				 email ? email->subdir : NULL);
     else {
 	if (set_showhr)
-	    fprintf(fp, "<hr noshade>\n");
+	    fprintf(fp, "<hr>\n");
 	fprint_summary(fp, PAGE_BOTTOM, firstdatenum, lastdatenum, amountmsgs);
 	fprint_menu(fp, SUBJECT_INDEX, set_archives, "", "", PAGE_BOTTOM,
 		    email ? email->subdir : NULL);
@@ -2348,7 +2348,7 @@ void writeauthors(int amountmsgs, struct emailinfo *email)
 	fprint_summary(fp, PAGE_TOP, firstdatenum, lastdatenum, amountmsgs);
 	/* JK: added the extra <p> here */
 	if (set_showhr)
-	    fprintf(fp, "<hr noshade><p>\n");
+	    fprintf(fp, "<hr><p>\n");
     }
 
     if (set_indextable) {
@@ -2380,7 +2380,7 @@ void writeauthors(int amountmsgs, struct emailinfo *email)
 				 email ? email->subdir : NULL);
     else {
 	if (set_showhr)
-	    fprintf(fp, "<hr noshade>\n");
+	    fprintf(fp, "<hr>\n");
 	fprint_summary(fp, PAGE_BOTTOM, firstdatenum, lastdatenum, amountmsgs);
 	fprint_menu(fp, AUTHOR_INDEX, set_archives, "", "", PAGE_BOTTOM,
 		    email ? email->subdir : NULL);
@@ -2490,7 +2490,7 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
 		    fprint_summary(fp1, PAGE_TOP, first_date, last_date,
 				   count);
 		    if (set_showhr)
-		        fprintf(fp1, "<hr noshade>\n");
+		        fprintf(fp1, "<hr>\n");
 		}
 
 		if (set_indextable) {
@@ -2534,7 +2534,7 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
 		    print_index_footer_links(fp1, j, last_date, count, NULL);
 		else {
 		    if (set_showhr)
-		        fprintf(fp1, "<hr noshade>\n");
+		        fprintf(fp1, "<hr>\n");
 		    fprint_summary(fp1, PAGE_BOTTOM, first_date, last_date,
 				   count);
 		    fprint_menu(fp1, j, set_archives, "", "", PAGE_BOTTOM,
@@ -2633,7 +2633,7 @@ void write_toplevel_indices(int amountmsgs)
 	    fprint_summary(fp, PAGE_TOP, firstdatenum, lastdatenum, amountmsgs);
 	    /* JK: added an extra <p> here */
 	    if (set_showhr)
-	        fprintf(fp, "<hr noshade><p>\n"); 
+	        fprintf(fp, "<hr><p>\n"); 
 	}
 	fprintf(fp, "<table>\n");
     }
@@ -2695,7 +2695,7 @@ void write_toplevel_indices(int amountmsgs)
 	}
 	else {
 	    if (set_showhr)
-	        fprintf(fp, "<hr noshade>\n");
+	        fprintf(fp, "<hr>\n");
 	    fprint_summary(fp, PAGE_BOTTOM, firstdatenum, lastdatenum, amountmsgs);
 	    fprint_menu(fp, FOLDERS_INDEX, set_archives, "", "", PAGE_BOTTOM, NULL);
 	}

@@ -218,7 +218,7 @@ void cgi_main(cgi_info *ci)
 	    printf("<h1 align=\"center\">Your message has been sent.</h1>\n");
 
 	    printf("The following message has been sent to ");
-	    printf("<strong>%s</strong>:\n<p>\n<hr noshade>\n\n", to);
+	    printf("<strong>%s</strong>:\n<p>\n<hr>\n\n", to);
 
 	    printf("<blockquote>\n");
 	    printf("<br>From: %s\n", from);
@@ -232,7 +232,7 @@ void cgi_main(cgi_info *ci)
 	    printf("<p>\n%s\n", body);
 
 	    printf("</blockquote>\n");
-	    printf("<p>\n<hr noshade>\n");
+	    printf("<p>\n<hr>\n");
 	    printf("</body>\n</html>\n");
 	}
 	else

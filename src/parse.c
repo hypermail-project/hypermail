@@ -1598,7 +1598,7 @@ int parsemail(char *mbox,	/* file name */
 			     * be used.
 			     */
 			    bp = addbody(bp, &lp,
-					 "<p><strong>attached mail follows:</strong><hr noshade>",
+					 "<p><strong>attached mail follows:</strong><hr>",
 					 BODY_HTMLIZED | bodyflags);
 			    bodyflags |= BODY_ATTACHED;
 			    /* @@ should it be 1 or 2 ?? should we use another method? */
@@ -2332,7 +2332,7 @@ int parsemail(char *mbox,	/* file name */
 
 					trio_snprintf(buffer, sizeof(buffer),
 						 "%s<img src=\"%s%s%c%s\" alt=\"%s\">\n",
-						 (set_showhr ? "<hr noshade>\n" :
+						 (set_showhr ? "<hr>\n" :
 						  ""),
 						 subdir ? subdir->rel_path_to_top : "",
 						 &att_dir[strlen(dir) + 1],
@@ -2351,7 +2351,7 @@ int parsemail(char *mbox,	/* file name */
 
 					trio_snprintf(buffer, sizeof(buffer),
 						 "%s<ul>\n<li>%s %s: <a href=\"%s%s\">%s</a>\n</ul>\n",
-						 (set_showhr ? "<hr noshade>\n" :
+						 (set_showhr ? "<hr>\n" :
 						  ""), type,
 						 lang[MSG_ATTACHMENT],
 						 subdir ? subdir->rel_path_to_top : "",

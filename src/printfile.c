@@ -133,8 +133,10 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 		    putc(*cp, fp);
 		continue;
 	    case 'm':		/* %m - mailto */
-		for (cp = set_mailto; *cp; cp++)
-		    putc(*cp, fp);
+		if (set_mailto) {
+		    for (cp = set_mailto; *cp; cp++)
+			putc(*cp, fp);
+		}
 		continue;
 	    case 'p':		/* %p - PROGNAME */
 		for (cp = PROGNAME; *cp; cp++)
@@ -264,7 +266,7 @@ void print_msg_header(FILE *fp, char *label, char *subject,
 	free(ptr);
 #if 0 /* JK: and removed this as it looked a bit strange */
 	if (!set_usetable)
-	    fprintf(fp, "<hr noshade>\n<p>\n");
+	    fprintf(fp, "<hr>\n<p>\n");
 #endif
     }
 }
@@ -303,7 +305,7 @@ void printfooter(FILE *fp, char *htmlfooter, char *label, char *dir,
 		  dir, NULL, NULL, NULL, NULL, filename);
     else {
 	if (set_showhr && !set_usetable)
-	    fprintf(fp, "<hr noshade>\n");
+	    fprintf(fp, "<hr>\n");
 	fprintf(fp, "<p>\n<small>\n<em>\n");
 	fprintf(fp, "%s ", lang[MSG_ARCHIVE_GENERATED_BY]);
 	fprintf(fp, "<a href=\"%s\">%s %s</a> \n", HMURL, PROGNAME, VERSION);
