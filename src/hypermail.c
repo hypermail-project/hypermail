@@ -607,7 +607,9 @@ int main(int argc, char **argv)
 	        struct emailinfo *ep;
 		if (hashnumlookup(i, &ep)) {
 		    ep->flags &= ~USED_THREAD;
+#ifdef FASTREPLYCODE
 		    ep->isreply = 0;
+#endif
 		}
 		threadlist_by_msgnum[i] = NULL;
 	    } /* redo threading with more complete info than in 1st pass */

@@ -1144,10 +1144,12 @@ has_new_replies(struct emailinfo *email)
 	max_old_msgnum = find_max_msgnum();
     if (email->msgnum == max_old_msgnum)
 	return 1;  /* next msg needs to be linked, even if no new reply */
+#ifdef FASTREPLYCODE
     for (rp = email->replylist; rp != NULL; rp = rp->next) {
 	if (rp->frommsgnum == email->msgnum && rp->msgnum > max_old_msgnum)
 	    return 1;
     }
+#endif
     return 0;
 }
 
