@@ -110,6 +110,7 @@ char *set_unsafe_chars;
 
 char *set_folder_by_date;
 char *set_latest_folder;
+char *set_base_url;
 char *set_describe_folder;
 int set_msgsperfolder;
 
@@ -535,6 +536,11 @@ struct Config cfg[] = {
      "# a symbolic link by this name to the most recently created\n"
      "# subdirectory. Note that many web servers are configured to\n"
      "# not follow symbolic links for security reasons.\n"},
+
+    {"base_url", &set_base_url, NULL, CFG_STRING,
+     "# The url of the archive's main directory. This is needed when\n"
+     "# the latest_folder option is used and the folder_by_date makes\n"
+     "# directories more than one level deep (e.g. with '%y/%m').\n"},
 
     {"iso2022jp", &set_iso2022jp, BFALSE, CFG_SWITCH,
      "# Set this to On to support ISO-2022-JP messages.\n"},

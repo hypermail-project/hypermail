@@ -134,6 +134,7 @@ extern bool set_linkquotes;
 
 extern char *set_folder_by_date;
 extern char *set_latest_folder;
+extern char *set_base_url;
 extern int set_msgsperfolder;
 extern char *set_describe_folder;
 

@@ -1001,14 +1001,32 @@ struct emailsubdir *new_subdir(char *subdir, struct emailsubdir *last_subdir,
     new_sd->subdir = strsav(subdir);
     new_sd->description = description;
     new_sd->a_date = date;
-    new_sd->rel_path_to_top = strsav("../");
-    count = 0;
-    for (p = subdir; *p; ++p)
-	count += (*p == '/');
-    while(--count > 0) {
-	trio_asprintf(&p, "../%s", new_sd->rel_path_to_top);
-	free(new_sd->rel_path_to_top);
-	new_sd->rel_path_to_top = p;
+    if (set_base_url != NULL) {
+	if (set_base_url[strlen(set_base_url)-1] != '/')
+	    trio_asprintf(&new_sd->rel_path_to_top, "%s/", set_base_url);
+	else
+	    new_sd->rel_path_to_top = strsav(set_base_url);
+    }
+    else {
+	new_sd->rel_path_to_top = strsav("../");
+	count = 0;
+	for (p = subdir; *p; ++p)
+	    count += (*p == '/');
+	while(--count > 0) {
+	    trio_asprintf(&p, "../%s", new_sd->rel_path_to_top);
+	    free(new_sd->rel_path_to_top);
+	    new_sd->rel_path_to_top = p;
+	}
+	if (set_latest_folder != NULL && set_folder_by_date != NULL
+	    && strchr(set_folder_by_date, '/')) {
+	    static int warned = 0;
+	    if (!warned) {
+	      fprintf(stderr, "Warning: the latest_folder option combined with "
+		      "a folder_by_date option that includes a '/' will produce "
+		      "some invalid links unless you use the base_url option!!.\n");
+	      warned = 1;
+	    }
+	}
     }
     trio_asprintf(&new_sd->full_path, "%s%s", set_dir, subdir);
     if (!isdir(new_sd->full_path)) {
