@@ -102,6 +102,7 @@ char *replacechar(char *, char, char *);
 char *convchars(char *);
 char *unconvchars(char *);
 char *makemailcommand(char *, char *, char *, char *);
+char *unspamify(char *);
 char *parseemail(char *, char *, char *);
 char *parseurl(char *);
 

@@ -768,6 +768,22 @@ char *makemailcommand(char *mailcommand, char *email, char *id, char *subject)
     return newcmd;
 }
 
+char *unspamify(char *s)
+{
+    char *p;
+    if (!s)
+	return s;
+    if (!strchr(s, '@') && ((p = strstr(s, "_at_")) != NULL)) {
+	struct Push buff;
+	INIT_PUSH(buff);
+	PushNString(&buff, s, p - s);
+	PushByte(&buff, '@');
+	PushString(&buff, p + 4);
+	return PUSH_STRING(buff);
+    }
+    return strsav(s);
+}
+
 /*
 ** RFC 1738
 ** Thus, only alphanumerics, the special characters "$-_.+!*'(),", and

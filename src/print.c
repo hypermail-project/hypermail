@@ -543,9 +543,23 @@ void print_index_footer_links(FILE *fp, mindex_t called_from,
 
 void printcomment(FILE *fp, char *label, char *value)
 {
-    if (value && *value)
+    if (value && *value) {
 	/* we only save the non-NULL ones */
-	fprintf(fp, "<!-- %s=\"%s\" -->\n", label, value);
+	char *ext_value = value;
+	char *ptr = strchr(value, '@');
+	if (set_spamprotect_id && ptr && (!strcmp(label, "id")
+				       || !strcmp(label, "inreplyto"))) {
+	    struct Push retbuf;
+	    INIT_PUSH(retbuf);
+	    PushNString(&retbuf, value, ptr - value);
+	    PushNString(&retbuf, "_at_", 4);
+	    PushString(&retbuf, ptr + 1);
+	    ext_value = PUSH_STRING(retbuf);
+	}
+	fprintf(fp, "<!-- %s=\"%s\" -->\n", label, ext_value);
+	if (ext_value != value)
+	    free(ext_value);
+    }
 }
 
 /*

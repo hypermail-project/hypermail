@@ -72,6 +72,7 @@ extern bool set_linkquotes;
 extern bool set_monthly_index;
 extern bool set_yearly_index;
 extern bool set_spamprotect;
+extern bool set_spamprotect_id;
 extern bool set_attachmentsindex;
 #ifdef GDBM
 extern bool set_usegdbm;

@@ -47,6 +47,7 @@ bool set_linkquotes;
 bool set_monthly_index;
 bool set_yearly_index;
 bool set_spamprotect;
+bool set_spamprotect_id;
 bool set_attachmentsindex;
 #ifdef GDBM
 bool set_usegdbm;
@@ -434,6 +435,12 @@ struct Config cfg[] = {
     {"spamprotect", &set_spamprotect, BFALSE, CFG_SWITCH,
      "# Set this to On to make hypermail not output real email addresses\n"
      "# in the output HTML but instead it will obfuscate them a little.\n"},
+
+    {"spamprotect_id", &set_spamprotect_id, BFALSE, CFG_SWITCH,
+     "# Set this to On to make hypermail not output real email message\n"
+     "# ids in HTML comments (sometimes used internally by hypermail) but\n"
+     "# instead it will obfuscate them a little so they don't look like\n"
+     "# email addresses to spammers.\n"},
 
     {"attachmentsindex", &set_attachmentsindex, BTRUE, CFG_SWITCH,
      "# Set this to  Off to make hypermail not output an index of\n"
