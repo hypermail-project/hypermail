@@ -1505,12 +1505,12 @@ void writearticles(int startnum, int maxnum)
 	printcomment(fp, "isosent", secs_to_iso(email->date));
 	printcomment(fp, "name", email->name);
 	printcomment(fp, "email", email->emailaddr);
-	printcomment(fp, "subject", ptr = convchars(email->subject, email->charset));
+ 	printcomment(fp, "subject", ptr = convcharsnospamprotect(email->subject, email->charset));
 	if (ptr)
 	    free(ptr);
 	printcomment(fp, "id", email->msgid);
 	printcomment(fp, "charset", email->charset);
-	printcomment(fp, "inreplyto", ptr = convchars(email->inreplyto, email->charset));
+ 	printcomment(fp, "inreplyto", ptr = convcharsnospamprotect(email->inreplyto, email->charset));
 	if (email->is_deleted) {
 	    char num_buf[32];
 	    sprintf(num_buf, "%d", email->is_deleted);

@@ -520,10 +520,11 @@ char *convdash (char *line)
 ** Returns an ALLOCATED string!
 */
 
-char *convchars(char *line, char *charset)
+char *convcharsreal(char *line, char *charset, int spamprotect)
 {
     struct Push buff;
     int in_ascii = TRUE, esclen = 0;
+    int seen_at = FALSE;
     bool is_iso_8859_1;
 
     if (charset && !strcasecmp ("iso-8859-1", charset))
@@ -576,12 +577,33 @@ char *convchars(char *line, char *charset)
 	case '\"':
 	    PushString(&buff, "&quot;");
 	    break;
+	case '@': /* pkn added: simple "antispam" measure */
+	    PushString(&buff, "&#64;");
+	    seen_at = TRUE;
+	    break;
+	case '.': /* pkn added */
+	    if (seen_at && spamprotect)
+	    {
+	    	PushString(&buff, "&#46;<!--nospam-->");
+	    	seen_at = FALSE;
+	    	break;
+	    }
+	    /* fall through */
 	default:
 	    PushByte(&buff, *line);
 	}
     }
     RETURN_PUSH(buff);
 } /* end convchars() */
+
+char *convcharsnospamprotect(char *line, char *charset)
+{
+    convcharsreal(line, charset, FALSE);
+}
+char *convchars(char *line, char *charset)
+{
+    convcharsreal(line, charset, set_spamprotect);
+}
 
 /*
 ** Converts from an Unicode entity to the equivalent winlatin charset
@@ -634,6 +656,10 @@ char *unconvchars(char *line)
 	    else if (!strncmp("amp;", line + 1, 4)) {
 		PushByte(&buff, '&');
 		line += 4;
+	    }
+	    else if (!strncmp("&#46;<!--nospam-->", line + 1, 18)) {
+	        PushByte(&buff, '.');
+	        line += 18;
 	    }
 	    else if (!strncmp("quot;", line + 1, 5)) {
 		PushByte(&buff, '\"');
