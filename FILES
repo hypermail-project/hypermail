@@ -134,6 +134,9 @@ src/strio.h
 src/trio.c
 src/trio.h
 src/triop.h
+src/trionan.c
+src/trionan.h
+src/triodef.h
 src/txt2html.c
 src/txt2html.h
 src/uudecode.c
