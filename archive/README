@@ -3,6 +3,13 @@ mailing list archives.  Much of the functionality here has been rendered
 obsolete by the folder_by_date option. See ../docs/hmrc.html for more
 info about that option.
 
+Also see ../contrib/msg2hypermailarchive.py for another program with
+similar functionality. It's author says:
+   It can almost do everything that msg2archive could do.
+   Together with "formail" it also replaces mailbox2archive for me.
+   (e.g. like   cat hypermail-test.9907 | formail -s msg2hypermailarchive.py --month 7 --year 1999 -L hypermail-test -v )
+
+
            README - This file.
              1998 - script for recreation of the hypermail archives 
                     from the mailbox version

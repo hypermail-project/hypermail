@@ -1,0 +1,31 @@
+#!/bin/sh
+#
+
+DIR=`pwd`
+Msg2archive=$DIR/msg2hypermailarchive.py
+TestMsg=$DIR/test-msg
+
+if [ ! -d  ../tests/mail-archive ]; then
+     mkdir ../tests/mail-archive
+fi
+
+if [ ! -d  ../tests/mail-archive/mailbox ]; then
+     mkdir ../tests/mail-archive/mailbox
+fi
+
+#cat test-msg | htestmail -v
+
+# Tests for generic msg2archive executable
+#
+# usage: msg2archive [options] (file on stdin only)
+#        -A archive-basedir      (#define ARCHIVE)
+#        -b about_link           (#define ABOUT_LINK)
+#        -c configfile           (#define CONFIGFILE)
+#        -H hypermail executable (#define HYPERMAIL)
+#        -L listname             (#define LISTNAME)
+#        -l list lable           (#define LABEL)
+#        -M mailbox directory    (#define MAILBOXDIR)
+#        -t testing (no execution, assumes -v)
+#        -v verbose
+
+(cd ../tests; cat $TestMsg | $Msg2archive -v -L hypermail-test )
