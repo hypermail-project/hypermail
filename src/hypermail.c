@@ -567,15 +567,22 @@ int main(int argc, char **argv)
 
 	if (set_show_msg_links) {
 	    fixnextheader(set_dir, amount_old, -1);
-	    if (set_showreplies)
-		fixreplyheader(set_dir, amount_old, 0);
-	    fixthreadheader(set_dir, amount_old);
+	    for (i = amount_old; i < amount_new; ++i) {
+		if (set_showreplies)
+		    fixreplyheader(set_dir, i, 0, amount_old);
+		fixthreadheader(set_dir, i, amount_old);
+	    }
 	}
     }
     else {
 	amount_new =
 	    parsemail(set_mbox, use_stdin, set_readone, set_increment,
 		      set_dir, set_inlinehtml, 0);	/* number from 0 */
+	if (!matches_existing(0)) {
+	    fprintf(stderr, "Warning: first message in mailbox does not "
+		    "match first message in archive\n"
+		    "or obsolete gdbm file present.\n");
+	}
 	if (set_linkquotes)
 	    analyze_headers(max_msgnum + 1);
 	writearticles(0, max_msgnum + 1);
