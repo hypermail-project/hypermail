@@ -98,7 +98,6 @@ char *strsav(const char *);
 char *strreplace(char *, char *);
 void strcpymax(char *, const char *, int);
 void strtolower (char *);
-char *strcasestr(char *, const char *);
 char *stripzone(char *);
 int numstrchr(char *, char);
 char *getvalue(char *);
