@@ -1,3 +1,12 @@
+Quick summary:
+./configure
+make
+make install
+
+See the Upgrading section at the end for changes that might affect users
+of older versions.
+==========================
+
    SECURITY WARNING: Do not put hypermail's output anyplace where a web
    server might have server side includes (SSI) enabled, unless you are sure
    you know what you are doing. If in doubt, check your web server
@@ -8,7 +17,11 @@
    filenames don't end in .shtml and don't contain characters like / or \,
    which prevent some security problems, but there are few restrictions
    on what can go in a file (e.g. possibly malicious html tags - try the
-   "text_types = *" option if you want to restrict this).
+   "text_types = *" option or "ignore_types = $NONPLAIN" option if you want
+   to restrict this). You might also want to look at the attachmentlink
+   and unsafe_chars options to restrict attachment filenames.
+   Also, it is probably a bad idea to enable cgi execution on a directory
+   that hypermail puts files in.
 
 Before Building Hypermail:
 ==========================
@@ -103,3 +116,25 @@ Documentation:
 
     2) Type "make html.install". You should be able to view the
        HTML documentation using any World-Wide Web browser. 
+
+Upgrading:
+==============
+ The body option has been disabled as of version 2.1.4 for strict HTML 4.01
+compatibility. You should replace any body command you have in your .hmrc
+with a style sheet (such as a file called hypermail.css in the archive
+directory), and set icss_url and mcss_url to the url of that style
+sheet. If you want the appearance that was the default before 2.1.4, your
+style sheet should contain this:
+
+body {color: black; background: #ffffff}
+h1.center {text-align: center}
+div.center {text-align: center}
+
+ Also, if you have been using the icss_url and/or mcss_url options and
+are upgrading to 2.1.4 or higher, you might want to add those statements
+to your style sheet, 
+
+ The overwrite option defaulted to On for many versions. Starting with
+version 2.1.4, it defaults to off again. You may want to turn it on
+again occasionally to insure that all of your archive uses the same style
+(assuming you have a copy of the archive in mbox format).
