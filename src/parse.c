@@ -1248,7 +1248,8 @@ int parsemail(char *mbox,	/* file name */
 	    /* check for MIME */
 	    else if (!strncasecmp(line, "MIME-Version:", 13))
 		Mime_B = TRUE;
-	    else if (isspace(line[0]) && ('\n' != line[0])) {
+	    else if (isspace(line[0]) && ('\n' != line[0]) \
+		     && !('\r' == line[0] && '\n' == line[1])) {
 		/*
 		 * since this begins with a whitespace, it means the 
 		 * previous line is continued on this line, leave only 
@@ -1264,7 +1265,7 @@ int parsemail(char *mbox,	/* file name */
 			    BODY_CONTINUE | BODY_HEADER | bodyflags);
 	    }
 
-	    else if (line[0] == '\n') {
+	    else if (line[0] == '\n' || (line[0] == '\r' && line[1] == '\n')) {
 		struct body *head;
 
 		char savealternative;

@@ -1,5 +1,10 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Peter McCluskey (Nov 5 2001)
+  - change parse.c to treat lines containing only a carriage return as
+ blank lines for purpose of deciding whether they indicate the end of
+ headers or a continued header line.
+
 Peter McCluskey (Aug 22 2001)
   - fix Makefile to clean pcre directory.
 
