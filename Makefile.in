@@ -35,7 +35,8 @@ LDFLAGS=@LDFLAGS@ -Lpcre
 all:   hypermail support 
 
 hypermail:
-	@cd src; $(MAKE) all CC="$(CC)" CFLAGS="$(CFLAGS)" \
+	@cd src; $(MAKE) all CC="$(CC)" \
+		CFLAGS="$(CFLAGS) @FNV_INCLUDES@ @FNV_CFLAGS@" \
 		cgidir="$(cgidir)" bindir="$(bindir)" LIBS="$(LIBS)"
 
 support:   

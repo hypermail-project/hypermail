@@ -2,6 +2,15 @@ Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  Jose Kahan (jose@w3.org) (September 25, 2002)
+  Commited the ~/hypermail/ltmain.sh file and also put it in the
+  FILES section. Somehow, without this file, it was impossible to
+  compile the file generated thru a make tgz. The same kind of
+  file already existed in the pcre and fnv directories.
+  Added a rule to pass the FNV optional CFLAGS from the 
+  ~/hypermail/Makefile file, so that you can do a make from the top-level
+  (previously, you had to do it in the src directory... oops!).
+
+ Jose Kahan (jose@w3.org) (September 25, 2002)
   Updated the FILES tgz file (added libfnv, removed two non-existent
   tests).
   Fixed the make tgz rule (how long was it since it was last used?)

@@ -18,6 +18,7 @@ install-sh
 maketgz
 patchlevel.h
 acconfig.h
+ltmain.sh
 # 
 # Archive directory files 
 #
