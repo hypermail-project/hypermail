@@ -680,8 +680,9 @@ searchbackmsgnum = 500
 # If folder_by_date or msgsperfolder are in use, create
 # a symbolic link by this name to the most recently created
 # subdirectory. Note that many web servers are configured to
-# not follow symbolic links for security reasons.
-#latest_folder = 
+# not follow symbolic links for security reasons. The link will
+# be created in the directory specified by the "dir" or "-d" option.
+#latest_folder = current
 
 # iso2022jp = [ 0 | 1 ]
 #

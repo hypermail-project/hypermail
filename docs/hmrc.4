@@ -406,7 +406,8 @@ For msgsperfolder:
 If folder_by_date or msgsperfolder are in use, create
 a symbolic link by this name to the most recently created
 subdirectory. Note that many web servers are configured to
-not follow symbolic links for security reasons.
+not follow symbolic links for security reasons. The link will
+be created in the directory specified by the "dir" or "-d" option.
 .TP
 .B base_url = "url"
 The url of the archive's main directory. This is needed when

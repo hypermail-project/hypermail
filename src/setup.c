@@ -635,7 +635,9 @@ struct Config cfg[] = {
      "# If folder_by_date or msgsperfolder are in use, create\n"
      "# a symbolic link by this name to the most recently created\n"
      "# subdirectory. Note that many web servers are configured to\n"
-     "# not follow symbolic links for security reasons.\n", FALSE},
+     "# not follow symbolic links for security reasons. The link will\n"
+     "# be created in the directory specified by the 'dir' or '-d' option.",
+     FALSE},
 
     {"base_url", &set_base_url, NULL, CFG_STRING,
      "# The url of the archive's main directory. This is needed when\n"
