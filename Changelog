@@ -2,6 +2,10 @@ Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+ Kent Landfield (Feb 19, 2003)
+   - Updated TODO with configure issues and other corrections we want
+     to make to the code in the near future.
+
  Jose Kahan (jose@w3.org) (Feb 19, 2003)
    - Upgraded extract_rfc2047_content() as the previous extracting
      algorithm was broken.

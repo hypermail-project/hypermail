@@ -5,8 +5,7 @@ them to hypermail-dev@hypermail.org.
 General Things:
 ===============
 
-- Need to clean up the code and remove unused variables and 
-  old code that is commented/ifdefed out.
+- Need to clean up the code and remove old code that is commented/ifdefed out.
 
 - Update the doc files to assure all configuration file directives
   are included appropriately in the documentation. Currently the
@@ -29,6 +28,11 @@ General Things:
 
 - Make the "New List Message" and "Reply To List" features available
   when usetable == 0
+
+- system() should be replaced by fork()+execvp() (or maybe by s_popen())
+  in archive/ mbox2hypermail.c
+
+- HTML code should be escaped where appropriate.
 
 - Make it possible to insert the FONT to use in the tables.
   <TH><FONT ...>string</FONT></TH>
@@ -116,6 +120,23 @@ o Hypermail should be able to deal with Sun's (silly) mailtool
   attachments in a manner similar to how it deals with mime attachments. 
   It would be really cool if the output would be identical and the 
   differences hidden from the user(s).
+
+=================
+Configure issues
+=================
+
+Defines not used in config.h.in:
+HAVE_STRFTIME, HAVE_GETOPT, HAVE_GETPWUID, HAVE_LSTAT,
+HAVE_MKDIR, HAVE_STRCASECMP, HAVE_STRDUP, HAVE_STRSTR, HAVE_STRTOL,
+HAVE_ALLOCA_H, HAVE_ARPA_INET_H, HAVE_MALLOC_H, HAVE_NDIR_H ,
+HAVE_NETDB_H, HAVE_NETINET_IN_H, HAVE_STDARG_H, HAVE_STDIO_H,
+HAVE_SYS_DIR_H, HAVE_SYS_NDIR_H , HAVE_SYS_SOCKET_H, HAVE_TIME_H
+
+HAVE_BCOPY is only used in in pcre and not hypermail sources.
+
+Configure needs to support SunOS4x.
+
+Change prototype definitions for certain systems (FREBSD 4.6 for example)
 
 ============
 Misc. Needs:
