@@ -1944,7 +1944,7 @@ void writearticles(int startnum, int maxnum)
 	print_headers(fp, email, FALSE);
 	printbody(fp, email, maybe_reply, is_reply);
 	fprintf (fp, "<span id=\"received\"><dfn>%s</dfn> %s</span>\n", 
-		 lang[MSG_RECEIVED_ON], email->fromdatestr);
+		 lang[MSG_RECEIVED_ON],  getdatestr(email->fromdate));
 	fprintf (fp, "</div>\n");
 	printcomment(fp, "body", "end");
 
