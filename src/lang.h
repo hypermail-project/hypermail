@@ -1344,7 +1344,7 @@ char *fr[] = {       /* French */
   "En r&eacute;ponse &agrave;",             /* In reply to         -HTML*/
   "Suivant dans le th&egrave;me",          /* Next in thread      -HTML*/
   "Sans doute en r&eacute;ponse",          /* Maybe reply         -HTML*/
-  "par Thème",                      /* By Thread           -HTML*/
+  "par Th&eagrave;me",                      /* By Thread           -HTML*/
   "par Sujet",                             /* By Subject          -HTML*/
   "par Auteur",                            /* By Author           -HTML*/
   "Ne peut créer le répertoire",           /* Can not create directory -STDERR*/
@@ -1358,7 +1358,7 @@ char *fr[] = {       /* French */
   "Ne peut ouvrir l'archive de mail",      /* Cannot open mail archive */
   "Lecture du nouvel en-tête...",          /* Reading new header...-STDOUT   */
   "Chargement de la boite aux lettres",    /* Loading mailbox      -STDOUT   */
-  "encodage non supporté, stocké tel quel",/* encoding is not supported, stored as-is -HTML*/
+  "encodage non support&eacute;, stock&eacute; tel quel",/* encoding is not supported, stored as-is -HTML*/
   "messages",                              /* messages             -HTML*/
   "Version",                               /* Version            -STDOUT*/
   "Revision",                              /* Patchlevel         -STDOUT*/
@@ -1404,8 +1404,8 @@ char *fr[] = {       /* French */
   "Actions sur les mails",                 /* Mail actions (MA) header -HTML*/
   "cr&eacute;er un nouveau th&egrave;me",  /* MA New Message      -HTML*/
   "r&eacute;pondre &agrave; ce message",   /* MA Reply            -HTML*/
-  "Summary of Monthly Index Files",        /* monthly             -HTML*/
-  "Summary of Yearly Index Files",         /* yearly              -HTML*/
+  "R&eacute;capitulatif des fichiers Index mensuels",   /* monthly             -HTML*/
+  "R&eacute;capitulatif des fichiers Index annuels",         /* yearly              -HTML*/
   "Creation d'un cache GDBM pour les en-têtes",  /* Build a GDBM header cache   -STDOUT*/
   "GDBM header cache option not build in",
   		      /* GDBM header cache option not build in  -STDERR*/
@@ -1413,63 +1413,63 @@ char *fr[] = {       /* French */
   "Impossible de créer un fichier GDBM... ",    /* Can't create gdbm index     -STDOUT*/
   "Maintenance d'une archive email (mbox)",     /* Maintain an mbox archive    -STDOUT*/
   "Impossible de lire et d'écrire simultanément dans une archive email (mbox)", /* "Can't both read from and write to an mbox." -STDOUT*/
-  "Liste par fichier attachés",            /* Attachment view  -HTML*/
-  "par messages avec fichiers attachés",    /* By messages with attachments -HTML*/
+  "Liste par fichier attach&eacute;s",            /* Attachment view  -HTML*/
+  "par messages avec fichiers attach&eacute;s",    /* By messages with attachments -HTML*/
   "Ecriture de l'index 'fichiers attachés' dans",/* Writing attachment index to -STDOUT*/
   "octets",		                   /* file size, so far only for attachments  -HTML */
   "Impossible de créer un lien symbolique",/* MSG_CANNOT_CREATE_SYMLINK     -STDOUT */
   "Impossible de supprimer le fichier",    /* MSG_CANNOT_UNLINK                       -STDOUT */
-  "Dossier précédent",                     /* MSG_PREV_DIRECTORY                     -HTML */
+  "Dossier pr&eacute;c&eacute;dent",                     /* MSG_PREV_DIRECTORY                     -HTML */
   "Dossier suivant",                       /* MSG_NEXT_DIRECTORY                     -HTML */
   "Liste des dossiers",                    /* MSG_FOLDERS_INDEX                      -HTML */
   "Ce message a &eacute;t&eacute; supprim&eacute; de l'archive", /* MSG_DELETED -HTML */
   "Ce message est trop vieux",             /* MSG_EXPIRED -HTML */
-  "(message supprim&eacute)",              /* MSG_DEL_SHORT                            -HTML */
+  "(message supprim&eacute;)",              /* MSG_DEL_SHORT                            -HTML */
   "Texte original de ce message",          /* MSG_TXT_VERSION                          -HTML */
   "Ce message a &eacute;t&eacute; supprimé par filtrage",    /* MSG_FILTERED_OUT -HTML */
   "Auteur",                                /* MSG_FROM              -HTML*/
-  "Write haof XML files",       /* Write hoaf XML files       -STDOUT */
-  "Writing haof to",            /* Writing haof to               -HTML*/
-  "This message",                 /* This message -HTML */
-  "Message body",                 /* Message body -HTML */
-  "Respond",                      /* Respond -HTML */
-  "More options",                 /* More options -HTML */
-  "Related messages",             /* Related messages -HTML */
-  "Next",                         /* Next -HTML */
-  "Previous",                     /* Previous -HTML */
-  "Replies",                      /* Replies -HTML */
-  "Contemporary messages sorted", /* Contemporary messages sorted -HTML */
-  "Help",                         /* Help  -HTML */
-  "Message to which this message replies", /* In Reply To - HTML link*/
-  "Next message in this discussion thread", /* Next message in thread - HTML link*/
-  "Message sent in reply to this message", /* Replies to this message - HTML link*/
-  "Contemporary messages by date", /* Contemporary messages by date */
-  "Contemporary discussion threads", /* Contemporary messages by threads -  HTML */
-  "Contemporary messages by subject", /* Contemporary messages by subject - HTML */
-  "Contemporary messages by author", /* Contemporary messages by author - HTML*/
-  "Next message in the list", /* Next message - HTML */
-  "Previous message in the list", /* Previous message - HTML */
-  "Contemporary messages by attachment", /* Contemporary messages by attachments - HTML*/
-  "Navigation bar to upper levels", /* Navigation bar, upper levels - HTML*/
-  "Navigation bar", /* Navigation bar - HTML*/
-  "sort by", /* Sort by - HTML*/
-  "Other periods", /* Other periods - HTML */
-  "Next", /* Next folder - HTML */
-  "Messages archived in the next period, sorted by date", /* Next folder, by date - HTML link */
-  "Previous", /* Previous folder - HTML */
-  "Messages archived in the previous period, sorted by date", /* Previous folder, by date - HTML Link */
-  "List of all periods", /* List of all periods - HTML*/
-  "This period", /* This period - HTML*/
-  "Received on", /* Received on - HTML */
-  "Nearby", /* Nearby - HTML */
+  "Ecrire fichiers XML haof (archive overview files)",       /* Write hoaf XML files       -STDOUT */
+  "Ecriture des fichiers haof (archive overview files) dans",     /* Writing haof to               -HTML*/
+  "Ce message",                 /* This message -HTML */
+  "Corps du message",                 /* Message body -HTML */
+  "R&eacute;pondre",                      /* Respond -HTML */
+  "Autres options",                 /* More options -HTML */
+  "Messages en rapport",             /* Related messages -HTML */
+  "Suivant",                         /* Next -HTML */
+  "Pr&eacute;cedent",                     /* Previous -HTML */
+  "R&eacute;ponses",                      /* Replies -HTML */
+  "Messages r&eacute;cents tri&eacute;s", /* Contemporary messages sorted -HTML */
+  "Aide",                         /* Help  -HTML */
+  "Message auquels ce message r&eacute;pond", /* In Reply To - HTML link*/
+  "Message suivant dans la discussion", /* Next message in thread - HTML link*/
+  "Message envoy&eacute; en r&eacute;ponse au message courant", /* Replies to this message - HTML link*/
+  "Messages r&eacute;cents par date", /* Contemporary messages by date */
+  "Discussions r&eacute;centes", /* Contemporary messages by threads -  HTML */
+  "Messages r&eacute;cents par sujet", /* Contemporary messages by subject - HTML */
+  "Messages r&eacute;cents par auteur", /* Contemporary messages by author - HTML*/
+  "Message suivant dans la liste", /* Next message - HTML */
+  "Message pr&eacute;cedent dans la liste", /* Previous message - HTML */
+  "Messages r&eacute;cents par fichier attach&eacute;", /* Contemporary messages by attachments - HTML*/
+  "Barre de navigation vers le niveau sup&eacute;rieur", /* Navigation bar, upper levels - HTML*/
+  "Barre de navigation", /* Navigation bar - HTML*/
+  "Trier par", /* Sort by - HTML*/
+  "Autres p&eacute;riodes", /* Other periods - HTML */
+  "Suivant", /* Next folder - HTML */
+  "Messages archives dans la p&eacute;riode suivante, tri&eacute;s par date", /* Next folder, by date - HTML link */
+  "Pr&eacute;cedent", /* Previous folder - HTML */
+  "Messages archives dans la p&eacute;riode pr&eacute;cedente, tri&eacute;s par date", /* Previous folder, by date - HTML Link */
+  "Liste de toutes les p&eacute;riodes", /* List of all periods - HTML*/
+  "Cette p&eacute;riode", /* This period - HTML*/
+  "Re&Ccedil;u le", /* Received on - HTML */
+  "A cot&eacute; de", /* Nearby - HTML */
   "re-sorted", /* Resorted - HTML */
-  "listed by date", /* listed by date - HTML */
-  "by discussion threads" , /* discussion threads - HTML */
-  "listed by author", /* listed by author - HTML */
-  "by subject", /* listed by subject - HTML */
-  "by attachment", /* by attachment - HTML */
-  "period", /* period - HTML */
-  " to ", /* to - HTML */
+  "list&eacute; par date", /* listed by date - HTML */
+  "par fil de discussion" , /* discussion threads - HTML */
+  "list&eacute; par auteur", /* listed by author - HTML */
+  "par sujet", /* listed by subject - HTML */
+  "par fichier attach&eacute;", /* by attachment - HTML */
+  "p&eacute;riode", /* period - HTML */
+  " &eagrave; ", /* to - HTML */
   "from", /* from - HTML */
   "on", /* on - HTML */
   NULL,                                    /* End Of Message Table  - NOWHERE*/
