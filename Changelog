@@ -1,6 +1,12 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+ Jose Kahan (jose@w3.org) (Jan 25, 2002)
+   - When a message had a charset of type US-ASCII or ISO-8959-1, it wasn't being
+     stored in the HTML version of the message. This could result in a correct
+     decoding of the message, as browsers assume a user-given default charset in those
+     cases.
+
 Peter McCluskey (Dec 19 2001)
    Create version 2.1.4 tarball.
 

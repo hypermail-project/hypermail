@@ -1496,11 +1496,8 @@ int parsemail(char *mbox,	/* file name */
 				cp++;	/* pass a quote too if one is there */
 
 			    sscanf(cp, "%128[^;\"\n]", charbuffer);
-			    if (strcasecmp("ISO-8859-1", charbuffer) &&
-				strcasecmp("US-ASCII", charbuffer))
-				/* If this isn't any of the charsets above,
-				   then save the charset info! */
-				charset = strsav(charbuffer);
+			    /* save the charset info */
+			    charset = strsav(charbuffer);
 			}
 
 			if (alternativeparser) {
