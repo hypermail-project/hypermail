@@ -21,10 +21,10 @@
 #include <assert.h>
 #include <ctype.h>
 #include "proto.h"
+#include "setup.h"
 #include "struct.h"
 #include "print.h"
 #include "search.h"
-#include "setup.h"
 
 static int bigram_count = 0;
 static struct reply *replylist_tmp;
