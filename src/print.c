@@ -1412,8 +1412,12 @@ has_new_replies(struct emailinfo *email)
 {
     struct reply *rp;
     static int max_old_msgnum = -2;
-    if (max_old_msgnum == -2)
+    if (max_old_msgnum == -2) {
+      if (set_nonsequential)
+	max_old_msgnum = find_max_msgnum_id();
+      else
 	max_old_msgnum = find_max_msgnum();
+    }
     if (email->msgnum == max_old_msgnum)
 	return 1;  /* next msg needs to be linked, even if no new reply */
 #ifdef FASTREPLYCODE
@@ -2821,17 +2825,17 @@ void write_messageindex (int startnum, int maxnum)
     buf = messageindex_name ();
     fp = fopen (buf, "w");
     free (buf);
-    fprintf (fp, "%.04d %.04d\n", startnum, maxnum);
+    fprintf (fp, "%.04d %.04d\n", startnum, maxnum - 1);
 
     /* write the reference to the message filenames */
     num = startnum;
-    while (num < maxnum) {
-	if ((bp = hashnumlookup(num, &email)) != NULL) 
-	  {
-	    buf = message_name (email);
-	    fprintf (fp, "%.04d %s.html\n", num, buf);
-	  }
-	num++;
+    while (num <  maxnum) {
+      if ((bp = hashnumlookup(num, &email)) != NULL) 
+	{
+	  buf = message_name (email);
+	  fprintf (fp, "%.04d %s\n", num, buf);
+	}
+      num++;
     }
     fclose (fp);
 } /* end write_messageindex () */

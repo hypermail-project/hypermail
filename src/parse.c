@@ -2672,6 +2672,10 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
 
     char inreply_start[256];
     static char *inreply_start_old = "<b>In reply to:</b> <a href=\"";
+
+    if (set_nonsequential && !msgnum_id_table[num])
+      return 0;
+
     if (set_linkquotes) {
 	sprintf(inreply_start, "<strong>%s:</strong> <a href=\"",
 		lang[MSG_IN_REPLY_TO]);

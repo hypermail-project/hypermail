@@ -422,7 +422,7 @@ char ** read_msgnum_id_table(int max_num)
     if (max_num == -1)
       return NULL;
 
-    table = (char **) calloc (sizeof (char *), max_num);
+    table = (char **) calloc (sizeof (char *), max_num + 1);
 
     /* open the index file */
     buf = messageindex_name ();
@@ -433,7 +433,7 @@ char ** read_msgnum_id_table(int max_num)
     fgets (line, sizeof(line), fp);
 
     read_msgs = 0;
-    while (fgets (line, sizeof (line), fp) && read_msgs < max_num)
+    while (fgets (line, sizeof (line), fp) && read_msgs <= max_num)
       {
 	char *msgid;
 	int num;

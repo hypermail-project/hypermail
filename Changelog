@@ -1,6 +1,11 @@
 Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Jose Kahan (jose@w3.org) (October 1, 2002)
+  The non-sequential msgid mode didn't work when updating the
+  archives by one message. Fixed a confusion in the generation of
+  the msgindex file.
+
  Jose Kahan (jose@w3.org) (September 26, 2002)
   Cleaned the autoconf files for passing the libnvf compile parameters
   (what a difference does reading the manual make).
