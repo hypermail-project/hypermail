@@ -1,5 +1,19 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (August 20, 2002)
+  Change preferedcontent to fall back on type "text/" or on encoding if
+  it can't find any prefered types.
+  Fix mdecodeRFC2047 to decode headers of any length (removing 128 byte limit).
+  Add classes to default stylesheet to set colors of headers, standard links,
+  and of quoted text according to quote nesting depth.
+
+ Peter McCluskey (August 16, 2002)
+  Fix bug internal error in crossindexthread2 resulting from message with
+  unterminated mime.
+
+ Peter McCluskey (August 11, 2002)
+  Add Norwegian language support from Bosse Klykken.
+
  Peter McCluskey (August 7, 2002)
   Add contrib/msg2hypermailarchive.py from Bernhard Reiter.
   Add antispamdomain option from Vincent McIntyre.
