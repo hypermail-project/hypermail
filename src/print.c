@@ -1221,6 +1221,12 @@ void writearticles(int startnum, int maxnum)
 	    
       if(!(gp = gdbm_open(indexname, 0, GDBM_WRCREAT, 0664, 0))) {
 
+	if (set_folder_by_date && set_increment && !is_empty_archive()) {
+		sprintf(errmsg, "Cannot open or create file \"%s\". Unable to "
+			"do\nincremental updates with the folder_by_date "
+			"option without using that file.", indexname);
+		progerr(errmsg);
+	}
 	/* couldn't open; unlink it rather than risk running
 	 * with an inconsistent version; it will be recreated if
 	 * necessary */
