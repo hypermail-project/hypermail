@@ -43,6 +43,14 @@ contrib/canonicalize.pl
 contrib/hyperfeed.pl
 contrib/hypetombox.pl
 contrib/cron_hypermail
+contrib/ls2mail
+contrib/hoaf-28/README
+contrib/hoaf-28/collect_snipplets.py
+contrib/hoaf-28/create_archive_snipplet.py
+contrib/hoaf-28/footer_html.hdr
+contrib/hoaf-28/haof-0.1.dtd
+contrib/hoaf-28/hypermail-2b28-2b28+.patch
+contrib/hoaf-28/top_html.hdr
 # 
 # Documentation
 #
@@ -137,8 +145,10 @@ tests/test-msg.hyp
 tests/test.rc
 tests/testhm.in
 tests/mboxes/1msg.mbox
+tests/mboxes/content-base.msg
 tests/mboxes/critmail.mbox
 tests/mboxes/embedded.msg
+tests/mboxes/mimetext.msg
 tests/mboxes/t1
 tests/mboxes/t2
 tests/mboxes/t3

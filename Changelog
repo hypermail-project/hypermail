@@ -1,5 +1,36 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (Mar 12 2001)
+  Added some files in contrib and tests/mboxes to FILES.
+
+ Peter McCluskey (Mar 2 2001)
+  Added features originally implemented in critmail. New source files:
+     finelink.c
+     finelink.h
+     quotes.c
+     search.c
+     search.h
+     txt2html.c
+     txt2html.h
+  New options:
+    - showhtml: new option value 2 gives richer conversion to html borrowed
+       from txt2html.pl.
+    - monthly_index: create additional index files broken up by month.
+    - yearly_index: create additional index files broken up by year.
+    - thread_file_depth: break the threads index file into multiple files,
+       roughly one per thread.
+    - linkquotes:  creates fine-grained links from quoted text to the text
+       where the quote originated. It also improves the threads index file
+       by more accurately matching messages with replies.
+    - searchbackmsgnum: with linkquotes and -u, speeds up processing, with
+       some risk that linkquotes won't find all links it should.
+    - link_to_replies: generate links from original quoted text to the
+       location(s) in replies which quote them.
+    - quote_hide_threshold: If the linkquotes option is on, replaces quoted
+       text with links in messages which quote too much.
+    - quote_link_string: with quote_hide_threshold, use this text in place
+       of first line of quoted text.
+
  Peter McCluskey (Feb 20 2001)
   - replaced the bodymailcommand with the following, to be more compatible:
    * mailcommand - works as before unless replymsg_command specified
