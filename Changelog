@@ -2,7 +2,11 @@ Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
- Kent Landfield (kent@hypermail.org) (February 10, 2003)
+ Kent Landfield (kent@hypermail.org) (February 12, 2003)
+  - Converted msg2archive.c to use Thomas Biege's <thomas@suse.de>
+    s_popen() instead of popen().
+
+ Kent Landfield (kent@hypermail.org) (February 11, 2003)
   - Modified configure.in to test for snprintf. This is needed
     since Solaris 2.5.1 does not have snprintf.  This only affects
     the msg2archive and mbox2hypermail in the archive directory.
