@@ -72,6 +72,7 @@ int uudecode(FILE *input,	/* get file data from (if needed) */
 	*length = 0;		/* in case we abort early */
     
 
+    buf[0] = 0;
     if (init) {
 	/* search for header line */
 	while (2 != sscanf(iptr, "begin %o %s", &mode, buf)) {

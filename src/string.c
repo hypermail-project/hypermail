@@ -1069,7 +1069,7 @@ char *parseurl(char *input)
 			      "<a href=\"%s%s\">%s%s</a>",
 			      thisprotocol, urlbuff2, thisprotocol, urlbuff2);
 		PushString(&buff, tempbuff); /* append the tag buffer */
-		inputp += strlen(urlbuff2);
+		inputp += strlen(urlbuff);
 		free(urlbuff2);
 	    } else {
 	        PushString(&buff, thisprotocol);

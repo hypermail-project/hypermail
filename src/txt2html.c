@@ -91,15 +91,18 @@ static int find_vertical_repeats(const struct body *bp)
     if (!bp->next) {
 	return 0;
     }
-    for (i = (isquote(bp->line) ? strlen(get_quote_prefix()) : 0);
-	 i < MAXLINE; ++i) {
+    i = (isquote(bp->line) ? strlen(get_quote_prefix()) : 0);
+    if (i > strlen(bp->line))
+	return 0;
+    for ( ; i < MAXLINE; ++i) {
 	int j;
 	const struct body *bp2 = bp->next;
-	if (!bp->line[i] || !bp2->line[i]) {
+	if (!bp->line[i] || i > strlen(bp2->line) || !bp2->line[i]) {
 	    return 0;
 	}
 	for (j = 1; bp2; ++j) {
-	    if (bp->line[i] != bp2->line[i] || !ispunct(bp->line[i]))
+	    if (i >= strlen(bp2->line)
+		|| bp->line[i] != bp2->line[i] || !ispunct(bp->line[i]))
 		break;
 	    bp2 = bp2->next;
 	}
@@ -584,7 +587,7 @@ txt2html(FILE *fp, struct emailinfo *email, const struct body *bp,
     }
 
     if (unhyphenation && !is_blank_line && !in_pre_block && !inquote
-	&& !was_break && line[strlen(line) - 2] == '-') {
+	&& !was_break && strlen(line) >= 2 && line[strlen(line) - 2] == '-') {
 	char *new_line = unhyphenate(line, next_line);
 	if (new_line != line) {
 	    free(line);

@@ -1131,7 +1131,7 @@ int parsemail(char *mbox,	/* file name */
     char alternative_file[129];	/* file name where we store the non-inline alternatives */
     char alternative_lastfile[129];	/* last file name where we store the non-inline alternatives */
     int att_counter = 0;	/* used to generate a unique name for attachments */
-    struct hmlist *att_name_list, *att_name_last; /* keeps track of attachment file name used so far for this message */
+    struct hmlist *att_name_list = NULL, *att_name_last; /* keeps track of attachment file name used so far for this message */
 
     /* -- end of alternative parser variables -- */
 
