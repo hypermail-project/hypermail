@@ -4,6 +4,12 @@ Version Changes for Hypermail
 ============================
 HYPERMAIL VERSION pre-2.1.9:
 ============================
+ Peter McCluskey (Nov 17, 2003)
+  Add a check for the problem with the starting message number that was
+ partly fixed on Oct 1. Now old archives with a startmsgnum = 0 .hmrc but
+ a first message of 0001.html in this case will be treated as if startmsgnum
+ was 0.
+
  Peter McCluskey (Nov 15, 2003)
   Add Portugese support from Hugo Cisneiros.
 

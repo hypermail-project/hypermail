@@ -3055,6 +3055,14 @@ static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
     if (set_folder_by_date) {
 	if (!num_from_gdbm)
 	    return 0;
+#ifdef GDBM
+	if (set_usegdbm && !hashnumlookup(first_read_body, &e0)
+	    && set_startmsgnum == 0 && first_read_body == 0
+	    && num_from_gdbm != -1 && hashnumlookup(1, &e0)) {
+	    /* kludge to handle old archives that mistakenly started with 0001 */
+	    first_read_body = 1;
+	}
+#endif
 	if (!hashnumlookup(first_read_body, &e0)) {
 #ifdef GDBM
 	    if (set_usegdbm) {
