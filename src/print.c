@@ -600,13 +600,13 @@ void print_haof_indices(FILE *fp, struct emailsubdir *subdir)
     if (show_index[dlev][DATE_INDEX])
 		fprintf(fp, "       <dateindex>%s</dateindex>\n", index_name[dlev][DATE_INDEX]);
 
-    if (show_index[dlev][AUTHOR_INDEX])
-		fprintf(fp, "       <subjectindex>%s</subjectindex>\n", index_name[dlev][AUTHOR_INDEX]);
+    if (show_index[dlev][SUBJECT_INDEX])
+		fprintf(fp, "       <subjectindex>%s</subjectindex>\n", index_name[dlev][SUBJECT_INDEX]);
 
     if (show_index[dlev][THREAD_INDEX])
 		fprintf(fp, "       <threadindex>%s</threadindex>\n", index_name[dlev][THREAD_INDEX]);
 
-    if (show_index[dlev][SUBJECT_INDEX])
+    if (show_index[dlev][AUTHOR_INDEX])
 		fprintf(fp, "       <authorindex>%s</authorindex>\n", index_name[dlev][AUTHOR_INDEX]);
 
     if (show_index[dlev][ATTACHMENT_INDEX])
@@ -2601,7 +2601,6 @@ void writehaof(int amountmsgs, struct emailinfo *email)
     FILE *fp;
 
     filename = haofname(email);
-    printf("haofname %s\n", filename);
 
     if (isfile(filename))
 	newfile = 0;
