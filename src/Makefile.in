@@ -142,10 +142,10 @@ mem.o: mem.c hypermail.h ../config.h ../patchlevel.h trio.h proto.h \
  lang.h
 parse.o: parse.c hypermail.h ../config.h ../patchlevel.h trio.h \
  proto.h lang.h setup.h struct.h uudecode.h base64.h search.h \
- getname.h parse.h print.h /usr/local/include/gdbm.h
+ getname.h parse.h print.h
 print.o: print.c hypermail.h ../config.h ../patchlevel.h trio.h \
  proto.h lang.h setup.h struct.h printfile.h print.h parse.h \
- txt2html.h finelink.h threadprint.h /usr/local/include/gdbm.h
+ txt2html.h finelink.h threadprint.h
 printfile.o: printfile.c hypermail.h ../config.h ../patchlevel.h \
  trio.h proto.h lang.h setup.h print.h printfile.h
 quotes.o: quotes.c hypermail.h ../config.h ../patchlevel.h trio.h \
