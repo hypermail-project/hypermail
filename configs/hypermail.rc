@@ -1,3 +1,4 @@
+
 #hm_listname = hypermail
 #hm_mboxdir = /ftp/hypermail/mail-archive/mailbox
 #hm_archives = NONE
@@ -35,7 +36,6 @@ hm_ihtmlheaderfile = /usr/local/lib/hypermail/hypermail-index.hyp
 hm_mhtmlheaderfile = /usr/local/lib/hypermail/hypermail-msg.hyp
 hm_ihtmlfooterfile = /usr/local/lib/hypermail/hypermail-footer.hyp
 hm_mhtmlfooterfile = /usr/local/lib/hypermail/hypermail-footer.hyp
-#hm_body=<body bgcolor="#F4D659" text="#333333">
 
 hm_inline_types = image/gif image/jpeg
 hm_ignore_types = text/x-vcard
