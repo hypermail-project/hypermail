@@ -841,7 +841,6 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply)
     char *id = email->msgid;
     char *subject = email->subject;
     int msgnum = email->msgnum;
-    char *inreply = email->inreplyto;
 #ifdef REMOVED_19991103
     int inhtml;
 #endif
@@ -1467,6 +1466,8 @@ void writearticles(int startnum, int maxnum)
 
 	if (!set_usetable) {
             int dlev = (email->subdir != NULL);
+	    if (!set_show_msg_links)
+		fprintf(fp, "<ul>\n");
 	    fprintf(fp,"<li><strong>%s %s:</strong> \n",
 		      lang[MSG_MESSAGES], lang[MSG_SORTED_BY]);
 	    if (show_index[dlev][DATE_INDEX])
