@@ -98,7 +98,7 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 	    num_replies[level] = 0;
 	    if ((level < set_thrdlevels) && !set_indextable) {
 		if (level > thread_file_depth) {
-		    fprintf(fp, "<li><ul>\n");
+		    fprintf(fp, "<ul>\n");
 		}
 		else if (level < MAXSTACK) {
 		    char *filename;
