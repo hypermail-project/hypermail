@@ -1,6 +1,10 @@
 Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (April 3, 2003)
+   - spam encoding from Peter Karlsson. Currently enabled via the
+    spamprotect option.
+
  Jose Kahan (Apr 23, 2003)
    - As a consequence of the XHTML convertion, unconvchars() wasn't
      storing information into the buffer when there were no entities.
@@ -20,6 +24,9 @@ Version Changes for Hypermail
      If you have a charset issue, your XHTML document will be invalid.
      As XHTML is backwards compatible with HTML, you can avoid this problem
      by continuing to use the text/html MIME type.
+
+ Peter McCluskey (April 3, 2003)
+   Fixed so attachment.html doesn't list .meta directory.
 
  Kent Landfield (Mar 20, 2003)
    - Added Splint (www.splint.org) support to src/Makefile.in
