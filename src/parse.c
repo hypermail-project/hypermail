@@ -1218,7 +1218,7 @@ int parsemail(char *mbox,	/* file name */
 
     if (use_stdin || !mbox || !strcasecmp(mbox, "NONE"))
 	fp = stdin;
-    else if ((fp = fopen(mbox, "r")) == NULL) {
+    else if ((fp = fopen(mbox, "rb")) == NULL) {
         snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", 
                  lang[MSG_CANNOT_OPEN_MAIL_ARCHIVE], mbox);
 	progerr(errmsg);

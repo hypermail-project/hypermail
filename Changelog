@@ -5,6 +5,9 @@ Version Changes for Hypermail
 HYPERMAIL VERSION pre-2.1.9:
 ============================
 
+ Peter McCluskey (Aug 16, 2003)
+  - applied fix from Jean-Charles Meyrignac to handle 0x1A in mbox.
+
  Jose Kahan (Aug  14, 2003)
   - After receiving more feedback, reverted the changes done for converting the
     displayed value of the Date: header. The reason is that users like to know
@@ -36,6 +39,9 @@ HYPERMAIL VERSION pre-2.1.9:
     already exists in that line. The best solution would be to do something 
     similar to ConvURLsWithHrefs.
     Also fixed a memory leak.
+
+ Peter McCluskey (Aug 8, 2003)
+  - Applied haof fixes from Bernhard Reiter.
 
  Jose Kahan (Aug  4, 2003)
   - As a side effect of PNK's use of an SGML entity for the @ char, the 
