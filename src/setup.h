@@ -100,7 +100,6 @@ extern char *set_replymsg_command;
 extern char *set_mailto;
 extern char *set_hmail;
 extern char *set_domainaddr;
-extern char *set_htmlbody;
 
 extern char *set_icss_url;
 extern char *set_mcss_url;

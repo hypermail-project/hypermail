@@ -14,7 +14,6 @@
 **              %~ - storage directory
 **              %a - Other Archives URL
 **              %b - About Archive URL
-**              %B - Body line specified
 **              %c - Charset META TAG - Not valid on index pages
 **              %e - email addr of message author - Not valid on index pages
 **              %f - file name of the HTML document
@@ -78,12 +77,6 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 	    case 'a':		/* %a - Other Archives URL */
 		if (set_archives) {
 		    for (cp = set_archives; *cp; cp++)
-			putc(*cp, fp);
-		}
-		continue;
-	    case 'B':		/* %B - BODY specified */
-		if (set_htmlbody) {
-		    for (cp = set_htmlbody; *cp; cp++)
 			putc(*cp, fp);
 		}
 		continue;
@@ -199,21 +192,13 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
     }
 
     /* 
-     * Assure the title is not longer than 64 characters as is
-     * recommended by the HTML specs. Also, strip off any trailing
-     * whitespace in TITLE so weblint is happy. 
+     * Strip off any trailing whitespace in TITLE so weblint is happy. 
      */
 
     trio_asprintf(&title, "%s: %s", label, rp = convchars(subject));
     free(rp);
 
-    if (!set_iso2022jp && strlen(title) > TITLESTRLEN) {
-	rp = title + (TITLESTRLEN - 1);
-	*rp-- = '\0';
-    }
-    else
-	rp = title + (strlen(title) - 1);
-
+    rp = title + (strlen(title) - 1);
     while (isspace(*rp))
 	*rp-- = '\0';
 
@@ -227,18 +212,29 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
     free(rp);
     if (use_mailto)
 	fprintf(fp, "<link rev=\"made\" href=\"mailto:%s\">\n", set_mailto);
+
     /* print the css url according to the type of header */
-    if (index_header && set_icss_url && *set_icss_url)
-        fprintf(fp, "<link rel=\"Stylesheet\" href=\"%s\">\n", set_icss_url);
-    else if (!index_header && set_mcss_url && *set_mcss_url)
-      fprintf(fp, "<link rel=\"Stylesheet\" href=\"%s\">\n", set_mcss_url);
+    if (index_header && set_icss_url && *set_icss_url) {
+      fprintf(fp, "<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">\n",
+              set_icss_url);
+
+    } else if (!index_header && set_mcss_url && *set_mcss_url) {
+      fprintf(fp, "<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">\n",
+              set_mcss_url);
+
+    } else {
+      /*
+       * if style sheets are not specified, emit a default one.
+       */
+      fprintf(fp, "<style type=\"text/css\">\n");
+      fprintf(fp, "body {color: black; background: #ffffff}\n");
+      fprintf(fp, "h1.center {text-align: center}\n");
+      fprintf(fp, "div.center {text-align: center}\n");
+      fprintf(fp, "</style>\n");
+    }
 
     fprintf(fp, "</head>\n");
-
-    if (set_htmlbody)
-	fprintf(fp, "%s\n", set_htmlbody);
-    else
-	fprintf(fp, "<body bgcolor=\"#FFFFFF\" text=\"#000000\">\n");
+    fprintf(fp, "<body>\n");
 }
 
 /*
@@ -257,7 +253,7 @@ void print_msg_header(FILE *fp, char *label, char *subject,
 	print_main_header(fp, FALSE, set_label, name, email, subject,
 			  charset, filename);
 #if 0 /* JK modified this */       
-	fprintf(fp, "<h1 align=\"center\">%s</h1>\n",
+	fprintf(fp, "<h1 class=\"center\">%s</h1>\n",
 		ptr = convchars(subject));
 	free(ptr);
 #endif
@@ -283,7 +279,7 @@ void print_index_header(FILE *fp, char *label, char *dir, char *subject,
 		  NULL, NULL, filename);
     else {
 	print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL);
-	fprintf(fp, "<h1 align=\"center\">%s<br>%s</h1>\n", label, subject);
+	fprintf(fp, "<h1 class=\"center\">%s<br>%s</h1>\n", label, subject);
 #if 0 /*@@ JK: removed it */	
 	if (!set_usetable)
 	    fprintf(fp, "<hr nohade>\n");

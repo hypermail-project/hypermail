@@ -75,7 +75,6 @@ char *set_replymsg_command;
 char *set_mailto;
 char *set_hmail;
 char *set_domainaddr;
-char *set_htmlbody;
 
 char *set_icss_url;
 char *set_mcss_url;
@@ -354,9 +353,6 @@ struct Config cfg[] = {
     {"domainaddr", &set_domainaddr, DOMAINADDR, CFG_STRING,
      "# Set this to the domainname you want added to a mail address\n"
      "# appearing in the RFC822 field which lack a hostname.\n"},
-
-    {"body", &set_htmlbody, BODY, CFG_STRING,
-     "# This is the <body> line to use when generating the HTML pages.\n"},
 
     {"icss_url", &set_icss_url, NULL, CFG_STRING,
      "# Specifies a URL to an external CSS stylesheet for the index pages.\n"
@@ -993,7 +989,6 @@ void dump_config(void)
     printf("set_mailto = %s\n",set_mailto ? set_mailto : "Not set");
     printf("set_hmail = %s\n",set_hmail ? set_hmail : "Not set");
     printf("set_domainaddr = %s\n",set_domainaddr ? set_domainaddr : "Not set");
-    printf("set_htmlbody = %s\n",set_htmlbody ? set_htmlbody : "Not set");
     printf("set_icss_url = %s\n",set_icss_url ? set_icss_url : "Not set");
     printf("set_mcss_url = %s\n",set_mcss_url ? set_mcss_url : "Not set");
 

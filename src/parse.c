@@ -250,25 +250,6 @@ void print_progress(int num, char *msg, char *filename)
     fflush(stdout);
 }
 
-#if 0
-char *tmpname(char *dir, char *pfx)
-{
-    char *f, *name;
-    static int cntr = 0;
-
-    trio_asprintf(&name, "%s/%s%dXXXXXX", dir, pfx, cntr++);
-    if (NULL == name)
-	return (NULL);
-
-    if ((f = mktemp(name)) != NULL)
-	return (f);
-
-    /* this means failure: */
-    free(name);
-    return (NULL);
-}
-#endif
-
 char *safe_filename(char *name)
 {
     register char *sp;

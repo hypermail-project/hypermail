@@ -484,11 +484,6 @@ int main(int argc, char **argv)
      * A bigger win on larger archives.
      */
 
-    if (set_htmlbody && !strcasecmp(set_htmlbody, "NONE")) {
-	free(set_htmlbody);
-	set_htmlbody = NULL;
-    }
-
     if (set_hmail && !strcasecmp(set_hmail, "NONE")) {
 	free(set_hmail);
 	set_hmail = NULL;

@@ -184,7 +184,7 @@ void fprint_menu(FILE *fp, mindex_t idx, char *archives, char *currentid,
     int i;
     int count_l = 0;
     fprintf(fp,
-	    "<div align=\"center\">\n<table border=\"2\" width=\"100%%\">\n<tr>\n");
+	    "<div class=\"center\">\n<table border=\"2\" width=\"100%%\">\n<tr>\n");
 
     if (set_mailcommand) {
 	if (set_hmail) {
@@ -273,7 +273,7 @@ void fprint_menu(FILE *fp, mindex_t idx, char *archives, char *currentid,
 
 void fprint_summary(FILE *fp, int pos, long first_d, long last_d, int num)
 {
-    fprintf(fp, "<div align=\"center\">\n");
+    fprintf(fp, "<div class=\"center\">\n");
     fprintf(fp, "<table>\n");
 
     if (pos == PAGE_TOP) {
@@ -1860,7 +1860,7 @@ void writedates(int amountmsgs, struct emailinfo *email)
      */
     if (set_indextable)
 	fprintf(fp,
-		"<div align=\"center\">\n<table width=\"80%%\">\n<tr><td><u><strong>%s</strong></u></td><td><u><strong>%s</strong></u></td><td><u><strong>%s</strong></u></td></tr>\n",
+		"<div class=\"center\">\n<table width=\"80%%\">\n<tr><td><u><strong>%s</strong></u></td><td><u><strong>%s</strong></u></td><td><u><strong>%s</strong></u></td></tr>\n",
 		lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
     else
 	fprintf(fp, "<ul>\n");
@@ -1958,7 +1958,7 @@ void writeattachments(int amountmsgs, struct emailinfo *email)
 
     if (set_indextable) {
 	fprintf(fp,
-		"<div align=\"center\">\n<table width=\"80%%\">\n<tr><td><u><strong>%s</strong></u></td><td><u><strong>%s</strong></u></td><td><u><strong>%s</strong></u></td></tr>\n",
+		"<div class=\"center\">\n<table width=\"80%%\">\n<tr><td><u><strong>%s</strong></u></td><td><u><strong>%s</strong></u></td><td><u><strong>%s</strong></u></td></tr>\n",
 		lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
 	printattachments(fp, datelist, email);
 	fprintf(fp, "</table>\n</div>\n<p>\n");
@@ -2059,7 +2059,7 @@ void writethreads(int amountmsgs, struct emailinfo *email)
 
     if (set_indextable) {
 	fprintf(fp,
-		"<div align=\"center\">\n<table>\n<tr><td><u><strong>%s</strong></u></td><td><u><strong>%s</strong></u></td><td><u><strong> %s</strong></u></td></tr>\n",
+		"<div class=\"center\">\n<table>\n<tr><td><u><strong>%s</strong></u></td><td><u><strong>%s</strong></u></td><td><u><strong> %s</strong></u></td></tr>\n",
 		lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
 	print_all_threads(fp, -1, -1, email);
 	fprintf(fp, "</table>\n</div>\n<p>\n");
@@ -2203,7 +2203,7 @@ void writesubjects(int amountmsgs, struct emailinfo *email)
 
     if (set_indextable) {
 	fprintf(fp,
-		"<div align=\"center\">\n<table>\n<tr><td><u><strong>%s</strong></u></td><td><u><strong>%s</strong></u></td><td><u><strong> %s</strong></u></td></tr>\n",
+		"<div class=\"center\">\n<table>\n<tr><td><u><strong>%s</strong></u></td><td><u><strong>%s</strong></u></td><td><u><strong> %s</strong></u></td></tr>\n",
 		lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
     }
     else {
@@ -2353,7 +2353,7 @@ void writeauthors(int amountmsgs, struct emailinfo *email)
 
     if (set_indextable) {
 	fprintf(fp,
-		"<div align=\"center\">\n<table>\n<tr><td><u><strong>%s</strong></u></td><td><u><strong>%s</strong></u></td><td><u><strong> %s</strong></u></td></tr>\n",
+		"<div class=\"center\">\n<table>\n<tr><td><u><strong>%s</strong></u></td><td><u><strong>%s</strong></u></td><td><u><strong> %s</strong></u></td></tr>\n",
 		lang[MSG_CAUTHOR], lang[MSG_CSUBJECT], lang[MSG_CDATE]);
     }
     else {
@@ -2495,7 +2495,7 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
 
 		if (set_indextable) {
 		    fprintf(fp1,
-			    "<div align=center>\n<table>\n<tr><td><u><strong>%s</strong></u></td><td><u><strong>%s</strong></u></td><td><u><strong> %s</strong></u></td></tr>\n",
+			    "<div class=\"center\">\n<table>\n<tr><td><u><strong>%s</strong></u></td><td><u><strong>%s</strong></u></td><td><u><strong> %s</strong></u></td></tr>\n",
 			    lang[j == AUTHOR_INDEX ? MSG_CAUTHOR : MSG_CSUBJECT],
 			    lang[j == AUTHOR_INDEX ? MSG_CSUBJECT : MSG_CAUTHOR],
 			    lang[MSG_CDATE]);

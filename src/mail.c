@@ -55,7 +55,7 @@ static void progerr(const char *s)
     printf("<title>Email Gateway Error</title>\n");
     printf("</head>\n");
     printf("<body bgcolor=\"#ffffff\" text=\"#000000\">\n");
-    printf("<h1 align=\"center\">Email Gateway Error</h1>\n");
+    printf("<h1 class=\"center\">Email Gateway Error</h1>\n");
     printf("This gateway program encountered an error:\n<p>\n");
     printf("<code>%s</code>\n", s);
     printf("</body>\n</html>\n");
@@ -93,11 +93,11 @@ void printform(char *to, char *from, char *subject,
     printf("<br>hostname %s\n", hostn);
 #endif
 
-    printf("<h1 align=\"center\">Email Gateway</h1>\n");
+    printf("<h1 class=\"center\">Email Gateway</h1>\n");
     printf
 	("<p align=\"center\"><em>Send an email message by filling in the form below.<br>Make sure your user name is specified correctly on the From: line.</em></p>\n");
 
-    printf("<div align=\"center\">\n");
+    printf("<div class=\"center\">\n");
     printf("<form method=\"post\" action=\"%s\">\n", CGINAME);
     printf("<pre>\n");
     printf("<strong>     To:</strong> ");
@@ -215,7 +215,7 @@ void cgi_main(cgi_info *ci)
 	    printf("<title>Email Gateway Response</title>\n");
 	    printf("</head>\n");
 	    printf("<body bgcolor=\"#ffffff\" text=\"#000000\">\n");
-	    printf("<h1 align=\"center\">Your message has been sent.</h1>\n");
+	    printf("<h1 class=\"center\">Your message has been sent.</h1>\n");
 
 	    printf("The following message has been sent to ");
 	    printf("<strong>%s</strong>:\n<p>\n<hr>\n\n", to);
