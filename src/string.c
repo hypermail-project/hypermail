@@ -248,7 +248,8 @@ char *strcasestr (char *phaystack, const char *pneedle)
 	      a = *++haystack;
 	      if (a == '\0')
 		goto ret0;
-shloop:	    }
+shloop:	    ;
+    	 }
           while (tolower (a) != b);
 
 jin:	  a = *++haystack;

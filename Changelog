@@ -1,5 +1,9 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Kent Landfield (May 4 2001)
+  - corrected compilation issue for Sun CC in string.c
+  - corrected check for set_custom_archives in hypermail.c
+
 Peter McCluskey (May 1 2001)
   - convert mprintf calls to trio calls
 

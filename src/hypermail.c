@@ -499,7 +499,7 @@ int main(int argc, char **argv)
 	set_archives = NULL;
     }
 
-    if (set_archives && !strcasecmp(set_custom_archives, "NONE")) {
+    if (set_custom_archives && !strcasecmp(set_custom_archives, "NONE")) {
 	free(set_custom_archives);
 	set_custom_archives = NULL;
     }
