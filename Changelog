@@ -6,6 +6,22 @@ Version Changes for Hypermail
    were not touched.  I'm going to leave those for their respective
    contributors to change.
 
+ Daniel Stenberg (daniel@haxx.nu) (May 25, 2000)
+ - Added 'spamprotect' as a new flag. It replaces @-letters with "_at_" to
+   confuse spam-email-robots a bit.
+
+ - Found a terrible bug when an URL contains a @-letter, since it'll first
+   become <href>-tagged and then <mailto>-converted... :-/
+
+ - Added https:// as a recognized URL type (deja-vu, didn't I do this before?)
+
+ - Corrected the alternative parser not being reset at the end of all mails
+
+ Daniel Stenberg (daniel@haxx.nu) (May 23, 2000)
+ - Corrected the output on %> appearences in the template files
+
+ - Applied the beauty fix supplied by Darryl Lee <lee@darryl.com>
+
  Daniel Stenberg (Apr 10, 2000)
  - I made %<unknown letter> in printfile display exactly as used the other
    day. Today I changed my email address all over!
