@@ -26,6 +26,7 @@ showbr = 1
 showhr = 1
 showreplies = 1
 show_msg_links = 1 
+show_index_links = 1
 #usetable = 1
 usetable = 0
 #indextable = 1
@@ -37,6 +38,7 @@ require_msgids = 1
 usemeta = 0
 #dateformat = %Y/%m/%d - %H:%M %Z
 attachmentlink = 
+attachmentsindex = On
 uselock = 1
 locktime = 3600
 thrdlevels = 9
@@ -44,11 +46,54 @@ dirmode = 0755
 filemode = 0644
 #mailcommand = mailto:$TO?subject=$SUBJECT&amp;replyto=$ID
 #mailcommand = /cgi-bin/mail?to=$TO&amp;replyto=$ID&amp;subject=$SUBJECT
+#newmsg_command=mailto:$TO
+#replymsg_command=mailto:$TO?Subject=$SUBJECT
 mailto = webmusket@landfield.com
 domainaddr = landfield.com
 #hmail = hypermail@landfield.com
 
+stripsubject = [hypermail]
+linkquotes = 0
+searchbackmsgnum = 500
+#quote_hide_threshold = 100
+#quote_link_string = Link
+#link_to_replies = Reply
+monthly_index = 0
+yearly_index = 0
+#thread_file_depth = 1
+#folder_by_date = %y%m
+#msgsperfolder = 100 
+latest_folder = current
+describe_folder = "%b %Y"
+iso2022jp = 0
+isodate = 1
+gmtime = 0
+usegdbm = 0
+append = 1
+append_filename = $DIR/INBOX
+#avoid_indices = subject author 
+#avoid_top_indices = date thread
+#base_url = http://www.hypermail.org/mail-archive/
+#txtsuffix = txt
+#delete_older = "Wed, 14 Mar 2001 12:59:51 +0200"
+#delete_newer = "Wed, 28 Mar 2001 12:59:51 +0200"
+deleted = "X-Hypermail-Deleted X-No-Archive"
+expires = Expires
+#delete_msgnum = 0 42 666
+delete_level = 1
+
+#filter_out=From:.+@spammers.com
+#filter_require = hypermail
+#filter_out_full_body = BUY
+#filter_require_full_body = [Ff]ree
+
+#save_alts = 2
+alts_text = "alternate version of message" 
+warn_surpressions = 1
+unsafe_chars = "."
+
 spamprotect = 1
+spamprotect_id = Off
 # antispamdomain =                     #correctly ignored
 # antispamdomain = ""                  #leaves quote marks in the url
 # antispamdomain = " "                 #works, leaves a space in the url
