@@ -31,7 +31,7 @@ static struct reply *replylist_tmp;
 
 #if 1
 typedef unsigned long BIGRAM_TYPE;
-static const unsigned max_tokens = 200000;
+static const unsigned max_tokens = 400000; /* increase this if you have plenty of RAM */
 #else				/* for systems with little RAM and archives less than 10 megs? */
 typedef unsigned short BIGRAM_TYPE;
 static const unsigned max_tokens = 0xfff0;
