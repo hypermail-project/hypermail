@@ -1107,7 +1107,6 @@ void writearticles(int startnum, int maxnum)
     struct emailinfo *email2;
     struct emailinfo *email_next_in_thread;
 
-    char filename[MAXFILELEN];
     struct body *bp, *status;
     struct reply *rp;
     FILE *fp;
@@ -1146,7 +1145,7 @@ void writearticles(int startnum, int maxnum)
 
     while ((bp = hashnumlookup(num, &email))) {
 
-	articlehtmlfilename(filename, email);
+	char *filename = articlehtmlfilename(email);
 
 	/*
 	 * Determine to overwrite files or not
@@ -1164,6 +1163,7 @@ void writearticles(int startnum, int maxnum)
 	if (!newfile && !set_overwrite) {
 	    skip = 1;		/* is this really necessary with continue ??? */
 	    num++;
+	    free(filename);
 	    continue;
 	}
 	else {
@@ -1637,6 +1637,7 @@ void writearticles(int startnum, int maxnum)
 		   ((float)num / (float)maxnum) * 100, '%');
 	    fflush(stdout);
 	}
+	free(filename);
 
 	num++;
     }
@@ -1659,11 +1660,11 @@ void writearticles(int startnum, int maxnum)
 void writedates(int amountmsgs, struct emailinfo *email)
 {
     int newfile;
-    char filename[MAXFILELEN];
+    char *filename;
     FILE *fp;
     char *datename = index_name[email && email->subdir != NULL][DATE_INDEX];
 
-    htmlfilename(filename, datename, email, "");
+    filename = htmlfilename(datename, email, "");
 
     if (isfile(filename))
 	newfile = 0;
@@ -1743,6 +1744,7 @@ void writedates(int amountmsgs, struct emailinfo *email)
 		lang[MSG_CANNOT_CHMOD], filename, set_filemode);
 	progerr(errmsg);
     }
+    free(filename);
 
     if (set_showprogress)
 	putchar('\n');
@@ -1755,11 +1757,11 @@ void writedates(int amountmsgs, struct emailinfo *email)
 void writeattachments(int amountmsgs, struct emailinfo *email)
 {
     int newfile;
-    char filename[MAXFILELEN];
+    char *filename;
     FILE *fp;
     char *attname = index_name[email && email->subdir != NULL][ATTACHMENT_INDEX];
 
-    htmlfilename(filename, attname, email, "");
+    filename = htmlfilename(attname, email, "");
 
     if (isfile(filename))
 	newfile = 0;
@@ -1839,6 +1841,7 @@ void writeattachments(int amountmsgs, struct emailinfo *email)
 		lang[MSG_CANNOT_CHMOD], filename, set_filemode);
 	progerr(errmsg);
     }
+    free(filename);
 
     if (set_showprogress)
 	putchar('\n');
@@ -1851,7 +1854,7 @@ void writeattachments(int amountmsgs, struct emailinfo *email)
 void writethreads(int amountmsgs, struct emailinfo *email)
 {
     int newfile;
-    char filename[MAXFILELEN];
+    char *filename;
     FILE *fp;
     char *thrdname = index_name[email && email->subdir != NULL][THREAD_INDEX];
 
@@ -1865,7 +1868,7 @@ void writethreads(int amountmsgs, struct emailinfo *email)
 
     printedlist = NULL;
 
-    htmlfilename(filename, thrdname, email, "");
+    filename = htmlfilename(thrdname, email, "");
 
     if (isfile(filename))
 	newfile = 0;
@@ -1936,6 +1939,7 @@ void writethreads(int amountmsgs, struct emailinfo *email)
 		lang[MSG_CANNOT_CHMOD], filename, set_filemode);
 	progerr(errmsg);
     }
+    free(filename);
 
     if (set_showprogress)
 	putchar('\n');
@@ -2004,11 +2008,11 @@ void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
 void writesubjects(int amountmsgs, struct emailinfo *email)
 {
     int newfile;
-    char filename[MAXFILELEN];
+    char *filename;
     FILE *fp;
     char *subjname = index_name[email && email->subdir != NULL][SUBJECT_INDEX];
 
-    htmlfilename(filename, subjname, email, "");
+    filename = htmlfilename(subjname, email, "");
 
     if (isfile(filename))
 	newfile = 0;
@@ -2084,6 +2088,7 @@ void writesubjects(int amountmsgs, struct emailinfo *email)
 		lang[MSG_CANNOT_CHMOD], filename, set_filemode);
 	progerr(errmsg);
     }
+    free(filename);
 
     if (set_showprogress)
 	putchar('\n');
@@ -2151,11 +2156,11 @@ void printauthors(FILE *fp, struct header *hp, char **oldname,
 void writeauthors(int amountmsgs, struct emailinfo *email)
 {
     int newfile;
-    char filename[MAXFILELEN];
+    char *filename;
     FILE *fp;
     char *authname = index_name[email && email->subdir != NULL][AUTHOR_INDEX];
 
-    htmlfilename(filename, authname, email, "");
+    filename = htmlfilename(authname, email, "");
 
     if (isfile(filename))
 	newfile = 0;
@@ -2233,6 +2238,7 @@ void writeauthors(int amountmsgs, struct emailinfo *email)
 		lang[MSG_CANNOT_CHMOD], filename, set_filemode);
 	progerr(errmsg);
     }
+    free(filename);
 
     if (set_showprogress)
 	putchar('\n');
@@ -2296,7 +2302,7 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
 		index_name[0][j] = period_bufs[j];
 	    }
 	    for(j = 0; j <= AUTHOR_INDEX; ++j) {
-		char filename[MAXFILELEN];
+		char *filename;
 		char buf1[MAXFILELEN];
 		FILE *fp1;
 		char *prev_text = "";
@@ -2304,7 +2310,7 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
 		if (!show_index[0][j])
 		    continue;
 		sprintf(buf1, "%sby%s", month_str, save_name[j]);
-		htmlfilename(filename, buf1, NULL, "");
+		filename = htmlfilename(buf1, NULL, "");
 		fp1 = fopen(filename,"w");
 		if(!fp1) {
 		    sprintf(errmsg,"can't open %s", filename);
@@ -2397,6 +2403,7 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
 		    fprintf(fp, "<TD><A HREF=\"%sby%s\">%s</A></TD>",
 			    month_str, save_name[j], indextypename[j]);
 		}
+		free(filename);
 	    }
 	    if (started_line) fprintf(fp, "</TR>\n");
 	}
@@ -2421,9 +2428,9 @@ init_index_names()
 void write_summary_indices(int amount_new)
 {
 	if (set_monthly_index || set_yearly_index) {
-		char filename[512];
+		char *filename;
 		FILE *fp;
-		htmlfilename(filename, "summary", NULL, set_htmlsuffix);
+		filename = htmlfilename("summary", NULL, set_htmlsuffix);
 		fp = fopen(filename,"w");
 		if (!fp) {
 			sprintf(errmsg, "Couldn't write \"%s\".", filename);
@@ -2432,6 +2439,7 @@ void write_summary_indices(int amount_new)
 		printmonths(fp, filename, amount_new);
 		fclose(fp);
 		chmod(filename, set_filemode);
+		free(filename);
 	}
 }
 
@@ -2440,10 +2448,10 @@ void write_toplevel_indices(int amountmsgs)
     int j, newfile;
     struct emailsubdir *sd;
     char *subject = lang[MSG_FOLDERS_INDEX];
-    char filename[MAXFILELEN];
+    char *filename;
     FILE *fp;
 
-    htmlfilename(filename, index_name[0][FOLDERS_INDEX] , NULL, "");
+    filename = htmlfilename(index_name[0][FOLDERS_INDEX] , NULL, "");
 
     if (isfile(filename))
 	newfile = 0;
@@ -2534,4 +2542,5 @@ void write_toplevel_indices(int amountmsgs)
 	progerr(errmsg);
     }
     fclose(fp);
+    free(filename);
 }

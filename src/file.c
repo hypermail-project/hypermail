@@ -388,18 +388,16 @@ char *msg_href(struct emailinfo *to_email, struct emailinfo *from_email)
     return buffer;
 }
 
-char *articlehtmlfilename(char *buffer, struct emailinfo *email)
+char *articlehtmlfilename(struct emailinfo *email)
 {
-    sprintf(buffer, "%s%.4d.%s", email->subdir ? email->subdir->full_path
-	    : set_dir, email->msgnum, set_htmlsuffix);
-    return buffer;
+    return maprintf("%s%.4d.%s", email->subdir ? email->subdir->full_path
+		    : set_dir, email->msgnum, set_htmlsuffix);
 }
 
-char *htmlfilename(char *buffer, const char *file, struct emailinfo *email,
+char *htmlfilename(const char *file, struct emailinfo *email,
 		   const char *suffix)
 {
-    sprintf(buffer, "%s%s%s%s",
-	    email && email->subdir ? email->subdir->full_path : set_dir,
-	    file, *suffix ? "." : "", suffix);
-    return buffer;
+    return maprintf("%s%s%s%s", email && email->subdir
+		    ? email->subdir->full_path : set_dir,
+		    file, *suffix ? "." : "", suffix);
 }

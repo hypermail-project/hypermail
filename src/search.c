@@ -568,14 +568,15 @@ static void add_old_replies()
 
 static void find_replyto_from_html(int num)
 {
-    char filename[MAXFILELEN], line[MAXLINE];
+    char *filename;
+    char line[MAXLINE];
     FILE *fp;
     char *ptr;
     static const char *href_str = "<a href=\"";
     struct emailinfo *ep;
     if (!hashnumlookup(num, &ep))
 	return;
-    articlehtmlfilename(filename, ep);
+    filename = articlehtmlfilename(ep);
     if ((fp = fopen(filename, "r")) != NULL) {
 	while (fgets(line, MAXLINE, fp)) {
 	    if ((ptr = strcasestr(line, lang[MSG_IN_REPLY_TO])) != NULL) {
@@ -597,6 +598,7 @@ static void find_replyto_from_html(int num)
 	}
 	fclose(fp);
     }
+    free(filename);
 }
 
 void analyze_headers(int amount_new)

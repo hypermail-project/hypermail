@@ -137,8 +137,8 @@ add_anchor(int msgnum, int quoting_msgnum, int quote_num,
 	   const char *anchor, char *line, int find_substr,
 	   int count_quoted_lines, const String_Match * match_info)
 {
-    char filename[MAXFILELEN];
-    char tmpfilename[MAXFILELEN];
+    char *filename;
+    char *tmpfilename;
     char buffer[MAXLINE];
     FILE *fp1, *fp2;
     int matches = 0;
@@ -164,15 +164,16 @@ add_anchor(int msgnum, int quoting_msgnum, int quote_num,
 	    break;
 	ptr = bp->line;
     }
-    articlehtmlfilename(filename, ep);
-    htmlfilename(tmpfilename, "tmp", ep, "tmp");
+    filename = articlehtmlfilename(ep);
     if ((fp1 = fopen(filename, "r")) == NULL) {
+	free(filename);
 	if (msgnum > quoting_msgnum)
 	    return 0;		/* just a forward ref */
 	fprintf(stderr, "Couldn't read \"%s\". %d %d\n", filename, msgnum,
 		quoting_msgnum);
 	return 0;
     }
+    tmpfilename = htmlfilename("tmp", ep, "tmp");
     if ((fp2 = fopen(tmpfilename, "w")) == NULL) {
 	sprintf(errmsg, "Couldn't write \"%s\".", tmpfilename);
 	progerr(NULL);
@@ -263,6 +264,8 @@ add_anchor(int msgnum, int quoting_msgnum, int quote_num,
 	    progerr(NULL);
 	}
     }
+    free(filename);
+    free(tmpfilename);
     return matches == 1;
 }
 

@@ -41,8 +41,8 @@ void readconfigs(char *, int);
 void symlink_latest(void);
 struct emailsubdir *msg_subdir(int, time_t);
 char *msg_href(struct emailinfo *, struct emailinfo *);
-char *articlehtmlfilename(char *, struct emailinfo *);
-char *htmlfilename(char *, const char *, struct emailinfo *, const char *);
+char *articlehtmlfilename(struct emailinfo *);
+char *htmlfilename(const char *, struct emailinfo *, const char *);
 
 /*
 ** hypermail.c functions

@@ -2888,7 +2888,7 @@ int loadoldheaders(char *dir)
 
 void fixnextheader(char *dir, int num)
 {
-    char filename[MAXFILELEN];
+    char *filename;
     char line[MAXLINE];
     struct emailinfo *email;
 
@@ -2902,9 +2902,9 @@ void fixnextheader(char *dir, int num)
     ul = 0;
 
     if (hashnumlookup(num, &e3))
-	articlehtmlfilename(filename, e3);
+	filename = articlehtmlfilename(e3);
     else /* revisit me - this case is probably impossible */
-	msnprintf(filename, sizeof(filename), "%s%s%.4d.%s", dir,
+	filename = maprintf("%s%s%.4d.%s", dir,
 	      (dir[strlen(dir) - 1] == '/') ? "" : "/", num,
 	      set_htmlsuffix);
 
@@ -2961,6 +2961,7 @@ void fixnextheader(char *dir, int num)
 	free(bp);
 	bp = cp;
     }
+    free(filename);
 }
 
 /*
@@ -2970,7 +2971,7 @@ void fixnextheader(char *dir, int num)
 
 void fixreplyheader(char *dir, int num, int remove_maybes)
 {
-    char filename[256];
+    char *filename;
     char line[MAXLINE];
 
     int subjmatch;
@@ -3040,9 +3041,9 @@ void fixreplyheader(char *dir, int num, int remove_maybes)
     }
 
     if (email2 != NULL)
-	articlehtmlfilename(filename, email2);
+	filename = articlehtmlfilename(email2);
     else /* revisit me - this case is probably pointless or harmful */
-	msnprintf(filename, sizeof(filename), "%s%s%.4d.%s", dir,
+	filename = maprintf("%s%s%.4d.%s", dir,
 	      (dir[strlen(dir) - 1] == '/') ? "" : "/",
 	      replynum, set_htmlsuffix);
 
@@ -3063,8 +3064,10 @@ void fixreplyheader(char *dir, int num, int remove_maybes)
 	    bp = addbody(bp, &lp, line, 0);
 	}
     }
-    else
+    else {
+	free(filename);
 	return;
+    }
     fclose(fp);
 
     cp = bp;			/* save start of list to free later */
@@ -3119,6 +3122,7 @@ void fixreplyheader(char *dir, int num, int remove_maybes)
 	free(bp);
 	bp = cp;
     }
+    free(filename);
 }
 
 /*
@@ -3128,7 +3132,8 @@ void fixreplyheader(char *dir, int num, int remove_maybes)
 
 void fixthreadheader(char *dir, int num)
 {
-    char filename[MAXFILELEN], line[MAXLINE];
+    char *filename;
+    char line[MAXLINE];
     char *name = NULL;
     char *subject = NULL;
     FILE *fp;
@@ -3154,15 +3159,17 @@ void fixthreadheader(char *dir, int num)
     if (rp == NULL)
 	return;
 
-    articlehtmlfilename(filename, rp->data);
+    filename = articlehtmlfilename(rp->data);
 
     bp = NULL;
     if ((fp = fopen(filename, "r")) != NULL) {
 	while ((fgets(line, MAXLINE, fp)) != NULL)
 	    bp = addbody(bp, &lp, line, 0);
     }
-    else
+    else {
+	free(filename);
 	return;
+    }
 
     fclose(fp);
 
@@ -3196,4 +3203,5 @@ void fixthreadheader(char *dir, int num)
 	free(bp);
 	bp = cp;
     }
+    free(filename);
 }
