@@ -1,5 +1,16 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (Mar 22, 2002)
+   Fixed to rewrite old messages that have new replies (some links to
+   replies/next in thread had been missing for overwrite=0, increment=0,
+   and also for linkquotes = 1).
+   Updated configure to reflect Daniel's changes to fix --without-gdbm in configure.in.
+
+ Peter McCluskey (Mar 19, 2002)
+   Increase MAXSTACK from 20 to 200.
+
+ Peter McCluskey (Feb 4, 2002)
+   Fix to avoid converting strings like ftp://user@host.com to mailto's.
 
  Peter McCluskey (Feb 4, 2002)
    Patch from William R. Knox to add meta date tag.

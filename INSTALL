@@ -50,6 +50,10 @@ Building Hypermail:
 
     1) Type "./configure". This creates the makefiles and the
        config.h file needed to build the software.
+       If it has trouble finding gdbm, you may want to disable that with:
+        ./configure  --without-gdbm
+       (Note that without gdbm, you can't do incremental updates using the
+       folder_by_date option).
 
     2) Type "make". This will build the software. You can test
        it locally and when you are ready to install it ...
@@ -60,6 +64,13 @@ environment variable (Willi Kernen reports that on a 64-bit Solaris,
 changing LD_LIBRARY_PATH to:
 /usr/lib:/usr/local/lib:/usr/ccs/lib:/usr/ucb/lib:/usr/openwin/lib
 fixed a problem).
+
+ If the make fails at this line: 
+        ar cq libpcre.a maketables.o get.o study.o pcre.o
+and the configure had said:
+  checking whether to build static libraries... no
+then you probably should try:
+./configure --disable-shared
 
 Testing Hypermail:
 ==================
