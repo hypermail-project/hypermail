@@ -203,23 +203,45 @@ void process_messages(char *flname)
     msgfp = efopen(msgfile, "w");
 
     if (month != NULL) {  /* AUDIT biege: external input -> cmd exec + bof */
-	if (configfile != NULL)
-	    sprintf(cmdstr, "/bin/cat %s | %s -u -i -c %s -d %s/%s/%s",
+	if (configfile != NULL) {
+#ifdef HAVE_SNPRINTF
+            snprintf(cmdstr, sizeof(cmdstr), 
+#else
+	    sprintf(cmdstr, 
+#endif
+	            "/bin/cat %s | %s -u -i -c %s -d %s/%s/%s",
 		    msgfile, HYPERMAIL, configfile, ARCHIVE, year, month);
-	else
+        }
+	else {
+#ifdef HAVE_SNPRINTF
+            snprintf(cmdstr, sizeof(cmdstr), 
+#else
 	    sprintf(cmdstr,
+#endif
 		    "/bin/cat %s | %s -u -i -d %s/%s/%s -l \"%s\" -b %s",
 		    msgfile, HYPERMAIL, ARCHIVE, year, month, LABEL,
 		    ABOUT_LINK);
+        }
     }
     else {
-	if (configfile != NULL)
-	    sprintf(cmdstr, "/bin/cat %s | %s -u -i -c %s -d %s/%s",
+	if (configfile != NULL) {
+#ifdef HAVE_SNPRINTF
+            snprintf(cmdstr, sizeof(cmdstr), 
+#else
+	    sprintf(cmdstr, 
+#endif
+                    "/bin/cat %s | %s -u -i -c %s -d %s/%s",
 		    msgfile, HYPERMAIL, configfile, ARCHIVE, year);
-	else
+        }
+	else {
+#ifdef HAVE_SNPRINTF
+            snprintf(cmdstr, sizeof(cmdstr), 
+#else
 	    sprintf(cmdstr,
+#endif
 		    "/bin/cat %s | %s -u -i -d %s/%s -l \"%s\" -b %s",
 		    msgfile, HYPERMAIL, ARCHIVE, year, LABEL, ABOUT_LINK);
+        }
     }
 
     if (debug) {

@@ -175,9 +175,14 @@ AC_STRUCT_TM
 
 AC_FUNC_STRFTIME
 AC_CHECK_FUNCS(mkdir strdup strstr strtol memcpy memset lstat strcasecmp \
-               strcasestr getpwuid getopt)
+               strcasestr getpwuid getopt snprintf)
 
 AC_TYPE_SIZE_T
+
+if test $ac_cv_func_snprintf != no; then
+    AC_DEFINE(HAVE_SNPRINTF)
+fi
+
 
 dnl gdbm checks
 

@@ -3,6 +3,11 @@ Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
  Kent Landfield (kent@hypermail.org) (February 10, 2003)
+  - Modified configure.in to test for snprintf. This is needed
+    since Solaris 2.5.1 does not have snprintf.  This only affects
+    the msg2archive and mbox2hypermail in the archive directory.
+
+ Kent Landfield (kent@hypermail.org) (February 10, 2003)
   - Modified configure to assure on Solaris that the ctype functions 
     were used instead of the macroes. New NO_MACRO define in config.h.
   - Added most of the patches submitted by Thomas Biege <thomas@suse.de>

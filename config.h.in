@@ -54,6 +54,9 @@
 #undef HAVE_STRSTR
 
 /* Define if you have the strtol function.  */
+#undef HAVE_SNPRINTF
+
+/* Define if you have the strtol function.  */
 #undef HAVE_STRTOL
 
 /* Define if you have the <alloca.h> header file.  */
