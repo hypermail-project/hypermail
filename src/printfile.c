@@ -308,11 +308,11 @@ void printfooter(FILE *fp, char *htmlfooter, char *label, char *dir,
     else {
 	if (set_showhr && !set_usetable)
 	    fprintf(fp, "<hr>\n");
-	fprintf(fp, "<p>\n<small>\n<em>\n");
+	fprintf(fp, "<p><small><em>\n");
 	fprintf(fp, "%s ", lang[MSG_ARCHIVE_GENERATED_BY]);
 	fprintf(fp, "<a href=\"%s\">%s %s</a> \n", HMURL, PROGNAME, VERSION);
 	fprintf(fp, ": %s\n", getlocaltime());
-	fprintf(fp, "</em>\n</small>\n");
+	fprintf(fp, "</em></small></p>\n");
 	fprintf(fp, "</body>\n</html>\n");
     }
 }
