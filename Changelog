@@ -1,5 +1,13 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Peter McCluskey (Nov 7 2001)
+ Changes to hypetombox.pl:
+  - add some support for handling attachments.
+  - fixed some problems arising from some tags being changed to lowercase.
+  - add -S option to specify htmlsuffix.
+  - changed to convert <p> to blank line (instead of to nothing).
+  - additions to improve handling of archives produced linkquotes=1 option.
+
 Peter McCluskey (Nov 5 2001)
   - change parse.c to treat lines containing only a carriage return as
  blank lines for purpose of deciding whether they indicate the end of
