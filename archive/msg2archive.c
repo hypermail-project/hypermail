@@ -23,8 +23,8 @@
 #include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/wait.h>
 #include "lists.h"
+#include "../config.h"
 
 char s[BUFSIZ];			/* read buffer                      */
 char cmdstr[BUFSIZ];
@@ -193,8 +193,12 @@ int main(int argc, char **argv)
     */
 
     /* AUDIT Thomas Biege: mailboxdir + listname are cmd line options */
-    snprintf(cmdstr, sizeof(cmdstr), "%s/%s.%.2d%.2d", mailboxdir, listname,
-             year, now->tm_mon + 1);
+#ifdef HAVE_SNPRINTF
+    snprintf(cmdstr, sizeof(cmdstr), 
+#else
+    sprintf(cmdstr, 
+#endif
+             "%s/%s.%.2d%.2d", mailboxdir, listname, year, now->tm_mon + 1);
 
     if (verbose)
 	fprintf(stderr, "Appending message to [%s]\n", cmdstr);
@@ -223,10 +227,20 @@ int main(int argc, char **argv)
     */
 
     if (configfile == NULL)
-        snprintf(cmdstr, sizeof(cmdstr), "%s -u -i -d %s/%d/%s -l \"%s\" -b %s",
+#ifdef HAVE_SNPRINTF
+        snprintf(cmdstr, sizeof(cmdstr), 
+#else
+        sprintf(cmdstr, 
+#endif
+                 "%s -u -i -d %s/%d/%s -l \"%s\" -b %s",
                  hypermail, archive, year, month, label, about_link);
     else
-        snprintf(cmdstr,sizeof(cmdstr),"%s -u -i -c %s",hypermail,configfile);
+#ifdef HAVE_SNPRINTF
+        snprintf(cmdstr,sizeof(cmdstr),
+#else
+        sprintf(cmdstr,
+#endif
+             "%s -u -i -c %s",hypermail,configfile);
 
     if (verbose)
 	fprintf(stderr, "Piping message to [%s]\n", cmdstr);
