@@ -625,7 +625,7 @@ void printdates(FILE *fp, struct header *hp, int year, int month,
 	startline = "<li>";
 	break_str = "&nbsp;";
 	sprintf(date_str, "<em>(%s)</em>", getdatestr(hp->data->date));
-	endline = "";
+	endline = "</li>";
 	subj_tag = "<strong>";
 	subj_end_tag = "</strong>";
       }
@@ -2096,7 +2096,7 @@ void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
 	    startline = "<ul><li>";
 	    break_str = "";
 	    sprintf(date_str, "<em>(%s)</em>", getdatestr(hp->data->date));
-	    endline = "</ul>";
+	    endline = "</li></ul>";
 	}
 	fprintf(fp,
 		"%s%s%s</a>%s <a name=\"%d\">%s</a>%s%s\n", startline,
@@ -2245,7 +2245,7 @@ void printauthors(FILE *fp, struct header *hp, char **oldname,
 	startline = "<ul><li>";
 	break_str = "&nbsp;";
 	sprintf(date_str, "<em>(%s)</em>", getdatestr(hp->data->date));
-	endline = "</ul>";
+	endline = "</li></ul>";
       }
       fprintf(fp,"%s%s%s</a>%s<a name=\"%d\">%s</a>%s%s\n",
 	      startline, msg_href(hp->data, subdir_email), subj, break_str,
