@@ -1070,7 +1070,8 @@ void emptydir(char *directory)
 			!strcmp("..", entry->d_name)) continue;
 		    trio_asprintf(&filename, "%s%c%s", realdir,
 				  PATH_SEPARATOR, entry->d_name);
-		    fprintf(stderr, "\nWe delete %s\n", filename);
+		    if (set_showprogress)
+		        fprintf(stderr, "\nWe delete %s\n", filename);
 		    unlink(filename);
 		    free(filename);
 		}
