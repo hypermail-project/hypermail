@@ -401,6 +401,9 @@ int main(int argc, char **argv)
 	set_dir = strreplace(set_dir, (strrchr(set_mbox, '/')) ?
 			     strrchr(set_mbox, '/') + 1 : set_mbox);
 
+    if (set_dir[strlen(set_dir) - 1] != PATH_SEPARATOR)
+	set_dir = maprintf("%s%c", set_dir, PATH_SEPARATOR);
+
     if (!set_label || !strcasecmp(set_label, "NONE"))
 	set_label = set_mbox ?
 	    (strreplace(set_label, (strrchr(set_mbox, '/')) ?
@@ -410,13 +413,43 @@ int main(int argc, char **argv)
      * Which index file will be called "index.html"?
      */
 
-    datename = setindex(set_defaultindex, "date", set_htmlsuffix);
-    thrdname = setindex(set_defaultindex, "thread", set_htmlsuffix);
-    subjname = setindex(set_defaultindex, "subject", set_htmlsuffix);
-    authname = setindex(set_defaultindex, "author", set_htmlsuffix);
+    index_name[1][DATE_INDEX] = setindex(set_defaultindex, "date",
+				      set_htmlsuffix);
+    index_name[1][THREAD_INDEX] = setindex(set_defaultindex, "thread",
+					set_htmlsuffix);
+    index_name[1][SUBJECT_INDEX] = setindex(set_defaultindex, "subject",
+					 set_htmlsuffix);
+    index_name[1][AUTHOR_INDEX] = setindex(set_defaultindex, "author",
+					set_htmlsuffix);
     if (set_attachmentsindex) {
-	attname = setindex(set_defaultindex, "attachment", set_htmlsuffix);
+	index_name[1][ATTACHMENT_INDEX]
+	    = setindex(set_defaultindex, "attachment", set_htmlsuffix);
     }
+    if (set_folder_by_date || set_msgsperfolder) {
+	index_name[0][DATE_INDEX] = setindex(set_default_top_index, "date",
+					     set_htmlsuffix);
+	index_name[0][THREAD_INDEX] = setindex(set_default_top_index, "thread",
+					       set_htmlsuffix);
+	index_name[0][SUBJECT_INDEX] = setindex(set_default_top_index,
+						"subject", set_htmlsuffix);
+	index_name[0][AUTHOR_INDEX] = setindex(set_default_top_index, "author",
+					       set_htmlsuffix);
+	if (set_attachmentsindex) {
+	    index_name[0][ATTACHMENT_INDEX] = setindex(set_default_top_index,
+						       "attachment",
+						       set_htmlsuffix);
+	}
+	index_name[0][FOLDERS_INDEX] = setindex(set_default_top_index,
+						"folders", set_htmlsuffix);
+    }
+    else {
+	index_name[0][DATE_INDEX] = index_name[1][DATE_INDEX];
+	index_name[0][THREAD_INDEX] = index_name[1][THREAD_INDEX];
+	index_name[0][AUTHOR_INDEX] = index_name[1][AUTHOR_INDEX];
+	index_name[0][SUBJECT_INDEX] = index_name[1][SUBJECT_INDEX];
+	index_name[0][ATTACHMENT_INDEX] = index_name[1][ATTACHMENT_INDEX];
+    }
+    init_index_names();
 
     /*
      * General settings for mail command and rewriting.
@@ -542,19 +575,23 @@ int main(int argc, char **argv)
 	    printedthreadlist = NULL;
 	    crossindexthread1(datelist);
 	}
-	if (show_index[DATE_INDEX])
-	    writedates(amount_new);
-	if (show_index[THREAD_INDEX])
-	    writethreads(amount_new);
-	if (show_index[SUBJECT_INDEX])
-	    writesubjects(amount_new);
-	if (show_index[AUTHOR_INDEX])
-	    writeauthors(amount_new);
+	if (show_index[0][DATE_INDEX])
+	    writedates(amount_new, NULL);
+	if (show_index[0][THREAD_INDEX])
+	    writethreads(amount_new, NULL);
+	if (show_index[0][SUBJECT_INDEX])
+	    writesubjects(amount_new, NULL);
+	if (show_index[0][AUTHOR_INDEX])
+	    writeauthors(amount_new, NULL);
 	if (set_attachmentsindex) {
-	    writeattachments(amount_new);
+	    writeattachments(amount_new, NULL);
 	}
+	if (set_folder_by_date || set_msgsperfolder)
+	    write_toplevel_indices(amount_new);
 	if (set_monthly_index || set_yearly_index)
 	    write_summary_indices(amount_new);
+	if (set_latest_folder)
+	    symlink_latest();
     }
     else {
 	printf("No mails to output!\n");

@@ -74,7 +74,7 @@ static int start_time;
 static int tree_alloc = 0;
 
 static void add_old_replies(void);
-static void find_replyto_from_html(int num, const char *dir);
+static void find_replyto_from_html(int num);
 
 void set_alt_replylist(struct reply *r)
 {
@@ -566,34 +566,30 @@ static void add_old_replies()
     }
 }
 
-static void find_replyto_from_html(int num, const char *dir)
+static void find_replyto_from_html(int num)
 {
     char filename[MAXFILELEN], line[MAXLINE];
     FILE *fp;
     char *ptr;
     static const char *href_str = "<a href=\"";
-    sprintf(filename, "%s%s%.4d.%s",
-	    dir, (dir[strlen(dir) - 1] == '/') ? "" : "/",
-	    num, set_htmlsuffix);
+    struct emailinfo *ep;
+    if (!hashnumlookup(num, &ep))
+	return;
+    articlehtmlfilename(filename, ep);
     if ((fp = fopen(filename, "r")) != NULL) {
 	while (fgets(line, MAXLINE, fp)) {
 	    if ((ptr = strcasestr(line, lang[MSG_IN_REPLY_TO])) != NULL) {
 		const char *ptr2 = strcasestr(ptr, href_str);
 		if (ptr2 != NULL) {
 		    int msgn = atoi(ptr2 + strlen(href_str));
-		    struct emailinfo *ep;
-		    struct body *status = hashnumlookup(num, &ep);
-		    if (status) {
 #ifdef FASTREPLYCODE
-		        struct emailinfo *email2;
-			if (hashnumlookup(msgn, &email2))
-			    replylist_tmp =
-			        addreply2(replylist_tmp, email2, ep, 0, NULL);
+		    struct emailinfo *email2;
+		    if (hashnumlookup(msgn, &email2))
+		        replylist_tmp = addreply2(replylist_tmp, email2,
+						  ep, 0, NULL);
 #else
-			replylist_tmp =
-			    addreply(replylist_tmp, msgn, ep, 0, NULL);
+		    replylist_tmp = addreply(replylist_tmp, msgn, ep, 0, NULL);
 #endif
-		    }
 		}
 	    }
 	    if (!strcmp(line, "<!-- nextthread=\"start\" -->\n"))
@@ -614,7 +610,7 @@ void analyze_headers(int amount_new)
 	min_search_msgnum = num - set_searchbackmsgnum;
 
     for (i = 0; i < num; ++i)
-	find_replyto_from_html(i, set_dir);
+	find_replyto_from_html(i);
     if (set_showprogress)
 	printf("\nparsing bodies for later search.\n");
     for (i = min_search_msgnum; i < num; ++i) {

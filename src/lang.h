@@ -161,6 +161,12 @@ struct language_entry {
 #define MSG_WRITING_ATTACHMENT_INDEX  		 106
 #define MSG_BYTES                                107
 
+#define MSG_CANNOT_CREATE_SYMLINK                108
+#define MSG_CANNOT_UNLINK                        109
+#define MSG_PREV_DIRECTORY                       110
+#define MSG_NEXT_DIRECTORY                       111
+#define MSG_FOLDERS_INDEX                        112
+
 #ifdef MAIN_FILE
 
 /*
@@ -284,6 +290,11 @@ char *de[] = {       /* German */
   "Nach Nachtrichten mit Attachement",	  /* By messages with attachments -HTML*/
   "Schreibe Attachements-Index in",	  /* Writing attachment index to -STDOUT*/
   "bytes",		    /* file size, so far only for attachments  -HTML */
+  "Cannot create symbolic link", /* MSG_CANNOT_CREATE_SYMLINK     -STDOUT */
+  "Cannot remove file", /* MSG_CANNOT_UNLINK                       -STDOUT */
+  "Previous Folder",  /* MSG_PREV_DIRECTORY                     -HTML */
+  "Next Folder",      /* MSG_NEXT_DIRECTORY                     -HTML */
+  "List of Folders",  /* MSG_FOLDERS_INDEX                      -HTML */
   NULL,                                   /* End Of Message Table - NOWHERE*/
 };
 
@@ -401,6 +412,11 @@ char *en[] = {       /* English */
   "By messages with attachments",	  /* By messages with attachments -HTML*/
   "Writing attachment index to",	  /* Writing attachment index to -STDOUT*/
   "bytes",		    /* file size, so far only for attachments  -HTML */
+  "Cannot create symbolic link", /* MSG_CANNOT_CREATE_SYMLINK     -STDOUT */
+  "Cannot remove file", /* MSG_CANNOT_UNLINK                       -STDOUT */
+  "Previous Folder",  /* MSG_PREV_DIRECTORY                     -HTML */
+  "Next Folder",      /* MSG_NEXT_DIRECTORY                     -HTML */
+  "List of Folders",  /* MSG_FOLDERS_INDEX                      -HTML */
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 
@@ -527,6 +543,11 @@ char *es[] = {       /* Espanol/Spanish */
   "Por mensajes con añadidos",	  /* By messages with attachments -HTML*/
   "Escribiendo Indice de Añadidos en",	  /* Writing attachment index to -STDOUT*/
   "bytes",		    /* file size, so far only for attachments  -HTML */
+  "Cannot create symbolic link", /* MSG_CANNOT_CREATE_SYMLINK     -STDOUT */
+  "Cannot remove file", /* MSG_CANNOT_UNLINK                       -STDOUT */
+  "Previous Folder",  /* MSG_PREV_DIRECTORY                     -HTML */
+  "Next Folder",      /* MSG_NEXT_DIRECTORY                     -HTML */
+  "List of Folders",  /* MSG_FOLDERS_INDEX                      -HTML */
   NULL,                               /* End Of Message Table */
 };
 
@@ -643,6 +664,11 @@ char *fi[] = {       /* Finnish */
   "By messages with attachments",	  /* By messages with attachments -HTML*/
   "Writing attachment index to",	  /* Writing attachment index to -STDOUT*/
   "bytes",		    /* file size, so far only for attachments  -HTML */
+  "Cannot create symbolic link", /* MSG_CANNOT_CREATE_SYMLINK     -STDOUT */
+  "Cannot remove file", /* MSG_CANNOT_UNLINK                       -STDOUT */
+  "Previous Folder",  /* MSG_PREV_DIRECTORY                     -HTML */
+  "Next Folder",      /* MSG_NEXT_DIRECTORY                     -HTML */
+  "List of Folders",  /* MSG_FOLDERS_INDEX                      -HTML */
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -761,6 +787,11 @@ char *fr[] = {       /* French */
   "Par messages avec attachments",	  /* By messages with attachments -HTML*/
   "Ecriture de l'index 'attachement' vers",	  /* Writing attachment index to -STDOUT*/
   "bytes",		    /* file size, so far only for attachments  -HTML */
+  "Cannot create symbolic link", /* MSG_CANNOT_CREATE_SYMLINK     -STDOUT */
+  "Cannot remove file", /* MSG_CANNOT_UNLINK                       -STDOUT */
+  "Previous Folder",  /* MSG_PREV_DIRECTORY                     -HTML */
+  "Next Folder",      /* MSG_NEXT_DIRECTORY                     -HTML */
+  "List of Folders",  /* MSG_FOLDERS_INDEX                      -HTML */
   NULL,                                  /* End Of Message Table  - NOWHERE*/
 };
 
@@ -879,6 +910,11 @@ char *is[] = {       /* Icelandic */
   "By messages with attachments",	  /* By messages with attachments -HTML*/
   "Writing attachment index to",	  /* Writing attachment index to -STDOUT*/
   "bytes",		    /* file size, so far only for attachments  -HTML */
+  "Cannot create symbolic link", /* MSG_CANNOT_CREATE_SYMLINK     -STDOUT */
+  "Cannot remove file", /* MSG_CANNOT_UNLINK                       -STDOUT */
+  "Previous Folder",  /* MSG_PREV_DIRECTORY                     -HTML */
+  "Next Folder",      /* MSG_NEXT_DIRECTORY                     -HTML */
+  "List of Folders",  /* MSG_FOLDERS_INDEX                      -HTML */
   NULL,                               /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1002,6 +1038,11 @@ char *se[] = {
   "By messages with attachments",	  /* By messages with attachments -HTML*/
   "Writing attachment index to",	  /* Writing attachment index to -STDOUT*/
   "bytes",		    /* file size, so far only for attachments  -HTML */
+  "Cannot create symbolic link", /* MSG_CANNOT_CREATE_SYMLINK     -STDOUT */
+  "Cannot remove file", /* MSG_CANNOT_UNLINK                       -STDOUT */
+  "Previous Folder",  /* MSG_PREV_DIRECTORY                     -HTML */
+  "Next Folder",      /* MSG_NEXT_DIRECTORY                     -HTML */
+  "List of Folders",  /* MSG_FOLDERS_INDEX                      -HTML */
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 

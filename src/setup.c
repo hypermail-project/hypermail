@@ -17,6 +17,7 @@ char *set_custom_archives;
 char *set_about;
 char *set_dir;
 char *set_defaultindex;
+char *set_default_top_index;
 
 bool set_overwrite;
 bool set_inlinehtml;
@@ -85,13 +86,18 @@ struct hmlist *set_prefered_types = NULL;
 struct hmlist *set_ignore_types = NULL;
 struct hmlist *set_show_headers = NULL;
 struct hmlist *set_avoid_indices = NULL;
-int show_index[NO_INDEX];
+struct hmlist *set_avoid_top_indices = NULL;
 
 char *set_ihtmlheader;
 char *set_ihtmlfooter;
 char *set_mhtmlheader;
 char *set_mhtmlfooter;
 char *set_attachmentlink;
+
+char *set_folder_by_date;
+char *set_latest_folder;
+char *set_describe_folder;
+int set_msgsperfolder;
 
 struct Config cfg[] = {
     {"language", &set_language, LANGUAGE, CFG_STRING,
@@ -138,11 +144,25 @@ struct Config cfg[] = {
     {"defaultindex", &set_defaultindex, DEFAULTINDEX, CFG_STRING,
      "# This specifies the default index that  users can view when\n"
      "# entering the archive. Valid types are date, thread, author,\n"
-     "# and subject.\n"},
+     "# subject, and attachment. When using the folder_by_date or\n"
+     "# msgsperfolder options, this option applies to subdirectories.\n"},
+
+    {"default_top_index", &set_default_top_index, "folders", CFG_STRING,
+     "# This specifies the default index that  users can view when\n"
+     "# entering the top level of an archive that uses the folder_by_date\n"
+     "# or msgsperfolder option. Valid types are date, thread, author,\n"
+     "# subject, attachment, and folders.\n"},
 
     {"avoid_indices", &set_avoid_indices, NULL, CFG_LIST,
      "# This is a list of index files to not generate. Valid types are\n"
-     "# date, thread, author, and subject.\n"},
+     "# date, thread, author, and subject. When using the folder_by_date or\n"
+     "# msgsperfolder options, this option applies to subdirectories.\n"},
+
+    {"avoid_top_indices", &set_avoid_top_indices, "date thread author subject", CFG_LIST,
+     "# This is a list of index files to not generate for the top\n"
+     "# directory of an archive using the folder_by_date or\n"
+     "# msgsperfolder option. Valid types are date, thread, author, \n"
+     "# subject, folders, and attachment.\n"},
 
     {"overwrite", &set_overwrite, BTRUE, CFG_SWITCH,
      "# Set this to On to make Hypermail overwrite existing archives.\n"},
@@ -184,7 +204,7 @@ struct Config cfg[] = {
      "# similar to that in <a href=\"http://www.cs.wustl.edu/~seth/txt2html/\">txt2html.pl</a>.\n"
      "# Showhtml = 2 will normally produce nicer looking results than\n"
      "# showhtml = 1, and showhtml = 0 will look pretty dull, but\n"
-     "# 1 and 2 run risks of altering the appearance in undesired ways."},
+     "# 1 and 2 run risks of altering the appearance in undesired ways.\n"},
 
     {"showbr", &set_showbr, BTRUE, CFG_SWITCH,
      "# Set this to On to place <br> tags at the end of article lines.\n"
@@ -239,7 +259,9 @@ struct Config cfg[] = {
 
 #ifdef GDBM
     {"usegdbm",  &set_usegdbm,  BFALSE,    CFG_SWITCH,
-     "# Set this to On to use gdbm to implement a header cache."},
+     "# Set this to On to use gdbm to implement a header cache.\n"
+     "#This will speed up hypermail, especially if your filesystem is slow.\n"
+     "#It will not provide any speedup with the linkquotes option.\n"},
 #endif
 
     {"append",  &set_append,  BFALSE,    CFG_SWITCH,
@@ -425,6 +447,40 @@ struct Config cfg[] = {
      "# but that is rarely useful. This option is currently disabled\n"
      "# if the indextable option is turned on, and probably needs to\n"
      "# be less than thrdlevels.\n"},
+
+    {"folder_by_date", &set_folder_by_date, NULL, CFG_STRING,
+     "# This string causes the messages to be put in subdirectories\n"
+     "# by date. The string will be passed to strftime(3) to generate\n"
+     "# subdirectory names based on message dates. Suggested values are\n"
+     "# \"%y%m\" or \"%b%y\" for monthly subdirectories, \"%Y\" for\n"
+     "# yearly, \"%G/%V\" for weekly. Do not alter this for an existing\n"
+     "# archive without removing the old html files. If you use this\n"
+     "# and update the archive incrementally (e.g. with -u), you must\n"
+     "# use the usegdbm option.\n"},
+
+    {"msgsperfolder", &set_msgsperfolder, INT(0), CFG_INTEGER,
+     "# Put messages in subdirectories with this many messages per\n"
+     "# directory. Do not use this and folder_by_date on the same archive.\n"
+     "# Do not alter this for an existing archive without removing the old\n"
+     "# html files.\n"},
+
+    {"describe_folder", &set_describe_folder, NULL, CFG_STRING,
+     "# Controls the labels used in folders.html to describe the\n"
+     "# directories created by the folder_by_date or msgsperfolder\n"
+     "# options. For folder_by_date labels, the describe_folder string\n"
+     "# will be passed to strftime(3) the same as the folder_by_date string.\n"
+     "# For msgsperfolder:\n"
+     "# %d for the directory number (starts with 0)\n"
+     "# %D for the directory number (starts with 1)\n"
+     "# %m for the number of the first message in the directory\n"
+     "# %M for the number of the last message that can be put in the\n"
+     "# directory.\n"},
+
+    {"latest_folder", &set_latest_folder, NULL, CFG_STRING,
+     "# If folder_by_date or msgsperfolder are in use, create\n"
+     "# a symbolic link by this name to the most recently created\n"
+     "# subdirectory. Note that many web servers are configured to\n"
+     "# not follow symbolic links for security reasons.\n"},
 };
 
 /* ---------------------------------------------------------------- */
@@ -569,10 +625,24 @@ void PostConfig(void)
     if (!strcmp(set_replymsg_command, "not set"))
 	set_replymsg_command = set_mailcommand;
 
-    show_index[AUTHOR_INDEX]  = !inlist(set_avoid_indices, "author");
-    show_index[DATE_INDEX]    = !inlist(set_avoid_indices, "date");
-    show_index[SUBJECT_INDEX] = !inlist(set_avoid_indices, "subject");
-    show_index[THREAD_INDEX]  = !inlist(set_avoid_indices, "thread");
+    show_index[1][AUTHOR_INDEX]  = !inlist(set_avoid_indices, "author");
+    show_index[1][DATE_INDEX]    = !inlist(set_avoid_indices, "date");
+    show_index[1][SUBJECT_INDEX] = !inlist(set_avoid_indices, "subject");
+    show_index[1][THREAD_INDEX]  = !inlist(set_avoid_indices, "thread");
+    show_index[1][ATTACHMENT_INDEX] = !inlist(set_avoid_indices, "attachments")
+        && set_attachmentsindex;
+    if (set_folder_by_date || set_msgsperfolder) {
+	show_index[0][AUTHOR_INDEX]  = !inlist(set_avoid_top_indices, "author");
+	show_index[0][DATE_INDEX]    = !inlist(set_avoid_top_indices, "date");
+	show_index[0][SUBJECT_INDEX] = !inlist(set_avoid_top_indices, "subject");
+	show_index[0][THREAD_INDEX]  = !inlist(set_avoid_top_indices, "thread");
+	show_index[0][ATTACHMENT_INDEX] = !inlist(set_avoid_top_indices, "attachments")
+	    && set_attachmentsindex;
+    }
+    else {
+	for (i = 0; i <= ATTACHMENT_INDEX; ++i)
+	    show_index[0][i] = show_index[1][i];
+    }
 }
 
 int ConfigAddItem(char *cfg_line)

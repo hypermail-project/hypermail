@@ -41,6 +41,7 @@ extern char *set_custom_archives;
 extern char *set_about;
 extern char *set_dir;
 extern char *set_defaultindex;
+extern char *set_default_top_index;
 
 extern bool set_overwrite;
 extern bool set_inlinehtml;
@@ -107,7 +108,7 @@ extern struct hmlist *set_prefered_types;
 extern struct hmlist *set_ignore_types;
 extern struct hmlist *set_show_headers;
 extern struct hmlist *set_avoid_indices;
-extern int show_index[NO_INDEX];
+extern struct hmlist *set_avoid_top_indices;
 
 extern char *set_ihtmlheader;
 extern char *set_ihtmlfooter;
@@ -116,5 +117,10 @@ extern char *set_mhtmlfooter;
 
 extern char *set_attachmentlink;
 extern bool set_linkquotes;
+
+extern char *set_folder_by_date;
+extern char *set_latest_folder;
+extern int set_msgsperfolder;
+extern char *set_describe_folder;
 
 #endif

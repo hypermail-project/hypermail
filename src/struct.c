@@ -48,6 +48,89 @@ unsigned hash(char *s)
     return (hashval % HASHSIZE);
 }
 
+void fill_email_dates(struct emailinfo *e, char *date, char *fromdate,
+		      char *isodate, char *isofromdate)
+{
+    bool fromdate_valid = 1, date_valid = 1;
+    /* fromdate may be empty (zero length string rather than NULL)
+     * date will always have something in it - either a date or
+     * the NODATE string "(no date)"
+     */
+    if (isodate != NULL && isofromdate != NULL) {
+	e->date = iso_to_secs(isodate);
+	e->fromdate = iso_to_secs(isofromdate);
+	e->fromdatestr = strsav(fromdate);
+	e->datestr = strsav(date);
+    }
+    else {
+	if (!strcmp(date, NODATE)) {
+	    date_valid = 0;
+	}
+	else {
+	    if ((e->date = convtoyearsecs(date)) == -1)
+		date_valid = 0;
+	}
+	if (!*fromdate) {
+	    fromdate_valid = 0;
+	}
+	else {
+	    if ((e->fromdate = convtoyearsecs(fromdate)) == -1)
+		fromdate_valid = 0;
+	}
+	if (fromdate_valid && !date_valid) {
+#ifdef PH_DATE_DEBUG
+	    fprintf(stderr,
+		    "%d: %s: using fromdate '%s' for both (date '%s')\n",
+		    num, msgid, fromdate, date);
+#endif
+	    e->fromdatestr = strsav(fromdate);
+	    e->datestr = strsav(fromdate);
+	    e->date = e->fromdate;
+	}
+	else if (!fromdate_valid && date_valid) {
+#ifdef PH_DATE_DEBUG
+	    fprintf(stderr,
+		    "%d: %s: using date '%s' for both (fromdate '%s')\n",
+		    num, msgid, date, fromdate);
+#endif
+	    e->fromdatestr = strsav(date);
+	    e->datestr = strsav(date);
+	    e->fromdate = e->date;
+	}
+	else if (!fromdate_valid && !date_valid) {
+#ifdef PH_DATE_DEBUG
+	    fprintf(stderr,
+		    "%d: %s: fromdate '%s' and date '%s' both bad\n", num,
+		    msgid, fromdate, date);
+#endif
+	    e->fromdatestr = strsav(fromdate);
+	    e->datestr = strsav(date);
+	}
+	else {
+	    e->fromdatestr = strsav(fromdate);
+	    e->datestr = strsav(date);
+#ifdef PH_DATE_DEBUG
+	    if (e->date > e->fromdate) {
+		rbs++;
+		if ((e->date - e->fromdate) > 4200) {	/* if more than 1:10 off */
+		    char fromdate_parsed[26];
+		    char date_parsed[26];
+		    strcpy(fromdate_parsed, ctime(&(e->fromdate)));
+		    strcpy(date_parsed, ctime(&(e->date)));
+		    date_parsed[24] = '\0';
+		    fromdate_parsed[24] = '\0';
+		    rbs_bigtime++;
+		    fprintf(stderr,
+			    "%d [%d:%d]: %s: received before sent\n %-38.38s %-30.38s\n %-38.38s %-38.38s\n",
+			    num, rbs, rbs_bigtime, msgid, fromdate, date,
+			    fromdate_parsed, date_parsed);
+		}
+	    }
+#endif
+	}
+    }
+}
+
 /*
 ** The structure most of everything else depends on.
 ** Hashes a message - header info, pointer to a list of body lines -
@@ -65,7 +148,6 @@ struct emailinfo *addhash(int num, char *date, char *name,
 
     unsigned hashval;
     char numstr[NUMSTRLEN];
-    bool fromdate_valid = 1, date_valid = 1;
     bool msgid_dup = 0;
     bool msgid_missing = 0;
     static int freedummy = 0;
@@ -157,82 +239,13 @@ struct emailinfo *addhash(int num, char *date, char *name,
     else
 	e->name = strsav(name);
 
-    /* fromdate may be empty (zero length string rather than NULL)
-     * date will always have something in it - either a date or
-     * the NODATE string "(no date)"
-     */
-    if (isodate != NULL && isofromdate != NULL) {
-	e->date = iso_to_secs(isodate);
-	e->fromdate = iso_to_secs(isofromdate);
-	e->fromdatestr = strsav(fromdate);
-	e->datestr = strsav(date);
-    }
-    else {
-	if (!strcmp(date, NODATE)) {
-	    date_valid = 0;
-	}
-	else {
-	    if ((e->date = convtoyearsecs(date)) == -1)
-		date_valid = 0;
-	}
-	if (!*fromdate) {
-	    fromdate_valid = 0;
-	}
-	else {
-	    if ((e->fromdate = convtoyearsecs(fromdate)) == -1)
-		fromdate_valid = 0;
-	}
-	if (fromdate_valid && !date_valid) {
-#ifdef PH_DATE_DEBUG
-	    fprintf(stderr,
-		    "%d: %s: using fromdate '%s' for both (date '%s')\n",
-		    num, msgid, fromdate, date);
-#endif
-	    e->fromdatestr = strsav(fromdate);
-	    e->datestr = strsav(fromdate);
-	    e->date = e->fromdate;
-	}
-	else if (!fromdate_valid && date_valid) {
-#ifdef PH_DATE_DEBUG
-	    fprintf(stderr,
-		    "%d: %s: using date '%s' for both (fromdate '%s')\n",
-		    num, msgid, date, fromdate);
-#endif
-	    e->fromdatestr = strsav(date);
-	    e->datestr = strsav(date);
-	    e->fromdate = e->date;
-	}
-	else if (!fromdate_valid && !date_valid) {
-#ifdef PH_DATE_DEBUG
-	    fprintf(stderr,
-		    "%d: %s: fromdate '%s' and date '%s' both bad\n", num,
-		    msgid, fromdate, date);
-#endif
-	    e->fromdatestr = strsav(fromdate);
-	    e->datestr = strsav(date);
-	}
-	else {
-	    e->fromdatestr = strsav(fromdate);
-	    e->datestr = strsav(date);
-#ifdef PH_DATE_DEBUG
-	    if (e->date > e->fromdate) {
-		rbs++;
-		if ((e->date - e->fromdate) > 4200) {	/* if more than 1:10 off */
-		    char fromdate_parsed[26];
-		    char date_parsed[26];
-		    strcpy(fromdate_parsed, ctime(&(e->fromdate)));
-		    strcpy(date_parsed, ctime(&(e->date)));
-		    date_parsed[24] = '\0';
-		    fromdate_parsed[24] = '\0';
-		    rbs_bigtime++;
-		    fprintf(stderr,
-			    "%d [%d:%d]: %s: received before sent\n %-38.38s %-30.38s\n %-38.38s %-38.38s\n",
-			    num, rbs, rbs_bigtime, msgid, fromdate, date,
-			    fromdate_parsed, date_parsed);
-		}
-	    }
-#endif
-	}
+    fill_email_dates(e, date, fromdate, isodate, isofromdate);
+    e->subdir = msg_subdir(e->msgnum, e->date);
+    if (e->subdir) {
+	if (!e->subdir->first_email)
+	    e->subdir->first_email = e;
+	e->subdir->last_email = e;
+	++e->subdir->count;
     }
     e->msgid = strsav(msgid);
     e->subject = strsav(subject);
@@ -807,6 +820,52 @@ struct header *addheader(struct header *hp,
     return hp;
 }
 
+struct emailsubdir *new_subdir(char *subdir, struct emailsubdir *last_subdir,
+			       char *description)
+{
+    struct emailsubdir *sd = folders;
+    struct emailsubdir *new_sd;
+    int i, count;
+    char *p;
+
+    while (sd) {
+	if (!strcmp(subdir, sd->subdir))
+	    return sd;
+	if (sd->next_subdir == NULL)
+	    break;
+	sd = sd->next_subdir;
+    }
+    new_sd = (struct emailsubdir *)emalloc(sizeof(struct emailsubdir));
+    if (sd == NULL)
+	folders = new_sd;
+    else
+	sd->next_subdir = new_sd;
+    new_sd->prior_subdir = sd;
+    new_sd->next_subdir = NULL;
+    new_sd->first_email = NULL;
+    new_sd->last_email = NULL;
+    new_sd->count = 0;
+    new_sd->subdir = strsav(subdir);
+    new_sd->description = description;
+    new_sd->rel_path_to_top = strsav("../");
+    count = 0;
+    for (p = subdir; *p; ++p)
+	count += (*p == '/');
+    while(--count > 0) {
+	p = maprintf("../%s", new_sd->rel_path_to_top);
+	free(new_sd->rel_path_to_top);
+	new_sd->rel_path_to_top = p;
+    }
+    new_sd->full_path = maprintf("%s%s%s", set_dir,
+				 (set_dir[strlen(set_dir) - 1] == '/') ? ""
+				 : "/", subdir);
+    if (!isdir(new_sd->full_path)) {
+	checkdir(new_sd->full_path);	/* make subdir(s) if needed */
+	if (set_latest_folder)
+	    latest_folder_path = new_sd->full_path;
+    }
+    return new_sd;
+}
 
 /*
 ** And Now The List Addition Routines!

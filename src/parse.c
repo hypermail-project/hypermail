@@ -1124,7 +1124,7 @@ int parsemail(char *mbox,	/* file name */
 	progerr(errmsg);
     }
     if(set_append) {
-        char filename[512]; /* revisit me */
+        char filename[MAXFILELEN];
     
 	/* add to an mbox as we read */
 
@@ -2188,14 +2188,22 @@ int parsemail(char *mbox,	/* file name */
 								+ 1],
 						       file, num, type);
 
+					struct emailsubdir *subdir = NULL;
+					if (set_msgsperfolder || set_folder_by_date) {
+					    struct emailinfo e;
+					    fill_email_dates(&e, date, fromdate,
+							     NULL, NULL);
+					    subdir = msg_subdir(num, e.date);
+					}
 					if ((sp = strchr(desc, '\n')) !=
 					    NULL) *sp = '\0';
 
 					snprintf(buffer, sizeof(buffer),
-						 "%s<ul>\n<li>%s %s: <a href=\"%s\">%s</a>\n</ul>\n",
+						 "%s<ul>\n<li>%s %s: <a href=\"%s%s\">%s</a>\n</ul>\n",
 						 (set_showhr ? "<hr noshade>\n" :
 						  ""), type,
 						 lang[MSG_ATTACHMENT],
+						 subdir ? subdir->rel_path_to_top : "",
 						 created_link, desc);
 
 					free(created_link);
@@ -2391,7 +2399,7 @@ int parsemail(char *mbox,	/* file name */
 ** Return the number of mails read.
 */
 
-static int loadoldheadersfrommessages(char *dir)
+static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
 {
     FILE *fp;
     char line[MAXLINE];
@@ -2406,8 +2414,10 @@ static int loadoldheadersfrommessages(char *dir)
     char *isodate = NULL;
     char *isofromdate = NULL;
     char *filename;
+    struct emailsubdir *subdir;
     char command[100];
     int num = 0;
+    struct emailinfo *e0 = NULL;
 
     struct body *bp = NULL;
     struct body *lp = NULL;
@@ -2421,28 +2431,53 @@ static int loadoldheadersfrommessages(char *dir)
 		lang[MSG_IN_REPLY_TO]);
     }
 
-    if (set_searchbackmsgnum && set_increment) { /* search for biggest message number */
-      int jump = 1000;
-      while (jump && first_read_body >= 0) {
-	filename = maprintf("%s%s%.4d.%s", dir, 
-			    (dir[strlen(dir) - 1] == '/') ? "" : "/", 
-			    first_read_body, set_htmlsuffix);
-	if ((fp = fopen(filename, "r")) != NULL) {
-	  fclose(fp);
-	  if (jump < 0) jump = -jump/2;
-	  first_read_body += jump;
-	}
-	else {
-	  if (jump > 0) jump = -jump/2;
-	  first_read_body += jump;
-	}
-	free(filename);
-      }
-      first_read_body -= set_searchbackmsgnum + 1;
+    if (num_from_gdbm != -1 && set_searchbackmsgnum && set_increment) {
+	first_read_body = num_from_gdbm - set_searchbackmsgnum;
+	if (first_read_body < 0)
+	    first_read_body = 0;
+	num = first_read_body;
     }
-    filename = maprintf("%s%s%.4d.%s", dir,
+    else if (set_searchbackmsgnum && set_increment) {
+	int jump = 1000;	 /* search for biggest message number */
+	while (jump && first_read_body >= 0) {
+	    subdir = msg_subdir(first_read_body, 0);
+	    filename = maprintf("%s%s%s%.4d.%s", set_dir,
+				(dir[strlen(dir) - 1] == '/') ? "" : "/",
+				subdir ? subdir->subdir : "",
+				first_read_body, set_htmlsuffix);
+	    if ((fp = fopen(filename, "r")) != NULL) {
+	        fclose(fp);
+		if (jump < 0) jump = -jump/2;
+		first_read_body += jump;
+	    }
+	    else {
+	        if (jump > 0) jump = -jump/2;
+		first_read_body += jump;
+	    }
+	    free(filename);
+	    free(subdir);
+	}
+	first_read_body -= set_searchbackmsgnum + 1;
+    }
+    if (set_folder_by_date) {
+	if (!num_from_gdbm)
+	    return 0;
+	if (!hashnumlookup(first_read_body, &e0)) {
+	    if (set_usegdbm)
+	        sprintf(errmsg,
+			"set_folder_by_date error old msg %d num_from_gdbm %d",
+			first_read_body, num_from_gdbm);
+	    else
+	        sprintf(errmsg, "folder_by_date requires usegdbm option");
+	    progerr(errmsg);
+	}
+	subdir = e0->subdir;
+    }
+    else
+        subdir = msg_subdir(num, 0);
+    filename = maprintf("%s%s%s%.4d.%s", dir,
 			(dir[strlen(dir) - 1] == '/') ? "" : "/",
-			num, set_htmlsuffix);
+			subdir ? subdir->subdir : "", num, set_htmlsuffix);
 
     if (!set_linkquotes)
       bp = addbody(bp, &lp, "\0", 0);
@@ -2480,7 +2515,6 @@ static int loadoldheadersfrommessages(char *dir)
 	while (fgets(line, sizeof(line), fp)) {
 
 	    if (1 == sscanf(line, "<!-- %99[^=]=", command)) {
-
 		if (!strcasecmp(command, "received"))
 		    fromdate = getvalue(line);
 		else if (!strcasecmp(command, "sent"))
@@ -2531,10 +2565,15 @@ static int loadoldheadersfrommessages(char *dir)
 			        break;
 			    line2 = remove_hypermail_tags(line);
 			    if (line2) {
-			        if (!bp && *line2 != '\n')
+			        if (!bp && *line2 != '\n') {
 				    bp = addbody(bp, &lp, "\n", 0);
+				    if (num_from_gdbm != -1)
+				        e0->bodylist = bp;
+				}
 				ptr = unconvchars(line2);
 				bp = addbody(bp, &lp, ptr ? ptr : "", 0);
+				if (num_from_gdbm != -1 && !e0->bodylist->line[0])
+				    e0->bodylist = bp;
 				if(0) fprintf(stderr,"addbody %sfrom %s",ptr,line);
 				free(ptr);
 				if (set_linkquotes && !inreply) {
@@ -2562,7 +2601,7 @@ static int loadoldheadersfrommessages(char *dir)
 	    }
 	}
 
-	if (legal) {
+	if (num_from_gdbm == -1 && legal) {
 	    struct emailinfo *emp;
 	    /* only do this if the input was reliable */
 	    emp = addhash(num, date ? date : NODATE,
@@ -2637,10 +2676,19 @@ static int loadoldheadersfrommessages(char *dir)
 	    fflush(stdout);
 	}
 
+	if (set_folder_by_date) {
+	    if (!hashnumlookup(num, &e0))
+	        break;		/* ought to mean end of old msgs */
+	    subdir = e0->subdir;
+	}
+	else
+	    subdir = msg_subdir(num, 0);
+
 	free(filename);
-	filename = maprintf("%s%s%.4d.%s", dir,
+
+	filename = maprintf("%s%s%s%.4d.%s", dir,
 			    (dir[strlen(dir) - 1] == '/') ? "" : "/",
-			    num, set_htmlsuffix);
+			    subdir ? subdir->subdir : "", num, set_htmlsuffix);
     }
     free(filename);
 
@@ -2761,7 +2809,8 @@ static int loadoldheadersfromGDBMindex(char *dir)
 	} /* end loop on messages */
 
 	gdbm_close(gp);
-
+	if (set_linkquotes)
+	    loadoldheadersfrommessages(dir, num);
       } /* end case of able to read gdbm index */
 
       else { 
@@ -2771,7 +2820,7 @@ static int loadoldheadersfromGDBMindex(char *dir)
 
 	if (set_showprogress)
 	  printf(lang[MSG_CREATING_GDBM_INDEX]);
-	num = loadoldheadersfrommessages(dir);
+	num = loadoldheadersfrommessages(dir, -1);
 	
 	if(!(gp = gdbm_open(indexname, 0, GDBM_NEWDB, 0600, 0))){
 
@@ -2822,7 +2871,7 @@ int loadoldheaders(char *dir)
     num = loadoldheadersfromGDBMindex(dir);
   else
 #endif
-    num = loadoldheadersfrommessages(dir);
+    num = loadoldheadersfrommessages(dir, -1);
 
   if (set_showprogress)
     printf("\b\b\b\b%4d %s.\n", num, lang[MSG_ARTICLES]);
@@ -2839,7 +2888,7 @@ int loadoldheaders(char *dir)
 
 void fixnextheader(char *dir, int num)
 {
-    char filename[256];
+    char filename[MAXFILELEN];
     char line[MAXLINE];
     struct emailinfo *email;
 
@@ -2847,11 +2896,15 @@ void fixnextheader(char *dir, int num)
     int ul;
     FILE *fp;
     char *ptr;
+    struct emailinfo *e3 = NULL;
 
     dp = NULL;
     ul = 0;
 
-    msnprintf(filename, sizeof(filename), "%s%s%.4d.%s", dir,
+    if (hashnumlookup(num, &e3))
+	articlehtmlfilename(filename, e3);
+    else /* revisit me - this case is probably impossible */
+	msnprintf(filename, sizeof(filename), "%s%s%.4d.%s", dir,
 	      (dir[strlen(dir) - 1] == '/') ? "" : "/", num,
 	      set_htmlsuffix);
 
@@ -2883,8 +2936,7 @@ void fixnextheader(char *dir, int num)
 		    }
 		    fprintf(fp, "<li><strong>%s:</strong> ",
 			    lang[MSG_NEXT_MESSAGE]);
-		    fprintf(fp, "<a href=\"%.4d.%s\">%s: \"%s\"</a>\n",
-			    num + 1, set_htmlsuffix,
+		    fprintf(fp, "%s%s: \"%s\"</a>\n", msg_href(email, e3),
 			    email->name, ptr = convchars(email->subject));
 		    free(ptr);
 
@@ -2930,7 +2982,7 @@ void fixreplyheader(char *dir, int num, int remove_maybes)
     char *ptr;
 
     struct emailinfo *email;
-    struct emailinfo *email2;
+    struct emailinfo *email2 = NULL;
 
     const char *last_reply = "";
     int next_in_thread = -1;
@@ -2987,7 +3039,10 @@ void fixreplyheader(char *dir, int num, int remove_maybes)
 	}
     }
 
-    msnprintf(filename, sizeof(filename), "%s%s%.4d.%s", dir,
+    if (email2 != NULL)
+	articlehtmlfilename(filename, email2);
+    else /* revisit me - this case is probably pointless or harmful */
+	msnprintf(filename, sizeof(filename), "%s%s%.4d.%s", dir,
 	      (dir[strlen(dir) - 1] == '/') ? "" : "/",
 	      replynum, set_htmlsuffix);
 
@@ -3021,16 +3076,17 @@ void fixreplyheader(char *dir, int num, int remove_maybes)
 	        if (last_reply) {
 		  char buf1[MAXLINE];
 		  ptr = convchars(email->subject);
-		  sprintf(buf1,
-			  "<li><strong>%s:</strong> <a href=\"%.4d.%s\">%s: \"%s\"</a>\n",
-			  lang[MSG_REPLY], num, set_htmlsuffix, email->name, ptr);
+		  sprintf(buf1, "<li><strong>%s:</strong> "
+			  "%s%s: \"%s\"</a>\n",
+			  lang[MSG_REPLY], msg_href(email, email2),
+			  email->name, ptr);
 
 		  if (strcmp(buf1, last_reply))
 		      fputs(buf1, fp);
 		}
 		else {
 		    fprintf(fp, "<li><strong>%s:</strong> ", lang[MSG_REPLY]);
-		    fprintf(fp, "<a href=\"%.4d.%s\">", num, set_htmlsuffix);
+		    fprintf(fp, "%s", msg_href(email, email2));
 		    fprintf(fp, "%s: \"%s\"</a>\n", email->name,
 			    ptr = convchars(email->subject));
 		    free(ptr);
@@ -3098,9 +3154,7 @@ void fixthreadheader(char *dir, int num)
     if (rp == NULL)
 	return;
 
-    sprintf(filename, "%s%s%.4d.%s", dir,
-	    (dir[strlen(dir) - 1] == '/') ? "" : "/",
-	    threadnum, set_htmlsuffix);
+    articlehtmlfilename(filename, rp->data);
 
     bp = NULL;
     if ((fp = fopen(filename, "r")) != NULL) {
@@ -3118,12 +3172,15 @@ void fixthreadheader(char *dir, int num)
 	while (bp != NULL) {
 	    fprintf(fp, "%s", bp->line);
 	    if (!strncmp(bp->line, "<!-- nextthr", 12)) {
-		fprintf(fp, "<li><strong>%s:</strong> ",
-			lang[MSG_NEXT_IN_THREAD]);
-		fprintf(fp, "<a href=\"%.4d.%s\">", num, set_htmlsuffix);
-		fprintf(fp, "%s: \"%s\"</a>\n",
-			name, ptr = convchars(subject));
-		free(ptr);
+		struct emailinfo *e3;
+		if(hashnumlookup(num, &e3)) {
+		    fprintf(fp, "<li><strong>%s:</strong> ",
+			    lang[MSG_NEXT_IN_THREAD]);
+		    fprintf(fp, "%s", msg_href(e3, rp->data));
+		    fprintf(fp, "%s: \"%s\"</a>\n",
+			    name, ptr = convchars(subject));
+		    free(ptr);
+		}
 	    }
 	    bp = bp->next;
 	}

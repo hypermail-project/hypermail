@@ -1,5 +1,14 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Peter McCluskey (Mar 30 2001)
+  - Reorganized hmrc.html.
+  - Add options to split archive into subdirectories:
+    folder_by_date
+    msgsperfolder
+    latest_folder
+    describe_folder
+    avoid_top_indices
+
 Peter McCluskey (Mar 22 2001)
   - Enabled attachments index file, added sublists of attachment
    names and file sizes.

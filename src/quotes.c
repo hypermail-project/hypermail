@@ -29,6 +29,19 @@ const char *get_quote_prefix()
     return quote_prefix;
 }
 
+static int msg_linkp(char *p3, char *p)
+{		/* has form <a href="{subdir/}nnnn.html"> */
+    char *ptmp;
+    if(!(isdigit(p3[-4]) && isdigit(p3[-3])
+	 && isdigit(p3[-2]) && isdigit(p3[-1])))
+	return 0;
+    if (!set_msgsperfolder && !set_folder_by_date)
+	return p3[-5] == '"';
+    ptmp = strstr(p, "://");
+    if (ptmp && ptmp < p3)
+	return 0;
+    return 1;	/* ought to be more checks here, but they are not easy */
+}
 
 /*
 ** Undo the html additions that prior hypermail run did to body
@@ -90,9 +103,7 @@ char *remove_hypermail_tags(char *line)
 	char suf[80];
 	sprintf(suf, ".%s", set_htmlsuffix);
 	p3 = strstr(p, suf);
-	if (p2 && p3 && p4 && p2 == p4 + 1 && p3[-5] == '"'
-	    && isdigit(p3[-4]) && isdigit(p3[-3]) && isdigit(p3[-2])
-	    && isdigit(p3[-1])) {	/* has form <a href="nnnn.html"> */
+	if (p2 && p3 && p4 && p2 == p4 + 1 && msg_linkp(p3, p)) {
 	    memmove(p, p2 + 1, strlen(p2 + 1) + 1);
 	    if ((p = strcasestr(p2, "</a>")) != NULL)
 		memmove(p, p + 4, strlen(p + 4) + 1);

@@ -21,6 +21,7 @@
 
 #include "hypermail.h"
 #include "setup.h"
+#include "struct.h"
 
 /*
 ** Does a file exist?
@@ -258,4 +259,147 @@ void readconfigs(char *path, int cmd_show_variables)
 	if (set_showprogress && !cmd_show_variables)
 	    printf("%s: %s\n", lang[MSG_PATH], path);
     }
+}
+
+void symlink_latest()
+{
+    char filename[MAXFILELEN];
+    char dirname[MAXFILELEN];
+    struct stat stbuf;
+    extern int errno;
+    msnprintf(filename, MAXFILELEN, "%s%s.%s",
+	      set_dir, set_latest_folder, set_htmlsuffix);
+    msnprintf(dirname, MAXFILELEN, "%sindex.%s",
+	      latest_folder_path, set_htmlsuffix);
+
+    if (!stat(filename, &stbuf) && unlink(filename)) {
+	sprintf(errmsg, "%s \"%s\" (latest_folder option).",
+		lang[MSG_CANNOT_UNLINK], filename);
+	progerr(errmsg);
+	return;
+    }
+
+    if (symlink(dirname, filename)) {
+	sprintf(errmsg, "%s \"%s\" (latest_folder option).",
+		lang[MSG_CANNOT_CREATE_SYMLINK], filename);
+	progerr(errmsg);
+	return;
+    }
+}
+
+static char *msgsperfolder_label(char *frmptr, int subdir_no)
+{
+    register char *aptr;
+    char dtstr[DATESTRLEN];
+    char c;
+    struct tm *now;
+    time_t clk;
+
+    struct Push buff;
+
+    INIT_PUSH(buff);
+
+    aptr = frmptr;
+
+    while ((c = *aptr++)) {
+	if (c == '%') {
+	    switch (*aptr++) {
+	    case '%':		/* Add the % character */
+		PushByte(&buff, '%');
+		continue;
+	    case 'd':		/* directory number, starting at 0 */
+		sprintf(dtstr, "%d", subdir_no);
+		PushString(&buff, dtstr);
+		continue;
+	    case 'D':		/* directory number, starting with 1 */
+		sprintf(dtstr, "%d", subdir_no+1);
+		PushString(&buff, dtstr);
+		continue;
+	    case 'm':		/* number of first message in directory */
+		sprintf(dtstr, "%d", set_msgsperfolder*subdir_no);
+		PushString(&buff, dtstr);
+		continue;
+	    case 'M':		/* number of last message possible */
+		sprintf(dtstr, "%d", set_msgsperfolder*(subdir_no + 1) - 1);
+		PushString(&buff, dtstr);
+		continue;
+	    default:
+		PushString(&buff, "%?");
+		continue;
+	    }			/* end switch */
+	}
+
+	PushByte(&buff, c);
+    }				/* end while */
+
+    RETURN_PUSH(buff);
+}
+
+struct emailsubdir *msg_subdir(int msgnum, time_t date)
+{
+    static struct emailsubdir *last_subdir;
+    char s[DATESTRLEN];
+    char desc_buf[DATESTRLEN];
+    char *desc;
+    char *fmt = set_describe_folder;
+    if (set_msgsperfolder > 0) {
+	int subdir_no = msgnum / set_msgsperfolder;
+	msnprintf(s, DATESTRLEN, "%d/", subdir_no);
+	if (!fmt)
+	    fmt = "%d";
+	desc = msgsperfolder_label(fmt, subdir_no);
+    }
+    else if (set_folder_by_date) {
+	strftime(s, DATESTRLEN-1, set_folder_by_date, localtime(&date));
+	if (!fmt)
+	    fmt = set_folder_by_date;
+	strftime(desc_buf, DATESTRLEN, fmt, localtime(&date));
+	desc = strsav(desc_buf);
+
+	if(s[0] && s[strlen(s) - 1] != '/')
+	    strcat(s, "/");
+    }
+    else
+	return NULL;
+    if (!last_subdir || strcmp(s, last_subdir->subdir)) {
+	last_subdir = new_subdir(s, last_subdir, desc);
+    }
+    return last_subdir;
+}
+
+/*
+ * returns "<a href=...>" that links to to_email from the directory of
+ * from_email, or from the set_dir directory if email is NULL.
+ */
+
+char *msg_href(struct emailinfo *to_email, struct emailinfo *from_email)
+{
+    static char buffer[MAXFILELEN];
+    if (!from_email && to_email->subdir)
+        msnprintf(buffer, MAXFILELEN, "<a href=\"%s%.4d.%s\">",
+		  to_email->subdir->subdir, to_email->msgnum, set_htmlsuffix);
+    else if(!to_email->subdir || to_email->subdir == from_email->subdir)
+        msnprintf(buffer, MAXFILELEN, "<a href=\"%.4d.%s\">",
+		  to_email->msgnum, set_htmlsuffix);
+    else
+        msnprintf(buffer, MAXFILELEN, "<a href=\"%s%s%.4d.%s\">",
+		  to_email->subdir->rel_path_to_top,
+		  to_email->subdir->subdir, to_email->msgnum, set_htmlsuffix);
+    return buffer;
+}
+
+char *articlehtmlfilename(char *buffer, struct emailinfo *email)
+{
+    sprintf(buffer, "%s%.4d.%s", email->subdir ? email->subdir->full_path
+	    : set_dir, email->msgnum, set_htmlsuffix);
+    return buffer;
+}
+
+char *htmlfilename(char *buffer, const char *file, struct emailinfo *email,
+		   const char *suffix)
+{
+    sprintf(buffer, "%s%s%s%s",
+	    email && email->subdir ? email->subdir->full_path : set_dir,
+	    file, *suffix ? "." : "", suffix);
+    return buffer;
 }

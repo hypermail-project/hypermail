@@ -142,7 +142,7 @@
 #define PAGE_BOTTOM  2
 
 typedef enum { DATE_INDEX, THREAD_INDEX, SUBJECT_INDEX, AUTHOR_INDEX,
-    ATTACHMENT_INDEX, NO_INDEX
+    ATTACHMENT_INDEX, FOLDERS_INDEX, NO_INDEX
 } mindex_t;
 
 /*
@@ -198,6 +198,18 @@ struct hashemail {
     struct hashemail *next;
 };
 
+struct emailsubdir {	/* used by set_folder_by_date, set_msgsperfolder */
+    struct emailinfo *first_email;
+    struct emailinfo *last_email;
+    struct emailsubdir *prior_subdir;
+    struct emailsubdir *next_subdir;
+    char *subdir;
+    char *full_path;
+    char *rel_path_to_top;	/* usually "../", sometimes "../../" */
+    int count;
+    char *description;		/* label to go in folders.html */
+};
+
 struct emailinfo {
     int msgnum;
     char *name;
@@ -223,6 +235,7 @@ struct emailinfo {
     struct reply *replylist;    /* list all possible direct replies to this */
     int isreply;
 #endif
+    struct emailsubdir *subdir;		/* NULL unless set_msgsperfolder or set_folder_by_date */
 };
 
 struct header {
@@ -265,6 +278,7 @@ VAR struct reply **threadlist_by_msgnum; /* array of ptrs into threadlist */
 VAR struct printed *printedlist;
 VAR struct printed *printedthreadlist;
 VAR struct hashemail *etable[HASHSIZE];
+VAR struct emailsubdir *folders;
 
 VAR struct hmlist *show_headers;
 
@@ -272,11 +286,17 @@ VAR char timezonestr[TIMEZONELEN];
 VAR char thisyear[YEARLEN];
 VAR char errmsg[MAXLINE];
 VAR char lockfile[MAXFILELEN];
+#if 0     /* replaced by index_name */
 VAR char *authname;		/* By author index file             */
 VAR char *datename;		/* By date index file               */
 VAR char *subjname;		/* By subject index file            */
 VAR char *thrdname;		/* By thread index file             */
 VAR char *attname;		/* By attachment index file         */
+VAR char *top_index[NO_INDEX];
+#endif
+#define MAX_DIRECTORY_LEVELS 2
+VAR char *index_name[MAX_DIRECTORY_LEVELS][NO_INDEX];
+VAR int show_index[MAX_DIRECTORY_LEVELS][NO_INDEX];
 
 VAR int use_mailcommand;
 VAR int use_mailto;
@@ -289,6 +309,8 @@ VAR char *mhtmlfooterfile;
 
 VAR long firstdatenum;
 VAR long lastdatenum;
+
+VAR const char *latest_folder_path;
 
 #ifdef MAIN_FILE
 /*

@@ -33,6 +33,15 @@ static int new_reply_to = -1;
 
 static int found_quote = 0;
 
+static char *get_path(struct emailinfo *ep, struct emailinfo *ep2)
+{
+    char *path = "";
+    if (ep2->subdir && ep2->subdir != ep->subdir)
+	path = maprintf("%s%s", ep2->subdir->rel_path_to_top,
+			ep2->subdir->subdir);
+    return path;
+}
+
 static struct body *place_anchor(const String_Match * match_info,
 				 struct body *bp, char *buffer, FILE *fp2,
 				 char **ptr, const char *anchor)
@@ -124,7 +133,7 @@ place_a_end(const String_Match * match_info, struct body **bp,
 */
 
 static int
-add_anchor(int msgnum, int quoting_msgnum, int quote_num, const char *dir,
+add_anchor(int msgnum, int quoting_msgnum, int quote_num,
 	   const char *anchor, char *line, int find_substr,
 	   int count_quoted_lines, const String_Match * match_info)
 {
@@ -155,16 +164,8 @@ add_anchor(int msgnum, int quoting_msgnum, int quote_num, const char *dir,
 	    break;
 	ptr = bp->line;
     }
-#if 1
-    sprintf(filename, "%s%s%.4d.%s",
-	    dir, (dir[strlen(dir) - 1] == '/') ? "" : "/",
-	    msgnum, set_htmlsuffix);
-    sprintf(tmpfilename, "%s%s%.4d.tmp",
-	    dir, (dir[strlen(dir) - 1] == '/') ? "" : "/", msgnum);
-#else
-    articlehtmlfilename(filename, dir, msgnum);
-    articlefilename(tmpfilename, dir, msgnum, ".tmp");
-#endif
+    articlehtmlfilename(filename, ep);
+    htmlfilename(tmpfilename, "tmp", ep, "tmp");
     if ((fp1 = fopen(filename, "r")) == NULL) {
 	if (msgnum > quoting_msgnum)
 	    return 0;		/* just a forward ref */
@@ -182,10 +183,17 @@ add_anchor(int msgnum, int quoting_msgnum, int quote_num, const char *dir,
 	    int wrote_a_end = FALSE;
 	    ++matches;
 	    bp = place_anchor(match_info, bp, buffer, fp2, &ptr, anchor);
-	    if (set_link_to_replies)
-		fprintf(fp2, "<a href=\"%.4d.%s#qlink%d\">%s</a>",
-			quoting_msgnum, set_htmlsuffix,
-			quote_num, set_link_to_replies);
+	    if (set_link_to_replies) {
+	        struct emailinfo *ep2;
+		if (hashnumlookup(quoting_msgnum, &ep2)) {
+		    char *path = get_path(ep, ep2);
+		    fprintf(fp2, "<a href=\"%s%.4d.%s#qlink%d\">%s</a>",
+			    path, quoting_msgnum, set_htmlsuffix,
+			    quote_num, set_link_to_replies);
+		    if (*path)
+		        free(path);
+		}
+	    }
 	    /* Now find end of quoted text: */
 	    do {
 		if (!strcmp(buffer, "<!-- body=\"end\" -->\n")) {
@@ -278,31 +286,40 @@ static char *unquote_and_strip(char *line)
 /*
 ** Find URL of the message this line of quoted text was taken from
 */
-#define MAX_ANCHOR_LEN 128
+/* #define MAX_ANCHOR_LEN 128 */
 
-static char *url_replying_to(char *inreply, const char *dir, char *line1,	/* first line of quoted text, with html */
+static char *url_replying_to(struct emailinfo *email,
+			     char *line1,	/* first line of quoted text, with html */
 			     const char *line2,	/* first line of quoted text, w/o html */
 			     const struct body *bp,
 			     int quote_num,
 			     int *quoting_msgnum,
 			     int count_quoted_lines,
-			     int maybe_reply, char *msgid, char *subject)
+			     int maybe_reply)
 {
-    static char buf[MAX_ANCHOR_LEN];
     String_Match match_info;
     char *p;
     int subjmatch = 0;
-    char anchor[MAX_ANCHOR_LEN];
+    char *anchor;
+    struct emailinfo *ep;
     int statusnum =
-	hashreplynumlookup(*quoting_msgnum, inreply, subject, &subjmatch);
-    sprintf(anchor, "%.4dqlink%d", *quoting_msgnum, quote_num);
+	hashreplynumlookup(*quoting_msgnum, email->inreplyto, email->subject,
+			   &subjmatch);
+    hashnumlookup(*quoting_msgnum, &ep);
+    anchor = maprintf("%.4dqlink%d", *quoting_msgnum, quote_num);
     if (statusnum != -1) {
-	sprintf(buf, "%.4d.%s", statusnum, set_htmlsuffix);
+	struct emailinfo *ep2;
+	hashnumlookup(statusnum, &ep2);
 	if (add_anchor(statusnum, *quoting_msgnum, quote_num,
-		       dir, anchor, line1, 0, count_quoted_lines, NULL)) {
-	    sprintf(buf, "%.4d.%s#%s", statusnum, set_htmlsuffix, anchor);
+		       anchor, line1, 0, count_quoted_lines, NULL)) {
+	    char *path = get_path(ep, ep2);
+	    char *buf = maprintf("%s%.4d.%s#%s",
+				 path, statusnum, set_htmlsuffix, anchor);
 	    if (maybe_reply)
 		set_new_reply_to(statusnum, strlen(line2));
+	    if (*path)
+	        free(path);
+	    free(anchor);
 	    return buf;
 	}
 	if (strlen(line2) > 6 && (p = strstr(line2, "..."))) {
@@ -310,18 +327,22 @@ static char *url_replying_to(char *inreply, const char *dir, char *line1,	/* fir
 	    char *tptr = (char *)emalloc(p - line2 + 1 + strlen(p + 3));
 	    strncpy(tptr, line2, p - line2);
 	    strcpy(tptr + (p - line2), p + 3);
-	    parsed = ConvURLsString(tptr, msgid, subject);
+	    parsed = ConvURLsString(tptr, email->msgid, email->subject);
 	    free(tptr);
 	    tptr = stripwhitespace(parsed ? parsed : "");
 	    if (parsed)
 		free(parsed);
-	    if (add_anchor(statusnum, *quoting_msgnum, quote_num, dir,
+	    if (add_anchor(statusnum, *quoting_msgnum, quote_num, 
 			   anchor, tptr, 1, count_quoted_lines, NULL)) {
+	        char *path = get_path(ep, ep2);
+		char *buf = maprintf("%s%.4d.%s#%s",
+				     path, statusnum, set_htmlsuffix, anchor);
 		free(tptr);
-		sprintf(buf, "%.4d.%s#%s", statusnum, set_htmlsuffix,
-			anchor);
 		if (maybe_reply)
 		    set_new_reply_to(statusnum, strlen(buf));
+		if (*path)
+	            free(path);
+		free(anchor);
 		return buf;
 	    }
 	    free(tptr);
@@ -350,18 +371,25 @@ static char *url_replying_to(char *inreply, const char *dir, char *line1,	/* fir
     }
     if (match_info.msgnum >= 0) {
 	char *parsed =
-	    ConvURLsString(match_info.last_matched_string, msgid, subject);
+	    ConvURLsString(match_info.last_matched_string, email->msgid,
+			   email->subject);
 	if (parsed) {
 	    char *parsed2 = stripwhitespace(parsed);
 	    free(parsed);
-	    if (add_anchor
-		(match_info.msgnum, *quoting_msgnum, quote_num, dir,
+	    if (add_anchor(match_info.msgnum, *quoting_msgnum, quote_num,
 		 anchor, parsed2, 1, count_quoted_lines, &match_info)) {
-		free(parsed2);
-		sprintf(buf, "%.4d.%s#%s",
-			match_info.msgnum, set_htmlsuffix, anchor);
+	        struct emailinfo *ep2;
+		struct body *bp = hashnumlookup(match_info.msgnum, &ep2);
+		char *path = get_path(ep, ep2);
+		char *buf = maprintf("%s%.4d.%s#%s", path,
+				     match_info.msgnum, set_htmlsuffix,
+				     anchor);
 		set_new_reply_to(match_info.msgnum,
 				 match_info.match_len_bytes);
+		free(parsed2);
+		if (*path)
+		    free(path);
+		free(anchor);
 		return buf;
 	    }
 	    free(parsed2);
@@ -372,6 +400,7 @@ static char *url_replying_to(char *inreply, const char *dir, char *line1,	/* fir
     if (count_quoted_lines < 3 && strcmp(get_quote_prefix(), ">")
 	&& strcmp(get_quote_prefix(), " >"))	/* was quote_prefix guess shaky? */
 	*quoting_msgnum = -1;	/* msg probably doesn't have any quotes */
+    free(anchor);
     return NULL;
 }
 
@@ -381,16 +410,16 @@ static char *url_replying_to(char *inreply, const char *dir, char *line1,	/* fir
 */
 
 int
-handle_quoted_text(FILE *fp, int quoting_msgnum, const struct body *bp,
-		   char *line, int inquote, int quote_num, char *inreply,
-		   const char *dir, bool replace_quoted, int maybe_reply,
-		   char *msgid, char *subject)
+handle_quoted_text(FILE *fp, struct emailinfo *email, const struct body *bp,
+		   char *line, int inquote, int quote_num,
+		   bool replace_quoted, int maybe_reply)
 {
     char *url1;
+    int quoting_msgnum = email->msgnum;
     const struct body *last_quoted_line = bp;
     int count_quoted_lines = 0;
     const char *fmt2 = set_iquotes ? "<em>%s</em><br>" : "%s<br>";
-    char *cvtd_line = ConvURLsString(unquote(line), msgid, subject);
+    char *cvtd_line = ConvURLsString(unquote(line), email->msgid, email->subject);
     char *buffer1 = (char *)emalloc(strlen(cvtd_line) + strlen(fmt2) + 1);
     sprintf(buffer1, fmt2, cvtd_line ? cvtd_line : "");
     if (cvtd_line)
@@ -402,17 +431,16 @@ handle_quoted_text(FILE *fp, int quoting_msgnum, const struct body *bp,
     }
     cvtd_line = unquote_and_strip(line);
     if (strlen(cvtd_line) < 5 && (!replace_quoted || !inquote)) {
-	char *parsed = ConvURLsString(line, msgid, subject);
+	char *parsed = ConvURLsString(line, email->msgid, email->subject);
 	if (parsed) {
 	    fprintf(fp, fmt2, parsed);
 	    free(parsed);
 	}
     }
     else if ((!inquote || !found_quote)
-	     && (url1 = url_replying_to(inreply, dir, buffer1, cvtd_line,
+	     && (url1 = url_replying_to(email, buffer1, cvtd_line,
 					bp, ++quote_num, &quoting_msgnum,
-					count_quoted_lines, maybe_reply,
-					msgid, subject))) {
+					count_quoted_lines, maybe_reply))) {
 	static const char *fmt1 = "<a href=\"%s\">%s</a>%s<br>\n";
 	char *tmpline;
 	char *p2;
@@ -430,7 +458,7 @@ handle_quoted_text(FILE *fp, int quoting_msgnum, const struct body *bp,
 	}
 	if (set_link_to_replies)
 	    fprintf(fp, "<a name=\"qlink%d\"></a>", quote_num);
-	p2 = ConvURLsString(part2, msgid, subject);
+	p2 = ConvURLsString(part2, email->msgid, email->subject);
 	if (replacing)
 	    fprintf(fp, fmt1, url1, set_quote_link_string, p2 ? p2 : "");
 	else {
@@ -440,6 +468,7 @@ handle_quoted_text(FILE *fp, int quoting_msgnum, const struct body *bp,
 		free(tmpptr);
 	    }
 	}
+	free(url1);
 	free(tmpline);
 	if (p2)
 	    free(p2);
@@ -448,7 +477,7 @@ handle_quoted_text(FILE *fp, int quoting_msgnum, const struct body *bp,
 	return 1;
     }
     else if (!replace_quoted || !inquote) {
-	char *parsed = ConvURLsString(bp->line, msgid, subject);
+	char *parsed = ConvURLsString(bp->line, email->msgid, email->subject);
 	if (parsed) {
 	    fprintf(fp, quoting_msgnum >= 0 ? fmt2 : "%s<br>\n", parsed);
 	    free(parsed);
@@ -508,20 +537,20 @@ int get_new_reply_to()
 */
 
 void
-replace_maybe_replies(const char *filename, const char *dir,
+replace_maybe_replies(const char *filename, struct emailinfo *ep,
 		      int new_reply_to)
 {
     char tmpfilename[MAXFILELEN];
     char buffer[MAXLINE];
     FILE *fp1, *fp2;
-    struct emailinfo *ep;
+    struct emailinfo *ep2;
     int in_body = 0;
     char *ptr;
     static const char *prev_patt0 = ".html\">[ Previous ]</a>";
 
-    if (!hashnumlookup(new_reply_to, &ep))
+    if (!hashnumlookup(new_reply_to, &ep2))
 	return;
-    sprintf(tmpfilename, "%s/aaaa.tmp", dir);
+    sprintf(tmpfilename, "%s/aaaa.tmp", set_dir);
     if ((fp1 = fopen(filename, "r")) == NULL) {
 	sprintf(errmsg, "Couldn't read \"%s\".", filename);
 	progerr(NULL);
@@ -537,12 +566,13 @@ replace_maybe_replies(const char *filename, const char *dir,
 	    in_body = 1;
 	if (!in_body) {
 	    if (!strcmp(buffer, "<!-- nextthread=\"start\" -->\n")) {
-		char *tmpptr = convchars(ep->subject);
+		char *tmpptr = convchars(ep2->subject);
 		if (tmpptr) {
+		    char *path = get_path(ep, ep2);
 		    fprintf(fp2, "<li> <strong>%s:</strong> "
-			    "<a href=\"%.4d.%s\">%s: \"%s\"</a>\n",
-			    lang[MSG_IN_REPLY_TO], new_reply_to,
-			    set_htmlsuffix, ep->name,
+			    "<a href=\"%s%.4d.%s\">%s: \"%s\"</a>\n",
+			    lang[MSG_IN_REPLY_TO], path, new_reply_to,
+			    set_htmlsuffix, ep2->name,
 			    tmpptr ? tmpptr : "");
 		    free(tmpptr);
 		}
@@ -566,13 +596,8 @@ replace_maybe_replies(const char *filename, const char *dir,
 		for (i = 0; patts[i]; ++i) {
 		    char temp[256];
 		    sprintf(temp, patts[i], lang[indices[i / 2]]);
-		    if ((ptr = strcasestr(buffer, temp)) && (i < 4
-							     ||
-							     new_reply_to
-							     ==
-							     atoi(ptr +
-								  strlen
-								  (temp))))
+		    if ((ptr = strcasestr(buffer, temp))
+			&& (i < 4 || new_reply_to == atoi(ptr + strlen(temp))))
 		    {
 			surpress = 1;
 			break;

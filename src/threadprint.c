@@ -4,8 +4,6 @@
 #include "threadprint.h"
 #include "printfile.h"
 
-static void print_replies(FILE *, struct emailinfo *, struct header *,
-			  int *);
 static void format_thread_info(FILE *, struct emailinfo *, int, int *);
 static int finish_thread_levels(FILE **, int, int, int *,
 				FILE **, char **, char **, int);
@@ -20,7 +18,7 @@ static int finish_thread_levels(FILE **, int, int, int *,
 ** period will be printed.
 */
 
-void print_all_threads(FILE *fp, int year, int month)
+void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 {
     int level = 0;
     int newlevel;
@@ -34,6 +32,7 @@ void print_all_threads(FILE *fp, int year, int month)
     int num_replies[MAXSTACK + 1];
     char *filename_stack[MAXSTACK + 1];
     char *subject_stack[MAXSTACK + 1];
+    struct emailsubdir *subdir = email ? email->subdir : NULL;
 
     struct reply *rp = threadlist;
     while (rp != NULL) {
@@ -46,6 +45,10 @@ void print_all_threads(FILE *fp, int year, int month)
 		finish_thread_levels(&fp, level, 0, num_replies, fp_stack,
 				     filename_stack, subject_stack,
 				     thread_file_depth);
+	    rp = rp->next;
+	    continue;
+	}
+	else if(level == 0 && subdir && rp->data->subdir != subdir) {
 	    rp = rp->next;
 	    continue;
 	}
@@ -76,7 +79,8 @@ void print_all_threads(FILE *fp, int year, int month)
 		else if (level < MAXSTACK) {
 		    char filename[MAXFILELEN];
 		    char subject[TITLESTRLEN];
-		    sprintf(filename, "%u%s", reply_list_count, thrdname);
+		    sprintf(filename, "%u%s", reply_list_count,
+			    index_name[subdir != NULL][THREAD_INDEX]);
 		    filename_stack[level] = strsav(filename);
 		    sprintf(filename, "%s%s%s", set_dir,
 			    (set_dir[strlen(set_dir) - 1] ==
@@ -166,16 +170,15 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
     /* Print the thread info */
     if (set_indextable) {
 	fprintf(fp,
-		"<tr><td>%s<a href=\"%.4d.%s\"><strong>%s</strong></a></td>"
+		"<tr><td>%s%s<strong>%s</strong></a></td>"
 		"<td><a name=\"%d\">%s</a></td>" "<td>%s</td></tr>\n",
-		level > 1 ? "--&gt; " : "", email->msgnum, set_htmlsuffix,
+		level > 1 ? "--&gt; " : "", msg_href(email, NULL),
 		subj, email->msgnum, email->name, getdatestr(email->date));
     }
     else {
-	fprintf(fp, "<li><a href=\"%.4d.%s\">"
-		"<strong>%s</strong></a> "
+	fprintf(fp, "<li>%s<strong>%s</strong></a> "
 		"<a name=\"%d\"><em>%s <small>(%s)</small></em></a>\n",
-		email->msgnum, set_htmlsuffix,
+		msg_href(email, NULL),
 		subj, email->msgnum, email->name, getdatestr(email->date));
     }
     free(subj);
@@ -247,56 +250,3 @@ static int finish_thread_levels(FILE **fp, int level, int newlevel,
     return level;
 }
 
-#ifdef REMOVED_UNUSED_19991203
-
-static void print_replies(FILE *fp, struct emailinfo *email,
-			  struct header *dl, int *level)
-{
-    struct emailinfo *em;
-
-    /* Find all replies to the 'email' email and print them. For each reply
-       search for replies for them! */
-    if (dl->left)
-	print_replies(fp, email, dl->left, level);
-
-#ifdef DEBUG_THREAD
-    printf("mail %d checks %s\n", email->msgnum, dl->data->subject);
-#endif
-
-
-    em = dl->data;
-
-    /* If this mail's In-Reply-To header matches the Message-Id of the
-       "father" mail, we have a match; */
-    if (!(em->flags & PRINT_THREAD) &&
-	isreplyto(em->msgnum, email->msgnum)) {
-
-	/* Don't "indent" more than wanted */
-	if ((*level < set_thrdlevels) && !set_indextable)
-	    fprintf(fp, "<ul>\n");
-
-	(*level)++;
-
-	if (!(em->flags & PRINT_THREAD)) {
-	    /* Now print this mail */
-	    format_thread_info(fp, em, *level);
-	}
-#ifdef DEBUG_THREAD
-	printf("PRINT REPLIES to %s\n", em->subject);
-#endif
-	/* Now, output the replies to this mail: */
-	print_replies(fp, em, datelist, level);
-
-	(*level)--;
-
-	/* re-indent back if we indented up there */
-	if ((*level < set_thrdlevels) && !set_indextable)
-	    fprintf(fp, "</ul>\n");
-    }
-
-    /* Now, find later replies */
-    if (dl->right)
-	print_replies(fp, email, dl->right, level);
-}
-
-#endif

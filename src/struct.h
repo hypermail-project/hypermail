@@ -3,6 +3,8 @@
 */
 
 unsigned hash(char *);
+void fill_email_dates(struct emailinfo *, char *, char *, char *, char *);
+
 struct emailinfo *addhash(int, char *, char *, char *, char *, char *, char *,
 			  char *, char *, char *, char *, struct body *);
 
@@ -20,6 +22,8 @@ struct reply *addreply(struct reply *, int, struct emailinfo *, int,
 struct reply *addreply2(struct reply *, struct emailinfo *, struct emailinfo *,
 			int, struct reply **);
 int rmlastlines(struct body *);
+
+struct emailsubdir *new_subdir(char *, struct emailsubdir *, char *);
 
 struct printed *markasprinted(struct printed *, int);
 int wasprinted(struct printed *, int);

@@ -38,6 +38,11 @@ char *dirpath(char *);
 
 void readconfigs(char *, int);
 
+void symlink_latest();
+struct emailsubdir *msg_subdir(int, time_t);
+char *msg_href(struct emailinfo *, struct emailinfo *);
+char *articlehtmlfilename(char *, struct emailinfo *);
+char *htmlfilename(char *, const char *, struct emailinfo *, const char *);
 
 /*
 ** hypermail.c functions
