@@ -162,6 +162,7 @@ on or off.
     <li><a href="#txtsuffix">txtsuffix</a> save each raw message
     <li><a href="#deleted">deleted</a> what headers indicate deletion
     <li><a href="#expires">expires</a> what headers indicate expire date
+    <li><a href="#delete_older">delete_older</a> delete messages before a date
     <li><a href="#delete_msgnum">delete_msgnum</a> delete these messages
     <li><a href="#delete_level">delete_level</a> what to do with deleted messages
     <li><a href="#progress">progress</a> verbosity
@@ -1079,6 +1080,8 @@ set this to the extension that you want these messages to have
 <dt><strong>deleted = list of headers used to indicate deletion</strong></dt><dd>
  This is the list of headers that indicate the message should
 not be displayed if the value of this header is 'yes'.
+ See the <a href="#delete_level">delete_level</a> option for more info about
+what happens to the message.
 <br>
 <br><i>deleted = X-Hypermail-Deleted X-No-Archive</i>
 </dd>
@@ -1086,13 +1089,26 @@ not be displayed if the value of this header is 'yes'.
 <dt><strong>expires = list of headers used to indicate expiration</strong></dt><dd>
  This is the list of headers that indicate the message should
 not be displayed if the value of this header is a date in the past.
+ See the <a href="#delete_level">delete_level</a> option for more info about
+what happens to the message.
 <br>
 <br><i>expires = Expires</i>
+</dd>
+<a name="delete_older"></a>
+<dt><strong>delete_older = date/time string</strong></dt><dd>
+ Any message older than this date should not be displayed. See the
+<a href="#delete_level">delete_level</a> option for more info about
+what happens to the message. Any date format that works in the Date:
+header line of an email message should work here.
+<br>
+<br><i>delete_older = "Wed, 14 Mar 2001 12:59:51 +0200"</i> (off by default)
 </dd>
 <a name="delete_msgnum"></a>
 <dt><strong>delete_msgnum = list of message numbers</strong></dt><dd>
  This is the list of message numbers that should be deleted from the
 html archive. The mbox is not changed.
+ See the <a href="#delete_level">delete_level</a> option for more info about
+what happens to the message.
 <br>
 <br><i>delete_msgnum = 42 666</i> (off by default)
 <a name="delete_level"></a>

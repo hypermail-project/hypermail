@@ -1,5 +1,12 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (August 3, 2002)
+   Fix expires option to work in incremental mode.
+   Add delete_older option.
+
+ Peter McCluskey (July 31, 2002)
+   Release version 2.1.5 tar file.
+ 
  Peter McCluskey (July 22, 2002)
    Apply gdbm patch from Bernhard Reiter, mainly altering messages.
    Apply German language patch from Bernhard Reiter.
