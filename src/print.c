@@ -741,7 +741,7 @@ static char *ConvMsgid(char *line, char *inreply,
     char *tmpline1;
     char *c;
     struct Push buff;
-    struct emailinfo *ep = hashreplylookup(-1, inreply, &subjmatch);
+    struct emailinfo *ep = hashreplylookup(-1, inreply, mailsubject, &subjmatch);
 
     if (ep == NULL || subjmatch)
 	return NULL;		/* not a known msgid - maybe an email addr? */
@@ -1396,7 +1396,7 @@ void writearticles(int startnum, int maxnum)
 	    if (email->inreplyto[0]) {
 		email2 =
 		    hashreplylookup(email->msgnum, email->inreplyto,
-				    &subjmatch);
+				    email->subject, &subjmatch);
 		if (email2) {
 		    char *del_msg = (email2->is_deleted ? lang[MSG_DEL_SHORT]
 				     : "");
@@ -1567,7 +1567,7 @@ void writearticles(int startnum, int maxnum)
 	    if (*email->inreplyto) {
 		email2 =
 		    hashreplylookup(email->msgnum, email->inreplyto,
-				    &subjmatch);
+				    email->subject, &subjmatch);
 		if (email2) {
 		    char *del_msg = (email2->is_deleted ? lang[MSG_DEL_SHORT]
 				     : "");

@@ -28,6 +28,7 @@ int rbs_bigtime = 0;
 #include "dmatch.h"
 #include "setup.h"
 #include "struct.h"
+#include "parse.h"
 
 struct body *hashnumlookup(int, struct emailinfo **);
 
@@ -337,6 +338,7 @@ int insert_in_lists(struct emailinfo *emp)
  *
  * Daniel 1999-03-19. Changed return type and parameters.
 */
+#ifdef USE_OBSOLETE_HASHREPLYLOOKUP
 
 struct emailinfo *hashreplylookup(int msgnum, char *inreply,
 				  int *issubjmatch)
@@ -386,6 +388,7 @@ struct emailinfo *hashreplylookup(int msgnum, char *inreply,
 
     return NULL;
 }
+#endif
 
 /*
  * Given an "message-id:" field, this tries to retrieve information
@@ -411,14 +414,16 @@ struct emailinfo *hashmsgidlookup(char *msgid, int *issubjmatch)
     return NULL;
 }
 
-
 /*
-** Same as the above function, but only returns the article number.
-** [Hmmm. Seems to have diverged from hashreplylookup. Why? pcm 2001-03-20]
+ * Given an "in-reply-to:" field and a message number, this function
+ * retrieves information about the message that this message is a 
+ * reply to.
+ * If all else fails but a reply is
+ * found by comparing subjects, maybereply is set to 1.
 */
 
-int hashreplynumlookup(int msgnum, char *inreply, char *subject,
-		       int *maybereply)
+struct emailinfo *hashreplylookup(int msgnum, char *inreply, char *subject,
+				  int *maybereply)
 {
     struct hashemail *ep;
 
@@ -437,7 +442,7 @@ int hashreplynumlookup(int msgnum, char *inreply, char *subject,
 		fprintf(stderr, "match on msgid   %4d %4d\n", msgnum,
 			ep->data->msgnum);
 #endif
-		return ep->data->msgnum;
+		return ep->data;
 	    }
 	    ep = ep->next;
 	}
@@ -450,7 +455,7 @@ int hashreplynumlookup(int msgnum, char *inreply, char *subject,
 		fprintf(stderr, "match on date    %4d %4d\n", msgnum,
 			ep->data->msgnum);
 #endif
-		return ep->data->msgnum;
+		return ep->data;
 	    }
 	    ep = ep->next;
 	}
@@ -464,7 +469,7 @@ int hashreplynumlookup(int msgnum, char *inreply, char *subject,
 		fprintf(stderr, "match on subject %4d %4d\n", msgnum,
 			ep->data->msgnum);
 #endif
-		return ep->data->msgnum;
+		return ep->data;
 	    }
 	    ep = ep->next;
 	}
@@ -477,37 +482,39 @@ int hashreplynumlookup(int msgnum, char *inreply, char *subject,
      */
     {
 	char *s, *saved_s;
-	int lowest_so_far = 60000;	/* arbitrary high number - higher than number of messages in archive */
+	struct emailinfo *lowest_so_far = NULL;
 	int match = 0;
 
 	s = emalloc(strlen(subject) + 1);
 	saved_s = strcpy(s, subject);
 
-	do {
+        if (isre(s, NULL))
+            do {
 #if DEBUG_THREAD > 1
-	    fprintf(stderr, "extra %s\n", s);
+                fprintf(stderr, "extra %s\n", s);
 #endif
-	    ep = etable[hash(s)];
-	    while (ep != NULL) {
-		if ((strcasecmp(s, ep->data->subject) == 0) &&
-		    (msgnum != ep->data->msgnum)) {
-		    match = 1;
-		    if (ep->data->msgnum < lowest_so_far)
-			lowest_so_far = ep->data->msgnum;
-		}
-		ep = ep->next;
-	    }
-	    s = oneunre(s);
-	} while (s != NULL);
+                ep = etable[hash(s)];
+                while (ep != NULL) {
+                    if ((strcasecmp(s, ep->data->subject) == 0) &&
+                        (msgnum != ep->data->msgnum)) {
+                        match = 1;
+                        if (lowest_so_far == NULL
+			    || ep->data->msgnum < lowest_so_far->msgnum)
+                            lowest_so_far = ep->data;
+                    }
+                    ep = ep->next;
+                }
+                s = oneunre(s);
+            } while (s != NULL);
 
 	free(saved_s);
 
 	if (match) {
 	    *maybereply = 1;
-	    if (lowest_so_far < msgnum) {
+	    if (lowest_so_far != NULL && lowest_so_far->msgnum < msgnum) {
 #if DEBUG_THREAD
 		fprintf(stderr, "match on extra   %4d %4d\n", msgnum,
-			lowest_so_far);
+			lowest_so_far->msgnum);
 #endif
 		return lowest_so_far;
 	    }
@@ -515,9 +522,9 @@ int hashreplynumlookup(int msgnum, char *inreply, char *subject,
 #if DEBUG_THREAD
 		fprintf(stderr,
 			"match on extra   %4d %4d discarded - less than %d\n",
-			msgnum, lowest_so_far, msgnum);
+			msgnum, lowest_so_far ? lowest_so_far->msgnum : -1, msgnum);
 #endif
-		return -1;
+		return NULL;
 	    }
 	}
     }
@@ -525,7 +532,19 @@ int hashreplynumlookup(int msgnum, char *inreply, char *subject,
 #if DEBUG_THREAD
     fprintf(stderr, "match NO MATCH   %4d\n", msgnum);
 #endif
-    return -1;
+    return NULL;
+}
+
+/*
+** Same as the above function, but only returns the article number.
+*/
+
+int hashreplynumlookup(int msgnum, char *inreply, char *subject,
+		       int *maybereply)
+{
+    struct emailinfo *email = hashreplylookup(msgnum, inreply, subject,
+					      maybereply);
+    return email != NULL ? email->msgnum : -1;
 }
 
 

@@ -10,7 +10,7 @@ struct emailinfo *addhash(int, char *, char *, char *, char *, char *, char *,
 
 int insert_in_lists(struct emailinfo *);
 
-struct emailinfo *hashreplylookup(int, char *, int *);
+struct emailinfo *hashreplylookup(int, char *, char *, int *);
 
 struct emailinfo *hashmsgidlookup(char *, int *);
 int hashreplynumlookup(int, char *, char *, int *);

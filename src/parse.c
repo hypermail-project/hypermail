@@ -372,18 +372,11 @@ void crossindexthread2(int num)
 {
     struct reply *rp;
     struct emailinfo *ep;
-    int ignore_maybes = 0;
     if(!hashnumlookup(num, &ep)) {
 	char errmsg[512];
 	sprintf(errmsg, "internal error crossindexthread2 %d", num);
 	progerr(errmsg);
     }
-
-    for (rp = ep->replylist; rp != NULL; rp = rp->next)
-	if (!rp->maybereply) {
-	    ignore_maybes = 1;
-	    break;
-	}
 
     for (rp = ep->replylist; rp != NULL; rp = rp->next) {
 	if (!(rp->data->flags & USED_THREAD)) {
@@ -3106,7 +3099,8 @@ void fixreplyheader(char *dir, int num, int remove_maybes)
       if (!set_showreplies && replynum != num - 1)
 	return;
       if (replynum == -1 && email->inreplyto && email->inreplyto[0]) {
-	email2 = hashreplylookup(email->msgnum, email->inreplyto, &subjmatch);
+	email2 = hashreplylookup(email->msgnum, email->inreplyto,
+				 email->subject, &subjmatch);
 	if (!email2)
 	  return;
 	replynum = email2->msgnum;
@@ -3117,7 +3111,8 @@ void fixreplyheader(char *dir, int num, int remove_maybes)
     else {
 	if (!email->inreplyto || !email->inreplyto[0])
 	    return;
-	email2 = hashreplylookup(email->msgnum, email->inreplyto, &subjmatch);
+	email2 = hashreplylookup(email->msgnum, email->inreplyto,
+				 email->subject, &subjmatch);
 	if (!email2)
 	    return;
 	replynum = email2->msgnum;
