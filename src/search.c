@@ -209,7 +209,7 @@ static int encode_token(const char *token
 {
     struct search_text *p = text_tree;
 #ifndef BY_TOKEN_STRING
-    unsigned int token_crc32 = crc32_lower(token, token_length);
+    unsigned int token_crc32 = crc32_lower((const unsigned char *)token, token_length);
 #endif
     int r;
     while (1) {
@@ -243,7 +243,7 @@ static int addb(const char *token, struct body *bp)
     int r;
 #ifndef BY_TOKEN_STRING
     int token_length = strlen(token);
-    unsigned int token_crc32 = crc32_lower(token, token_length);
+    unsigned int token_crc32 = crc32_lower((const unsigned char *)token, token_length);
 #endif
     static struct search_text *next_token = NULL;
     if (!text_tree) {
