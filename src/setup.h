@@ -66,9 +66,7 @@ extern bool set_linkquotes;
 extern bool set_monthly_index;
 extern bool set_yearly_index;
 extern bool set_spamprotect;
-#ifdef CHANGE_12DEC2000_BC
 extern bool set_attachmentsindex;
-#endif
 #ifdef GDBM
 extern bool set_usegdbm;
 #endif

@@ -155,12 +155,11 @@ struct language_entry {
 #define MSG_OPTION_ARCHIVE                       102
 #define MSG_CANNOT_BOTH_READ_AND_WRITE_TO_MBOX   103
 
-#ifdef CHANGE_12DEC2000_BC
 /* XXX Move these up with the others */
 #define MSG_ATTACHMENT_VIEW			 104
 #define MSG_BY_ATTACHMENT			 105
 #define MSG_WRITING_ATTACHMENT_INDEX  		 106
-#endif
+#define MSG_BYTES                                107
 
 #ifdef MAIN_FILE
 
@@ -281,11 +280,10 @@ char *de[] = {       /* German */
   "Can't create gdbm file... ",  /* Can't create gdbm index     -STDOUT*/
   "Maintain an mbox archive",    /* Maintain an mbox archive    -STDOUT*/
   "Can't both read from and write to an mbox.", /* "Can't both read from and write to an mbox." -STDOUT*/
-#ifdef CHANGE_12DEC2000_BC
   "Attachement-Sicht",                    /* Attachment view       -HTML*/
   "Nach Nachtrichten mit Attachement",	  /* By messages with attachments -HTML*/
   "Schreibe Attachements-Index in",	  /* Writing attachment index to -STDOUT*/
-#endif
+  "bytes",		    /* file size, so far only for attachments  -HTML */
   NULL,                                   /* End Of Message Table - NOWHERE*/
 };
 
@@ -399,11 +397,10 @@ char *en[] = {       /* English */
   "Can't create gdbm file... ",  /* Can't create gdbm index     -STDOUT*/
   "Maintain an mbox archive",    /* Maintain an mbox archive    -STDOUT*/
   "Can't both read from and write to an mbox.", /* "Can't both read from and write to an mbox." -STDOUT*/
-#ifdef CHANGE_12DEC2000_BC
   "Attachment view",			  /* Attachment view       -HTML*/
   "By messages with attachments",	  /* By messages with attachments -HTML*/
   "Writing attachment index to",	  /* Writing attachment index to -STDOUT*/
-#endif
+  "bytes",		    /* file size, so far only for attachments  -HTML */
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 
@@ -526,11 +523,10 @@ char *es[] = {       /* Espanol/Spanish */
   "Can't create gdbm file... ",  /* Can't create gdbm index     -STDOUT*/
   "Maintain an mbox archive",    /* Maintain an mbox archive    -STDOUT*/
   "Can't both read from and write to an mbox.", /* "Can't both read from and write to an mbox." -STDOUT*/
-#ifdef CHANGE_12DEC2000_BC
   "Por Añadido",                      /* Attachment view  -HTML*/
   "Por mensajes con añadidos",	  /* By messages with attachments -HTML*/
   "Escribiendo Indice de Añadidos en",	  /* Writing attachment index to -STDOUT*/
-#endif
+  "bytes",		    /* file size, so far only for attachments  -HTML */
   NULL,                               /* End Of Message Table */
 };
 
@@ -643,11 +639,10 @@ char *fi[] = {       /* Finnish */
   "Can't create gdbm file... ",  /* Can't create gdbm index     -STDOUT*/
   "Maintain an mbox archive",    /* Maintain an mbox archive    -STDOUT*/
   "Can't both read from and write to an mbox.", /* "Can't both read from and write to an mbox." -STDOUT*/
-#ifdef CHANGE_12DEC2000_BC
   "Attachment view",                      /* Attachment view  -HTML*/
   "By messages with attachments",	  /* By messages with attachments -HTML*/
   "Writing attachment index to",	  /* Writing attachment index to -STDOUT*/
-#endif
+  "bytes",		    /* file size, so far only for attachments  -HTML */
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -762,11 +757,10 @@ char *fr[] = {       /* French */
   "Can't create gdbm file... ",  /* Can't create gdbm index     -STDOUT*/
   "Maintain an mbox archive",    /* Maintain an mbox archive    -STDOUT*/
   "Can't both read from and write to an mbox.", /* "Can't both read from and write to an mbox." -STDOUT*/
-#ifdef CHANGE_12DEC2000_BC
   "Liste par attachements",               /* Attachment view  -HTML*/
   "Par messages avec attachments",	  /* By messages with attachments -HTML*/
   "Ecriture de l'index 'attachement' vers",	  /* Writing attachment index to -STDOUT*/
-#endif
+  "bytes",		    /* file size, so far only for attachments  -HTML */
   NULL,                                  /* End Of Message Table  - NOWHERE*/
 };
 
@@ -881,11 +875,10 @@ char *is[] = {       /* Icelandic */
   "Can't create gdbm file... ",  /* Can't create gdbm index     -STDOUT*/
   "Maintain an mbox archive",    /* Maintain an mbox archive    -STDOUT*/
   "Can't both read from and write to an mbox.", /* "Can't both read from and write to an mbox." -STDOUT*/
-#ifdef CHANGE_12DEC2000_BC
   "Attachment view",                      /* Attachment view  -HTML*/
   "By messages with attachments",	  /* By messages with attachments -HTML*/
   "Writing attachment index to",	  /* Writing attachment index to -STDOUT*/
-#endif
+  "bytes",		    /* file size, so far only for attachments  -HTML */
   NULL,                               /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1005,11 +998,10 @@ char *se[] = {
   "Can't create gdbm file... ",  /* Can't create gdbm index     -STDOUT*/
   "Maintain an mbox archive",    /* Maintain an mbox archive    -STDOUT*/
   "Can't both read from and write to an mbox.", /* "Can't both read from and write to an mbox." -STDOUT*/
-#ifdef CHANGE_12DEC2000_BC
   "Attachment view",                      /* Attachment view  -HTML*/
   "By messages with attachments",	  /* By messages with attachments -HTML*/
   "Writing attachment index to",	  /* Writing attachment index to -STDOUT*/
-#endif
+  "bytes",		    /* file size, so far only for attachments  -HTML */
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 

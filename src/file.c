@@ -39,7 +39,6 @@ int isfile(char *path)
 ** Does a directory exist?
 */
 
-#ifdef CHANGE_12DEC2000_BC
 int isdir(char *path)
 {
     struct stat stbuf;
@@ -48,7 +47,6 @@ int isdir(char *path)
 	return 0;
     return ((stbuf.st_mode & S_IFMT) == S_IFDIR) ? 1 : 0;
 }
-#endif
 
 /*
 ** This tries to create and chmod a directory.

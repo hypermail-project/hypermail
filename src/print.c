@@ -30,9 +30,13 @@
 
 #include "threadprint.h"
 
-#ifdef CHANGE_12DEC2000_BC
 #include "mprintf.h"
 #include "proto.h"
+
+#ifdef HAVE_DIRENT_H
+#include <dirent.h>
+#else
+#include <sys/dir.h>
 #endif
 
 static char *indextypename[NO_INDEX];
@@ -214,14 +218,12 @@ void fprint_menu(FILE *fp, mindex_t idx, char *archives,
 	fprintf(fp, "<th><a href=\"%s\">%s</a></th>\n", authname,
 		lang[MSG_AUTHOR_VIEW]);
 
-#ifdef CHANGE_12DEC2000_BC
     if (set_attachmentsindex) {
 	if (idx != ATTACHMENT_INDEX) {
 	    fprintf(fp, "<th><a href=\"%s\">%s</a></th>\n", attname,
 		lang[MSG_ATTACHMENT_VIEW]);
 	}
     }
-#endif
 
     if (archives && *archives)
 	fprintf(fp, "<th><a href=\"%s\">%s</a></th>\n", archives,
@@ -303,14 +305,12 @@ void print_index_header_links(FILE *fp, mindex_t called_from,
 	fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", subjname,
 		lang[MSG_SUBJECT]);
 
-#ifdef CHANGE_12DEC2000_BC
     if (set_attachmentsindex) {
 	if (called_from != ATTACHMENT_INDEX) {
 	    fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", attname,
 		lang[MSG_ATTACHMENT]);
 	}
     }
-#endif
 
     if (set_about && *set_about)
 	fprintf(fp, "<br><strong><a href=\"%s\">%s</a></strong>\n",
@@ -396,14 +396,12 @@ void print_index_footer_links(FILE *fp, mindex_t called_from,
 	fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", subjname,
 		lang[MSG_SUBJECT]);
 
-#ifdef CHANGE_12DEC2000_BC
     if (set_attachmentsindex) {
 	if (called_from != ATTACHMENT_INDEX) {
 	    fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", attname,
 		lang[MSG_ATTACHMENT]);
 	}
     }
-#endif
 
     if (set_about && *set_about)
 	fprintf(fp, "<br><strong><a href=\"%s\">%s</a></strong>\n",
@@ -534,12 +532,8 @@ void printdates(FILE *fp, struct header *hp, int year, int month)
 ** Pretty-prints the files with attachments in the index files.
 */
 
-#ifdef CHANGE_12DEC2000_BC
 void printattachments(FILE *fp, struct header *hp)
 {
-/* XXX - Next 2 lines copied from parse.c - yuck! */
-#define DIR_PREFIXER "att-"
-#define PATH_SEPARATOR '/'
     char *subj;
     char* attdir;
 
@@ -552,6 +546,7 @@ void printattachments(FILE *fp, struct header *hp)
 	attdir = maprintf("%s%c" DIR_PREFIXER "%04d",
 	    set_dir, PATH_SEPARATOR, em->msgnum);
 	if (isdir(attdir)) {
+	    DIR *dir = opendir(attdir);
 
 	    if (set_indextable) {
 		fprintf(fp, "<tr><td><a href=\"%.4d.%s\">%s</a></td>"
@@ -567,13 +562,52 @@ void printattachments(FILE *fp, struct header *hp)
 		    em->msgnum, set_htmlsuffix, subj, em->msgnum, em->name,
 		    getdatestr(em->date));
 	    }
+	    if (dir) {
+#ifdef HAVE_DIRENT_H
+		struct dirent *entry;
+#else
+		struct direct *entry;
+#endif
+		struct stat fileinfo;
+		char *filename, *stripped_filename;
+		const char *fmt2 =
+		  (set_indextable ? 
+		   "<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"%s\">%s</a></td><td colspan=\"2\" align=\"center\">(%d %s)</td></tr>\n"
+		   : "<li><a href=\"%s\">%s</a> (%d %s)\n");
+
+		int first_time = 1;
+		while ((entry = readdir(dir))) {
+		    int file_size = -1;
+		    if (!strcmp(".", entry->d_name) ||
+			!strcmp("..", entry->d_name)) continue;
+		    if (first_time && !set_indextable) {
+		        first_time = 0;
+			fprintf(fp, "<ol>\n");
+		    }
+		    filename = maprintf("%s%c%s", attdir,
+					PATH_SEPARATOR, entry->d_name);
+		    if (!stat(filename, &fileinfo))
+		        file_size = fileinfo.st_size;
+		    free(filename);
+		    filename = maprintf(DIR_PREFIXER "%04d%c%s", em->msgnum,
+					PATH_SEPARATOR, entry->d_name);
+		    stripped_filename = strchr(entry->d_name, '-');
+		    if (stripped_filename)
+		        fprintf(fp, fmt2, filename, stripped_filename+1,
+				file_size, lang[MSG_BYTES]);
+		    free(filename);
+		}
+		if (!first_time && !set_indextable) {
+		    fprintf(fp, "</ol>\n");
+		}
+		closedir(dir);
+	    }
 	}
 	free(attdir);
 	free(subj);
 	printattachments(fp, hp->right);
     }
 }
-#endif
 
 int showheader(char *header)
 {
@@ -1304,12 +1338,10 @@ void writearticles(int startnum, int maxnum)
 	    if (show_index[AUTHOR_INDEX])
 	        fprintf(fp, "<a href=\"%s#%d\">[ %s ]</a>\n",
 			authname, num, lang[MSG_AUTHOR]);
-#ifdef CHANGE_12DEC2000_BC
 	    if (set_attachmentsindex) {
 		fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", attname,
 		    lang[MSG_ATTACHMENT]);
 	    }
-#endif
 
 	    if (set_custom_archives && *set_custom_archives)
 	        fprintf(fp,"<li><strong>%s:</strong> %s\n", 
@@ -1470,12 +1502,10 @@ void writearticles(int startnum, int maxnum)
 	      if (show_index[AUTHOR_INDEX])
 		  fprintf(fp,"<a href=\"%s#%d\">[ %s ]</a>\n",
 			  authname, num, lang[MSG_AUTHOR]);
-#ifdef CHANGE_12DEC2000_BC
-	    if (set_attachmentsindex) {
-		fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", attname,
-		    lang[MSG_ATTACHMENT]);
-	    }
-#endif
+	      if (set_attachmentsindex) {
+		  fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", attname,
+			  lang[MSG_ATTACHMENT]);
+	      }
 	      if (set_custom_archives && *set_custom_archives)
 		  fprintf(fp,"<li><strong>%s:</strong> %s\n", 
 			  lang[MSG_OTHER_MAIL_ARCHIVES],
@@ -1670,7 +1700,7 @@ void writedates(int amountmsgs)
 /*
 ** Write the attachments index...
 */
-#ifdef CHANGE_12DEC2000_BC
+
 void writeattachments(int amountmsgs)
 {
     int newfile;
@@ -1759,7 +1789,6 @@ void writeattachments(int amountmsgs)
     if (set_showprogress)
 	putchar('\n');
 }
-#endif
 
 /*
 ** Write the thread index...

@@ -414,11 +414,9 @@ int main(int argc, char **argv)
     thrdname = setindex(set_defaultindex, "thread", set_htmlsuffix);
     subjname = setindex(set_defaultindex, "subject", set_htmlsuffix);
     authname = setindex(set_defaultindex, "author", set_htmlsuffix);
-#ifdef CHANGE_12DEC2000_BC
     if (set_attachmentsindex) {
 	attname = setindex(set_defaultindex, "attachment", set_htmlsuffix);
     }
-#endif
 
     /*
      * General settings for mail command and rewriting.
@@ -552,11 +550,9 @@ int main(int argc, char **argv)
 	    writesubjects(amount_new);
 	if (show_index[AUTHOR_INDEX])
 	    writeauthors(amount_new);
-#ifdef CHANGE_12DEC2000_BC
 	if (set_attachmentsindex) {
 	    writeattachments(amount_new);
 	}
-#endif
 	if (set_monthly_index || set_yearly_index)
 	    write_summary_indices(amount_new);
     }

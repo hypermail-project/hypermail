@@ -44,38 +44,6 @@
 
 extern char *mktemp(char *);
 
-/*
- * Suffix to prepend to all saved attachments' filenames when the
- * headers don't propose a filename
- */
-#define FILE_SUFFIXER "part"
-
-/*
- * Prefix to prepend to all saved attachments' directory names (before
- * the article number)
- */
-#define DIR_PREFIXER "att-"
-
-/* 
- * Used to replace invalid characters in supplied attachment filenames
- */
-#define REPLACEMENT_CHAR '_'
-
-/* 
- * Path separator for attachment file path generation
- */
-#define PATH_SEPARATOR '/'
-
-/*
- * Directory where meta information will be stored
- */
-#define META_DIR ".meta"
-
-/*
- * Extension to add to meta files
- */
-#define META_EXTENSION ".meta"
-
 typedef enum {
     ENCODE_NORMAL,
     ENCODE_QP,			/* quoted printable */

@@ -1,6 +1,10 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Peter McCluskey (Mar 22 2001)
+  - Enabled attachments index file, added sublists of attachment
+   names and file sizes.
+
+Peter McCluskey (Mar 22 2001)
   - Fixed problem with GDBM defines.
   - Improved speed by replacing O(N^2) code in these functions with
    code that is at least typically close to O(N):
