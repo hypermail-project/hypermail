@@ -146,8 +146,10 @@ foreach $msg (@msgs) {
                     $boguscntr += 1;
 		    warn("received $received, $line\n") if($boguscntr < 3);
                 }
+		$email = &unspamify($email);
                 print MBOX "From $email  $date\n";
                 print MBOX "Date: $sent\n";
+		$id = &unspamify($id);
 		print MBOX "Message-Id: <$id>\n";
 		print MBOX "To: $to_address\n";
 		print MBOX "From: $email ($name)\n";
@@ -156,6 +158,7 @@ foreach $msg (@msgs) {
                    print MBOX $opt_H;
                  }
                 if ($inreplyto) {
+		    $inreplyto = &unspamify($inreplyto);
 		    print MBOX "In-Reply-To: <$inreplyto>\n";
 		}
 		if (@attfiles)
@@ -268,4 +271,14 @@ sub get_att
 	$text .= $line;
     }
     return $s . encode_base64($text) . "\n\n";
+}
+
+sub unspamify
+{
+    my ($s) = @_;
+    if(index($s, '@') == -1)
+    {
+	$s =~ s/_at_/\@/;
+    }
+    return $s;
 }
