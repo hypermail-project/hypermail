@@ -111,6 +111,7 @@ extern char *set_icss_url;
 extern char *set_mcss_url;
 
 extern char *set_dateformat;
+extern char *set_indexdateformat;
 
 extern char *set_stripsubject;
 extern char *set_link_to_replies;

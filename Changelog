@@ -5,6 +5,17 @@ Version Changes for Hypermail
 HYPERMAIL VERSION pre-2.1.9:
 ============================
 
+ Jose Kahan (Aug  14, 2003)
+  - After receiving more feedback, reverted the changes done for converting the
+    displayed value of the Date: header. The reason is that users like to know
+    when they send a message. This information was getting lost because we
+    were converting the date to the local time.
+  - Made the Received on date be  shown in converted local time.
+  - Added a new configuration option, indexdateformat, so that people can
+    specify a different format for indexes than the one used elsewhere. If this
+    variable is not defined., it'll use the dateformat by default.
+  - Made the index by date compare dates independently of the value of dateformat.
+
  Jose Kahan (Aug  13, 2003)
   - Made the Received on footnote line use the same date format as that used for the
     Date: header on top of the messages.

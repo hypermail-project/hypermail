@@ -97,6 +97,7 @@ char *set_mcss_url;
 char *set_label;
 
 char *set_dateformat;
+char *set_indexdateformat;
 char *set_stripsubject;
 
 char *set_link_to_replies;
@@ -490,6 +491,10 @@ struct Config cfg[] = {
 
     {"dateformat", &set_dateformat, NULL, CFG_STRING,
      "# Format (see strftime(3)) for displaying dates.\n", FALSE},
+
+    {"indexdateformat", &set_indexdateformat, NULL, CFG_STRING,
+     "# Format (see strftime(3)) for displaying dates in the index pages.\n"
+     "# Will use dateformat if not specified.\n", FALSE},
 
     {"stripsubject", &set_stripsubject, NULL, CFG_STRING,
      "# A word to be stripped from all subject lines.  Helps unclutter\n"

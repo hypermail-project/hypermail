@@ -276,7 +276,7 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
 		"<td><a name=\"%d\">%s</a></td>" "<td>%s</td></tr>\n",
 		level > 1 ? "--&gt; " : "", 
 		href, first_attributes,
-		subj, email->msgnum, email->name, getdatestr(email->date));
+		subj, email->msgnum, email->name, getindexdatestr(email->date));
     }
     else {
         if (num_open_li[level] != 0) {
@@ -286,7 +286,7 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
 	fprintf(fp, "<li><a href=\"%s\"%s>%s</a>&nbsp;"
 		"<a name=\"%d\"><em>%s</em></a>&nbsp;<em>(%s)</em>\n", 
 		href, first_attributes, 
-		subj, email->msgnum, email->name, getdatestr(email->date));
+		subj, email->msgnum, email->name, getindexdatestr(email->date));
     }
     free(subj);
     ++num_replies[level];

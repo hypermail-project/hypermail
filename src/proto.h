@@ -12,6 +12,8 @@ char *getlocaltime(void);
 void gettimezone(void);
 void getthisyear(void);
 char *getdatestr(time_t);
+char *getindexdatestr(time_t);
+char *getdateindexdatestr(time_t);
 char *secs_to_iso(time_t);
 char *secs_to_iso_meta(time_t);
 time_t iso_to_secs(char *);

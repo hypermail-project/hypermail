@@ -722,7 +722,7 @@ void printdates(FILE *fp, struct header *hp, int year, int month, struct emailin
       if(set_indextable) {
 	startline = "<tr><td>";
 	break_str = "</td><td>";
-	strcpy(date_str, getdatestr(hp->data->date));
+	strcpy(date_str, getdateindexdatestr(hp->data->date));
 	endline = "</td></tr>";
 	subj_tag = "";
 	subj_end_tag = "";
@@ -730,7 +730,7 @@ void printdates(FILE *fp, struct header *hp, int year, int month, struct emailin
       else {
 	char *tmp;
 	bool is_first;
-	tmp = getdatestr(hp->data->date);
+	tmp = getdateindexdatestr(hp->data->date);
 	if (strcmp (prev_date_str, tmp)) {
 	  if (*prev_date_str)  { /* close the previous date item */
 	    fprintf (fp, "</ul></li>\n");
@@ -788,10 +788,10 @@ int printattachments(FILE *fp, struct header *hp, struct emailinfo *subdir_email
 		/* consider that if there's an attachment directory, there are attachments */
 		nb_attach++;
 		if (set_indextable) {
-		  fprintf(fp, "<tr><td>%s%s</a></td><td><a name=\"%d\"><em>%s</em></a></td>" "<td>%s</td></tr>\n", msg_href(em, subdir_email, TRUE), subj, em->msgnum, em->name, getdatestr(em->date));
+		  fprintf(fp, "<tr><td>%s%s</a></td><td><a name=\"%d\"><em>%s</em></a></td>" "<td>%s</td></tr>\n", msg_href(em, subdir_email, TRUE), subj, em->msgnum, em->name, getindexdatestr(em->date));
 		}
 		else {
-		  fprintf(fp, "<li>%s<dfn>%s</dfn></a>&nbsp;" "<a name=\"%d\"><em>%s</em></a>&nbsp;<em>(%s)</em>\n", msg_href(em, subdir_email, TRUE), subj, em->msgnum, em->name, getdatestr(em->date));
+		  fprintf(fp, "<li>%s<dfn>%s</dfn></a>&nbsp;" "<a name=\"%d\"><em>%s</em></a>&nbsp;<em>(%s)</em>\n", msg_href(em, subdir_email, TRUE), subj, em->msgnum, em->name, getindexdatestr(em->date));
 		}
 		if (dir) {
 #ifdef HAVE_DIRENT_H
@@ -1363,7 +1363,7 @@ void print_headers(FILE *fp, struct emailinfo *email, int in_thread_file)
   if (in_thread_file)
     fprintf(fp, "<span id=\"subject\"><dfn>%s</dfn>: %s</span><br />\n", lang[MSG_SUBJECT], email->subject);
   /* date */
-  fprintf(fp, "<span id=\"date\"><dfn>%s</dfn>: %s</span><br />\n", lang[MSG_CDATE], getdatestr(email->date));
+  fprintf(fp, "<span id=\"date\"><dfn>%s</dfn>: %s</span><br />\n", lang[MSG_CDATE], email->datestr);
 
   printheaders (fp, email);
 
@@ -2335,13 +2335,13 @@ void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
 	if(set_indextable) {
 	    startline = "<tr><td>&nbsp;</td><td>";
 	    break_str = "</td><td>";
-	    strcpy(date_str, getdatestr(hp->data->date));
+	    strcpy(date_str, getindexdatestr(hp->data->date));
 	    endline = "</td></tr>";
 	}
 	else {
 	    startline = "<li>";
 	    break_str = "";
-	    sprintf(date_str, "<em>(%s)</em>", getdatestr(hp->data->date));
+	    sprintf(date_str, "<em>(%s)</em>", getindexdatestr(hp->data->date));
 	    endline = "</li>";
 	}
 	fprintf(fp,
@@ -2473,13 +2473,13 @@ void printauthors(FILE *fp, struct header *hp, char **oldname,
       if(set_indextable) {
 	startline = "<tr><td>&nbsp;</td><td>";
 	break_str = "</td><td>";
-	strcpy(date_str, getdatestr(hp->data->date));
+	strcpy(date_str, getindexdatestr(hp->data->date));
 	endline = "</td></tr>";
       }
       else {
 	startline = "<li>";
 	break_str = "&nbsp;";
-	sprintf(date_str, "<em>(%s)</em>", getdatestr(hp->data->date));
+	sprintf(date_str, "<em>(%s)</em>", getindexdatestr(hp->data->date));
 	endline = "</li>";
       }
       fprintf(fp,"%s%s%s</a>%s<a name=\"%d\">%s</a>%s\n",

@@ -176,6 +176,47 @@ char *getdatestr(time_t yearsecs)
     return date;
 }
 
+/* 
+** This function calls getdatestr, but with an alternate date format
+** that is used for showing dates in the indexs
+*/
+
+char *getindexdatestr(time_t yearsecs)
+{
+  char *previous_dateformat;
+  char *date;
+
+  /* store the previous dateformat */
+  previous_dateformat = set_dateformat;
+  /* if there's an index date format, we use it, otherwise use the
+   standard  dateformat */
+  if (set_indexdateformat)
+    set_dateformat = set_indexdateformat;
+  date = getdatestr (yearsecs);
+  /* restore the previous dateformat */
+  set_dateformat = previous_dateformat;
+  return date;
+}
+
+/* 
+** This function calls getdatestr, but with a fixed  alternate
+**  date format that we use for comparing two dates minus the hour.
+*/
+
+char *getdateindexdatestr(time_t yearsecs)
+{
+  char *previous_dateformat;
+  char *date;
+
+  /* store the previous dateformat */
+  previous_dateformat = set_dateformat;
+  set_dateformat = "%A, %e %B";
+  date = getdatestr (yearsecs);
+  /* restore the previous dateformat */
+  set_dateformat = previous_dateformat;
+  return date;
+}
+
 char *secs_to_iso(time_t t)
 {
     /* is passed time_t variable
