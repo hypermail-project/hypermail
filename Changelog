@@ -2,6 +2,10 @@ Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+ Jose Kahan (jose@w3.org) (Feb 19, 2003)
+   - Upgraded extract_rfc2047_content() as the previous extracting
+     algorithm was broken.
+
  Kent Landfield (Feb 18, 2003)
    - Added missing contrib utilities, contrib/msg2hypermailarchive.py
      and contrib/runtest to FILES

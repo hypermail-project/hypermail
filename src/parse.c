@@ -746,14 +746,18 @@ extract_rfc2047_content(char *iptr)
 
     INIT_PUSH(buff);
 
-    ptr = end_ptr = strstr(iptr+2, "?=");
-    if (ptr) {
-	while(--ptr > iptr && *ptr != '?')
-	    ;
-	if (ptr > iptr) {
-	    PushNString(&buff, ptr + 1, end_ptr - ptr - 1);
-	    RETURN_PUSH(buff);
-	}
+    /* skip the charset, find the encoding */
+    ptr = strchr (iptr + 2, '?');
+    ptr++;
+    if ((*ptr == 'Q' || *ptr == 'q' || *ptr == 'B' || *ptr == 'b')
+	&& *(ptr + 1) == '?') {
+      /* it's a valid encoding */
+      ptr = ptr + 2;
+      end_ptr = strstr(ptr, "?=");
+      if (end_ptr && ptr > iptr) {
+	PushNString(&buff, ptr, end_ptr - ptr);
+	RETURN_PUSH(buff);
+      }
     }
     return NULL;
 }
