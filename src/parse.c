@@ -2752,7 +2752,9 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
 		    }
 		}
 		else if (!strcasecmp(command, "inreplyto")) {
-		    valp = getvalue(line);
+		    char *raw_msgid = getvalue(line);
+		    valp = unspamify(raw_msgid);
+		    if (raw_msgid) free(raw_msgid);
 		    if (valp) {
 			inreply = unconvchars(valp);
 			free(valp);
