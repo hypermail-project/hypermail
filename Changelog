@@ -1,5 +1,20 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ Peter McCluskey (Feb 19 2001) applied patches from "W. Tasin" <tasin@fhm.edu>
+ - some changes in the german translation
+ - if a Content-Base is found set content=CONTENT_IGNORE because it is on
+  another server and it would never be parsed well inside the mail...
+  (this is more a workaround than a good patch... a better way would be to
+  include this to every link inside the content... to show up also this
+  external site... but I think it is an easy way to handle this problem)
+ - add NONE as value for set_mailcommand, so "New Message" will not be shown
+ - improve handling of inline attachments after signature.
+ - prevent "(no email)" in emailaddr from becoming mailto.
+ - add option set_bodymailcommand to configure mailto's other than one
+  used in MSG_NEW_MESSAGE or MSG_REPLY.
+ - changes to makemailcommand to prevent (nil) from showing when no Subject:.
+
  Daniel Stenberg (Jan 3, 2001)
  - Added checks for more functions in the configure script
 

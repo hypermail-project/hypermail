@@ -50,6 +50,7 @@ int set_filemode;
 int set_locktime;
 
 char *set_mailcommand;
+char *set_bodymailcommand;
 char *set_mailto;
 char *set_hmail;
 char *set_domainaddr;
@@ -221,6 +222,13 @@ struct Config cfg[] = {
     {"filemode", &set_filemode, INT(0644), CFG_OCTAL,
      "# This is an octal number representing the file permissions\n"
      "# that new files are set to when they are created.\n"},
+
+    {"bodymailcommand", &set_bodymailcommand, "not set", CFG_STRING,
+     "# This specifies the mail command to use when  converting\n"
+     "# email  addresses to links. The variables $TO, $SUBJECT,\n"
+     "# and $ID can be used in constructing the command string.\n"
+     "# This command is used inside the mail bodies and  in the\n"
+     "# From: line.\n"},
 
     {"mailcommand", &set_mailcommand, MAILCOMMAND, CFG_STRING,
      "# This specifies the mail command to use when  converting\n"
@@ -460,7 +468,8 @@ void PreConfig(void)
 
 void PostConfig(void)
 {
-    return;			/* nothing currently */
+    if (!strcmp(set_bodymailcommand, "not set"))
+	set_bodymailcommand = set_mailcommand;
 }
 
 int ConfigAddItem(char *cfg_line)
@@ -631,6 +640,7 @@ void dump_config(void)
     printf("set_dateformat = %s\n",set_dateformat ? set_dateformat : "Not set");
     printf("set_stripsubject = %s\n",set_stripsubject ? set_stripsubject : "Not set");
     printf("set_mailcommand = %s\n",set_mailcommand ? set_mailcommand : "Not set");
+    printf("set_bodymailcommand = %s\n",set_bodymailcommand ? set_bodymailcommand : "Not set");
     printf("set_mailto = %s\n",set_mailto ? set_mailto : "Not set");
     printf("set_hmail = %s\n",set_hmail ? set_hmail : "Not set");
     printf("set_domainaddr = %s\n",set_domainaddr ? set_domainaddr : "Not set");

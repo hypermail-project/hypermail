@@ -568,7 +568,7 @@ char *makemailcommand(char *mailcommand, char *email, char *id, char *subject)
     char *newcmd = NULL;
     char *newcmd2;
 
-    if (isre(subject, NULL))
+    if (subject && isre(subject, NULL))
 	hasre = 1;
     else
 	hasre = 0;
@@ -576,9 +576,9 @@ char *makemailcommand(char *mailcommand, char *email, char *id, char *subject)
     convsubj = convchars(subject);
 
     /* remade to deal with any-length strings */
-    tmpsubject = maprintf("%s%s", (hasre) ? "" : "Re: ", convsubj);
+    /* tmpsubject = maprintf("%s%s", (hasre) ? "" : "Re: ", (convsubj) ? convsubj : ""); */
+    tmpsubject = maprintf("%s%s", (convsubj && !hasre) ? "Re: " : "", (convsubj) ? convsubj : "");
 
-    if (tmpsubject) {
 
 	if ((cp = strrchr(email, ' ')) != NULL)
 	    *cp = '\0';
@@ -587,7 +587,7 @@ char *makemailcommand(char *mailcommand, char *email, char *id, char *subject)
 	newcmd2 = replace(newcmd, "$ID", id);
 	free(newcmd);
 
-	newcmd = replace(newcmd2, "$SUBJECT", tmpsubject);
+	newcmd = replace(newcmd2, "$SUBJECT", (tmpsubject) ? tmpsubject : "");
 	free(newcmd2);
 
 	newcmd2 = replacechar(newcmd, '%', "%25");
@@ -602,7 +602,7 @@ char *makemailcommand(char *mailcommand, char *email, char *id, char *subject)
 	newcmd = newcmd2;	/* this is the new string */
 
 	free(tmpsubject);
-    }
+
     free(convsubj);
     return newcmd;
 }
@@ -678,7 +678,7 @@ char *parseemail(char *input,	/* string to parse */
                             ptr-email, email, at, mailbuff);
 
 		    if (valid_root_domain(mailaddr)) {
-			char *mailcmd = makemailcommand(set_mailcommand,
+			char *mailcmd = makemailcommand(set_bodymailcommand,
 							mailaddr, mid,
 							msubject);
 			msnprintf(tempbuff, sizeof(tempbuff),

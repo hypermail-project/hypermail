@@ -166,10 +166,10 @@ char *de[] = {       /* German */
   "Über diese Liste",                  /* About this list    -HTML*/
   "Ende der Nachricht",                   /* End of Messages    -HTML*/
   "Anfang der Nachricht",                 /* Start of Messages  -HTML*/
-  "Datums-Sicht",                         /* Date view          -HTML*/
-  "Thread-Sicht",                         /* Thread view        -HTML*/
-  "Subject-Sicht",                        /* Subject view       -HTML*/
-  "Autor-Sicht",                          /* Author view        -HTML*/
+  "Datumsansicht",                         /* Date view          -HTML*/
+  "Baumansicht",                         /* Thread view        -HTML*/
+  "Betreffansicht",                        /* Subject view       -HTML*/
+  "Autorenansicht",                          /* Author view        -HTML*/
   "Weitere Gruppen",                      /* Other groups       -HTML*/
   "Nachrichten",                          /* Messages           -HTML*/
   "Anfang",                               /* Starting           -HTML*/

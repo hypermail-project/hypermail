@@ -1307,7 +1307,14 @@ int parsemail(char *mbox,	/* file name */
 			    file_created = MAKE_FILE;	/* please make one */
 			}
 		    }
+		    else if (!strncasecmp(head->line, "Content-Base:", 13)) {
+			char *ptr = head->line + 13;
+                        content=CONTENT_IGNORE;
+			/* we must make sure this is not parsed more times
+			   than this */
+			head->parsedheader = TRUE;
 
+                    }
 		    else if (!strncasecmp(head->line, "Content-Type:", 13)) {
 			char *ptr = head->line + 13;
 #define DISP_HREF 1
@@ -1994,7 +2001,7 @@ int parsemail(char *mbox,	/* file name */
 				else
 				    fname = FILE_SUFFIXER;
 
-				binname = maprintf("%s%c%.2d-%s",
+				binname = maprintf("%s%c%02d-%s",
 						   att_dir, PATH_SEPARATOR,
 						   att_counter, fname);
 				/* @@ move this one up */

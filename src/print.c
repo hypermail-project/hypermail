@@ -80,9 +80,10 @@ void fprint_menu(FILE *fp, mindex_t idx, char *archives,
 
     if (set_mailcommand) {
 	if (set_hmail) {
-	    ptr = makemailcommand("mailto:$TO", set_hmail, "", "");
-	    fprintf(fp, "<th><a href=\"%s\">%s</a></th>\n",
-		    ptr ? ptr : "", lang[MSG_NEW_MESSAGE]);
+	    ptr = makemailcommand(set_mailcommand, set_hmail, "", "");
+            if (strcmp(ptr, "NONE")!=0)
+	         fprintf(fp, "<th><a href=\"%s\">%s</a></th>\n",
+			 ptr ? ptr : "", lang[MSG_NEW_MESSAGE]);
 	    if (ptr)
 		free(ptr);
 
@@ -91,8 +92,9 @@ void fprint_menu(FILE *fp, mindex_t idx, char *archives,
 
 		ptr = makemailcommand(set_mailcommand, set_hmail,
 				      currentid, cursub);
-		fprintf(fp, "<th><a href=\"%s\">%s</a></th>\n",
-			ptr ? ptr : "", lang[MSG_REPLY]);
+		if (strcmp(ptr, "NONE")!=0)
+		    fprintf(fp, "<th><a href=\"%s\">%s</a></th>\n",
+			    ptr ? ptr : "", lang[MSG_REPLY]);
 		if (ptr)
 		    free(ptr);
 	    }
@@ -230,7 +232,7 @@ void print_index_header_links(FILE *fp, int called, int amountmsgs)
 
     /* JK: moved it here as it looks better and changed a bit the text */
     if (set_mailcommand && set_hmail) {
-	ptr = makemailcommand("mailto:$TO", set_hmail, "", "");
+	ptr = makemailcommand(set_mailcommand, set_hmail, "", "");
 	fprintf(fp, "<br><strong>%s:</strong> <a href=\"%s\">[ %s ]</a>\n",
 		lang[MSG_MAIL_ACTIONS], ptr ? ptr : "", 
 		lang[MSG_MA_NEW_MESSAGE]);
@@ -322,7 +324,7 @@ void print_index_footer_links(FILE *fp, int called, int amountmsgs)
 
     /* JK: added it here as it looks better and changed a bit the text */
     if (set_mailcommand && set_hmail) {
-	ptr = makemailcommand("mailto:$TO", set_hmail, "", "");
+	ptr = makemailcommand(set_mailcommand, set_hmail, "", "");
 	fprintf(fp, "<br><strong>%s:</strong> <a href=\"%s\">[ %s ]</a>\n",
 		lang[MSG_MAIL_ACTIONS], ptr ? ptr : "", 
 		lang[MSG_MA_NEW_MESSAGE]);
@@ -575,6 +577,7 @@ void printbody(FILE *fp, struct body *bp, char *id, char *subject)
 	}
 	else {
 	    if (inheader) {
+                insig=0;
 		if (set_showhtml) {
 		  if (pre) {
 			fprintf(fp, "</pre>\n");
@@ -833,7 +836,7 @@ void writearticles(int startnum, int maxnum)
 #endif
 	if (!strcmp(email->name, email->emailaddr)) {
 	    if (use_mailcommand) {
-		ptr = makemailcommand(set_mailcommand,
+		ptr = makemailcommand(set_bodymailcommand,
 				      email->emailaddr,
 				      email->msgid, email->subject);
 		fprintf(fp, "<strong>From:</strong> <a href=\"%s\">", ptr ? ptr : "");
@@ -845,8 +848,8 @@ void writearticles(int startnum, int maxnum)
 		fprintf(fp, "<em>%s</em><br>\n", email->name);
 	}
 	else {
-	    if (use_mailcommand) {
-		ptr = makemailcommand(set_mailcommand,
+	    if (use_mailcommand && strcmp(email->emailaddr,"(no email)")!=0) {
+		ptr = makemailcommand(set_bodymailcommand,
 				      email->emailaddr,
 				      email->msgid, email->subject);
 		fprintf(fp, "<strong>From:</strong> %s (<a href=\"%s\">",
@@ -856,9 +859,12 @@ void writearticles(int startnum, int maxnum)
 		fprintf(fp, "<em>%s</em></a>)<br>\n", email->emailaddr);
 	    }
 	    else
+	    {
 		fprintf(fp,
 			"<strong>From:</strong> %s (<em>%s</em>)<br>\n",
-			email->name, email->emailaddr);
+			email->name, 
+			(strcmp(email->emailaddr,"(no email)")!=0) ? email->emailaddr : "no email");
+	    }
 	}
 	fprintf(fp, "<strong>Date:</strong> %s\n<p>\n",
 		getdatestr(email->date));
