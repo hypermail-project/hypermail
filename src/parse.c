@@ -3011,10 +3011,10 @@ static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
     struct emailinfo *e0 = NULL;
 
     struct reply *replylist_tmp = NULL;
-    int first_read_body = 0;
+    int first_read_body = set_startmsgnum;
     
     if (num_from_gdbm != -1)
-      max_num = num_from_gdbm;
+      max_num = num_from_gdbm - 1;
     else if (set_nonsequential)
       max_num = find_max_msgnum_id();
     else
@@ -3024,8 +3024,8 @@ static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
 	max_msgnum = max_num;
     if (set_searchbackmsgnum) {
 	first_read_body = max_num - set_searchbackmsgnum;
-	if (first_read_body < 0)
-	    first_read_body = 0;
+	if (first_read_body < set_startmsgnum)
+	    first_read_body = set_startmsgnum;
 	if (num_from_gdbm != -1)
 	    num = first_read_body;
     }

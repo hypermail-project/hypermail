@@ -358,7 +358,7 @@ int find_max_msgnum()
 	return -1;
 #ifdef GDBM
     if (set_folder_by_date && set_usegdbm) {
-	return loadoldheadersfromGDBMindex(set_dir, 1);
+	return loadoldheadersfromGDBMindex(set_dir, 1) - 1;
     }
 #endif
     if (set_msgsperfolder) {

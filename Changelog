@@ -4,6 +4,10 @@ Version Changes for Hypermail
 ============================
 HYPERMAIL VERSION pre-2.1.9:
 ============================
+ Peter McCluskey (Oct 1, 2003)
+  Fix some problems with starting message number that caused bugs when
+  increment = 1, linkquotes = 1 and using folder_by_date.
+
  Peter McCluskey (Sep 11, 2003)
   Fixes to make pcre work.
 
