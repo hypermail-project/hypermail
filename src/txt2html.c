@@ -601,7 +601,7 @@ txt2html(FILE *fp, struct emailinfo *email, const struct body *bp,
 	    was_break = 1;
 	}
 	if (!set_linkquotes) {
-	    fprintf(fp, "<i>");
+	    fprintf(fp, "<i class=\"%s\">", find_quote_class(line));
 	    ConvURLs(fp, chomp(line), email->msgid, email->subject);
 	    fprintf(fp, "</i><br>\n");
 	}

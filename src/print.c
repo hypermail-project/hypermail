@@ -187,7 +187,7 @@ void fprint_menu(FILE *fp, mindex_t idx, char *archives, char *currentid,
     printcomment(fp, "fprint_menu", "begin");
 #endif
     fprintf(fp,
-	    "<div class=\"center\">\n<table border=\"2\" width=\"100%%\">\n<tr>\n");
+	    "<div class=\"center\">\n<table border=\"2\" width=\"100%%\" class=\"links\">\n<tr>\n");
 
     if (set_mailcommand) {
 	if (set_hmail) {
@@ -1084,11 +1084,14 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply)
 			}
 		    }
 		    else {
-		        fprintf(fp, "%s", (set_iquotes) ? "<em>" : "");
+			fprintf(fp, "<%s class=\"%s\">",
+				set_iquotes ? "em" : "span",
+				find_quote_class(bp->line));
 
 			ConvURLs(fp, bp->line, id, subject);
 
-			fprintf(fp, "%s<br>\n", (set_iquotes) ? "</em>" : "");
+			fprintf(fp, "%s<br>\n",
+				(set_iquotes) ? "</em>" : "</span>");
 		    }
 		}
 		else if ((bp->line)[0] != '\0') {
@@ -1380,7 +1383,7 @@ void writearticles(int startnum, int maxnum)
 	/*
 	 * Print the message's author info and date.
 	 */
-	fprintf(fp, "<p>\n");
+	fprintf(fp, "<p class=\"headers\">\n");
 	if (!strcmp(email->name, email->emailaddr)) {
 	    if (use_mailcommand) {
 		ptr = makemailcommand(set_mailcommand,
@@ -1429,7 +1432,7 @@ void writearticles(int startnum, int maxnum)
 
 	if (set_show_msg_links && set_show_msg_links != 4) {
 	    printcomment(fp, "next", "start");
-	    fprintf(fp, "<ul>\n");
+	    fprintf(fp, "<ul class=\"links\">\n");
 
 	    /*
 	     * Is there a next message?
@@ -1538,7 +1541,7 @@ void writearticles(int startnum, int maxnum)
 	if (!set_usetable) {
             int dlev = (email->subdir != NULL);
 	    if (!(set_show_msg_links && set_show_msg_links != 4))
-		fprintf(fp, "<ul>\n");
+		fprintf(fp, "<ul class=\"links\">\n");
 	    if (set_show_index_links && set_show_index_links != 4) {
 	        fprintf(fp,"<li><strong>%s %s:</strong> \n",
 			lang[MSG_MESSAGES], lang[MSG_SORTED_BY]);
@@ -1610,7 +1613,7 @@ void writearticles(int startnum, int maxnum)
 
 	if (set_show_msg_links && set_show_msg_links != 3) {
 	  /* JK: removed a <p>\n here */
-	    fprintf(fp, "<ul>\n");
+	    fprintf(fp, "<ul class=\"links\">\n");
 	    printcomment(fp, "next", "start");
 	    email2 = neighborlookup(num, 1);
 

@@ -254,6 +254,12 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
       fprintf(fp, "body {color: black; background: #ffffff}\n");
       fprintf(fp, "h1.center {text-align: center}\n");
       fprintf(fp, "div.center {text-align: center}\n");
+      fprintf(fp, ".quotelev1 {color : #990099}\n");
+      fprintf(fp, ".quotelev2 {color : #ff7700}\n");
+      fprintf(fp, ".quotelev3 {color : #007799}\n");
+      fprintf(fp, ".quotelev4 {color : #95c500}\n");
+      fprintf(fp, ".headers {background : #e0e0d0}\n");
+      fprintf(fp, ".links {background : #f8f8e0}\n");
       fprintf(fp, "</style>\n");
     }
 

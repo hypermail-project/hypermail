@@ -120,6 +120,8 @@ char *unquote(char *line);
 char *remove_hypermail_tags(char *line);
 int compute_quoted_percent(struct body *bp);
 int is_sig_start(const char *line);
+int find_quote_depth(char *);
+char *find_quote_class(char *);
 
 #ifdef lint
 int isspace(int);

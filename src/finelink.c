@@ -426,9 +426,12 @@ handle_quoted_text(FILE *fp, struct emailinfo *email, const struct body *bp,
     int quoting_msgnum = email->msgnum;
     const struct body *last_quoted_line = bp;
     int count_quoted_lines = 0;
-    const char *fmt2 = set_iquotes ? "<em>%s</em><br>" : "%s<br>";
+    char *fmt2;
     char *cvtd_line = ConvURLsString(unquote(line), email->msgid, email->subject);
     char *buffer1;
+    trio_asprintf(&fmt2, set_iquotes ? "<em class=\"%s\">%%s</em><br>"
+		  : "<span class=\"%s\">%%s</span><br>",
+		  find_quote_class(line));
     trio_asprintf(&buffer1, fmt2, cvtd_line ? cvtd_line : "");
     if (cvtd_line)
 	free(cvtd_line);
@@ -482,6 +485,7 @@ handle_quoted_text(FILE *fp, struct emailinfo *email, const struct body *bp,
 	    free(p2);
 	free(cvtd_line);
 	free(buffer1);
+	free(fmt2);
 	return 1;
     }
     else if (!replace_quoted || !inquote) {
@@ -493,6 +497,7 @@ handle_quoted_text(FILE *fp, struct emailinfo *email, const struct body *bp,
     }
     free(cvtd_line);
     free(buffer1);
+    free(fmt2);
     return 0;
 }
 

@@ -282,6 +282,38 @@ char *unquote(char *line)
 }
 
 /*
+ * The find_quote_depth function assumes that the line is already known
+ * to be quoted text. It returns the number of times the line has been
+ * quoted if it decides that is easy to determine, otherwise 1.
+ */
+
+int find_quote_depth(char *line)
+{
+    int cnt = 0;
+    if (*quote_prefix && !strchr(quote_prefix, '>'))
+	return 1;		/* too hard to deal with nonstandard quotes */
+    for ( ; *line; ++line) {
+	if (isspace(*line))
+	    continue;
+	if (*line == '>')
+	    ++cnt;
+	else break;
+    }
+    return cnt;
+}
+
+char *find_quote_class(char *line)
+{
+    int quote_depth = find_quote_depth(line);
+    if (quote_depth > 4) quote_depth = ((quote_depth - 1) % 4) + 1;
+    if (quote_depth >= 4) return "quotelev4";
+    if (quote_depth >= 3) return "quotelev3";
+    if (quote_depth >= 2) return "quotelev2";
+    if (quote_depth >= 1) return "quotelev1";
+    return "";
+}
+
+/*
 ** Find out what percent of the body consists of lines appearing
 ** to be quotes of other messages.
 */
