@@ -703,126 +703,126 @@ char *fi[] = {       /* Finnish */
 */
 
 char *fr[] = {       /* French */
-  "Nouveau Message",                     /* New Message        -HTML*/
-  "R&eacute;ponse",                      /* Reply              -HTML*/
-  "A propos de cette liste",             /* About this list    -HTML*/
-  "Fin des Messages",                    /* End of Messages    -HTML*/
-  "D&eacute;but des Messages",           /* Start of Messages  -HTML*/
-  "Liste par Date",                      /* Date view          -HTML*/
-  "Liste par Th&egrave;me",              /* Thread view        -HTML*/
-  "Liste par Sujet",                     /* Subject view       -HTML*/
-  "Liste par Auteur",                    /* Author view        -HTML*/
-  "Autres groupes",                      /* Other groups       -HTML*/
-  "Messages",                            /* Messages           -HTML*/
-  "D&eacute;but",                        /* Starting           -HTML*/
-  "Fin",                                 /* Ending             -HTML*/
-  "A propos de cette archive",           /* About this archive -HTML*/
-  "Messages class&eacute;s par",         /* Messages sorted by -HTML*/
-  "Autres archives",                     /* Other mail archives -HTML*/
-  "Par Date",                            /* By Date             -HTML*/
-  "Messages les plus r&eacute;cents",    /* Most recent messages-HTML*/
-  "auteur",                              /* author              -HTML*/
-  "date",                                /* date                -HTML*/
-  "th&egrave;eme",                       /* thread              -HTML*/
-  "sujet",                               /* subject             -HTML*/
-  "pour les options",                    /* for options       -STDOUT*/
-  "Ecriture des messages vers",          /* Writing messages to-STDOUT*/
-  "Ecriture de l'index 'date' vers",     /* Writing date index to-STDOUT*/
-  "Ecriture de l'index 'thème' vers", /* Writing thread index to -STDOUT*/
-  "Ecriture de l'index 'sujet' vers",    /* Writing subject index to-STDOUT*/
-  "Ecriture de l'index 'auteur' vers",   /* Writing author index to-STDOUT*/
-  "Date du dernier message",             /* Last message date   -HTML*/
-  "Archiv&eacute; le",                   /* Archived on         -HTML*/
-  "Ne peut effectuer de chmod",          /* Can not chmod     -STDERR*/
-  "Ne peut écrire",                   /* Could not write   -STDERR*/
-  "Message suivant",                     /* Next message        -HTML*/
-  "Message pr&eacute;c&eacute;dent",     /* Previous message    -HTML*/
-  "Sans doute en r&eacute;ponse à",   /* Maybe in reply to   -HTML*/
-  "En r&eacute;ponse à",              /* In reply to         -HTML*/
-  "Suivant dans le th&egrave;me",        /* Next in thread      -HTML*/
-  "Sans doute en r&eacute;ponse",        /* Maybe reply         -HTML*/
-  "Par Th&egrave;me",                    /* By Thread           -HTML*/
-  "Par Sujet",                           /* By Subject          -HTML*/
-  "Par Auteur",                          /* By Author           -HTML*/
-  "Ne peut créer le répertoire",   /* Can not create directory -STDERR*/
-  "Création du répertoire",        /* Creating directory -STDOUT*/
-  "Valeurs configurées",              /* Configuration Values -STDOUT*/
-  "chemin",                              /* path              -STDOUT*/
-  "Plus assez de mémoire!",           /* Ran out of memory!-STDERR*/
+  "Nouveau Message",                       /* New Message        -HTML*/
+  "R&eacute;ponse",                        /* Reply              -HTML*/
+  "A propos de cette liste",               /* About this list    -HTML*/
+  "Fin des Messages",                      /* End of Messages    -HTML*/
+  "D&eacute;but des Messages",             /* Start of Messages  -HTML*/
+  "Liste par Date",                        /* Date view          -HTML*/
+  "Liste par Th&egrave;me",                /* Thread view        -HTML*/
+  "Liste par Sujet",                       /* Subject view       -HTML*/
+  "Liste par Auteur",                      /* Author view        -HTML*/
+  "Autres groupes",                        /* Other groups       -HTML*/
+  "Messages",                              /* Messages           -HTML*/
+  "D&eacute;but",                          /* Starting           -HTML*/
+  "Fin",                                   /* Ending             -HTML*/
+  "A propos de cette archive",             /* About this archive -HTML*/
+  ", class&eacute;s par",                  /* Messages sorted by -HTML*/
+  "Autres archives",                       /* Other mail archives -HTML*/
+  "par Date",                              /* By Date             -HTML*/
+  "Messages les plus r&eacute;cents",      /* Most recent messages-HTML*/
+  "auteur",                                /* author              -HTML*/
+  "date",                                  /* date                -HTML*/
+  "th&egrave;me",                          /* thread              -HTML*/
+  "sujet",                                 /* subject             -HTML*/
+  "pour les options",                      /* for options       -STDOUT*/
+  "Ecriture des messages vers",            /* Writing messages to-STDOUT*/
+  "Ecriture de l'index 'date' dans",       /* Writing date index to-STDOUT*/
+  "Ecriture de l'index 'thème' dans",      /* Writing thread index to -STDOUT*/
+  "Ecriture de l'index 'sujet' dans",      /* Writing subject index to-STDOUT*/
+  "Ecriture de l'index 'auteur' dans",     /* Writing author index to-STDOUT*/
+  "Date du dernier message",               /* Last message date   -HTML*/
+  "Archiv&eacute; le",                     /* Archived on         -HTML*/
+  "Ne peut effectuer de chmod",            /* Can not chmod     -STDERR*/
+  "Ne peut écrire",                        /* Could not write   -STDERR*/
+  "Message suivant",                       /* Next message        -HTML*/
+  "Message pr&eacute;c&eacute;dent",       /* Previous message    -HTML*/
+  "Sans doute en r&eacute;ponse &agrave;", /* Maybe in reply to   -HTML*/
+  "En r&eacute;ponse &agrave;",             /* In reply to         -HTML*/
+  "Suivant dans le th&egrave;me",          /* Next in thread      -HTML*/
+  "Sans doute en r&eacute;ponse",          /* Maybe reply         -HTML*/
+  "par Thème",                      /* By Thread           -HTML*/
+  "par Sujet",                             /* By Subject          -HTML*/
+  "par Auteur",                            /* By Author           -HTML*/
+  "Ne peut créer le répertoire",           /* Can not create directory -STDERR*/
+  "Création du répertoire",                /* Creating directory -STDOUT*/
+  "Valeurs configurées",                   /* Configuration Values -STDOUT*/
+  "chemin",                                /* path              -STDOUT*/
+  "Plus assez de mémoire!",                 /* Ran out of memory!-STDERR*/
   "Cette archive a &eacute;t&eacute; cr&eacute;&eacute;e par",  /* This archive was generated by-HTML*/
-  "Eléments",                         /* Elements          -STDOUT*/
-  "Aucun Elément",                    /* No Elements       -STDOUT*/
-  "Ne peut ouvrir l'archive de mail",    /* Cannot open mail archive */
-  "Lecture du nouvel en-tête...",     /* Reading new header...-STDOUT   */
-  "Chargement de la mailbox",            /* Loading mailbox      -STDOUT   */
-  "encodage non supporté, stocké tel quel", /* encoding is not supported, stored as-is -HTML*/
-  "messages",                            /* messages             -HTML*/
-  "Version",                             /* Version            -STDOUT*/
-  "Patchlevel",                          /* Patchlevel         -STDOUT*/
-  "Documents",                           /* Docs               -STDOUT*/
-  "Variables de Commande et de Contrôle", /* Command and Control Variables-STDOUT*/
-  "Oui",                                 /* Yes                -STDOUT*/
-  "Non",                                 /* No                 -STDOUT*/
-  "A propos de l'archive: non utilisé", /* About the archive: not used-STDOUT */
-  "Autres archives: non utilisé",     /* Other archives: not used-STDOUT*/
-  "adresse non utilisée",             /* address not used        -STDOUT*/
-  "Utilisation de la déclaration <BODY>", /* Builtin <BODY> statement used-STDOUT*/
-  "Ne peut lire à la fois un fichier et le stdin", /* Cannot read from both file and stdin. -STDERR*/
-  "Options",                             /* Options                -STDOUT*/
-  "URL vers les autres archives",        /* URL to other archives  -STDOUT*/
+  "Eléments",                              /* Elements          -STDOUT*/
+  "Aucun Elément",                         /* No Elements       -STDOUT*/
+  "Ne peut ouvrir l'archive de mail",      /* Cannot open mail archive */
+  "Lecture du nouvel en-tête...",          /* Reading new header...-STDOUT   */
+  "Chargement de la boite aux lettres",    /* Loading mailbox      -STDOUT   */
+  "encodage non supporté, stocké tel quel",/* encoding is not supported, stored as-is -HTML*/
+  "messages",                              /* messages             -HTML*/
+  "Version",                               /* Version            -STDOUT*/
+  "Revision",                              /* Patchlevel         -STDOUT*/
+  "Documents",                             /* Docs               -STDOUT*/
+  "Variables de Commande et de Contrôle",  /* Command and Control Variables-STDOUT*/
+  "Oui",                                   /* Yes                -STDOUT*/
+  "Non",                                   /* No                 -STDOUT*/
+  "A propos de l'archive: non utilisé",    /* About the archive: not used-STDOUT */
+  "Autres archives: non utilisé",          /* Other archives: not used-STDOUT*/
+  "adresse non utilisée",                  /* address not used        -STDOUT*/
+  "Utilisation de la déclaration <BODY>",  /* Builtin <BODY> statement used-STDOUT*/
+  "Impossible de lire simulatanément un fichier et le flot d'entrée standard (stdin)", /* Cannot read from both file and stdin. -STDERR*/
+  "Options",                               /* Options                -STDOUT*/
+  "URL vers les autres archives",          /* URL to other archives  -STDOUT*/
   "URL vers les informations sur l'archive",  /* URL to archive information -STDOUT*/
-  "Fichier de configuration à lire",  /* Configuration file to read in -STDOUT*/
-  "Répertoire oú sauver les fichiers HTML", /* The directory to save HTML files in -STDOUT*/
-  "Lecture des messages depuis le stdin", /* Read messages from standard input -STDOUT*/
-  "Nom de l'archive de sortie",          /* What to name the output archive -STDOUT*/
-  "Archive de mail lue",                 /* Mail archive to read in -STDOUT*/
-  "Voir la progression",                 /* Show progress           -STDOUT*/
+  "Fichier de configuration à lire",       /* Configuration file to read in -STDOUT*/
+  "Répertoire où sauver les fichiers HTML",/* The directory to save HTML files in -STDOUT*/
+  "Lecture des messages depuis le flot d'entrée standard (stdin)", /* Read messages from standard input -STDOUT*/
+  "Nom de l'archive de sortie",            /* What to name the output archive -STDOUT*/
+  "Archive d'email à lire",                   /* Mail archive to read in -STDOUT*/
+  "Voir la progression",                   /* Show progress           -STDOUT*/
   "Voir les variables de configuration seulement", /* Show configuration variables only -STDOUT*/
-  "Afficher la version et quitter",      /* Show version information and exit -STDOUT*/
-  "Mettre à jour l'archive d'un article", /* Update archive by one article -STDOUT*/
-  "Ecraser les messages précédents", /* Overwrite previous messages -STDOUT*/
-  "Spécifier la langue à utiliser", /* Specify language to use     -STDOUT*/
-  "Usage",                               /* Usage           -STDOUT*/
-  "Langue non supportée",             /* Language not supported -STDERR*/
-  "Non défini",                       /* Not set        -STDOUT*/
-  "Non utilisé",                      /* Not used       -STDOUT*/
-  "Fichier d'attachement créé",    /* Created attachment file -STDOUT*/
-  "attachement",                         /* attachment     -HTML*/
-  "mode",                                /* mode           -STDOUT*/
-  "Lecture des anciens en-têtes",     /* Reading old headers -STDOUT*/
-  "",                                    /* for alignment only       -STDOUT*/
-  "ERREUR",                              /* ERROR                    -STDERR*/
-  "Adresse de soumission de la liste", 
-                           /* The submission address of the list-STDERR*/
+  "Afficher la version et quitter",        /* Show version information and exit -STDOUT*/
+  "Mettre à jour l'archive d'un article",  /* Update archive by one article -STDOUT*/
+  "Ecraser les messages précédents",       /* Overwrite previous messages -STDOUT*/
+  "Spécifier la langue à utiliser",        /* Specify language to use     -STDOUT*/
+  "Utilisation",                           /* Usage           -STDOUT*/
+  "Langue non supportée",                  /* Language not supported -STDERR*/
+  "Non défini",                            /* Not set        -STDOUT*/
+  "Non utilisé",                           /* Not used       -STDOUT*/
+  "Fichier attaché créé",                  /* Created attachment file -STDOUT*/
+  "fichier attach&eacute;",                /* attachment     -HTML*/
+  "mode",                                  /* mode           -STDOUT*/
+  "Lecture des anciens en-têtes",          /* Reading old headers -STDOUT*/
+  "",                                      /* for alignment only       -STDOUT*/
+  "ERREUR",                                /* ERROR                    -STDERR*/
+  "Adresse d'envoi à la liste", 
+                                           /* The submission address of the list-STDERR*/
   "Lire seulement un mail depuis l'entrée",
-  "Auteur",                              /* author              -HTML*/
-  "Date",                                /* date                -HTML*/
-  "Sujet",                               /* subject             -HTML*/
-  "Actions sur les mails",               /* Mail actions (MA) header -HTML*/
-  "cr&eacute;er un nouveau th&egrave;me",     /* MA New Message      -HTML*/
-  "r&eacute;pondre &agrave; ce message",      /* MA Reply            -HTML*/
-  "Summary of Monthly Index Files",      /* monthly             -HTML*/
-  "Summary of Yearly Index Files",       /* yearly              -HTML*/
-  "Build a GDBM header cache",   /* Build a GDBM header cache   -STDOUT*/
-  "Creating gdbm index... ",     /* Creating gdbm index         -STDOUT*/
-  "Can't create gdbm file... ",  /* Can't create gdbm index     -STDOUT*/
-  "Maintain an mbox archive",    /* Maintain an mbox archive    -STDOUT*/
-  "Can't both read from and write to an mbox.", /* "Can't both read from and write to an mbox." -STDOUT*/
-  "Liste par attachements",               /* Attachment view  -HTML*/
-  "Par messages avec attachments",	  /* By messages with attachments -HTML*/
-  "Ecriture de l'index 'attachement' vers",	  /* Writing attachment index to -STDOUT*/
-  "bytes",		    /* file size, so far only for attachments  -HTML */
-  "Cannot create symbolic link", /* MSG_CANNOT_CREATE_SYMLINK     -STDOUT */
-  "Cannot remove file", /* MSG_CANNOT_UNLINK                       -STDOUT */
-  "Previous Folder",  /* MSG_PREV_DIRECTORY                     -HTML */
-  "Next Folder",      /* MSG_NEXT_DIRECTORY                     -HTML */
-  "List of Folders",  /* MSG_FOLDERS_INDEX                      -HTML */
-  "This message has been deleted from the archive", /* MSG_DELETED -HTML */
-  "This message has expired",                       /* MSG_EXPIRED -HTML */
-  "(deleted message)", /* MSG_DEL_SHORT                            -HTML */
-  "Original text of this message", /* MSG_TXT_VERSION                          -HTML */
-  "This message has been filtered out",        /* MSG_FILTERED_OUT -HTML */
-  NULL,                                  /* End Of Message Table  - NOWHERE*/
+  "Auteur",                                /* author              -HTML*/
+  "Date",                                  /* date                -HTML*/
+  "Sujet",                                 /* subject             -HTML*/
+  "Actions sur les mails",                 /* Mail actions (MA) header -HTML*/
+  "cr&eacute;er un nouveau th&egrave;me",  /* MA New Message      -HTML*/
+  "r&eacute;pondre &agrave; ce message",   /* MA Reply            -HTML*/
+  "Summary of Monthly Index Files",        /* monthly             -HTML*/
+  "Summary of Yearly Index Files",         /* yearly              -HTML*/
+  "Creation d'un cache GDBM pour les en-têtes",  /* Build a GDBM header cache   -STDOUT*/
+  "Generation de l'index GDBM... ",               /* Creating gdbm index         -STDOUT*/
+  "Impossible de créer un fichier GDBM... ",    /* Can't create gdbm index     -STDOUT*/
+  "Maintenance d'une archive email (mbox)",     /* Maintain an mbox archive    -STDOUT*/
+  "Impossible de lire et d'écrire simultanément dans une archive email (mbox)", /* "Can't both read from and write to an mbox." -STDOUT*/
+  "Liste par fichier attachés",            /* Attachment view  -HTML*/
+  "par messages avec fichiers attachés",    /* By messages with attachments -HTML*/
+  "Ecriture de l'index 'fichiers attachés' dans",/* Writing attachment index to -STDOUT*/
+  "octets",		                   /* file size, so far only for attachments  -HTML */
+  "Impossible de créer un lien symbolique",/* MSG_CANNOT_CREATE_SYMLINK     -STDOUT */
+  "Impossible de supprimer le fichier",    /* MSG_CANNOT_UNLINK                       -STDOUT */
+  "Dossier précédent",                     /* MSG_PREV_DIRECTORY                     -HTML */
+  "Dossier suivant",                       /* MSG_NEXT_DIRECTORY                     -HTML */
+  "Liste des dossiers",                    /* MSG_FOLDERS_INDEX                      -HTML */
+  "Ce message a &eacute;t&eacute; supprim&eacute; de l'archive", /* MSG_DELETED -HTML */
+  "Ce message est trop vieux",             /* MSG_EXPIRED -HTML */
+  "(message supprim&eacute)",              /* MSG_DEL_SHORT                            -HTML */
+  "Texte original de ce message",          /* MSG_TXT_VERSION                          -HTML */
+  "Ce message a &eacute;t&eacute; supprimé par filtrage",    /* MSG_FILTERED_OUT -HTML */
+  NULL,                                    /* End Of Message Table  - NOWHERE*/
 };
 
 /*

@@ -356,6 +356,14 @@ int main(int argc, char **argv)
 	cmderr(errmsg);
     }
 
+#ifdef HAVE_LOCALE_H
+    if ( ! setlocale(LC_ALL, set_language) ) {
+        sprintf(errmsg, "WARNING: setlocale: \"%s\" %s.\n", set_language,
+	        lang[MSG_LANGUAGE_NOT_SUPPORTED]);
+        fprintf(stderr, errmsg);
+    }
+#endif
+	
     lang = tlang;		/* A good language, make it so. */
 
     if (print_usage)		/* Print the usage message and terminate */
