@@ -145,14 +145,14 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
     /* Print the thread info */
     if (set_indextable) {
 	fprintf(fp,
-		"<tr><td>%s<a href=\"%.4d.%s\"><strong>%s</strong></A></td>"
+		"<tr><td>%s<a href=\"%.4d.%s\"><strong>%s</strong></a></td>"
 		"<td><a name=\"%d\">%s</a></td>" "<td>%s</td></tr>\n",
 		level > 1 ? "--&gt; " : "", email->msgnum, set_htmlsuffix,
 		subj, email->msgnum, email->name, getdatestr(email->date));
     }
     else {
 	fprintf(fp, "<li><a href=\"%.4d.%s\">"
-		"<strong>%s</strong></A> "
+		"<strong>%s</strong></a> "
 		"<a name=\"%d\"><em>%s <small>(%s)</small></em></a>\n",
 		email->msgnum, set_htmlsuffix,
 		subj, email->msgnum, email->name, getdatestr(email->date));

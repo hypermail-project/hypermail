@@ -315,10 +315,10 @@ mailto = webmaster@landfield.com
 
 domainaddr = landfield.com
 
-# body = [ HTML <bodo> statement | NONE ]
+# body = [ HTML <body> statement | NONE ]
 #
 # Set this to the <body> line to use when generating the HTML pages.
-# Set to "NONE" to use the builtin <BODY> line by default.
+# Set to "NONE" to use the builtin <body> line by default.
 
 body = <body bgcolor="#FFFFFF" text="#000000">
 

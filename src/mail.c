@@ -95,7 +95,7 @@ void printform(char *to, char *from, char *subject,
 
     printf("<h1 align=\"center\">Email Gateway</h1>\n");
     printf
-	("<p align=\"center\"><em>Send an email message by filling in the form below.<br>Make sure your user name is specified correctly on the From: line.</em></P>\n");
+	("<p align=\"center\"><em>Send an email message by filling in the form below.<br>Make sure your user name is specified correctly on the From: line.</em></p>\n");
 
     printf("<div align=\"center\">\n");
     printf("<form method=\"post\" action=\"%s\">\n", CGINAME);

@@ -71,7 +71,7 @@ void fprint_menu(FILE *fp, mindex_t idx, char *archives,
 {
     char *ptr;
     fprintf(fp,
-	    "<dov align=\"center\">\n<table border=\"2\" width=\"100%%\">\n<tr>\n");
+	    "<div align=\"center\">\n<table border=\"2\" width=\"100%%\">\n<tr>\n");
 
     if (set_mailcommand) {
 	if (set_hmail) {
@@ -103,7 +103,7 @@ void fprint_menu(FILE *fp, mindex_t idx, char *archives,
 	    fprintf(fp, "<th><a href=\"#end\">%s</a></th>\n",
 		    lang[MSG_END_OF_MESSAGES]);
 	else
-	    fprintf(fp, "<th><a name=\"end\" href=\"#\">%s</a></TH>\n",
+	    fprintf(fp, "<th><a name=\"end\" href=\"#\">%s</a></th>\n",
 		    lang[MSG_START_OF_MESSAGES]);
     }
 
