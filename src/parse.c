@@ -810,9 +810,6 @@ static char *mdecodeRFC2047(char *string, int length)
 		2 + strlen(charset) + 1 + strlen(encoding) + 1 +
 		strlen(blurb) + 2;
 
-	    free(blurb);
-	    blurb = NULL;
-
 	    if (!strcasecmp("q", encoding)) {
 		/* quoted printable decoding */
 
@@ -843,6 +840,9 @@ static char *mdecodeRFC2047(char *string, int length)
 		strcpy(output, "<unknown>");
 		output += 9;
 	    }
+
+	    free(blurb);
+	    blurb = ptr = NULL;
 
 	    oldptr = iptr;	/* save start position */
 
@@ -1224,7 +1224,7 @@ int parsemail(char *mbox,	/* file name */
 	 require_filter_full_len++, tlist = tlist->next)
 	;
     pos = require_filter_len + require_filter_full_len;
-    require_filter = (bool *)emalloc(pos * sizeof(*require_filter));
+    require_filter = (pos ? (bool *)emalloc(pos * sizeof(*require_filter)) : NULL);
     require_filter_full = require_filter + require_filter_len;
     for (pos = 0; pos < require_filter_len; ++pos)
 	require_filter[pos] = FALSE;
@@ -2553,7 +2553,7 @@ int parsemail(char *mbox,	/* file name */
 	hassubject = 0;
 	hasdate = 0;
     }
-    free(require_filter);
+    if (require_filter) free(require_filter);
 
     if (set_showprogress && !readone)
 	print_progress(num, lang[MSG_ARTICLES], NULL);
