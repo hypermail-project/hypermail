@@ -3,6 +3,7 @@
 #include "struct.h"
 #include "threadprint.h"
 #include "printfile.h"
+#include "print.h"
 
 static void format_thread_info(FILE *, struct emailinfo *, int, int *,
 			       struct emailinfo *, FILE *, int);
@@ -227,7 +228,7 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
 	int is_reply;
 	fprintf(fp_body, "<a name =\"%.4d\"></a>", email->msgnum);
 	print_headers(fp_body, email, TRUE);
-	is_reply = print_links(fp_body, email, TRUE);
+	is_reply = print_links(fp_body, email, PAGE_TOP, TRUE);
 	if ((set_show_msg_links && set_show_msg_links != 4) || !set_usetable)
 	    fprintf(fp_body, "</ul>\n");
 
