@@ -613,7 +613,7 @@ char *en[] = {       /* English */
   "About this archive",          /* About this archive -HTML*/
   "sorted by",                   /* Messages sorted by -HTML*/
   "Other mail archives",         /* Other mail archives -HTML*/
-  "By Date",                     /* By Date             -HTML*/
+  "by date",                     /* By Date             -HTML*/
   "Most recent messages",        /* Most recent messages-HTML*/
   "author",                      /* author              -HTML*/
   "date",                        /* date                -HTML*/
@@ -635,9 +635,9 @@ char *en[] = {       /* English */
   "In reply to",                 /* In reply to         -HTML*/
   "Next in thread",              /* Next in thread      -HTML*/
   "Maybe reply",                 /* Maybe reply         -HTML*/
-  "By Thread",                   /* By Thread           -HTML*/
-  "By Subject",                  /* By Subject          -HTML*/
-  "By Author",                   /* By Author           -HTML*/
+  "by thread",                   /* By Thread           -HTML*/
+  "by subject",                  /* By Subject          -HTML*/
+  "by author",                   /* By Author           -HTML*/
   "Can not create directory",    /* Can not create directory -STDERR*/
   "Creating directory",          /* Creating directory -STDOUT*/
   "Configuration Values",        /* Configuration Values -STDOUT*/
@@ -705,7 +705,7 @@ char *en[] = {       /* English */
   "Maintain an mbox archive",    /* Maintain an mbox archive    -STDOUT*/
   "Can't both read from and write to an mbox.", /* "Can't both read from and write to an mbox." -STDOUT*/
   "Attachment view",			  /* Attachment view       -HTML*/
-  "By messages with attachments",	  /* By messages with attachments -HTML*/
+  "by messages with attachments",	  /* By messages with attachments -HTML*/
   "Writing attachment index to",	  /* Writing attachment index to -STDOUT*/
   "bytes",		    /* file size, so far only for attachments  -HTML */
   "Cannot create symbolic link", /* MSG_CANNOT_CREATE_SYMLINK     -STDOUT */

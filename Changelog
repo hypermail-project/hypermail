@@ -6,6 +6,14 @@ HYPERMAIL VERSION pre-2.1.9:
 ============================
 
  Jose Kahan (Aug  18, 2003)
+  - Changed to lowercase the suffixes added to the message indexes. That is,
+    from "archive name By Date" to "archive name by date" because the
+    upper case seemed out of style as we don't have any control on what
+    is the string used for the archive's name. Did this change only for
+    the English messages as I don't know if this convention works well for
+    other languages.
+
+ Jose Kahan (Aug  18, 2003)
   - Made the links to the different indexes show the index of the current entry.
     This change originated from the feedback we got on the WAI enhanced archievs.
     People find that this small changes increases the usability of the archive.
