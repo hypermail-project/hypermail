@@ -274,6 +274,8 @@ struct emailinfo {
     long exp_time;
     int is_deleted;	/* 1=deleted, 2=expired, 4=filtered out, */
 			/* 8=filtered (required line missing) */
+    int deletion_completed; /* -1 or delete_level that reflects last time */
+                            /* that file was rewritten to reflect is_deleted */
 };
 
 struct header {

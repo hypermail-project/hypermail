@@ -3204,6 +3204,7 @@ int loadoldheadersfromGDBMindex(char *dir, int get_count_only)
       GDBM_FILE gp;
       int num;
       int num_added = 0;
+      int old_delete_level = -1;
 
       if (!get_count_only)
 	authorlist = subjectlist = datelist = NULL;
@@ -3234,6 +3235,12 @@ int loadoldheadersfromGDBMindex(char *dir, int get_count_only)
 	datum content;
 	datum key;
 	int max_num;
+
+	key.dptr = "delete_level";
+	key.dsize = strlen(key.dptr);
+	content = gdbm_fetch(gp, key);
+	if (content.dptr)
+	    old_delete_level = atoi(content.dptr);
 
 	key.dptr = (char *) &num;
 	key.dsize = sizeof(num);
@@ -3309,6 +3316,7 @@ int loadoldheadersfromGDBMindex(char *dir, int get_count_only)
 			   fromdate, charset, isodate, isofromdate, bp))) {
 	      emp->exp_time = exp_time;
 	      emp->is_deleted = is_deleted;
+	      emp->deletion_completed = old_delete_level;
 	      check_expiry(emp);
 	      if (insert_in_lists(emp, NULL, 0))
 		  ++num_added;

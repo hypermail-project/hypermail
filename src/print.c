@@ -1775,6 +1775,17 @@ static GDBM_FILE gdbm_init()
 
 	    unlink(indexname);
 	}
+	else {
+	    datum key;
+	    datum content;
+	    char buf[512];
+	    key.dptr = "delete_level";
+	    key.dsize = strlen(key.dptr);
+	    sprintf(buf, "%d", set_delete_level);
+	    content.dsize = strlen(buf) + 1;
+	    content.dptr = buf; /* the value is in this string */
+	    gdbm_store(gp, key, content, GDBM_REPLACE);
+	}
     }
     return gp;
 }
@@ -1796,17 +1807,22 @@ void update_deletions(int num_old)
 	if (num >= num_old)
 	    continue;		/* new message - already done */
 	if (hashnumlookup(num, &ep)) {
-	    char *filename = articlehtmlfilename(ep);
-	    if (set_delete_level != DELETE_REMOVES_FILES) {
-		struct body *bp = ep->bodylist;
-		if (bp == NULL)
-		    parse_old_html(num, ep, 1, 0, NULL, 0);
-		writearticles(num, num + 1);
+	    char *filename;
+	    if (ep->deletion_completed == set_delete_level) /* done already? */
+	        continue;
+	    if (set_delete_level != DELETE_LEAVES_TEXT) {
+	        filename = articlehtmlfilename(ep);
+		if (set_delete_level != DELETE_REMOVES_FILES) {
+		    struct body *bp = ep->bodylist;
+		    if (bp == NULL)
+		        parse_old_html(num, ep, 1, 0, NULL, 0);
+		    writearticles(num, num + 1);
+		}
+		else if (isfile(filename)) {
+		    unlink(filename);
+		}
+		free(filename);
 	    }
-	    else if (isfile(filename)) {
-		unlink(filename);
-	    }
-	    free(filename);
 #ifdef FASTREPLYCODE
 	    for (rp = ep->replylist; rp != NULL; rp = rp->next) {
 #else

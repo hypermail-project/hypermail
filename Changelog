@@ -1,6 +1,10 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+ Peter McCluskey (Mar 23, 2004)
+   Changes to speed up incremental update when there are deleted files if
+  using usegdbm (it's still slow if usegdbm = 0).
+
 ============================
 HYPERMAIL VERSION 2.1.9:
 ============================

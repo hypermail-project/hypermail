@@ -266,6 +266,7 @@ struct emailinfo *addhash(int num, char *date, char *name, char *email, char *ms
     e->charset = strsav(charset);
     e->flags = 0;
     e->is_deleted = 0;
+    e->deletion_completed = -1;
     e->exp_time = -1;
     e->bodylist = sp;
     e->initial_next_in_thread = -1;
