@@ -1,10 +1,12 @@
 This is a file of things to do. If you have other ideas or needs send
-them to hypermail@hypermail.org or enter them in the Hypermail Development
-Center's Suggestions located at http://www.hypermail.org/cgi-bin/hmsuggest.
+them to hypermail-dev@hypermail.org.
 
 ===============
 General Things:
 ===============
+
+- Need to clean up the code and remove unused variables and 
+  old code that is commented/ifdefed out.
 
 - Update the doc files to assure all configuration file directives
   are included appropriately in the documentation. Currently the
@@ -32,10 +34,6 @@ General Things:
   <TH><FONT ...>string</FONT></TH>
   Fonts are not be inherited correctly in many browsers.
 
-- Add faqs.org validation routines to assure that only valid 
-  links are generated. valid_domain is used but othere are still 
-  needed.  This will also look for other links besides just listed URLs.
-  
 - Have configure look at the language selected and if it is not "en" 
   set the EURODATE to 1.
 

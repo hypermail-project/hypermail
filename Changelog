@@ -2,6 +2,16 @@ Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+ Kent Landfield (kent@hypermail.org) (February 10, 2003)
+  - Modified configure to assure on Solaris that the ctype functions 
+    were used instead of the macroes. New NO_MACRO define in config.h.
+  - Added most of the patches submitted by Thomas Biege <thomas@suse.de>
+  - Cleaned up compilation commenting out unused variables with NOT_USED.
+    Need to remove them and other unnecessary code soon.
+  - Various other minor compilation issues.
+  - Corrected prototype issue in print.c
+  - Added parameter checking to archive/*.c source
+
  Peter McCluskey (Feb 10, 2003)
   Fixed the append option to handle lines between end of headers through
  mime boundary correctly.
