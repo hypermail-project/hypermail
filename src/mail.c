@@ -138,6 +138,23 @@ void cgi_main(cgi_info *ci)
 
     print_mimeheader("text/html");
 
+#ifndef I_LIKE_SPAMMERS
+    /* This program has been set to be useless by default because it
+     * is probably easy for spammers to use as an open relay. It also
+     * has problems with enabling malicious use of JavaScript and
+     * CRLF Injection. Don't enable code below the #else unless you
+     * are sure that you trust the people who have access to the web
+     * page it produces.
+     */
+    printf("<html>\n");
+    printf("<head>\n");
+    printf("<title>Email Gateway</title>\n");
+    printf("</head>\n");
+    printf("<body bgcolor=\"#ffffff\" text=\"#000000\">\n");
+    printf("This page has been disabled due to potential abuse by spammers.\n");
+    printf("</body>\n</html>\n");
+    return;
+#else
     from = NULL;
     to = NULL;
     subject = NULL;
@@ -248,4 +265,5 @@ void cgi_main(cgi_info *ci)
 	progerr(tmpstr2);
     }
     free_form_entries(parms);
+#endif
 }
