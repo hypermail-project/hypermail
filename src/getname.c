@@ -274,7 +274,7 @@ void getname(char *line, char **namep, char **emailp)
 	}
     }
 
-    if (name[i-1] == ' ' && *c == '<' || *c == '(')
+    if (i > 0 && name[i-1] == ' ' && (*c == '<' || *c == '('))
 	name[--i] = '\0';
     else
 	name[i] = '\0';
