@@ -246,7 +246,7 @@ const char *find_quote_prefix(struct body *bp,
 	    best_index = i;
 	}
     }
-    if (best_count == 1 && !is_reply) {
+    if (best_count == 1 && (!is_reply || !strchr(guess[best_index], '>'))) {
 	for (i = 0; i < num_guesses; ++i) {
 	    if (i != best_index && guess_times_found[i] == best_count
 		&& !strncmp(guess[i], guess[best_index],
