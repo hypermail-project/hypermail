@@ -2,7 +2,7 @@
 
                           Version:  2.1
 
-This is a alpha release of the 2.1 version of hypermail.
+This is a release of the 2.1 version of hypermail.
 
 Please refer to Changelog for the list of changes made to this release.
 
@@ -124,6 +124,13 @@ Building Hypermail:
 
     2) Type "make". This will build the software. You can test
        it locally and when you are ready to install it ...
+
+ On some systems you may need to add "-R/usr/local/lib -L/usr/local/lib"
+to the CFLAGS variable in the Makefiles, or alter your LD_LIBRARY_PATH
+environment variable (Willi Kernen reports that on a 64-bit Solaris,
+changing LD_LIBRARY_PATH to:
+/usr/lib:/usr/local/lib:/usr/ccs/lib:/usr/ucb/lib:/usr/openwin/lib
+fixed a problem).
 
 Testing Hypermail:
 ==================
