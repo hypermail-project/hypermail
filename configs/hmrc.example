@@ -346,7 +346,7 @@ filemode = 0644
 # mailcommand = [ direct mailto | cgi-bin script path | NONE ]
 #
 # This is the mail command that email links go to, for instance
-# "mailto:$TO" or "/cgi-bin/mail?to=$TO&replyto=$ID&subject=$SUBJECT"
+# "mailto:$TO" or "/cgi-bin/mail?to=$TO&amp;replyto=$ID&amp;subject=$SUBJECT"
 #
 # In constructing this command, you can specify variables:
 #
@@ -356,7 +356,7 @@ filemode = 0644
 #
 # NONE disables mailcommand usage.
 
-mailcommand = mailto:$TO?subject=$SUBJECT&replyto=$ID
+mailcommand = mailto:$TO?subject=$SUBJECT&amp;replyto=$ID
 
 # mailto = [ email-address | NONE ]
 #
@@ -446,7 +446,7 @@ show_headers = From,Subject,Date,Message-ID
 # inline_types = indicate which types of data should be inlined
 #
 # This is the list of MIME types that you want inlined with <img> tags
-# as opposed to simply linked into the message with a <A HREF>. They 
+# as opposed to simply linked into the message with a <a href>. They 
 # can be listed individually on multiple lines or comma or space 
 # separated on a single line.
 #      inline_types = image/gif image/jpeg
@@ -454,7 +454,7 @@ show_headers = From,Subject,Date,Message-ID
 #      inline_types = image/gif
 #      inline_types = image/jpeg
 
-inline_types = image/gif image/jpeg
+inline_types = image/gif image/jpeg image/png
 
 # ignore_types = indicate which types of attachments to ignore and
 #                   not process.
