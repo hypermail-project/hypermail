@@ -48,6 +48,10 @@ clean:
 	rm -f $(OBJS) Lint.out
 	rm -f $(PROGS)
 
+clobber:  clean
+
+distclean:  clean
+
 install: $(bindir)/msg2archive$(SUFFIX) $(bindir)/rdmsg$(SUFFIX)
 
 $(bindir)/msg2archive$(SUFFIX):  msg2archive$(SUFFIX)

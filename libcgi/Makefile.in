@@ -34,6 +34,8 @@ install: $(ALL)
 clean:
 	-$(RM) -f *.o *~ *.a
 
+clobber: clean
+distclean: clean
 
 insight: clean
 	$(MAKE) CC="insight"

@@ -92,3 +92,11 @@ problem I think is more related to that the "alternative parser" never really
 finishes its work until it finds the end-boundary and when the following
 "From " line starts a new mail, something bad happens.  Hypermail should 
 process corrupt messages a bit better.
+
+=================================================
+Problem: Building on DEC Alpha systems.
+
+Make sure and use the GCC compiler and not the native DEC compiler
+when building on a DEC Alpha using TRU64 (OSF1).
+
+

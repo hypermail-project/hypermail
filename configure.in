@@ -66,6 +66,7 @@ case "$host" in
     ;;
   *-dec-osf*)
     # DEC OSF flags 
+    CFLAGS="$CFLAGS -mieee"
     INSTALL="install-sh"
     ;;
 esac

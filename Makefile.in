@@ -75,11 +75,13 @@ clobber: clean
 	rm -f libcgi/Makefile
 	rm -f src/Makefile
 	rm -f src/defaults.h
-	rm -f tests/testmail
 	rm -f tests/testhm
 	rm -rf tests/testdir
 	rm -rf tests/mail-archive
 	rm -f Makefile
+
+distclean: clobber
+	rm -f tests/testmail
 
 tgz:
 	@(dir=`pwd`;name=`basename $$dir`;echo Creates $$name.tar.gz; cd .. ; \

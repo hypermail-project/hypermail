@@ -2,6 +2,15 @@ Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+ Kent Landfield (kent@hypermail.org) (February 06, 2003)
+  Hypermail 2.1.6 runs on a DEC Alpha running TRU64 when compiled
+  with GCC 2.95. It does however require the -mieee flag be set for the
+  trionan.c sources.  
+   - Modified configure.in script to support setting the the -mieee flag
+     for an Alpha TRU64 build.
+   - Modified various Makefile.in files to assure clean/clobber/distclean 
+     worked universally.  
+
  Peter McCluskey (January 24, 2003)
   Release version 2.1.6 tar file.
   Fix buffer overflow when progress = 2 (triggered by long attachment

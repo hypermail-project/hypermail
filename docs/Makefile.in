@@ -47,3 +47,5 @@ install.html:
 	$(INSTALL_PROG) -c -m 0644 hmrc.html $(htmldir)
 
 clean:
+clobber:
+distclean:

@@ -119,8 +119,18 @@ clean:
 	rm -f .inslog tca.map lint.out
 	rm -f getdate.c
 	@cd pcre; $(MAKE) clean
-	@(if test $(FNV_DEP) != "" ; then cd fnv; $(MAKE) clobber; fi)
+	@(if test "$(FNV_DEP)" != "" ; then cd fnv; $(MAKE) clean; fi)
 	@cd ../libcgi; $(MAKE) clean
+
+clobber: clean
+	@cd pcre; rm -f *.lock
+	@(if test "$(FNV_DEP)" != "" ; then cd fnv; $(MAKE) clobber; fi)
+	@cd ../libcgi; $(MAKE) clobber
+
+distclean: clobber
+	@cd pcre; $(MAKE) distclean
+	@(if test "$(FNV_DEP)" != "" ; then cd fnv; $(MAKE) distclean; fi)
+	@cd ../libcgi; $(MAKE) distclean
 
 #
 # Regenerate this dependency list with gcc -MM *.c:
