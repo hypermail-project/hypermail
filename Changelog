@@ -1,5 +1,10 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (July 22, 2002)
+   Apply gdbm patch from Bernhard Reiter, mainly altering messages.
+   Apply German language patch from Bernhard Reiter.
+   Apply haof patch from Bernhard Reiter.
+
  Peter McCluskey (July 15, 2002)
    Fix some missing links to multipart attachments with save_alts option.
 

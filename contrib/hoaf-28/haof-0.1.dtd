@@ -1,28 +1,49 @@
 <!--
 
-    hypermail archive overview file DTD 0.1
-    Experimental and intermediate by Bernhard Reiter v0.1 29.11.1999
+    Experimental hypermail archive overview file DTD 0.2 
     Might be available from http://ffii.org/~breiter/probe
+
+    Copyright 1999,2002 by Bernhard Reiter <breiter@ffii.org>.
+    This specification is released as Free Software under a permissive
+    license. Do with it what you want, give credit, note that
+    you use this at your own risk.
+ 
 
     I want to build nicer overview link files from hypermail archives.
     So hypermail can create a file with this format in each
     archive directory and scripts can pick it up.
-    (If I hack it in, that is.)
 
+    Changes:
+    29.11.1999 Bernhard Reiter <breiter@ffii.org>
+        initial v0.1
+    25.12.1999 Bernhard
+	added <archiver> 
+	added optional <references>: This could be used for threading
+    21. 7.2002  Bernhard
+	added <attachement> index for use with newer hypermail versions
+        v0.2
 -->
 
-<!ELEMENT haof (indices, mails)>
+<!ELEMENT haof (archiver, indices, mails)>
 <!ATTLIST haof
           version     CDATA #REQUIRED> 
 
-<!ELEMENT indices (dateindex | subjectindex | threadindex | authorindex )*>
+<!ELEMENT archiver EMPTY>
+<!ATTLIST archiver
+	  name	CDATA #REQUIRED
+	  version CDATA #REQUIRED>
+
+<!ELEMENT indices (dateindex, subjectindex,  
+	threadindex?, authorindex?, attachmentindex? )>
 <!ELEMENT dateindex (#PCDATA)>
 <!ELEMENT subjectindex (#PCDATA)>
 <!ELEMENT threadindex (#PCDATA)>
 <!ELEMENT authorindex (#PCDATA)>
+<!ELEMENT attachmentindex (#PCDATA)>
 
 <!ELEMENT mails (mail)+>
-<!ELEMENT mail (subject | date | fromname | fromemail | message-id | file )*>
+<!ELEMENT mail (subject,  date , fromname , fromemail, message-id, file,
+		(references)? )>
 <!ELEMENT subject (#PCDATA)>
 <!ELEMENT date (#PCDATA)>
 <!ELEMENT fromname (#PCDATA)>
@@ -30,3 +51,5 @@
 <!ELEMENT message-id (#PCDATA)>
 <!ELEMENT file (#PCDATA)>
 
+<!ELEMENT references (ref)+>
+<!ELEMENT ref (#PCDATA)>

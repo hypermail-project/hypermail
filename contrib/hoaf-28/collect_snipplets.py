@@ -9,12 +9,16 @@ The indexfilename is relative to the directory, "-" for stdout is recognised.
 
 directory has to contain top_html.hdr and footer_html.hdr.
 """
-__version__=0.2
+__version__=0.3
 
 #29.11.1999 initial Bernhard Reiter
 # 6.12.1999 Bernhard
 #   fix: table row not created, if no snipplet there
 #   added: second argument
+#25.12.1999 Bernhard
+#   cleanup: extracted code into new functions add_header(), add_footer()
+#20. 7.2002 Bernhard
+#   finished the cleanup
 
 import sys
 import os
@@ -24,6 +28,28 @@ import create_archive_snipplet
 topdirre= re.compile (r"^[12]\d{3,3}$")
 
 months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+
+def add_header(outputfile,path):
+    """ Read and dump header file use standard html header."""
+    fname=os.path.join(path,"top_html.hdr")
+    if os.path.isfile(fname):
+        f=open(fname,"r")
+        outputfile.writelines(f.readlines())
+        f.close()
+    else:
+        outputfile.write("<html>\n<body>\n")
+        
+
+def add_footer(outputfile,path):
+    """ Read and dumb footer file or write standard html footer. """
+    fname=os.path.join(path,"footer_html.hdr")
+    if os.path.isfile(fname):
+        f=open(fname,"r")
+        outputfile.writelines(f.readlines())
+        f.close()
+    else:
+        outputfile.write("</body>\n</html>\n")
+
 
 def main(argv):
 
@@ -51,11 +77,7 @@ def main(argv):
     write=outputfile.write
     writelines=outputfile.writelines
 
-    # dump header file
-    f=open(os.path.join(path,"top_html.hdr"),"r")
-    writelines(f.readlines())
-    f.close()
-
+    add_header(outputfile,path)
 
     # get the real work done
     dirlist=os.listdir(path)
@@ -85,6 +107,8 @@ def main(argv):
 
         subpath=os.path.join(path,dir)
         dirlist=os.listdir(subpath)
+
+        months.reverse()
         for month in months:
             if month in dirlist and os.path.isdir(os.path.join(subpath,month)):
 
@@ -101,11 +125,8 @@ def main(argv):
         write("</table>\n")
         
 
+    add_footer(outputfile,path)
 
-    # dump footer file
-    f=open(os.path.join(path,"footer_html.hdr"),"r")
-    writelines(f.readlines())
-    f.close()
 
     if outputfile != sys.stdout:
         outputfile.close()
@@ -113,4 +134,3 @@ def main(argv):
 
 if __name__ =="__main__":
     main(sys.argv)
-
