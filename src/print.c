@@ -1145,7 +1145,11 @@ void update_deletions(int num_old)
 		unlink(filename);
 	    }
 	    free(filename);
+#ifdef FASTREPLYCODE
 	    for (rp = ep->replylist; rp != NULL; rp = rp->next) {
+#else
+	    for (rp = replylist; rp != NULL; rp = rp->next) {
+#endif
 	        int rnum = rp->data->msgnum;
 		if (rnum < num_old) {
 		    if (!rp->data->bodylist || !rp->data->bodylist->line[0])
