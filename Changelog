@@ -1,5 +1,8 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Daniel Stenberg (Jan 3, 2001)
+ - Added checks for more functions in the configure script
+
  Ashley M. Kirchner (May 31, 2000)
  - I converted all uppercase HTML tags to lowercase in the main hypermail
    base source.  Stuff that got contributed (under the contrib directory)
