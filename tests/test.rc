@@ -23,7 +23,6 @@ showheaders = 0
 show_headers = X-Mailer,Status
 showhtml = 1
 showbr = 1
-showhr = 1
 showreplies = 1
 show_msg_links = 1 
 show_index_links = 1
