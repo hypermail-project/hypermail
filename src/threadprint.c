@@ -4,7 +4,8 @@
 #include "threadprint.h"
 #include "printfile.h"
 
-static void format_thread_info(FILE *, struct emailinfo *, int, int *);
+static void format_thread_info(FILE *, struct emailinfo *, int, int *,
+			       struct emailinfo *);
 static int finish_thread_levels(FILE **, int, int, int *,
 				FILE **, char **, char **, int);
 
@@ -153,7 +154,7 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 	/* Now print this mail */
 	if ((year == -1 || year_of_datenum(rp->data->date) == year)
 	    && (month == -1 || month_of_datenum(rp->data->date) == month))
-	    format_thread_info(fp, rp->data, level, num_replies);
+	    format_thread_info(fp, rp->data, level, num_replies, email);
 
 	prev = rp->msgnum;
 	rp = rp->next;
@@ -161,7 +162,8 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 }
 
 static void format_thread_info(FILE *fp, struct emailinfo *email,
-			       int level, int *num_replies)
+			       int level, int *num_replies,
+			       struct emailinfo* subdir_email)
 {
     char *subj;
 
@@ -172,13 +174,13 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
 	fprintf(fp,
 		"<tr><td>%s%s<strong>%s</strong></a></td>"
 		"<td><a name=\"%d\">%s</a></td>" "<td>%s</td></tr>\n",
-		level > 1 ? "--&gt; " : "", msg_href(email, NULL),
+		level > 1 ? "--&gt; " : "", msg_href(email, subdir_email),
 		subj, email->msgnum, email->name, getdatestr(email->date));
     }
     else {
 	fprintf(fp, "<li>%s<strong>%s</strong></a> "
 		"<a name=\"%d\"><em>%s <small>(%s)</small></em></a>\n",
-		msg_href(email, NULL),
+		msg_href(email, subdir_email),
 		subj, email->msgnum, email->name, getdatestr(email->date));
     }
     free(subj);
