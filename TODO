@@ -49,8 +49,6 @@ General Things:
 Index Issues:
 =============
 
-- Make it optional as to what, if any, indexes are generated.
-
 - Make the formating of index pages use magic cookies for all parts of the
   page.
 

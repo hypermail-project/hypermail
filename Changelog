@@ -1,5 +1,8 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Peter McCluskey (Mar 14 2001)
+  - Added avoid_indices option.
+
 Peter McCluskey (Mar 13 2001)
   - Sped up by balancing the datelist tree a bit (it had been virtually
     a linked list) and by removing redundant call to nextinthread.

@@ -352,6 +352,12 @@ de - German
 <DT> <STRONG>HM_DEFAULTINDEX "type"</STRONG>
 <DD> This is the index that is intended to be the one that users see first when entering the archive. Possible values are <STRONG>"date"</STRONG>, <STRONG>"thread"</STRONG>, <STRONG>"subject"</STRONG>, and <STRONG>"author"</STRONG>.
 <P>
+<DT> <STRONG>HM_AVOID_INDICES "list of index files to avoid generating" </STRONG>
+<DD> This is a list of index files to not generate.
+Possible values are <STRONG>"date"</STRONG>, <STRONG>"thread"</STRONG>, <STRONG>"subject"</STRONG>, and <STRONG>"author"</STRONG>.
+They can be listed individually on multiple lines or comma or space 
+separated on a single line.
+<P>
 <DT> <STRONG>HM_REVERSE boolean_number</STRONG>
 <DD> Defining this variable as <STRONG>1</STRONG> will reverse-sort the article entries in the date and thread index files by the date they were received. That is, the most recent messages will appear at the top of the index rather than the other way around.
 <P>

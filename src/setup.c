@@ -7,6 +7,7 @@
 #include "setup.h"
 #include "struct.h"
 #include "setup.h"
+#include "print.h"
 
 char *set_language;
 char *set_htmlsuffix;
@@ -80,6 +81,8 @@ struct hmlist *set_inline_types = NULL;
 struct hmlist *set_prefered_types = NULL;
 struct hmlist *set_ignore_types = NULL;
 struct hmlist *set_show_headers = NULL;
+struct hmlist *set_avoid_indices = NULL;
+int show_index[NO_INDEX];
 
 char *set_ihtmlheader;
 char *set_ihtmlfooter;
@@ -133,6 +136,10 @@ struct Config cfg[] = {
      "# This specifies the default index that  users can view when\n"
      "# entering the archive. Valid types are date, thread, author,\n"
      "# and subject.\n"},
+
+    {"avoid_indices", &set_avoid_indices, NULL, CFG_LIST,
+     "# This is a list of index files to not generate. Valid types are\n"
+     "# date, thread, author, and subject.\n"},
 
     {"overwrite", &set_overwrite, BTRUE, CFG_SWITCH,
      "# Set this to On to make Hypermail overwrite existing archives.\n"},
@@ -366,7 +373,7 @@ struct Config cfg[] = {
 
     {"link_to_replies", &set_link_to_replies, NULL, CFG_STRING,
      "# If the linkquotes option is on, specifying a string here\n"
-     "# causes it to generate links from original quoted text the\n"
+     "# causes it to generate links from original quoted text to the\n"
      "# location(s) in replies which quote them. The string\n"
      "# is used to display the link.\n"},
 
@@ -542,10 +549,16 @@ void PreConfig(void)
 
 void PostConfig(void)
 {
+    int i;
     /* Keep default behavior the same as it was when mailcommand applied
     * to the cases now covered by replymsg_command. */
     if (!strcmp(set_replymsg_command, "not set"))
 	set_replymsg_command = set_mailcommand;
+
+    show_index[AUTHOR_INDEX]  = !inlist(set_avoid_indices, "author");
+    show_index[DATE_INDEX]    = !inlist(set_avoid_indices, "date");
+    show_index[SUBJECT_INDEX] = !inlist(set_avoid_indices, "subject");
+    show_index[THREAD_INDEX]  = !inlist(set_avoid_indices, "thread");
 }
 
 int ConfigAddItem(char *cfg_line)

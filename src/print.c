@@ -122,19 +122,19 @@ void fprint_menu(FILE *fp, mindex_t idx, char *archives,
 		    lang[MSG_START_OF_MESSAGES]);
     }
 
-    if (idx != DATE_INDEX)
+    if (idx != DATE_INDEX && show_index[DATE_INDEX])
 	fprintf(fp, "<th><a href=\"%s\">%s</a></th>\n", datename,
 		lang[MSG_DATE_VIEW]);
 
-    if (idx != THREAD_INDEX)
+    if (idx != THREAD_INDEX && show_index[THREAD_INDEX])
 	fprintf(fp, "<th><a href=\"%s\">%s</a></th>\n", thrdname,
 		lang[MSG_THREAD_VIEW]);
 
-    if (idx != SUBJECT_INDEX)
+    if (idx != SUBJECT_INDEX && show_index[SUBJECT_INDEX])
 	fprintf(fp, "<th><a href=\"%s\">%s</a></th>\n", subjname,
 		lang[MSG_SUBJECT_VIEW]);
 
-    if (idx != AUTHOR_INDEX)
+    if (idx != AUTHOR_INDEX && show_index[AUTHOR_INDEX])
 	fprintf(fp, "<th><a href=\"%s\">%s</a></th>\n", authname,
 		lang[MSG_AUTHOR_VIEW]);
 
@@ -211,19 +211,19 @@ void print_index_header_links(FILE *fp, mindex_t called_from,
     fprintf(fp, "<strong>%d %s %s:</strong> \n", amountmsgs,
 	    lang[MSG_ARTICLES], lang[MSG_SORTED_BY]);
 
-    if (called_from != AUTHOR_INDEX)
+    if (called_from != AUTHOR_INDEX && show_index[AUTHOR_INDEX])
 	fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", authname,
 		lang[MSG_AUTHOR]);
 
-    if (called_from != DATE_INDEX)
+    if (called_from != DATE_INDEX && show_index[DATE_INDEX])
 	fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", datename,
 		lang[MSG_DATE]);
 
-    if (called_from != THREAD_INDEX)
+    if (called_from != THREAD_INDEX && show_index[THREAD_INDEX])
 	fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", thrdname,
 		lang[MSG_THREAD]);
 
-    if (called_from != SUBJECT_INDEX)
+    if (called_from != SUBJECT_INDEX && show_index[SUBJECT_INDEX])
 	fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", subjname,
 		lang[MSG_SUBJECT]);
 
@@ -304,19 +304,19 @@ void print_index_footer_links(FILE *fp, mindex_t called_from,
     fprintf(fp, "<strong>%d %s %s:</strong> \n", amountmsgs,
 	    lang[MSG_ARTICLES], lang[MSG_SORTED_BY]);
 
-    if (called_from != AUTHOR_INDEX)
+    if (called_from != AUTHOR_INDEX && show_index[AUTHOR_INDEX])
 	fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", authname,
 		lang[MSG_AUTHOR]);
 
-    if (called_from != DATE_INDEX)
+    if (called_from != DATE_INDEX && show_index[DATE_INDEX])
 	fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", datename,
 		lang[MSG_DATE]);
 
-    if (called_from != THREAD_INDEX)
+    if (called_from != THREAD_INDEX && show_index[THREAD_INDEX])
 	fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", thrdname,
 		lang[MSG_THREAD]);
 
-    if (called_from != SUBJECT_INDEX)
+    if (called_from != SUBJECT_INDEX && show_index[SUBJECT_INDEX])
 	fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", subjname,
 		lang[MSG_SUBJECT]);
 
@@ -1177,14 +1177,18 @@ void writearticles(int startnum, int maxnum)
 	if (!set_usetable) {
             fprintf(fp,"<li><strong>%s %s:</strong> \n",
 		      lang[MSG_MESSAGES], lang[MSG_SORTED_BY]);
-	    fprintf(fp, "<a href=\"%s#%d\">[ %s ]</a>\n",
-		    datename, num, lang[MSG_DATE]);
-	    fprintf(fp, "<a href=\"%s#%d\">[ %s ]</a>\n",
-		    thrdname, num, lang[MSG_THREAD]);
-	    fprintf(fp, "<a href=\"%s#%d\">[ %s ]</a>\n",
-		    subjname, num, lang[MSG_SUBJECT]);
-	    fprintf(fp, "<a href=\"%s#%d\">[ %s ]</a>\n",
-		    authname, num, lang[MSG_AUTHOR]);
+	    if (show_index[DATE_INDEX])
+	        fprintf(fp, "<a href=\"%s#%d\">[ %s ]</a>\n",
+			datename, num, lang[MSG_DATE]);
+	    if (show_index[THREAD_INDEX])
+	        fprintf(fp, "<a href=\"%s#%d\">[ %s ]</a>\n",
+			thrdname, num, lang[MSG_THREAD]);
+	    if (show_index[SUBJECT_INDEX])
+	        fprintf(fp, "<a href=\"%s#%d\">[ %s ]</a>\n",
+			subjname, num, lang[MSG_SUBJECT]);
+	    if (show_index[AUTHOR_INDEX])
+	        fprintf(fp, "<a href=\"%s#%d\">[ %s ]</a>\n",
+			authname, num, lang[MSG_AUTHOR]);
 #ifdef CHANGE_12DEC2000_BC
 	    if (set_attachmentsindex) {
 		fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", attname,
@@ -1339,14 +1343,18 @@ void writearticles(int startnum, int maxnum)
 		  fprintf(fp, "<ul>\n");
 	      fprintf(fp,"<li><strong>%s %s:</strong> \n",
 		      lang[MSG_MESSAGES], lang[MSG_SORTED_BY]);
-	      fprintf(fp,"<a href=\"%s#%d\">[ %s ]</a>\n",
-		      datename, num, lang[MSG_DATE]);
-	      fprintf(fp,"<a href=\"%s#%d\">[ %s ]</a>\n",
-		      thrdname, num, lang[MSG_THREAD]);
-	      fprintf(fp,"<a href=\"%s#%d\">[ %s ]</a>\n",
-		      subjname, num, lang[MSG_SUBJECT]);
-	      fprintf(fp,"<a href=\"%s#%d\">[ %s ]</a>\n",
-		      authname, num, lang[MSG_AUTHOR]);
+	      if (show_index[DATE_INDEX])
+		  fprintf(fp,"<a href=\"%s#%d\">[ %s ]</a>\n",
+			  datename, num, lang[MSG_DATE]);
+	      if (show_index[THREAD_INDEX])
+		  fprintf(fp,"<a href=\"%s#%d\">[ %s ]</a>\n",
+			  thrdname, num, lang[MSG_THREAD]);
+	      if (show_index[SUBJECT_INDEX])
+		  fprintf(fp,"<a href=\"%s#%d\">[ %s ]</a>\n",
+			  subjname, num, lang[MSG_SUBJECT]);
+	      if (show_index[AUTHOR_INDEX])
+		  fprintf(fp,"<a href=\"%s#%d\">[ %s ]</a>\n",
+			  authname, num, lang[MSG_AUTHOR]);
 #ifdef CHANGE_12DEC2000_BC
 	    if (set_attachmentsindex) {
 		fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", attname,
@@ -2066,6 +2074,8 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
 		FILE *fp1;
 		char *prev_text = "";
 		char subject_title[128];
+		if (!show_index[j])
+		    continue;
 		sprintf(filename, "%s%s%sby%s", set_dir,
 			(set_dir[strlen(set_dir) - 1] == '/') ? "" : "/",
 			month_str, indextypefilename[j]);

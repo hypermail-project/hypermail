@@ -131,6 +131,14 @@ specific</EM> information to hypermail.  Comments are denoted by the
 <BR># 
 <BR>defaultindex = thread
 <BR>
+<BR># <STRONG>avoid_indices = </STRONG>
+<BR># This is a list of index files to not generate. Valid types are
+<BR># date, thread, author, and subject.
+<BR># They can be listed individually on multiple lines or comma or space 
+<BR># separated on a single line.
+<BR>
+<BR>avoid_indices = subject author
+<BR>
 <BR># <STRONG>reverse = [ 0 | 1 ]</STRONG>
 <BR>#
 <BR># Setting this variable to 1 will reverse-sort the article
@@ -140,6 +148,7 @@ specific</EM> information to hypermail.  Comments are denoted by the
 <BR># Set to 0 if you want latest message on the bottom for date and
 <BR># thread indexes. 
 <BR>#
+<BR>
 <BR>reverse = 0
 <BR>
 <BR># <STRONG>usetable = [ 0 | 1 ]</STRONG>

@@ -517,10 +517,14 @@ int main(int argc, char **argv)
 	    printedthreadlist = NULL;
 	    crossindexthread1(datelist);
 	}
-	writedates(amount_new);
-	writethreads(amount_new);
-	writesubjects(amount_new);
-	writeauthors(amount_new);
+	if (show_index[DATE_INDEX])
+	    writedates(amount_new);
+	if (show_index[THREAD_INDEX])
+	    writethreads(amount_new);
+	if (show_index[SUBJECT_INDEX])
+	    writesubjects(amount_new);
+	if (show_index[AUTHOR_INDEX])
+	    writeauthors(amount_new);
 #ifdef CHANGE_12DEC2000_BC
 	if (set_attachmentsindex) {
 	    writeattachments(amount_new);

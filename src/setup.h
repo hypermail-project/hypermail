@@ -103,6 +103,8 @@ extern struct hmlist *set_inline_types;
 extern struct hmlist *set_prefered_types;
 extern struct hmlist *set_ignore_types;
 extern struct hmlist *set_show_headers;
+extern struct hmlist *set_avoid_indices;
+extern int show_index[NO_INDEX];
 
 extern char *set_ihtmlheader;
 extern char *set_ihtmlfooter;
