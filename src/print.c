@@ -619,7 +619,7 @@ void printcomment(FILE *fp, char *label, char *value)
 	    struct Push retbuf;
 	    INIT_PUSH(retbuf);
 	    PushNString(&retbuf, value, ptr - value);
-	    PushNString(&retbuf, "_at_", 4);
+	    PushNString(&retbuf, set_antispam_at, strlen(set_antispam_at));
 	    PushString(&retbuf, ptr + 1);
 	    ext_value = PUSH_STRING(retbuf);
 	}

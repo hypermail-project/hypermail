@@ -1,6 +1,22 @@
 Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Kent Landfield (kent@hypermail.org) (November 24, 2002)
+  Made some updates to the docs.  Still need to update the
+  docs to include writehaof, nonsequential, msgsperfolder and
+  assure other config file directives are listed and current.
+
+ Kent Landfield (kent@hypermail.org) (November 24, 2002)
+  Added Russian language support.
+  Submitted by Igor Solovyoff" <siv@intear.com.ua>
+
+ Kent Landfield (kent@hypermail.org) (November 24, 2002)
+  Made the  "_at_" antispam bit configurable by config file, using
+      antispam_at = __somestring__  (does not have to have __ in it)
+  Anything hardcoded by default, can be figured out and used by 
+  spammers.  Particularly something like "_at_".
+  Submitted by Philip Brown <phil@bolthole.com>
+
  Jose Kahan (jose@w3.org) (October 17, 2002)
   URL generation was broken when a URL had a '@' char and hypermail
   was using the mailcommand option. parseemail() didn't take this

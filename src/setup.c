@@ -9,6 +9,7 @@
 #include "setup.h"
 #include "print.h"
 
+char *set_antispam_at;
 char *set_language;
 char *set_htmlsuffix;
 char *set_mbox;
@@ -127,6 +128,9 @@ char *set_delete_newer;
 int set_delete_level;
 
 struct Config cfg[] = {
+    {"antispam_at", &set_antispam_at, ANTISPAM_AT, CFG_STRING,
+     "# replace any @ sign with this string, if spam flags enabled\n"},
+     
     {"language", &set_language, LANGUAGE, CFG_STRING,
      "# A two-letter string specifying the language to use!\n"
      "# For example 'en' for English\n"},

@@ -34,6 +34,7 @@ void MakeConfig(bool);		/* set to TRUE to include comments */
 void PreConfig(void);
 void PostConfig(void);
 
+extern char *set_antispam_at;
 extern char *set_language;
 extern char *set_htmlsuffix;
 extern char *set_mbox;

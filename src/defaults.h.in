@@ -29,4 +29,6 @@
 
 #define DOMAINADDR   "@domainaddr@"
 
+#define ANTISPAM_AT   "_at_"
+
 #endif

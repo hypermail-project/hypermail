@@ -119,7 +119,7 @@ The
 .B \-i
 and
 .B \-m
-options cannot be used together.  Only archives in UNIX mailbox format can be read in - mailboxes of this kind are usually appended RFC 822-compliant articles separated by lines such as "\\nFrom person@site Mon Jan 10 12:34:56 1994".
+options cannot be used together.  Only archives in UNIX mailbox format can be read in - mailboxes of this kind are usually appended RFC2822-compliant articles separated by lines such as "\\nFrom person@site Mon Jan 10 12:34:56 1994".
 .LP
 .B Note:
 If the mailbox that is being read from is an archive that new messages are always being added to, don't use the
@@ -287,7 +287,7 @@ A CGI mail program is included with the source which can be used for this purpos
 .TP
 .B HM_DOMAINADDR "domainname"
 Set this to the domainname you want added to a mail address appearing
-in the RFC822 field which lack a hostname.  When the list resides on the 
+in the RFC2822 field which lack a hostname.  When the list resides on the 
 same host as the user sending the message, it is often not required of
 the MTA to domain-ize these addresses for delivery.  In such cases, 
 Hypermail will add the DOMAINADDR to the email address.  If defined as

@@ -779,12 +779,12 @@ char *unspamify(char *s)
     char *p;
     if (!s)
 	return s;
-    if (!strchr(s, '@') && ((p = strstr(s, "_at_")) != NULL)) {
+    if (!strchr(s, '@') && ((p = strstr(s, set_antispam_at)) != NULL)) {
 	struct Push buff;
 	INIT_PUSH(buff);
 	PushNString(&buff, s, p - s);
 	PushByte(&buff, '@');
-	PushString(&buff, p + 4);
+	PushString(&buff, p + strlen(set_antispam_at));
 	return PUSH_STRING(buff);
     }
     return strsav(s);
@@ -822,7 +822,7 @@ char *parseemail(char *input,	/* string to parse */
     int in_ascii = TRUE, esclen = 0;
 
     if(set_spamprotect)
-      at="_at_";
+      at=set_antispam_at;
     else
       at="@";
 

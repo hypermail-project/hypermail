@@ -129,7 +129,7 @@ The <STRONG>-d</STRONG> option specifies the directory to put the HTML files and
 <LI>This reads the file <STRONG>/var/spool/mail/wu-ftpd</STRONG> from standard input and will save the output in a directory called <STRONG>wu-ftpd</STRONG> in the same directory Hypermail was run from.
 </OL>
 <P>
-Note that Hypermail can only read messages in the UNIX mailbox format! Such archives are typically RFC 822 mail messages appended to each other that look similar to this:
+Note that Hypermail can only read messages in the UNIX mailbox format! Such archives are typically RFC 2822 mail messages appended to each other that look similar to this:
 <P>
 <PRE>
    From john@foo.com  Mon Jan  1 00:01:30 1994
@@ -356,6 +356,7 @@ de (de_DE) - German
 <BR>is (is_IS) - Icelandic
 <br>no (no_NO) - Norwegian
 <BR>pl (pl_PL) - Polish
+<BR>ru (ru_RU) - Russian
 <BR>sv (sv_SE) - Swedish
 </BLOCKQUOTE>
 The directory /usr/share/i18n/locales on many systems has the locale
@@ -425,7 +426,7 @@ See also <a href="hmrc.html#filter_require">filter_require</a>,
 <P>
 <DT> <STRONG>HM_DOMAINADDR "domainname"</STRONG>
 <DD>Set this to the domainname you want added to a mail address appearing
-in the RFC822 field which lack a hostname. When the list resides on the 
+in the RFC2822 field which lack a hostname. When the list resides on the 
 same host as the user sending the message, it is often not required of
 the MTA to domain-ize these addresses for delivery.  In such cases, 
 Hypermail will add the DOMAINADDR to the email address. If defined as

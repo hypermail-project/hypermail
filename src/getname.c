@@ -16,19 +16,20 @@ static int blankstring(char *str)
 
 char *spamify(char *input)
 {
+  int insertlen=strlen(set_antispam_at);
   /* we should replace the @-letter in the email
      address */
-  int newlen=strlen(input)+4;
+  int newlen=strlen(input)+insertlen;
   char *atptr=strchr(input, '@');
   if(atptr) {
     char *newbuf = malloc(newlen);
     int index=atptr-input;
     /* copy the part before the @ */
     memcpy(newbuf, input, index);
-    /* append _at_ */
-    memcpy(newbuf+index, "_at_", 4);
+
+    memcpy(newbuf+index, set_antispam_at, insertlen);
     /* append the part after the @ */
-    strcpy(newbuf+index+4, input+index+1);
+    strcpy(newbuf+index+insertlen, input+index+1);
     /* correct the pointer and free the old */
     free(input);
     return newbuf;

@@ -202,6 +202,7 @@ and <a href="#eurodate">eurodate</a>.
 <br>is (is_IS) - Icelandic
 <br>no (no_NO) - Norwegian
 <br>pl (pl_PL) - Polish
+<br>ru (ru_RU) - Russian
 <br>sv (sv_SE) - Swedish
 <br>
 <br>The directory /usr/share/i18n/locales on many systems has the locale
@@ -338,7 +339,7 @@ mailto to NONE.
 </dd>
 <a name="domainaddr"></a>
 <dt><strong>domainaddr = [ domainname | NONE ]</strong></dt><dd>
-Domain-ize Addresses -- addresses appearing in the RFC822 field 
+Domain-ize Addresses -- addresses appearing in the RFC2822 field 
 which lack hostname can't be made into proper HREFs.  Because the 
 MTA resides on the same host as the list, it is often not required
 to domain-ize these addresses for delivery.  In such cases, hypermail
@@ -351,7 +352,7 @@ will add the DOMAINADDR to the email address.
 <h3><a name="index_avail">Index availability</a></h3>
 
 <a name="folder_by_date"></a>
-<dt><strong>folder_by_date = [ strftime-date-format</strong></dt><dd>
+<dt><strong>folder_by_date = [ strftime-date-format ]</strong></dt><dd>
 This string causes the messages to be put in subdirectories
 by date. The string will be passed to strftime(3) to generate
 subdirectory names based on message dates. Suggested values are
@@ -747,7 +748,7 @@ pages, or 4 to produce those links only at the bottom of the message.
 </dd>
 <a name="showheaders"></a>
 <dt><strong>showheaders = [ 0 | 1 ]</strong></dt><dd>
-Set this to 1 to show the RFC 822 message headers To:, 
+Set this to 1 to show the RFC 2822 message headers To:, 
 From:, and Subject: information found in the email messages.
 Set to 0 if you want to hide mail headers in articles.
 <br>
@@ -755,7 +756,7 @@ Set to 0 if you want to hide mail headers in articles.
 </dd>
 
 <a name="show_headers"></a>
-<dt><strong>show_headers = List of RFC 822 Headers to display</strong></dt><dd>
+<dt><strong>show_headers = List of RFC 2822 Headers to display</strong></dt><dd>
 This is the list of headers to be displayed if showheaders  
 is set to 1 (TRUE) They can be listed comman or space separated
 all on a single line such as
@@ -828,7 +829,7 @@ This is a list of MIME types that you want hypermail to treat
 exactly as if they were text/plain. They can be listed individually 
 on multiple lines or comma or space separated on a single line.
 <br>
-<br><i>text_types = text, text/plain, message/rfc822</i> (disabled by default)
+<br><i>text_types = text, text/plain, message/rfc2822</i> (disabled by default)
 </dd>
 
 <a name="inline_types"></a>
@@ -990,7 +991,7 @@ Set this to 0 to accept messages without a Message-ID header.
 
 <h3><a name="filters">Message Filtering</a></h3>
  Regular expression support is provided by the
-<a href="http://www.pcre.org/">PCRE</a> library package,
+<a href="http://www.pcre.org/">PCRE</a>&nbsp; library package,
 which is open source software, written by Philip Hazel, and copyright
 by the University of Cambridge, England.
 <p>
@@ -1038,6 +1039,7 @@ deletion as the expires option. The expressions use the same
 syntax as Perl regular expressions.
 <br>
 <br><i>filter_require_full_body = </i>
+</dd>
 
 <h3><a name="files">Filesystem output</a></h3>
 <a name="dir"></a>
@@ -1233,7 +1235,7 @@ and
 
 <hr noshade>
 <small><em><strong>
-Last updated July 17, 2002
+Last updated November 24, 2002
 </strong></em></small>
 
 </body>

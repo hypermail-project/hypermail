@@ -65,7 +65,9 @@ and generating archives.
       gr - Greek
       el - Greek
       is - Icelandic 
+      no - Norwegian
       pl - Polish
+      ru - Russian
       sv - Swedish
 
 .nr
@@ -246,6 +248,12 @@ Set this to
 to make hypermail not output real email addresses in the output
 HTML, but instead obfuscate them a little.  By default email
 addresses are not obfuscated.
+.TP
+.B antispam_at = "string"
+Set this to 
+.B 1
+make hypermail use something like "_at_" instead of the RFC 2822 @ address
+separator.
 .TP
 .B attachmentsindex = boolean_number
 Set this to

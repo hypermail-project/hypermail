@@ -6,6 +6,12 @@ Center's Suggestions located at http://www.hypermail.org/cgi-bin/hmsuggest.
 General Things:
 ===============
 
+- Update the doc files to assure all configuration file directives
+  are included appropriately in the documentation. Currently the
+  documentation does not completely list all options.
+
+- Update the pcre library to a much more recent version.
+
 - Modify configure to locate the appropriate htdocs directory locations
   for installing the documentation and image files.
 
