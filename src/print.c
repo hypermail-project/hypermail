@@ -2832,12 +2832,12 @@ void write_messageindex (int startnum, int maxnum)
     while (num <  maxnum) {
       if ((bp = hashnumlookup(num, &email)) != NULL) 
 	{
-	  buf = message_name (email);
-	  fprintf (fp, "%.04d %s\n", num, buf);
+	  buf = message_name(email);
+	  fprintf(fp, "%.04d %s\n", num, buf);
 	}
       num++;
     }
-    fclose (fp);
+    fclose(fp);
     chmod(filename, set_filemode);
-    free (filename);
+    free(filename);
 } /* end write_messageindex () */
