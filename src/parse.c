@@ -2210,8 +2210,13 @@ int parsemail(char *mbox,	/* file name */
                              * directories must exist first...  
                              */
 
+#ifdef O_BINARY
+#define OPENBITMASK O_WRONLY | O_CREAT | O_BINARY
+#else
+#define OPENBITMASK O_WRONLY | O_CREAT
+#endif
 			    if (binname) {
-				binfile = open(binname, O_WRONLY | O_CREAT,
+				binfile = open(binname, OPENBITMASK,
 					       set_filemode);
 
 				if (-1 != binfile) {
