@@ -681,8 +681,7 @@ void printdates(FILE *fp, struct header *hp, int year, int month,
   const char *endline;
   const char *subj_tag;
   const char *subj_end_tag;
-  char date_str[DATESTRLEN+11];
-  char line_count_str[50];
+  static char date_str[DATESTRLEN+11]; /* made static for smaller stack */
 
   if (hp != NULL) {
     struct emailinfo *em=hp->data;
@@ -693,7 +692,6 @@ void printdates(FILE *fp, struct header *hp, int year, int month,
 	&& (!subdir_email || subdir_email->subdir == em->subdir)) {
       subj = convchars(em->subject);
 
-      line_count_str[0] = 0;
       if(set_indextable) {
 	startline = "<tr><td>";
 	break_str = "</td><td>";
@@ -710,10 +708,10 @@ void printdates(FILE *fp, struct header *hp, int year, int month,
 	subj_tag = "<strong>";
 	subj_end_tag = "</strong>";
       }
-      fprintf(fp,"%s%s%s%s%s</a>%s<a name=\"%d\"><em>%s</em></a>%s%s%s%s\n",
+      fprintf(fp,"%s%s%s%s%s</a>%s<a name=\"%d\"><em>%s</em></a>%s%s%s\n",
 	      startline, msg_href(em, subdir_email),
 	      subj_tag, subj, subj_end_tag, break_str, em->msgnum, em->name,
-	      break_str, date_str, line_count_str, endline);
+	      break_str, date_str, endline);
       free(subj);
     }
     printdates(fp, hp->right, year, month, subdir_email);
@@ -2104,8 +2102,7 @@ void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
   const char *startline;
   const char *break_str;
   const char *endline;
-  char date_str[DATESTRLEN+11];
-  char line_count_str[50];
+  static char date_str[DATESTRLEN+11]; /* made static for smaller stack */
 
   if (hp != NULL) {
     printsubjects(fp, hp->left, oldsubject, year, month, subdir_email);
@@ -2125,7 +2122,6 @@ void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
 		fprintf(fp, "<li><strong>%s</strong>\n", subj);
 	    }
 	}
-	line_count_str[0] = 0;
 	if(set_indextable) {
 	    startline = "<tr><td>&nbsp;</td><td>";
 	    break_str = "</td><td>";
@@ -2139,9 +2135,9 @@ void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
 	    endline = "</li></ul>";
 	}
 	fprintf(fp,
-		"%s%s%s</a>%s <a name=\"%d\">%s</a>%s%s\n", startline,
+		"%s%s%s</a>%s <a name=\"%d\">%s</a>%s\n", startline,
 		msg_href(hp->data, subdir_email), hp->data->name, break_str,
-		hp->data->msgnum, date_str, line_count_str, endline);
+		hp->data->msgnum, date_str, endline);
 	*oldsubject = hp->data->unre_subject;
       
 	free(subj);
@@ -2253,8 +2249,7 @@ void printauthors(FILE *fp, struct header *hp, char **oldname,
   const char *startline;
   const char *break_str;
   const char *endline;
-  char date_str[DATESTRLEN+11];
-  char line_count_str[50];
+  static char date_str[DATESTRLEN+11]; /* made static for smaller stack */
 
   if (hp != NULL) {
     printauthors(fp, hp->left, oldname, year, month, subdir_email);
@@ -2274,7 +2269,6 @@ void printauthors(FILE *fp, struct header *hp, char **oldname,
 	else
 		fprintf(fp, "<li><strong>%s</strong>\n", hp->data->name);
       }
-      line_count_str[0] = 0;
       if(set_indextable) {
 	startline = "<tr><td>&nbsp;</td><td>";
 	break_str = "</td><td>";
@@ -2287,9 +2281,9 @@ void printauthors(FILE *fp, struct header *hp, char **oldname,
 	sprintf(date_str, "<em>(%s)</em>", getdatestr(hp->data->date));
 	endline = "</li></ul>";
       }
-      fprintf(fp,"%s%s%s</a>%s<a name=\"%d\">%s</a>%s%s\n",
+      fprintf(fp,"%s%s%s</a>%s<a name=\"%d\">%s</a>%s\n",
 	      startline, msg_href(hp->data, subdir_email), subj, break_str,
-	      hp->data->msgnum, date_str, line_count_str, endline);
+	      hp->data->msgnum, date_str, endline);
       free(subj);
 
       *oldname = hp->data->name;	/* avoid copying */
