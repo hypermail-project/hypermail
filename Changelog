@@ -1,5 +1,9 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Daniel Stenberg (May 8 2001)
+  - Removed the last traces of mprintf.[ch] and made the trio stuff work
+    completely as a replacement.
+
 Peter McCluskey (May 7 2001)
   - fixes to trio configuration.
 
