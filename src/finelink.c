@@ -537,15 +537,39 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
 	if (!strcmp(buffer, "<!-- body=\"start\" -->\n"))
 	    in_body = 1;
 	if (!in_body) {
-	    if (!strcmp(buffer, "<!-- nextthread=\"start\" -->\n")) {
+	  if (!strcmp(buffer, "<!-- unextthread=\"start\" -->\n")) {
+		char *tmpptr = convchars(ep2->subject, ep2->charset);
+		if (tmpptr) {
+		    char *path = get_path(ep, ep2);
+                    fprintf(fp2,"[ <a href=\"%s%.4d.%s\" title=\"%s: &quot;%s&quot;\">%s</a> ]\n", 
+			    path, new_reply_to, set_htmlsuffix, lang[MSG_LTITLE_IN_REPLY_TO], 
+			    ep2->name, tmpptr ? tmpptr : "");
+		    free(tmpptr);
+		}
+	  }
+	  else
+	  if (!strcmp(buffer, "<!-- lnextthread=\"start\" -->\n")) {
+	        char *tmpptr = convchars(ep2->subject, ep2->charset);
+		if (tmpptr) {
+		    char *path = get_path(ep, ep2);
+                    fprintf(fp2, "<li><dfn>%s</dfn> " 
+			    "<a href=\"%s%.4d.%s\" title=\"%s\">%s: \"%s\"</a></li>\n", 
+			    lang[MSG_IN_REPLY_TO], path, 
+			    new_reply_to, set_htmlsuffix, lang[MSG_LTITLE_IN_REPLY_TO], 
+			    ep2->name, tmpptr ? tmpptr : "");
+		    free(tmpptr);
+		}
+	  }
+	  else
+	  if (!strcmp(buffer, "<!-- nextthread=\"start\" -->\n")) {
 		char *tmpptr = convchars(ep2->subject, ep2->charset);
 		if (tmpptr) {
 		    char *path = get_path(ep, ep2);
                     fprintf(fp2, "<li> <strong>%s:</strong> " "<a href=\"%s%.4d.%s\">%s: \"%s\"</a>\n", lang[MSG_IN_REPLY_TO], path, new_reply_to, set_htmlsuffix, ep2->name, tmpptr ? tmpptr : "");
 		    free(tmpptr);
 		}
-	    }
-	    else {
+	  }
+	  else {
 		static const char *patts[] = {
 		    "<b>Maybe in reply to:</b>",
 		    "<strong>%s:</strong>",
@@ -553,9 +577,18 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
 		    "<strong>%s:</strong>",
 		    "<li> <b>Previous message:</b> <a href=\"",
 		    "<li> <strong>%s:</strong> <a href=\"",
+		    "<li><dfn>%s</dfn>: <a href=\"",
+		    "<li><dfn>%s</dfn>: <a href=\"",
+		    "<li><dfn>%s</dfn>: <a href=\"",
 		    NULL
 		};
 		static const int indices[] = { MSG_MAYBE_IN_REPLY_TO,
+		    MSG_MAYBE_IN_REPLY_TO,
+		    MSG_IN_REPLY_TO,
+		    MSG_IN_REPLY_TO,
+		    MSG_PREVIOUS_MESSAGE,
+		    MSG_PREVIOUS_MESSAGE,
+		    MSG_MAYBE_IN_REPLY_TO,
 		    MSG_IN_REPLY_TO,
 		    MSG_PREVIOUS_MESSAGE
 		};
@@ -563,9 +596,9 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
 		int surpress = 0;
 		for (i = 0; patts[i]; ++i) {
 		    char temp[256];
-		    snprintf(temp,sizeof(temp), patts[i], lang[indices[i / 2]]);
+		    snprintf(temp,sizeof(temp), patts[i], lang[indices[i]]);
 		    if ((ptr = strcasestr(buffer, temp))
-					    && (i < 4 || new_reply_to == atoi(ptr + strlen(temp)))) {
+			&& (i < 4 || new_reply_to == atoi(ptr + strlen(temp)))) {
 			surpress = 1;
 			break;
 		    }

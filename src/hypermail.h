@@ -345,6 +345,10 @@ VAR int use_domainaddr;
 
 VAR char *ihtmlheaderfile;
 VAR char *ihtmlfooterfile;
+VAR char *ihtmlheadfile;
+VAR char *ihtmlhelpupfile;
+VAR char *ihtmlhelplowfile;
+VAR char *ihtmlnavbar2upfile;
 VAR char *mhtmlheaderfile;
 VAR char *mhtmlfooterfile;
 

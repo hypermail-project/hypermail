@@ -1969,6 +1969,7 @@ int parsemail(char *mbox,	/* file name */
 		    close(binfile);
 		    binfile = -1;
 		}
+
 		isinheader = 1;
 		if (!hassubject)
 		    subject = NOSUBJECT;
@@ -2522,7 +2523,6 @@ int parsemail(char *mbox,	/* file name */
 				      append_bp = 
 					addbody(append_bp, &append_lp, "<div>\n",
 						BODY_HTMLIZED | bodyflags);
-
 				    append_bp =
 					addbody(append_bp, &append_lp, buffer,
 						BODY_HTMLIZED | bodyflags);
@@ -2777,14 +2777,14 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
     FILE *fp;
 
     char inreply_start[256];
-    static char *inreply_start_old = "<b>In reply to:</b> <a href=\"";
+    static char *inreply_start_old = "<li><dfn>In reply to</dfn>: <a href=\"";
 
     if (set_nonsequential && !msgnum_id_table[num])
       return 0;
 
     if (set_linkquotes) {
         snprintf(inreply_start, sizeof(inreply_start), 
-                "<strong>%s:</strong> <a href=\"", lang[MSG_IN_REPLY_TO]);
+                "<dfn>%s</dfn>: <a href=\"", lang[MSG_IN_REPLY_TO]);
     }
 
     /* prepare the name of the file that stores the message */
@@ -3410,7 +3410,25 @@ void fixnextheader(char *dir, int num, int direction)
 	    }
 	    fprintf(fp, "%s", bp->line);
 
-	    if (!strncmp(bp->line, "<!-- next=", 10)) {
+	    if (!strncmp(bp->line, "<!-- unext=", 11)) {
+	      ptr = convchars(email->subject, email->charset);
+	      fprintf(fp, "[ <a href=\"%s\" title=\"%s: &quot;%s&quot;\">%s</a> ]\n", 
+		       msg_href (email, e3, FALSE), 
+		      email->name, ptr ? ptr : "", 
+		      lang[MSG_NEXT_MESSAGE]);
+	      if (ptr)
+		free(ptr);
+	    }
+	    else if (!strncmp(bp->line, "<!-- lnext=", 11)) {
+	      ptr = convchars(email->subject, email->charset);
+	      fprintf(fp, "<li><dfn>%s</dfn>: ", lang[MSG_NEXT_MESSAGE]);
+	      fprintf(fp, "<a href=\"%s\" title=\"%s\">%s: \"%s\"</a></li>\n", 
+		      msg_href(email, e3, FALSE), lang[MSG_LTITLE_NEXT],
+		      email->name, ptr ? ptr : "");
+	      if (ptr)
+		free(ptr);
+	    }
+	    else if (!strncmp(bp->line, "<!-- next=", 10)) {
 	      dp = bp->next;
 	      if (!strncmp(dp->line, "<ul", 3)) {
 		fprintf(fp, "%s", dp->line);
@@ -3418,7 +3436,7 @@ void fixnextheader(char *dir, int num, int direction)
 	      }
 	      fprintf(fp, "<li><strong>%s:</strong> ",
 		      lang[MSG_NEXT_MESSAGE]);
-	      fprintf(fp, "%s%s: \"%s\"</a></li>\n", msg_href(email, e3),
+	      fprintf(fp, "%s%s: \"%s\"</a></li>\n", msg_href(email, e3, TRUE),
 		      email->name, ptr = convchars(email->subject, email->charset));
 	      free(ptr);
 	      
@@ -3431,7 +3449,6 @@ void fixnextheader(char *dir, int num, int direction)
 	    bp = bp->next;
 	}
     }
-
     fclose(fp);
 
     /* can we clean up a bit please... */
@@ -3462,15 +3479,29 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 
     const char *last_reply = "";
     int next_in_thread = -1;
+
     const char *old_maybe_pattern = "<li> <b>Maybe reply:</b> <a href=";
     const char *old_reply_pattern = "<b>Reply:</b> ";
     const char *old_nextinthread_pattern = "<b>Next in thread:</b> <a href=\"";
-    const char *old_next_pattern = "<li> <b>Next message:</b>";
+    const char *old_next_pattern = "<li> <b>Next message:</b>:";
+
+    /* pre-WAI patterns */
+    char old2_maybe_pattern[MAXLINE];
+    char old2_link_maybe_pattern[MAXLINE];
+    char old2_reply_pattern[MAXLINE];
+    char old2_link_reply_pattern[MAXLINE];
+    char old2_nextinthread_pattern[MAXLINE];
+    char old2_next_pattern[MAXLINE];
+
     char current_maybe_pattern[MAXLINE];
+    char current_link_maybe_pattern[MAXLINE];
     char current_reply_pattern[MAXLINE];
+    char current_link_reply_pattern[MAXLINE];
     char current_nextinthread_pattern[MAXLINE];
     char current_next_pattern[MAXLINE];
     
+    bool is_old_format = FALSE;
+
     status = hashnumlookup(num, &email);
 
     if (status == NULL || email->is_deleted)
@@ -3478,15 +3509,33 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 
     if (remove_maybes || set_linkquotes) {
         snprintf(current_maybe_pattern, sizeof(current_maybe_pattern), 
-                "<li><strong>%s:</strong> <a href=", lang[MSG_MAYBE_REPLY]);
+                "<li><dfn>%s</dfn>: <a href=", lang[MSG_MAYBE_REPLY]);
+        snprintf(current_link_maybe_pattern, sizeof(current_maybe_pattern), 
+                "<li><a name=\"replies\" id=\"replies\"></a><dfn>%s</dfn>: <a href=", 
+		 lang[MSG_MAYBE_REPLY]);
         snprintf(current_reply_pattern, sizeof(current_reply_pattern), 
-                "<li><strong>%s:</strong> <a href=", lang[MSG_REPLY]);
+                "<li><dfn>%s</dfn>: <a href=", lang[MSG_REPLY]);
+        snprintf(current_link_reply_pattern, sizeof(current_reply_pattern), 
+                "<li><a name=\"replies\" id=\"replies\"></a><dfn>%s</dfn>: <a href=",
+		 lang[MSG_REPLY]);
         snprintf(current_nextinthread_pattern, 
                 sizeof(current_nextinthread_pattern), 
-                "<li><strong>%s:</strong> <a href=", lang[MSG_NEXT_IN_THREAD]);
+                "<li><dfn>%</dfn>: <a href=", lang[MSG_NEXT_IN_THREAD]);
         snprintf(current_next_pattern, sizeof(current_next_pattern), 
+                "<li>dfn>%s</dfn>: <a href=", lang[MSG_NEXT_MESSAGE]);
+
+	/* backwards compatiblity */
+	snprintf(old2_maybe_pattern, sizeof(old2_maybe_pattern), 
+                "<li><strong>%s:</strong> <a href=", lang[MSG_MAYBE_REPLY]);
+        snprintf(old2_reply_pattern, sizeof(old2_reply_pattern), 
+                "<li><strong>%s:</strong> <a href=", lang[MSG_REPLY]);
+        snprintf(old2_nextinthread_pattern, 
+                sizeof(old2_nextinthread_pattern), 
+                "<li><strong>%s:</strong> <a href=", lang[MSG_NEXT_IN_THREAD]);
+        snprintf(old2_next_pattern, sizeof(old2_next_pattern), 
                 "<li><strong>%s:</strong> <a href=", lang[MSG_NEXT_MESSAGE]);
     }
+
     if (set_linkquotes) {
       struct reply *rp;
       for (rp = replylist; rp != NULL; rp = rp->next) {
@@ -3537,6 +3586,13 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 		    ptr = strstr(line, current_nextinthread_pattern);
 		    if (ptr)
 		        next_in_thread = atoi(ptr+strlen(current_nextinthread_pattern));
+		    else {
+		      ptr = strstr(line, old2_nextinthread_pattern);
+		      if (ptr) {
+		        next_in_thread = atoi(ptr+strlen(old2_nextinthread_pattern));
+			is_old_format = TRUE;
+		      }
+		    }
 		}
 	    }
 	    bp = addbody(bp, &lp, line, 0);
@@ -3552,6 +3608,8 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 
     fp = fopen(filename, "w+");
     if (fp) {
+        bool list_started = FALSE; /* tells when we're starting a reply list for the
+				      first time */
 	while (bp) {
 	    if (!strncmp(bp->line, "<!-- emptylink=", 15)) {
 	      /* JK: just skip this line and the following which is just our
@@ -3560,14 +3618,58 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 	      bp = bp->next;
 	      continue;
 	    }
-	    if (!strncmp(bp->line, "<!-- reply", 10)) {
+	    if (!strncmp(bp->line, " [ <a href=\"#replies\">", 22)) {
+	      list_started = TRUE; 
+	      fprintf (fp, bp->line);
+	      bp = bp->next;
+	      continue;
+	    }
+	    if (!strncmp(bp->line, "<!-- ureply", 11)) {
+	      if (list_started == FALSE)
+		fprintf (fp, " [ <a href=\"#replies\">%s</a> ]\n", 
+			 lang[MSG_REPLIES]);
+	      fprintf (fp, bp->line);
+	      bp = bp->next;
+	      continue;
+	    }
+	    if (!strncmp(bp->line, "<!-- lreply", 11)) {
+	        char *del_msg = (email2->is_deleted ? lang[MSG_DEL_SHORT] : "");
+		char *ptr1;
+		ptr = convchars(email->subject, email->charset);
+		if (list_started == FALSE) {
+		  list_started = TRUE;
+		  trio_asprintf(&ptr1,
+				"<li><a name=\"replies\" id=\"replies\"></a>"
+				"<dfn>%s</dfn>: %s <a href=\"%s\" title=\"%s\">"
+				"%s: \"%s\"</a></li>\n",
+				lang[subjmatch ? MSG_MAYBE_REPLY : MSG_REPLY],
+				del_msg, msg_href(email, email2, FALSE), 
+				lang[MSG_LTITLE_REPLIES],
+				email->name, ptr);
+		}
+		else
+		  trio_asprintf(&ptr1,
+				"<li><dfn>%s</dfn>: %s <a href=\"%s\" title=\"%s\">"
+				"%s: \"%s\"</a></li>\n",
+				lang[subjmatch ? MSG_MAYBE_REPLY : MSG_REPLY],
+				del_msg, msg_href(email, email2, FALSE), 
+				lang[MSG_LTITLE_REPLIES],
+				email->name, ptr);
+		free(ptr);
+
+		if (!last_reply || strcmp(ptr1, last_reply))
+		    fputs(ptr1, fp);
+		free(ptr1);
+	    }
+	    else if (!strncmp(bp->line, "<!-- reply", 10)) {
+	      /* backwards compatiblity with the pre-WAI code */
 	        char *del_msg = (email2->is_deleted ? lang[MSG_DEL_SHORT] : "");
 		char *ptr1;
 		ptr = convchars(email->subject, email->charset);
 		trio_asprintf(&ptr1,
 			      "<li><strong>%s:</strong>%s %s%s: \"%s\"</a></li>\n",
 			      lang[subjmatch ? MSG_MAYBE_REPLY : MSG_REPLY],
-			      del_msg, msg_href(email, email2),
+			      del_msg, msg_href(email, email2, TRUE),
 			      email->name, ptr);
 		free(ptr);
 
@@ -3577,15 +3679,24 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 	    }
 	    if (next_in_thread - 1 == replynum
 		&& (strcasestr(bp->line, current_next_pattern)
+		    || strcasestr(bp->line, old2_next_pattern)
 		    || strstr(bp->line, old_next_pattern))) {
 	        bp = bp->next;
 		continue; /* line duplicates next in thread; surpress */
 	    }
+
 	    if (!remove_maybes
 		|| strncasecmp(bp->line, current_maybe_pattern, strlen(current_maybe_pattern))
+		|| strncasecmp(bp->line, current_link_maybe_pattern, 
+			       strlen(current_link_maybe_pattern))
+		|| strncasecmp(bp->line, old2_link_maybe_pattern, 
+			       strlen(old2_link_maybe_pattern))
 		|| strncasecmp(bp->line, old_maybe_pattern, strlen(old_maybe_pattern)))
 	        fprintf(fp, "%s", bp->line); /* not redundant or disproven */
 	    if (set_linkquotes && (strcasestr(bp->line, current_reply_pattern)
+				   || strcasestr(bp->line, current_link_reply_pattern)
+				   || strcasestr(bp->line, old2_reply_pattern)
+				   || strcasestr(bp->line, old2_link_reply_pattern)
 				   || strstr(bp->line, old_reply_pattern)))
 	        last_reply = bp->line;
 	    bp = bp->next;
@@ -3657,13 +3768,41 @@ void fixthreadheader(char *dir, int num, int max_update)
 	      bp = bp->next;
 	      continue;
 	    }
+	   /* @@ JK: don't I have the charset here? */
 	    fprintf(fp, "%s", bp->line);
-	    if (!strncmp(bp->line, "<!-- nextthr", 12)) {
+	    if (!strncmp(bp->line, "<!-- unextthr", 13)) {
+	      struct emailinfo *e3;
+	      if (hashnumlookup(num, &e3)) {
+		fprintf (fp, " [ <a href=\"%s\" title=\"%s: &quot;%s&quot;\">%s</a> ]\n",
+			 msg_href (e3, rp->data, FALSE), 
+			 name, ptr = convchars(subject, NULL),
+			 lang[MSG_NEXT_IN_THREAD]);
+		if (ptr)
+		  free (ptr);
+		if (bp->next && strstr(bp->next->line, lang[MSG_NEXT_IN_THREAD]))
+		  bp = bp->next; /* skip old copy of this line */
+	      }
+	    }
+	    else if (!strncmp(bp->line, "<!-- lnextthr", 13)) {
+	      struct emailinfo *e3;
+	      if (hashnumlookup(num, &e3)) {
+		fprintf(fp, "<li><dfn>%s</dfn>: ",
+			lang[MSG_NEXT_IN_THREAD]);
+		fprintf(fp, "<a href=\"%s\" title=\"\%s\">%s: \"%s\"</a></li>\n", 
+			msg_href(e3, rp->data, FALSE), lang[MSG_LTITLE_NEXT_IN_THREAD],
+			name, ptr = convchars(subject, NULL));			
+		if (ptr)
+		  free(ptr);
+		if (bp->next && strstr(bp->next->line, lang[MSG_NEXT_IN_THREAD]))
+		  bp = bp->next; /* skip old copy of this line */
+	      }
+	    }
+	    else if (!strncmp(bp->line, "<!-- nextthr", 12)) {
 		struct emailinfo *e3;
 		if(hashnumlookup(num, &e3)) {
 		    fprintf(fp, "<li><strong>%s:</strong> ",
 			    lang[MSG_NEXT_IN_THREAD]);
-		    fprintf(fp, "%s", msg_href(e3, rp->data));
+		    fprintf(fp, "%s", msg_href(e3, rp->data, TRUE));
 		    fprintf(fp, "%s: \"%s\"</a></li>\n",
 			    name, ptr = convchars(subject, NULL));
 		    free(ptr);

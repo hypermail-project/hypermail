@@ -537,7 +537,7 @@ static void find_replyto_from_html(int num)
 #endif
 		}
 	    }
-	    if (!strcmp(line, "<!-- nextthread=\"start\" -->\n"))
+	    if (!strcmp(line, "<!-- lnextthread=\"start\" -->\n"))
 		break;
 	}
 	fclose(fp);

@@ -13,4 +13,6 @@ void print_msg_header(FILE *, char *, char *, char *, char *, char *,
 
 void print_index_header(FILE *, char *, char *, char *, char *);
 
-void printfooter(FILE *, char *, char *, char *, char *, char *);
+void printfooter(FILE *, char *, char *, char *, char *, char *, bool);
+
+void printlaststats(FILE *, long);

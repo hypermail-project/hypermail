@@ -197,6 +197,25 @@ void strcpymax(char *dest, const char *src, int n)
     *dest = 0;
 }
 
+/*
+** strtolower - converts a string to lower case.
+*/
+
+void strtolower(char *string)
+{
+  char *ptr;
+
+  if (!string)
+    return;
+
+  ptr = string;
+  while (*ptr) {
+    if (isalpha (*ptr))
+      *ptr = tolower (*ptr);
+    ptr++;
+  }
+}
+
 #ifndef HAVE_STRCASESTR
 /*
 ** strcasestr() - case insensitive strstr()

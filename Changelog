@@ -2,13 +2,24 @@ Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+ Jose Kahan (May 13, 2003)
+   - Add the WAI enhancements proposed in 
+     http://www.w3.org/2002/03/archives-improvements/. 
+     As a consequence of this change, the sethr and usetable configuration
+     options are deprecated. The new markup takes into account the changes
+     that those options proposed and offers them in a WAI friendly way.
+     Some code cleaning needs yet to be done to remove all the cases
+     where those rules were used. Previous code version is tagged as
+     "before-wai".
+     Fixed some invalid XHTML markup too.
+
  Peter McCluskey (May 12, 2003)
    - fix txtsuffix to not crash on null pointer.
    - fix discard_dup_msgids to work when showprogress = 0.
 
  Peter McCluskey (April 24, 2003)
    - spam encoding from Peter Karlsson. Currently enabled via the
-    spamprotect option.
+     spamprotect option.
 
  Jose Kahan (Apr 23, 2003)
    - As a consequence of the XHTML convertion, unconvchars() wasn't

@@ -178,6 +178,45 @@ struct language_entry {
 #define MSG_OPTION_XML				 120
 #define MSG_WRITING_HAOF			 121
 
+/* JK: new messages added by WAI. When this is ready, it would
+   be good to merge them into the above sections. The current
+   use of localization in hypermail makes this quite complex to do. */
+
+/* print.c */
+
+#define MSG_THIS_MESSAGE                         122
+#define MSG_MSG_BODY                             123
+#define MSG_RESPOND                              124
+#define MSG_MORE_OPTIONS                         125
+#define MSG_RELATED_MESSAGES                     126
+#define MSG_NEXT                                 127
+#define MSG_PREVIOUS                             128
+#define MSG_REPLIES                              129
+#define MSG_CONTEMPORARY_MSGS_SORTED             130
+#define MSG_HELP                                 131
+#define MSG_LTITLE_IN_REPLY_TO                   132
+#define MSG_LTITLE_NEXT_IN_THREAD                133
+#define MSG_LTITLE_REPLIES                       134
+#define MSG_LTITLE_BY_DATE                       135
+#define MSG_LTITLE_BY_THREAD                     136
+#define MSG_LTITLE_BY_SUBJECT                    137
+#define MSG_LTITLE_BY_AUTHOR                     138
+#define MSG_LTITLE_NEXT                          139
+#define MSG_LTITLE_PREVIOUS                      140
+#define MSG_LTITLE_BY_ATTACHMENT                 141
+#define MSG_NAVBAR2UPPERLEVELS                   142
+#define MSG_NAVBAR                               143
+#define MSG_SORT_BY                              144
+#define MSG_OTHER_PERIODS                        145
+#define MSG_NEXTPERIOD                           146
+#define MSG_LTITLE_NEXTPERIOD                    147
+#define MSG_PREVPERIOD                           148
+#define MSG_LTITLE_PREVPERIOD                    149
+#define MSG_LTITLE_FOLDERS_INDEX                 150
+#define MSG_THIS_PERIOD                          151
+#define MSG_RECEIVED_ON                          152
+#define MSG_NEARBY                               153
+
 #ifdef MAIN_FILE
 
 /*
@@ -323,6 +362,38 @@ char *de[] = {       /* German */
   "Autor",                              /* MSG_FROM              -HTML*/
   "Erstelle haof XML Dateien",  /* Write hoaf XML files       -STDOUT */
   "Schreibe Hoaf in",           /* Writing haof to               -HTML*/
+  "This message",                 /* This message -HTML */
+  "Message body",                 /* Message body -HTML */
+  "Respond",                      /* Respond -HTML */
+  "More options",                 /* More options -HTML */
+  "Related messages",             /* Related messages -HTML */
+  "Next",                         /* Next -HTML */
+  "Previous",                     /* Previous -HTML */
+  "Replies",                      /* Replies -HTML */
+  "Contemporary messages sorted", /* Contemporary messages sorted -HTML */
+  "Help",                         /* Help  -HTML */
+  "Message to which this message replies", /* In Reply To - HTML link*/
+  "Next message in this discussion thread", /* Next message in thread - HTML link*/
+  "Message sent in reply to this message", /* Replies to this message - HTML link*/
+  "Contemporary messages by date", /* Contemporary messages by date */
+  "Contemporary discussion threads", /* Contemporary messages by threads -  HTML */
+  "Contemporary messages by subject", /* Contemporary messages by subject - HTML */
+  "Contemporary messages by author", /* Contemporary messages by author - HTML*/
+  "Next message in the list", /* Next message - HTML */
+  "Previous message in the list", /* Previous message - HTML */
+  "Contemporary messages by attachment", /* Contemporary messages by attachments - HTML*/
+  "Navigation bar to upper levels", /* Navigation bar, upper levels - HTML*/
+  "Navigation bar", /* Navigation bar - HTML*/
+  "sort by", /* Sort by - HTML*/
+  "Other periods", /* Other periods - HTML */
+  "Next", /* Next folder - HTML */
+  "Messages archived in the next period, sorted by date", /* Next folder, by date - HTML link */
+  "Previous", /* Previous folder - HTML */
+  "Messages archived in the previous period, sorted by date", /* Previous folder, by date - HTML Link */
+  "List of all periods", /* List of all periods - HTML*/
+  "This period", /* This period - HTML*/
+  "Received on", /* Received on - HTML */
+  "Nearby", /* Nearby - HTML */
   NULL,                              /* End Of Message Table - NOWHERE*/
 };
 
@@ -455,6 +526,38 @@ char *pl[] = {                      /* English */
   "Autor",                          /* MSG_FROM              -HTML*/
   "Write haof XML files",       /* Write hoaf XML files       -STDOUT */
   "Writing haof to",            /* Writing haof to               -HTML*/
+  "This message",                 /* This message -HTML */
+  "Message body",                 /* Message body -HTML */
+  "Respond",                      /* Respond -HTML */
+  "More options",                 /* More options -HTML */
+  "Related messages",             /* Related messages -HTML */
+  "Next",                         /* Next -HTML */
+  "Previous",                     /* Previous -HTML */
+  "Replies",                      /* Replies -HTML */
+  "Contemporary messages sorted", /* Contemporary messages sorted -HTML */
+  "Help",                         /* Help  -HTML */
+  "Message to which this message replies", /* In Reply To - HTML link*/
+  "Next message in this discussion thread", /* Next message in thread - HTML link*/
+  "Message sent in reply to this message", /* Replies to this message - HTML link*/
+  "Contemporary messages by date", /* Contemporary messages by date */
+  "Contemporary discussion threads", /* Contemporary messages by threads -  HTML */
+  "Contemporary messages by subject", /* Contemporary messages by subject - HTML */
+  "Contemporary messages by author", /* Contemporary messages by author - HTML*/
+  "Next message in the list", /* Next message - HTML */
+  "Previous message in the list", /* Previous message - HTML */
+  "Contemporary messages by attachment", /* Contemporary messages by attachments - HTML*/
+  "Navigation bar to upper levels", /* Navigation bar, upper levels - HTML*/
+  "Navigation bar", /* Navigation bar - HTML*/
+  "sort by", /* Sort by - HTML*/
+  "Other periods", /* Other periods - HTML */
+  "Next", /* Next folder - HTML */
+  "Messages archived in the next period, sorted by date", /* Next folder, by date - HTML link */
+  "Previous", /* Previous folder - HTML */
+  "Messages archived in the previous period, sorted by date", /* Previous folder, by date - HTML Link */
+  "List of all periods", /* List of all periods - HTML*/
+  "This period", /* This period - HTML*/
+  "Received on", /* Received on - HTML */
+  "Nearby", /* Nearby - HTML */
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -588,6 +691,38 @@ char *en[] = {       /* English */
   "From",                       /* MSG_FROM                    	 -HTML*/
   "Write haof XML files",       /* Write hoaf XML files       -STDOUT */
   "Writing haof to",            /* Writing haof to               -HTML*/
+  "This message",                 /* This message -HTML */
+  "Message body",                 /* Message body -HTML */
+  "Respond",                      /* Respond -HTML */
+  "More options",                 /* More options -HTML */
+  "Related messages",             /* Related messages -HTML */
+  "Next",                         /* Next -HTML */
+  "Previous",                     /* Previous -HTML */
+  "Replies",                      /* Replies -HTML */
+  "Contemporary messages sorted", /* Contemporary messages sorted -HTML */
+  "Help",                         /* Help  -HTML */
+  "Message to which this message replies", /* In Reply To - HTML link*/
+  "Next message in this discussion thread", /* Next message in thread - HTML link*/
+  "Message sent in reply to this message", /* Replies to this message - HTML link*/
+  "Contemporary messages by date", /* Contemporary messages by date */
+  "Contemporary discussion threads", /* Contemporary messages by threads -  HTML */
+  "Contemporary messages by subject", /* Contemporary messages by subject - HTML */
+  "Contemporary messages by author", /* Contemporary messages by author - HTML*/
+  "Next message in the list", /* Next message - HTML */
+  "Previous message in the list", /* Previous message - HTML */
+  "Contemporary messages by attachment", /* Contemporary messages by attachments - HTML*/
+  "Navigation bar to upper levels", /* Navigation bar, upper levels - HTML*/
+  "Navigation bar", /* Navigation bar - HTML*/
+  "sort by", /* Sort by - HTML*/
+  "Other periods", /* Other periods - HTML */
+  "Next", /* Next folder - HTML */
+  "Messages archived in the next period, sorted by date", /* Next folder, by date - HTML link */
+  "Previous", /* Previous folder - HTML */
+  "Messages archived in the previous period, sorted by date", /* Previous folder, by date - HTML Link */
+  "List of all periods", /* List of all periods - HTML*/
+  "This period", /* This period - HTML*/
+  "Received on", /* Received on - HTML */
+  "Nearby", /* Nearby - HTML */
   NULL,                         /* End Of Message Table      - NOWHERE*/
 };
 
@@ -731,6 +866,38 @@ char *es[] = {       /* Espanol/Spanish */
   "Autor",                            /* MSG_FROM 		      - HTML  */
   "Write haof XML files",       /* Write hoaf XML files       -STDOUT */
   "Writing haof to",            /* Writing haof to               -HTML*/
+  "This message",                 /* This message -HTML */
+  "Message body",                 /* Message body -HTML */
+  "Respond",                      /* Respond -HTML */
+  "More options",                 /* More options -HTML */
+  "Related messages",             /* Related messages -HTML */
+  "Next",                         /* Next -HTML */
+  "Previous",                     /* Previous -HTML */
+  "Replies",                      /* Replies -HTML */
+  "Contemporary messages sorted", /* Contemporary messages sorted -HTML */
+  "Help",                         /* Help  -HTML */
+  "Message to which this message replies", /* In Reply To - HTML link*/
+  "Next message in this discussion thread", /* Next message in thread - HTML link*/
+  "Message sent in reply to this message", /* Replies to this message - HTML link*/
+  "Contemporary messages by date", /* Contemporary messages by date */
+  "Contemporary discussion threads", /* Contemporary messages by threads -  HTML */
+  "Contemporary messages by subject", /* Contemporary messages by subject - HTML */
+  "Contemporary messages by author", /* Contemporary messages by author - HTML*/
+  "Next message in the list", /* Next message - HTML */
+  "Previous message in the list", /* Previous message - HTML */
+  "Contemporary messages by attachment", /* Contemporary messages by attachments - HTML*/
+  "Navigation bar to upper levels", /* Navigation bar, upper levels - HTML*/
+  "Navigation bar", /* Navigation bar - HTML*/
+  "sort by", /* Sort by - HTML*/
+  "Other periods", /* Other periods - HTML */
+  "Next", /* Next folder - HTML */
+  "Messages archived in the next period, sorted by date", /* Next folder, by date - HTML link */
+  "Previous", /* Previous folder - HTML */
+  "Messages archived in the previous period, sorted by date", /* Previous folder, by date - HTML Link */
+  "List of all periods", /* List of all periods - HTML*/
+  "This period", /* This period - HTML*/
+  "Received on", /* Received on - HTML */
+  "Nearby", /* Nearby - HTML */
   NULL,                               /* End Of Message Table */
 };
 
@@ -862,6 +1029,38 @@ char *fi[] = {       /* Finnish */
   "Kirjoittajan mukaan",                 /* MSG_FROM                  -HTML*/
   "Write haof XML files",       /* Write hoaf XML files       -STDOUT */
   "Writing haof to",            /* Writing haof to               -HTML*/
+  "This message",                 /* This message -HTML */
+  "Message body",                 /* Message body -HTML */
+  "Respond",                      /* Respond -HTML */
+  "More options",                 /* More options -HTML */
+  "Related messages",             /* Related messages -HTML */
+  "Next",                         /* Next -HTML */
+  "Previous",                     /* Previous -HTML */
+  "Replies",                      /* Replies -HTML */
+  "Contemporary messages sorted", /* Contemporary messages sorted -HTML */
+  "Help",                         /* Help  -HTML */
+  "Message to which this message replies", /* In Reply To - HTML link*/
+  "Next message in this discussion thread", /* Next message in thread - HTML link*/
+  "Message sent in reply to this message", /* Replies to this message - HTML link*/
+  "Contemporary messages by date", /* Contemporary messages by date */
+  "Contemporary discussion threads", /* Contemporary messages by threads -  HTML */
+  "Contemporary messages by subject", /* Contemporary messages by subject - HTML */
+  "Contemporary messages by author", /* Contemporary messages by author - HTML*/
+  "Next message in the list", /* Next message - HTML */
+  "Previous message in the list", /* Previous message - HTML */
+  "Contemporary messages by attachment", /* Contemporary messages by attachments - HTML*/
+  "Navigation bar to upper levels", /* Navigation bar, upper levels - HTML*/
+  "Navigation bar", /* Navigation bar - HTML*/
+  "sort by", /* Sort by - HTML*/
+  "Other periods", /* Other periods - HTML */
+  "Next", /* Next folder - HTML */
+  "Messages archived in the next period, sorted by date", /* Next folder, by date - HTML link */
+  "Previous", /* Previous folder - HTML */
+  "Messages archived in the previous period, sorted by date", /* Previous folder, by date - HTML Link */
+  "List of all periods", /* List of all periods - HTML*/
+  "This period", /* This period - HTML*/
+  "Received on", /* Received on - HTML */
+  "Nearby", /* Nearby - HTML */
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -995,6 +1194,38 @@ char *fr[] = {       /* French */
   "Auteur",                                /* MSG_FROM              -HTML*/
   "Write haof XML files",       /* Write hoaf XML files       -STDOUT */
   "Writing haof to",            /* Writing haof to               -HTML*/
+  "This message",                 /* This message -HTML */
+  "Message body",                 /* Message body -HTML */
+  "Respond",                      /* Respond -HTML */
+  "More options",                 /* More options -HTML */
+  "Related messages",             /* Related messages -HTML */
+  "Next",                         /* Next -HTML */
+  "Previous",                     /* Previous -HTML */
+  "Replies",                      /* Replies -HTML */
+  "Contemporary messages sorted", /* Contemporary messages sorted -HTML */
+  "Help",                         /* Help  -HTML */
+  "Message to which this message replies", /* In Reply To - HTML link*/
+  "Next message in this discussion thread", /* Next message in thread - HTML link*/
+  "Message sent in reply to this message", /* Replies to this message - HTML link*/
+  "Contemporary messages by date", /* Contemporary messages by date */
+  "Contemporary discussion threads", /* Contemporary messages by threads -  HTML */
+  "Contemporary messages by subject", /* Contemporary messages by subject - HTML */
+  "Contemporary messages by author", /* Contemporary messages by author - HTML*/
+  "Next message in the list", /* Next message - HTML */
+  "Previous message in the list", /* Previous message - HTML */
+  "Contemporary messages by attachment", /* Contemporary messages by attachments - HTML*/
+  "Navigation bar to upper levels", /* Navigation bar, upper levels - HTML*/
+  "Navigation bar", /* Navigation bar - HTML*/
+  "sort by", /* Sort by - HTML*/
+  "Other periods", /* Other periods - HTML */
+  "Next", /* Next folder - HTML */
+  "Messages archived in the next period, sorted by date", /* Next folder, by date - HTML link */
+  "Previous", /* Previous folder - HTML */
+  "Messages archived in the previous period, sorted by date", /* Previous folder, by date - HTML Link */
+  "List of all periods", /* List of all periods - HTML*/
+  "This period", /* This period - HTML*/
+  "Received on", /* Received on - HTML */
+  "Nearby", /* Nearby - HTML */
   NULL,                                    /* End Of Message Table  - NOWHERE*/
 };
 
@@ -1130,6 +1361,38 @@ char *is[] = {       /* Icelandic */
   "Hφfundur",                         /* MSG_FROM              -HTML*/
   "Write haof XML files",       /* Write hoaf XML files       -STDOUT */
   "Writing haof to",            /* Writing haof to               -HTML*/
+  "This message",                 /* This message -HTML */
+  "Message body",                 /* Message body -HTML */
+  "Respond",                      /* Respond -HTML */
+  "More options",                 /* More options -HTML */
+  "Related messages",             /* Related messages -HTML */
+  "Next",                         /* Next -HTML */
+  "Previous",                     /* Previous -HTML */
+  "Replies",                      /* Replies -HTML */
+  "Contemporary messages sorted", /* Contemporary messages sorted -HTML */
+  "Help",                         /* Help  -HTML */
+  "Message to which this message replies", /* In Reply To - HTML link*/
+  "Next message in this discussion thread", /* Next message in thread - HTML link*/
+  "Message sent in reply to this message", /* Replies to this message - HTML link*/
+  "Contemporary messages by date", /* Contemporary messages by date */
+  "Contemporary discussion threads", /* Contemporary messages by threads -  HTML */
+  "Contemporary messages by subject", /* Contemporary messages by subject - HTML */
+  "Contemporary messages by author", /* Contemporary messages by author - HTML*/
+  "Next message in the list", /* Next message - HTML */
+  "Previous message in the list", /* Previous message - HTML */
+  "Contemporary messages by attachment", /* Contemporary messages by attachments - HTML*/
+  "Navigation bar to upper levels", /* Navigation bar, upper levels - HTML*/
+  "Navigation bar", /* Navigation bar - HTML*/
+  "sort by", /* Sort by - HTML*/
+  "Other periods", /* Other periods - HTML */
+  "Next", /* Next folder - HTML */
+  "Messages archived in the next period, sorted by date", /* Next folder, by date - HTML link */
+  "Previous", /* Previous folder - HTML */
+  "Messages archived in the previous period, sorted by date", /* Previous folder, by date - HTML Link */
+  "List of all periods", /* List of all periods - HTML*/
+  "This period", /* This period - HTML*/
+  "Received on", /* Received on - HTML */
+  "Nearby", /* Nearby - HTML */
   NULL,                               /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1268,6 +1531,38 @@ char *sv[] = {
   "F&ouml;rfattare",                     /* MSG_FROM             -HTML*/
   "Skriv haof-XML-filer",       /* Write hoaf XML files       -STDOUT */
   "Skriver haof till",            /* Writing haof to               -HTML*/
+  "This message",                 /* This message -HTML */
+  "Message body",                 /* Message body -HTML */
+  "Respond",                      /* Respond -HTML */
+  "More options",                 /* More options -HTML */
+  "Related messages",             /* Related messages -HTML */
+  "Next",                         /* Next -HTML */
+  "Previous",                     /* Previous -HTML */
+  "Replies",                      /* Replies -HTML */
+  "Contemporary messages sorted", /* Contemporary messages sorted -HTML */
+  "Help",                         /* Help  -HTML */
+  "Message to which this message replies", /* In Reply To - HTML link*/
+  "Next message in this discussion thread", /* Next message in thread - HTML link*/
+  "Message sent in reply to this message", /* Replies to this message - HTML link*/
+  "Contemporary messages by date", /* Contemporary messages by date */
+  "Contemporary discussion threads", /* Contemporary messages by threads -  HTML */
+  "Contemporary messages by subject", /* Contemporary messages by subject - HTML */
+  "Contemporary messages by author", /* Contemporary messages by author - HTML*/
+  "Next message in the list", /* Next message - HTML */
+  "Previous message in the list", /* Previous message - HTML */
+  "Contemporary messages by attachment", /* Contemporary messages by attachments - HTML*/
+  "Navigation bar to upper levels", /* Navigation bar, upper levels - HTML*/
+  "Navigation bar", /* Navigation bar - HTML*/
+  "sort by", /* Sort by - HTML*/
+  "Other periods", /* Other periods - HTML */
+  "Next", /* Next folder - HTML */
+  "Messages archived in the next period, sorted by date", /* Next folder, by date - HTML link */
+  "Previous", /* Previous folder - HTML */
+  "Messages archived in the previous period, sorted by date", /* Previous folder, by date - HTML Link */
+  "List of all periods", /* List of all periods - HTML*/
+  "This period", /* This period - HTML*/
+  "Received on", /* Received on - HTML */
+  "Nearby", /* Nearby - HTML */
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 
@@ -1406,6 +1701,38 @@ char *no[] = {
   "Forfatter",                     /* MSG_FROM             -HTML*/
   "Skrive haof XML filer",       /* Write hoaf XML files       -STDOUT */
   "Skriver haof til",            /* Writing haof to               -HTML*/
+  "This message",                 /* This message -HTML */
+  "Message body",                 /* Message body -HTML */
+  "Respond",                      /* Respond -HTML */
+  "More options",                 /* More options -HTML */
+  "Related messages",             /* Related messages -HTML */
+  "Next",                         /* Next -HTML */
+  "Previous",                     /* Previous -HTML */
+  "Replies",                      /* Replies -HTML */
+  "Contemporary messages sorted", /* Contemporary messages sorted -HTML */
+  "Help",                         /* Help  -HTML */
+  "Message to which this message replies", /* In Reply To - HTML link*/
+  "Next message in this discussion thread", /* Next message in thread - HTML link*/
+  "Message sent in reply to this message", /* Replies to this message - HTML link*/
+  "Contemporary messages by date", /* Contemporary messages by date */
+  "Contemporary discussion threads", /* Contemporary messages by threads -  HTML */
+  "Contemporary messages by subject", /* Contemporary messages by subject - HTML */
+  "Contemporary messages by author", /* Contemporary messages by author - HTML*/
+  "Next message in the list", /* Next message - HTML */
+  "Previous message in the list", /* Previous message - HTML */
+  "Contemporary messages by attachment", /* Contemporary messages by attachments - HTML*/
+  "Navigation bar to upper levels", /* Navigation bar, upper levels - HTML*/
+  "Navigation bar", /* Navigation bar - HTML*/
+  "sort by", /* Sort by - HTML*/
+  "Other periods", /* Other periods - HTML */
+  "Next", /* Next folder - HTML */
+  "Messages archived in the next period, sorted by date", /* Next folder, by date - HTML link */
+  "Previous", /* Previous folder - HTML */
+  "Messages archived in the previous period, sorted by date", /* Previous folder, by date - HTML Link */
+  "List of all periods", /* List of all periods - HTML*/
+  "This period", /* This period - HTML*/
+  "Received on", /* Received on - HTML */
+  "Nearby", /* Nearby - HTML */
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 
@@ -1545,6 +1872,38 @@ char *gr[] = {       /* Greek */
   "Πρότυπο κείμενο του μηνύματος", 	/* MSG_TXT_VERSION                          -HTML */
   "Αυτό το μήνυμα έχει φιλτραριστεί ",  /* MSG_FILTERED_OUT -HTML */
   "Συγγραφέας",       			/* MSG_FROM              -HTML*/
+  "This message",                 /* This message -HTML */
+  "Message body",                 /* Message body -HTML */
+  "Respond",                      /* Respond -HTML */
+  "More options",                 /* More options -HTML */
+  "Related messages",             /* Related messages -HTML */
+  "Next",                         /* Next -HTML */
+  "Previous",                     /* Previous -HTML */
+  "Replies",                      /* Replies -HTML */
+  "Contemporary messages sorted", /* Contemporary messages sorted -HTML */
+  "Help",                         /* Help  -HTML */
+  "Message to which this message replies", /* In Reply To - HTML link*/
+  "Next message in this discussion thread", /* Next message in thread - HTML link*/
+  "Message sent in reply to this message", /* Replies to this message - HTML link*/
+  "Contemporary messages by date", /* Contemporary messages by date */
+  "Contemporary discussion threads", /* Contemporary messages by threads -  HTML */
+  "Contemporary messages by subject", /* Contemporary messages by subject - HTML */
+  "Contemporary messages by author", /* Contemporary messages by author - HTML*/
+  "Next message in the list", /* Next message - HTML */
+  "Previous message in the list", /* Previous message - HTML */
+  "Contemporary messages by attachment", /* Contemporary messages by attachments - HTML*/
+  "Navigation bar to upper levels", /* Navigation bar, upper levels - HTML*/
+  "Navigation bar", /* Navigation bar - HTML*/
+  "sort by", /* Sort by - HTML*/
+  "Other periods", /* Other periods - HTML */
+  "Next", /* Next folder - HTML */
+  "Messages archived in the next period, sorted by date", /* Next folder, by date - HTML link */
+  "Previous", /* Previous folder - HTML */
+  "Messages archived in the previous period, sorted by date", /* Previous folder, by date - HTML Link */
+  "List of all periods", /* List of all periods - HTML*/
+  "This period", /* This period - HTML*/
+  "Received on", /* Received on - HTML */
+  "Nearby", /* Nearby - HTML */
   NULL,                           	/* End Of Message Table - NOWHERE*/
 };
 
@@ -1676,6 +2035,38 @@ char *ru[] = {     /* Russian */
   "οΤ",                        /* MSG_FROM                      -HTML*/
   "ϊΑΠΙΣΨ haof XML ΖΑΚΜΟΧ",       /* Write hoaf XML files       -STDOUT */
   "ϊΑΠΙΣΩΧΑΐ haof Χ",            /* Writing haof to               -HTML*/
+  "This message",                 /* This message -HTML */
+  "Message body",                 /* Message body -HTML */
+  "Respond",                      /* Respond -HTML */
+  "More options",                 /* More options -HTML */
+  "Related messages",             /* Related messages -HTML */
+  "Next",                         /* Next -HTML */
+  "Previous",                     /* Previous -HTML */
+  "Replies",                      /* Replies -HTML */
+  "Contemporary messages sorted", /* Contemporary messages sorted -HTML */
+  "Help",                         /* Help  -HTML */
+  "Message to which this message replies", /* In Reply To - HTML link*/
+  "Next message in this discussion thread", /* Next message in thread - HTML link*/
+  "Message sent in reply to this message", /* Replies to this message - HTML link*/
+  "Contemporary messages by date", /* Contemporary messages by date */
+  "Contemporary discussion threads", /* Contemporary messages by threads -  HTML */
+  "Contemporary messages by subject", /* Contemporary messages by subject - HTML */
+  "Contemporary messages by author", /* Contemporary messages by author - HTML*/
+  "Next message in the list", /* Next message - HTML */
+  "Previous message in the list", /* Previous message - HTML */
+  "Contemporary messages by attachment", /* Contemporary messages by attachments - HTML*/
+  "Navigation bar to upper levels", /* Navigation bar, upper levels - HTML*/
+  "Navigation bar", /* Navigation bar - HTML*/
+  "sort by", /* Sort by - HTML*/
+  "Other periods", /* Other periods - HTML */
+  "Next", /* Next folder - HTML */
+  "Messages archived in the next period, sorted by date", /* Next folder, by date - HTML link */
+  "Previous", /* Previous folder - HTML */
+  "Messages archived in the previous period, sorted by date", /* Previous folder, by date - HTML Link */
+  "List of all periods", /* List of all periods - HTML*/
+  "This period", /* This period - HTML*/
+  "Received on", /* Received on - HTML */
+  "Nearby", /* Nearby - HTML */
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 

@@ -653,14 +653,21 @@ char *message_name (struct emailinfo *email)
  * from_email, or from the set_dir directory if email is NULL.
  */
 
-char *msg_href(struct emailinfo *to_email, struct emailinfo *from_email)
+char *msg_href(struct emailinfo *to_email, struct emailinfo *from_email, bool generate_markup)
 /* note: you probably have to make a copy of
  * the buffer returned before the next call to this function.
  */
 {
     static char buffer[MAXFILELEN + 11];
-    trio_snprintf(buffer, MAXFILELEN + 11, "<a href=\"%s\">", 
-                   msg_relpath(to_email, from_email));
+    char *ptr;
+
+    ptr = msg_relpath(to_email, from_email);
+    if (generate_markup)
+      trio_snprintf(buffer, MAXFILELEN + 11, "<a href=\"%s\">", 
+		    ptr);
+    else
+      trio_snprintf(buffer, MAXFILELEN + 11, "%s", ptr);
+
     return buffer;
 }
 

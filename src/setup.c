@@ -105,6 +105,7 @@ struct hmlist *set_inline_types = NULL;
 struct hmlist *set_prefered_types = NULL;
 struct hmlist *set_ignore_types = NULL;
 struct hmlist *set_show_headers = NULL;
+struct hmlist *set_skip_headers = NULL;
 struct hmlist *set_avoid_indices = NULL;
 struct hmlist *set_avoid_top_indices = NULL;
 struct hmlist *set_filter_out = NULL;
@@ -114,6 +115,10 @@ struct hmlist *set_filter_require_full_body = NULL;
 
 char *set_ihtmlheader;
 char *set_ihtmlfooter;
+char *set_ihtmlhead;
+char *set_ihtmlhelpup;
+char *set_ihtmlhelplow;
+char *set_ihtmlnavbar2up;
 char *set_mhtmlheader;
 char *set_mhtmlfooter;
 char *set_attachmentlink;
@@ -258,7 +263,9 @@ struct Config cfg[] = {
      "# only takes effect if hm_showhtml is 1.\n", FALSE},
 
     {"showhr", &set_showhr, BTRUE, CFG_SWITCH,
-     "# Set this to On to place horizontal rules before and after articles.\n", FALSE},
+     "# Set this to On to place horizontal rules before and after articles.\n"
+     "NOTE: THIS OPTION HAS BEEN DEPRECATED BY THE WAY CHANGES. IT WILL BE\n"
+     "IGNORED.\n", FALSE},
 
     {"showreplies", &set_showreplies, BTRUE, CFG_SWITCH,
      "# Set this to On to show all replies to a message as links\n"
@@ -283,7 +290,9 @@ struct Config cfg[] = {
      "# Setting this variable to On will tell Hypermail to generate\n"
      "# an index menu at the top and bottom of each page in a table\n"
      "# format. Set to Off if you want the standard Hypermail page look\n"
-     "# and feel\n", FALSE},
+     "# and feel\n"
+     "NOTE: THIS OPTION HAS BEEN DEPRECATED BY THE WAY CHANGES. IT WILL BE\n"
+     "IGNORED.\n", FALSE},
 
     {"indextable", &set_indextable, BFALSE, CFG_SWITCH,
      "# Setting this variable to On will tell Hypermail to generate\n"
@@ -440,6 +449,28 @@ struct Config cfg[] = {
      "# Define path as the path to a template  file  containing\n"
      "# valid  HTML  formatting  statements  that  you  wish to\n"
      "# included at the bottom of every index  page.\n", FALSE},
+
+    {"ihtmlheadfile", &set_ihtmlhead, NULL, CFG_STRING,
+     "# Define path as the path to a template  file  containing\n"
+     "# valid  HTML  formatting  statements  that  you  wish to\n"
+     "# included inside the HTML HEAD element of every index page.\n", FALSE},
+
+    {"ihtmlhelpupfile", &set_ihtmlhelpup, NULL, CFG_STRING,
+     "# Define path as the path to a template  file  containing\n"
+     "# valid  HTML  formatting  statements  that  you  wish to\n"
+     "# included as information giving help to your archive users,"
+     "# in the upper navigation bar.\n", FALSE},
+
+    {"ihtmlhelplowfile", &set_ihtmlhelplow, NULL, CFG_STRING,
+     "# Define path as the path to a template  file  containing\n"
+     "# valid  HTML  formatting  statements  that  you  wish to\n"
+     "# included as information giving help to your archive users,"
+     "# in the lower navigation bar.\n", FALSE},
+
+    {"ihtmlnavbar2upfile", &set_ihtmlnavbar2up, NULL, CFG_STRING,
+     "# Define path as the path to a template  file  containing\n"
+     "# valid  HTML  formatting  statements  that  you  wish to\n"
+     "# included as information giving links to the hierarchin your archive.\n", FALSE},
 
     {"mhtmlheaderfile", &set_mhtmlheader, NULL, CFG_STRING,
      "# Define path as the path to a template  file  containing\n"
@@ -685,6 +716,7 @@ struct Config cfg[] = {
      "# Set this to On to assume that any string on the body of the message\n"
      "# that says <A HREF=\"     </A> is a URL, together with its markup\n"
      "and treat it as such.", TRUE},
+
 };
 
 /* ---------------------------------------------------------------- */
@@ -1158,6 +1190,39 @@ void dump_config(void)
         for (cp = set_ihtmlfooter; *cp; cp++)
              putchar(*cp);
     }
+
+    if (!set_ihtmlhead)
+        printf("set_ihtmlhead = Not set\n");
+    else {
+        printf("set_ihtmlhead = ");
+        for (cp = set_ihtmlhead; *cp; cp++)
+             putchar(*cp);
+    }
+
+    if (!set_ihtmlhelpup)
+        printf("set_ihtmlhelpup = Not set\n");
+    else {
+        printf("set_ihtmlhelpup = ");
+        for (cp = set_ihtmlhelpup; *cp; cp++)
+             putchar(*cp);
+    }
+
+    if (!set_ihtmlhelplow)
+        printf("set_ihtmlhelplow = Not set\n");
+    else {
+        printf("set_ihtmlhelplow = ");
+        for (cp = set_ihtmlhelplow; *cp; cp++)
+             putchar(*cp);
+    }
+
+    if (!set_ihtmlnavbar2up)
+        printf("set_ihtmlnavbar2up = Not set\n");
+    else {
+        printf("set_ihtmlnavbar2up = ");
+        for (cp = set_ihtmlnavbar2up; *cp; cp++)
+             putchar(*cp);
+    }
+
 
     if (!set_mhtmlheader)
         printf("set_mhtmlheader = Not set\n");

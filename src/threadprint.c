@@ -6,7 +6,7 @@
 #include "print.h"
 
 static void format_thread_info(FILE *, struct emailinfo *, int, int *,
-			       struct emailinfo *, FILE *, int);
+			       struct emailinfo *, FILE *, int, bool);
 static int finish_thread_levels(FILE **, int, int, int *, FILE **,
 				char **, char **, int, struct emailinfo *,
 				struct emailinfo *, char *, FILE *);
@@ -16,6 +16,10 @@ static void finish_thread_file(FILE *, struct emailinfo *, char *);
 /* #define DEBUG_THREAD */
 
 #define MAXSTACK 200
+
+/* A counter to know how many open li elements we have */
+static int num_open_li[MAXSTACK + 1];
+
 
 /*
 ** If year and/or month are != -1, only messages within the specified time
@@ -42,6 +46,7 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
     FILE *fp_body = NULL;
     char *filenameb = NULL;
     int threadnum = 0;
+    bool is_first = TRUE;
 
     struct reply *rp = threadlist;
     last_email = rp->data;
@@ -50,7 +55,7 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
     }
 
     for (i = 0; i <= MAXSTACK; i++)
-      num_replies[i] = 0;
+      num_replies[i] = num_open_li[i] = 0;
 
     while (rp != NULL) {
 #if DEBUG_THREAD
@@ -96,7 +101,8 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 			MAXSTACK);
 	    stack[level] = rp->msgnum;
 	    num_replies[level] = 0;
-	    if ((level < set_thrdlevels) && !set_indextable) {
+	    if (!set_indextable) {
+	      if (level < set_thrdlevels) {
 		if (level > thread_file_depth) {
 		    fprintf(fp, "<ul>\n");
 		}
@@ -123,6 +129,14 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 		    free(filename);
 		    ++reply_list_count;
 		}
+	      }
+	      else {
+		/* if we go over the thread limit, we just close the last open li */
+		if (!set_indextable && num_open_li[level - 1] != 0) {
+		  fprintf (fp, "</li>\n");
+		  num_open_li[level - 1]--;
+		}
+	      }
 	    }
 	}
 	else {
@@ -139,7 +153,11 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 	    }
 	    newlevel = i + 1;
 	    if (newlevel == level) {
-		/* nothing to do - same level */
+	      /* same level, close the previous item */
+	      if (!set_indextable && num_open_li[level] != 0) {
+		fprintf (fp, "</li>\n");
+		num_open_li[level]--;
+	      }
 	    }
 	    else if (newlevel > level) {
 		/* I don't think this branch will be used - do the right thing anyway */
@@ -154,11 +172,12 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 			    MAXSTACK);
 		    newlevel = MAXSTACK;
 		}
-
+		
 		if (!set_indextable) {
 		    while (level < newlevel) {
 			if (level < set_thrdlevels) {
 			    fprintf(fp, "<li><ul>\n");
+			    ++num_open_li[level];
 			}
 			level++;
 		    }
@@ -200,15 +219,22 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 	/* Now print this mail */
 	if ((year == -1 || year_of_datenum(rp->data->date) == year)
 	    && (month == -1 || month_of_datenum(rp->data->date) == month)
-	    && !rp->data->is_deleted)
+	    && !rp->data->is_deleted) {
 	    format_thread_info(fp, rp->data, level, num_replies,
-			       email, fp_body, threadnum);
+			       email, fp_body, threadnum, is_first);
+	    if (is_first)
+	      is_first = FALSE;
+	}
 
 	prev = rp->msgnum;
 	hide_level = (rp->data->is_deleted && rp->frommsgnum != rp->msgnum);
 	last_email = rp->data;
 	rp = rp->next;
     }
+
+    if (!set_indextable && num_open_li[0] != 0)
+      fprintf (fp, "</li>\n");
+
     if (set_files_by_thread && filenameb && last_email) {
 	finish_thread_file(fp_body, last_email, filenameb);
 	filenameb = NULL;
@@ -218,11 +244,12 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 static void format_thread_info(FILE *fp, struct emailinfo *email,
 			       int level, int *num_replies,
 			       struct emailinfo* subdir_email, FILE *fp_body,
-			       int threadnum)
+			       int threadnum, bool is_first)
 {
     char *subj;
     char *href = NULL;
     char buffer[256];
+    char *first_attributes = (is_first) ? " accesskey=\"j\" name=\"first\" id=\"first\"" : "";
 
     subj = convchars(email->subject, email->charset);
 
@@ -232,9 +259,9 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
 	fprintf(fp_body, "<a name =\"%.4d\"></a>", email->msgnum);
 	print_headers(fp_body, email, TRUE);
 	is_reply = print_links(fp_body, email, PAGE_TOP, TRUE);
-	if ((set_show_msg_links && set_show_msg_links != 4) || !set_usetable)
+	if ((set_show_msg_links && set_show_msg_links != 4) || !set_usetable) {
 	    fprintf(fp_body, "</ul>\n");
-
+	}
 	/* maybe_reply only affects code in finelink.c which we don't want to run twice? */
 	printbody(fp_body, email, maybe_reply, is_reply);
 	if (level == 0) {
@@ -244,24 +271,31 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
 	}
     }
     if (!href)
-	href = msg_href(email, subdir_email);
+	href = msg_href(email, subdir_email, FALSE);
 
     /* Print the thread info */
     if (set_indextable) {
 	fprintf(fp,
-		"<tr><td>%s%s<strong>%s</strong></a></td>"
+		"<tr><td>%s<a href=\"%s\"%s><strong>%s</strong></a></td>"
 		"<td><a name=\"%d\">%s</a></td>" "<td>%s</td></tr>\n",
-		level > 1 ? "--&gt; " : "", href,
+		level > 1 ? "--&gt; " : "", 
+		href, first_attributes,
 		subj, email->msgnum, email->name, getdatestr(email->date));
     }
     else {
-	fprintf(fp, "<li>%s<strong>%s</strong></a> "
-		"<a name=\"%d\"><em>%s <small>(%s)</small></em></a></li>\n", href,
+        if (num_open_li[level] != 0) {
+	  fprintf (fp, "</li>\n");
+	  num_open_li[level]--;
+	}
+	fprintf(fp, "<li><a href=\"%s\"%s>%s</a>&nbsp;"
+		"<a name=\"%d\"><em>%s</em></a>&nbsp;<em>(%s)</em>\n", 
+		href, first_attributes, 
 		subj, email->msgnum, email->name, getdatestr(email->date));
     }
     free(subj);
     ++num_replies[level];
-
+    if (!set_indextable)
+      ++num_open_li[level];
     email->flags |= PRINT_THREAD;	/* its written now */
 }
 
@@ -290,7 +324,7 @@ finish_thread_file(FILE *fp_body, struct emailinfo *email, char *filenameb)
 	}
 	else fprint_menu0(fp_body, email, PAGE_BOTTOM);
 	printfooter(fp_body, mhtmlfooterfile, set_label, set_dir,
-		    email->subject, filenameb);
+		    email->subject, filenameb, TRUE);
 	fclose(fp_body);
 	if (chmod(filenameb, set_filemode) == -1) {
             snprintf(errmsg, sizeof(errmsg), "Couldn't chmod \"%s\" to %o.", 
@@ -317,14 +351,28 @@ static int finish_thread_levels(FILE **fp, int level, int newlevel,
 	    num_replies[level - 1] += num_replies[level];
 	    if (level < set_thrdlevels) {
 		if (level > thread_file_depth) {
-		    fprintf(*fp, "</ul></li>\n");
+		    if (num_open_li[level] != 0) {
+		      fprintf(*fp, "</li>");
+		      num_open_li[level]--;
+		    }
+		    fprintf(*fp, "</ul>\n");
+
+		    if (num_open_li[level] != 0) {
+		      fprintf(*fp, "</li>");
+		      num_open_li[level]--;
+		    }
 		}
 		else if (level < MAXSTACK) {
 		    char *filename = htmlfilename(filename_stack[level],
 						  subdir_email, "");
-		    fprintf(*fp, "</ul></li>");
+		    fprintf(*fp, "</li></ul>\n");
+		    if (num_open_li[level] != 0) {
+		      fprintf(*fp, "</li>");
+		      num_open_li[level]--;
+		    }
+		    fprintf (*fp, "</ul>");
 		    printfooter(*fp, ihtmlfooterfile, set_label, set_dir,
-				subject_stack[level], filename);
+				subject_stack[level], filename, TRUE);
 		    fclose(*fp);
 		    *fp = fp_stack[level - 1];
 		    if (num_replies[level]) {
@@ -337,12 +385,19 @@ static int finish_thread_levels(FILE **fp, int level, int newlevel,
                                      filename, set_filemode);
 			    progerr(errmsg);
 			}
+			num_open_li[level]++;
 		    }
 		    else
 			remove(filename);
 		    free(filename_stack[level]);
 		    free(filename);
 		}
+	    }
+	    else {
+	      if (num_open_li[level] != 0) {
+		fprintf(*fp, "</li>");
+		num_open_li[level]--;
+	      }	      
 	    }
 	    level--;
 	}

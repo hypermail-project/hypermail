@@ -210,7 +210,7 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
 	    "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n"
 	    "    \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n",
 	    rp);
-    fprintf(fp, "<html lang=\"%s\">\n", set_language);
+    fprintf(fp, "<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"%s\">\n", set_language);
     fprintf(fp, "<head>\n");
 
     if (charset && *charset) {
@@ -248,8 +248,9 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
 	fprintf(fp, "<meta name=\"Author\" content=\"%s (%s)\" />\n",name,email);
     fprintf(fp, "<meta name=\"Subject\" content=\"%s\" />\n", rp =
 	    convchars(subject, charset));
-	fprintf(fp, "<meta name=\"Date\" content=\"%s\" />\n",date);
     free(rp);
+    if (date)
+	fprintf(fp, "<meta name=\"Date\" content=\"%s\" />\n",date);
     if (use_mailto)
 	fprintf(fp, "<link rev=\"made\" href=\"mailto:%s\" />\n", set_mailto);
 
@@ -266,6 +267,8 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
       /*
        * if style sheets are not specified, emit a default one.
        */
+      /* @@ JK: the old css */
+#if 0
       fprintf(fp, "<style type=\"text/css\">\n");
       fprintf(fp, "body {color: black; background: #ffffff}\n");
       fprintf(fp, "h1.center {text-align: center}\n");
@@ -277,7 +280,34 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
       fprintf(fp, ".headers {background : #e0e0d0}\n");
       fprintf(fp, ".links {background : #f8f8e0}\n");
       fprintf(fp, "</style>\n");
+#endif
+      /* @@ JK: the new css */
+      fprintf (fp, "<style type=\"text/css\">\n");
+      
+      fprintf (fp,"/*<![CDATA[*/\n");
+      fprintf (fp, "/* To be incorporated in the main stylesheet, don't code it in hypermail! */\n");
+      fprintf (fp, "body {color: black; background: #ffffff}\n");
+      fprintf (fp, "dfn {font-weight: bold;}\n");
+      fprintf (fp, "pre { background-color:inherit;}\n");
+      fprintf (fp, ".head { border-bottom:1px solid black;}\n");
+      fprintf (fp, ".foot { border-top:1px solid black;}\n");
+
+      /* JK: This was the WAI rule before */
+      /* fprintf (fp, "#body {background-color:#fff;}\n"); */
+      fprintf (fp, "map ul {list-style:none;}\n");
+      fprintf (fp, "#mid { font-size:0.9em;}\n");
+      fprintf (fp, "#received { float:right;}\n");
+      fprintf (fp, "address { font-style:inherit ;}\n");
+      fprintf (fp, "/*]]>*/\n");
+      fprintf(fp, ".quotelev1 {color : #990099}\n");
+      fprintf(fp, ".quotelev2 {color : #ff7700}\n");
+      fprintf(fp, ".quotelev3 {color : #007799}\n");
+      fprintf(fp, ".quotelev4 {color : #95c500}\n");
+      fprintf (fp, "</style>\n");
     }
+
+    if (ihtmlheadfile)
+      fprintf (fp, "%s", ihtmlheadfile);
 
     fprintf(fp, "</head>\n");
     fprintf(fp, "<body>\n");
@@ -291,7 +321,6 @@ void print_msg_header(FILE *fp, char *label, char *subject,
 		      char *dir, char *name, char *email, char *msgid,
 		      char *charset, time_t date, char *filename)
 {
-    char *ptr;
     if (mhtmlheaderfile)
 	printfile(fp, mhtmlheaderfile, set_label, subject, set_dir, name, 
 		  email, msgid, charset, secs_to_iso_meta(date), filename);
@@ -303,9 +332,13 @@ void print_msg_header(FILE *fp, char *label, char *subject,
 		ptr = convchars(subject, charset));
 	free(ptr);
 #endif
+
+#if 0 /* JK: moved it to the generation of the body */
 	fprintf(fp, "<h1>%s</h1>\n",
 		ptr = convchars(subject, charset));
 	free(ptr);
+#endif 
+
 #if 0 /* JK: and removed this as it looked a bit strange */
 	if (!set_usetable)
 	    fprintf(fp, "<hr />\n<p />\n");
@@ -324,11 +357,18 @@ void print_index_header(FILE *fp, char *label, char *dir, char *subject,
 	printfile(fp, ihtmlheaderfile, label, subject, dir, NULL, NULL,
 		  NULL, NULL, NULL, filename);
     else {
+	/* print the navigation bar to upper levels */
 	print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL, NULL);
-	fprintf(fp, "<h1 class=\"center\">%s<br />%s</h1>\n", label, subject);
+	
+	fprintf (fp, "<div class=\"head\">\n");
+	if (ihtmlnavbar2upfile)
+	  fprintf(fp, "<map title=\"%s\" id=\"upper\">\n%s</map>\n", 
+		  lang[MSG_NAVBAR2UPPERLEVELS], ihtmlnavbar2upfile);
+
+	fprintf(fp, "<h1>%s %s</h1>\n", label, subject);
 #if 0 /*@@ JK: removed it */	
 	if (!set_usetable)
-	    fprintf(fp, "<hr />\n");
+	  fprintf(fp, "<hr />\n");
 #endif
     }
 }
@@ -338,7 +378,7 @@ void print_index_header(FILE *fp, char *label, char *dir, char *subject,
 */
 
 void printfooter(FILE *fp, char *htmlfooter, char *label, char *dir,
-		 char *subject, char *filename)
+		 char *subject, char *filename, bool close_div)
 {
     printcomment(fp, "trailer", "footer");
 
@@ -346,13 +386,31 @@ void printfooter(FILE *fp, char *htmlfooter, char *label, char *dir,
 	printfile(fp, htmlfooter, label, subject,
 		  dir, NULL, NULL, NULL, NULL, NULL, filename);
     else {
+      /*
 	if (set_showhr && !set_usetable)
 	    fprintf(fp, "<hr />\n");
+      */
 	fprintf(fp, "<p><small><em>\n");
 	fprintf(fp, "%s ", lang[MSG_ARCHIVE_GENERATED_BY]);
 	fprintf(fp, "<a href=\"%s\">%s %s</a> \n", HMURL, PROGNAME, VERSION);
 	fprintf(fp, ": %s\n", getlocaltime());
 	fprintf(fp, "</em></small></p>\n");
+	if (close_div)
+	  fprintf (fp, "</div>\n");
 	fprintf(fp, "</body>\n</html>\n");
     }
+}
+
+/*
+** Prints the HTML last message and last archived date (used in the indexes).
+*/
+
+void printlaststats (FILE *fp, long lastdatenum)
+{
+    fprintf (fp, "<ul>\n");
+    fprintf (fp, "<li><dfn><a id=\"end\" name=\"end\">%s</a></dfn>: <em>%s</em></li>\n",
+	     lang[MSG_LAST_MESSAGE_DATE], getdatestr(lastdatenum));
+
+    fprintf (fp, "<li><dfn>%s</dfn>: %s</li>\n",  lang[MSG_ARCHIVED_ON], getlocaltime());
+    fprintf (fp, "</ul>\n");
 }

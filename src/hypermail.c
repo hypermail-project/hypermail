@@ -393,6 +393,12 @@ int main(int argc, char **argv)
 	use_stdin = TRUE;
     }
 
+    /* the list of headers that we always show and that we want to avoid
+       showing twice when printing the body */
+    set_skip_headers = add_list(set_skip_headers, "from");
+    set_skip_headers = add_list(set_skip_headers, "date");
+    set_skip_headers = add_list(set_skip_headers, "subject");
+
     /*
      * Did they decide to use stdin by specifying it on the command line ?
      * If not then check and see if that is the default they wanted from
@@ -411,12 +417,29 @@ int main(int argc, char **argv)
     }
 
     /*
+    ** Deprecated options 
+    */
+    if (set_showhr) {
+      fprintf (stderr, "The \"showhr\" option has been deprecated. Ignoring it.\n");
+      set_showhr = FALSE;
+    }
+
+    if (set_usetable) {
+      fprintf (stderr, "The \"usetable\" option has been deprecated. Ignoring it.\n");
+      set_usetable = FALSE;
+    }
+
+    /*
      * Read the contents of the file into the variables to be used
      * in printing out the pages.
      */
 
     ihtmlheaderfile = expand_contents(set_ihtmlheader);
     ihtmlfooterfile = expand_contents(set_ihtmlfooter);
+    ihtmlheadfile = expand_contents(set_ihtmlhead);
+    ihtmlhelpupfile = expand_contents(set_ihtmlhelpup);
+    ihtmlhelplowfile = expand_contents(set_ihtmlhelplow);
+    ihtmlnavbar2upfile = expand_contents(set_ihtmlnavbar2up);
     mhtmlheaderfile = expand_contents(set_mhtmlheader);
     mhtmlfooterfile = expand_contents(set_mhtmlfooter);
 
@@ -666,6 +689,14 @@ int main(int argc, char **argv)
 	free(ihtmlheaderfile);
     if (ihtmlfooterfile)
 	free(ihtmlfooterfile);
+    if (ihtmlheadfile)
+	free(ihtmlheadfile);
+    if (ihtmlhelpupfile)
+	free(ihtmlhelpupfile);
+    if (ihtmlhelplowfile)
+	free(ihtmlhelplowfile);
+    if (ihtmlnavbar2upfile)
+	free(ihtmlnavbar2upfile);
     if (mhtmlheaderfile)
 	free(mhtmlheaderfile);
     if (mhtmlfooterfile)

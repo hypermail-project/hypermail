@@ -120,6 +120,7 @@ extern struct hmlist *set_inline_types;
 extern struct hmlist *set_prefered_types;
 extern struct hmlist *set_ignore_types;
 extern struct hmlist *set_show_headers;
+extern struct hmlist *set_skip_headers;
 extern struct hmlist *set_avoid_indices;
 extern struct hmlist *set_avoid_top_indices;
 extern struct hmlist *set_filter_out;
@@ -129,6 +130,10 @@ extern struct hmlist *set_filter_require_full_body;
 
 extern char *set_ihtmlheader;
 extern char *set_ihtmlfooter;
+extern char *set_ihtmlhead;
+extern char *set_ihtmlhelpup;
+extern char *set_ihtmlhelplow;
+extern char *set_ihtmlnavbar2up;
 extern char *set_mhtmlheader;
 extern char *set_mhtmlfooter;
 
