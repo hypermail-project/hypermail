@@ -173,7 +173,7 @@ struct Config cfg[] = {
      "# date, thread, author, and subject. When using the folder_by_date or\n"
      "# msgsperfolder options, this option applies to subdirectories.\n"},
 
-    {"avoid_top_indices", &set_avoid_top_indices, "date thread author subject", CFG_LIST,
+    {"avoid_top_indices", &set_avoid_top_indices, NULL, CFG_LIST,
      "# This is a list of index files to not generate for the top\n"
      "# directory of an archive using the folder_by_date or\n"
      "# msgsperfolder option. Valid types are date, thread, author, \n"

@@ -55,7 +55,6 @@ contrib/hoaf-28/top_html.hdr
 # 
 # Documentation
 #
-docs/Install-win32.txt
 docs/Makefile.in
 docs/attachments.txt
 docs/customizing.html

@@ -54,10 +54,10 @@ MAILOBJS=	mail.o ../libcgi/libcgi.a
 .c.o:
 	$(CC) -c $(CFLAGS) $<
 
-all:   hypermail$(SUFFIX) mail$(SUFFIX) pcre
+all:    pcre/libpcre.a hypermail$(SUFFIX) mail$(SUFFIX)
 
-pcre:
-	@cd pcre; $(MAKE) libpcre.a CC="$(CC)" CFLAGS="$(CFLAGS)"
+pcre/libpcre.a:
+	@cd pcre; $(MAKE) libtool libpcre.a CC="$(CC)" CFLAGS="$(CFLAGS)"
 
 hypermail$(SUFFIX): $(OBJS) 
 	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(OBJS) $(OPT_LIBS) $(MISC_LIBS)
