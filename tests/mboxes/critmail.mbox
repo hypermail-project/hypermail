@@ -1,0 +1,143 @@
+From owner-hypermail Fri Sep 25 20:23 CDT 2000
+Received: by landfield.com (8.9.0/8.9.0) id UAA06103
+	for hypermail-outgoing; Fri, 25 Sep 2000 20:22:37 -0500 (CDT)
+Received: from runningman.rs.itd.umich.edu (runningman.rs.itd.umich.edu [141.211.144.15])
+	by landfield.com (8.9.0/8.9.0) with ESMTP id UAA06097
+	for <hypermail@landfield.com>; Fri, 25 Sep 2000 20:21:33 -0500 (CDT)
+Received: from umich.edu (dialin224193.isdn.umich.edu [198.111.224.193])
+	by runningman.rs.itd.umich.edu (8.8.5/2.3) with ESMTP id VAA19384; Fri, 25 Sep 2000 21:19:37 -0400 (EDT)
+Message-ID: <360C40A1.A8FAF28C@umich.edu>
+Date: Fri, 25 Sep 2000 21:17:21 -0400
+From: "Jeffrey K. MacKie-Mason" <jmm@umich.edu>
+Organization: University of Michigan
+X-Mailer: Mozilla 4.5b2 [en] (WinNT; I)
+X-Accept-Language: en
+MIME-Version: 1.0
+To: hypermail@landfield.com
+CC: Charles Hall <chall@totalsports.net>,
+        "Gordon H. Buchan" <gbuchan@matrox.com>
+Subject: Re: adding new messages to prior hypermail archive
+Content-Transfer-Encoding: 7bit
+Sender: owner-hypermail@landfield.com
+Precedence: bulk
+Reply-To: "Jeffrey K. MacKie-Mason" <jmm@umich.edu>
+X-Lines: 54
+Content-Type: text/plain; charset="us-ascii"
+Content-Length: 2276
+Status: OR
+
+
+Charles and Gordon offered helpful suggestions.  However, I think there
+is a problem.
+
+Here is what I'm trying to do: I have an existing Hypermail archive
+(from 1.02) with 467 messages already in it.  I do *NOT* have the
+original mailbox file for it.  
+
+I now have 65 new messages in a mailbox that I want to add.
+
+I've tried a standard run, as Gordon suggested (those are Gordon's
+paths):
+
+/home/gordon/bin/hypermail \
+-b "http://cusidnet.anadas.com/" \
+-a "http://cusidnet.anadas.com/" \
+-m "/home/gordon/mail/cusid" \
+-l "CUSIDnet Web Mirror" \
+-d "/home/gordon/www/cusidnet/fall2000/" \
+-c "/home/gordon/bin/.cusidnethyprc" > /dev/null
+
+That had the following result: The new index files overwrote the
+existing index files, and showed the information for the 65 *new*
+messages but no listings for the 467 original messages.  However, the
+archive in fact contained the 467 html files for the original messages,
+but did *not* contain files for any of the new messages.  (Click on New
+#1 in the index, and it goes to file 0000.html which is Old #1.)
+
+Then I tried what Charles suggested: I inserted 467 "dummy" messages in
+my mailbox file so that Hypermail could count down those and only add
+the "new" messages.  That *almost* worked.  The message files were
+correctly created: an addition 65 nnnn.html files were added to the
+archive.  However, the original 467 message entries in the index were
+overwritten with the header information from the 467 dummy messages.  So
+my index files are now useless....
+
+The (filler added here to make the line 40+ chars) two hyphen-
+ated words in the original verision of this sentence should have no spaces in-
+serted where the hyphens were.
+
+From owner-hypermail Fri Sep 25 20:59 CDT 2000
+Received: by landfield.com (8.9.0/8.9.0) id UAA06348
+	for hypermail-outgoing; Fri, 25 Sep 2000 20:59:15 -0500 (CDT)
+Received: from ns.totalsports.net (ns.totalsports.net [207.175.67.50])
+	by landfield.com (8.9.0/8.9.0) with ESMTP id UAA06340
+	for <hypermail@landfield.com>; Fri, 25 Sep 2000 20:58:30 -0500 (CDT)
+Received: from klaatu.totalsports.net
+          (chall3.totalsports.net [207.175.67.217]) by ns.totalsports.net
+          (Post.Office MTA v3.5 release 215 ID# 0-55440U300L200S0V35)
+          with SMTP id net; Fri, 25 Sep 2000 21:53:37 -0400
+Message-ID: <360C4737.6946@totalsports.net>
+Date: Fri, 25 Sep 2000 21:45:27 -0400
+From: chall@totalsports.net (Charles Hall)
+Organization: Total Sports
+X-Mailer: Mozilla 3.01Gold (Win95; I)
+MIME-Version: 1.0
+To: "Jeffrey K. MacKie-Mason" <jmm@umich.edu>
+CC: hypermail@landfield.com
+Subject: Re: adding new messages to prior hypermail archive
+References: <360C40A1.A8FAF28C@umich.edu>
+Content-Transfer-Encoding: 7bit
+Sender: owner-hypermail@landfield.com
+Precedence: bulk
+Reply-To: chall@totalsports.net (Charles Hall)
+X-Lines: 25
+Content-Type: text/plain; charset="us-ascii"
+Content-Length: 1005
+Status: OR
+
+Jeffrey K. MacKie-Mason wrote:
+> 
+> Then I tried what Charles suggested...  However, the original 467 message
+> entries in the index were overwritten with the 467 dummy messages.  So
+> my index files are now useless....
+
+Ouch! I hope you can recover from this. I didn't realize. Sorry.
+
+>The (filler added here to make the line 40+ chars) two hyphen-
+>ated words in the original verision of this sentence should have no spaces in-
+>serted where the hyphens were.
+
+This message should be formatted adequately if set_showhtml = 2. Expect
+many problems if set_showhtml = 1.
+
+        Test the ability of set_showhtml = 2 to handle tables 
+     column1           column2            column3
+ =====================================================================
+        1                 2                  3
+       one               two               three
+        1                                    3
+
+ The columns above should be centered under the appropriate 'u'.
+ ---------------------------------------------------------
+ You should see a horizontal rule above.
+
+1. This should look like a list item numbered one.
+2. This should look like a list item numbered two.
+   - first line of a sublist entry, filler added here
+     to make it longer than a single line.
+         * a sublist nested a 2nd level deep.
+         * a sublist nested a 2nd level deep.
+   - closing the singly nested list
+3. This should look like a list item numbered three of the outer list.
+
+leftmost left left | There should be vertical |
+left aligned in    | bars aligned on either   | right
+tabular format.    | side of me.              |
+
+The second and last words of this sentence should have carets (^'s) under them.
+    ^^^^^^                                                                ^^^^
+
+!!THIS LINE SHOULD BE SURROUNDED BY STRONG TAGS BECAUSE IT IS ALL UPPER CASE!!
+
+oooooooo           line these up
+.....              with these up
