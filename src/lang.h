@@ -42,7 +42,7 @@ struct language_entry {
 #define MSG_THREAD_VIEW            6
 #define MSG_SUBJECT_VIEW           7
 #define MSG_AUTHOR_VIEW            8
-#define MSG_OTHER_GROUPS           9
+#define MSG_ATTACHMENT_VIEW        9
 #define MSG_MESSAGES              10
 #define MSG_STARTING              11
 #define MSG_ENDING                12
@@ -158,7 +158,7 @@ struct language_entry {
 #define MSG_CANNOT_BOTH_READ_AND_WRITE_TO_MBOX   104
 
 /* XXX Move these up with the others */
-#define MSG_ATTACHMENT_VIEW			 105
+#define MSG_ATTACHMENT_VIEW_OBSOLETED		 105
 #define MSG_BY_ATTACHMENT			 106
 #define MSG_WRITING_ATTACHMENT_INDEX  		 107
 #define MSG_BYTES                                108
@@ -194,8 +194,8 @@ char *de[] = {       /* German */
   "Datumsansicht",                         /* Date view          -HTML*/
   "Themenansicht",                         /* Thread view        -HTML*/
   "Titelansicht",                        /* Subject view       -HTML*/
-  "Autorenansicht",                          /* Author view        -HTML*/
-  "Weitere Gruppen",                      /* Other groups       -HTML*/
+  "Autorenansicht",                         /* Author view        -HTML*/
+  "Anhänge-Übersicht",                    /* Attachment view       -HTML*/
   "Nachrichten",                          /* Messages           -HTML*/
   "Anfang",                               /* Starting           -HTML*/
   "Ende",                                 /* Ending             -HTML*/
@@ -224,7 +224,7 @@ char *de[] = {       /* German */
   "Als Antwort auf",                      /* In reply to         -HTML*/
   "Nächste zum Thema",           	  /* Next in thread      -HTML*/
   "Eventuelle Antwort",                   /* Maybe reply         -HTML*/
-  "Nach Thread",                          /* By Thread           -HTML*/
+  "Nach Strang",                          /* By Thread           -HTML*/
   "Nach Titel",                         /* By Subject          -HTML*/
   "Nach Autor",                           /* By Author           -HTML*/
   "Kann das Verzeichnis nicht erstellen", /* Can not create directory -STDERR*/
@@ -303,19 +303,19 @@ char *de[] = {       /* German */
   "Kann Gdbm Datei nicht erstellen... ",  
   				/* Can't create gdbm index     -STDOUT*/
   "Pflege ein zusätzliches mbox-Archiv", /* Maintain an mbox archive -STDOUT*/
-  "Can't both read from and write to an mbox.", 
+  "Kann nicht gleichzeitig von mbox lesen und schreiben.", 
   	       /* "Can't both read from and write to an mbox." -STDOUT*/
   "Anhänge-Übersicht",                      /* Attachment view       -HTML*/
-  "Nach Nachtrichten mit Anhang",/* By messages with attachments -HTML*/
+  "Nach Nachrichten mit Anhang",/* By messages with attachments -HTML*/
   "Schreibe Anhang-Index in",	/* Writing attachment index to -STDOUT*/
   "Bytes",		    /* file size, so far only for attachments  -HTML */
-  "Kann symoblischen Verweis nicht erstellen.", 
+  "Kann symbolischen Verweis nicht erstellen.", 
   			     /* MSG_CANNOT_CREATE_SYMLINK     -STDOUT */
   "Kann Datei nicht entfernen", /* MSG_CANNOT_UNLINK          -STDOUT */
   "Vorheriges Verzeichnis",              /* MSG_PREV_DIRECTORY  -HTML */
-  "Nächsts Verzeichnis",                 /* MSG_NEXT_DIRECTORY  -HTML */
+  "Nächstes Verzeichnis",                 /* MSG_NEXT_DIRECTORY  -HTML */
   "Verzeichnisliste",  /* MSG_FOLDERS_INDEX                     -HTML */
-  "Dies Nachricht wurde auf dem Archiv entfernt",/* MSG_DELETED -HTML */
+  "Diese Nachricht wurde aus dem Archiv entfernt",/* MSG_DELETED -HTML */
   "Diese Nachricht ist abgelaufen",              /* MSG_EXPIRED -HTML */
   "(gelöschte Nachricht)",          /* MSG_DEL_SHORT            -HTML */
   "Ursprünglicher Text dieser Nachricht", /* MSG_TXT_VERSION    -HTML */
@@ -341,7 +341,7 @@ char *pl[] = {                      /* English */
   "Wg w±tków",                      /* Thread view        -HTML*/
   "Wg tematów",                     /* Subject view       -HTML*/
   "Wg autorów",                     /* Author view        -HTML*/
-  "Inne grupy",                     /* Other groups       -HTML*/
+  "Wg za³±czników",                 /* Attachment view    -HTML*/
   "Wiadomo¶ci",                     /* Messages           -HTML*/
   "Pocz±tek",                       /* Starting           -HTML*/
   "Koniec",                         /* Ending             -HTML*/
@@ -473,7 +473,7 @@ char *en[] = {       /* English */
   "Thread view",                 /* Thread view        -HTML*/
   "Subject view",                /* Subject view       -HTML*/
   "Author view",                 /* Author view        -HTML*/
-  "Other groups",                /* Other groups       -HTML*/
+  "Attachment view",             /* Attachment view    -HTML*/
   "Messages",                    /* Messages           -HTML*/
   "Starting",                    /* Starting           -HTML*/
   "Ending",                      /* Ending             -HTML*/
@@ -606,7 +606,7 @@ char *es[] = {       /* Espanol/Spanish */
   "Por conversación",         	      /* Thread view  		      - HTML  */
   "Por tema",                         /* Subject view  		      - HTML  */
   "Por autor",                        /* Author view  		      - HTML  */
-  "Otros grupos",                     /* Other groups  		      - HTML  */
+  "Por adjuntos",                     /* Attachment view	      - HTML  */
   "Mensajes",                         /* Messages  		      - HTML  */
   "Inicio",                           /* Starting		      - HTML  */
   "Fin",                              /* Ending  		      - HTML  */
@@ -748,7 +748,7 @@ char *fi[] = {       /* Finnish */
   "Ketjunäkymä",                     /* Thread view        -HTML*/
   "Aihenäkymä",                      /* Subject view       -HTML*/
   "Kirjoittajanäkymä",               /* Author view        -HTML*/
-  "Muut arkistot",                         /* Other groups       -HTML*/
+  "Attachment view",                       /* Attachment view    -HTML*/
   "Viestit",                               /* Messages           -HTML*/
   "alkaa",                                 /* Starting           -HTML*/
   "loppuu",                                /* Ending             -HTML*/
@@ -880,7 +880,7 @@ char *fr[] = {       /* French */
   "Liste par Th&egrave;me",                /* Thread view        -HTML*/
   "Liste par Sujet",                       /* Subject view       -HTML*/
   "Liste par Auteur",                      /* Author view        -HTML*/
-  "Autres groupes",                        /* Other groups       -HTML*/
+  "Liste par fichier attachés",            /* Attachment view    -HTML*/
   "Messages",                              /* Messages           -HTML*/
   "D&eacute;but",                          /* Starting           -HTML*/
   "Fin",                                   /* Ending             -HTML*/
@@ -1013,7 +1013,7 @@ char *is[] = {       /* Icelandic */
   "Raðað e. umræðum",      /* Thread view        -HTML*/
   "Raðað e. viðfangsefnum",   /* Subject view       -HTML*/
   "Raðað e. höfundum",        /* Author view        -HTML*/
-  "Aðrir flokkar",                  /* Other groups       -HTML*/
+  "Attachment view",                  /* Attachment view    -HTML*/
   "Bréfum",                         /* Messages           -HTML*/
   "Frá",                            /* Starting           -HTML*/
   "Til",                               /* Ending             -HTML*/
@@ -1148,7 +1148,7 @@ char *sv[] = {
   "Trådvy",                      /* Thread view        -HTML*/
   "Ämnesvy",                     /* Subject view       -HTML*/
   "Författarvy",                 /* Author view        -HTML*/
-  "Andra grupper",                  /* Other groups       -HTML*/
+  "Bilagevy",                  /* Attachment view    -HTML*/
   "Brev",                           /* Messages           -HTML*/
   "Startar",                        /* Starting           -HTML*/
   "Slutar",                         /* Ending             -HTML*/
@@ -1428,7 +1428,7 @@ char *gr[] = {       /* Greek */
   "ÐñïâïëÞ áíÜ thread",                	/* Thread view        -HTML*/
   "ÐñïâïëÞ áíÜ èÝìá",                	/* Subject view       -HTML*/
   "ÐñïâïëÞ áíÜ óõããñáöÝá",          	/* Author view        -HTML*/
-  "Aëëåò ïìÜäåò",                      	/* Other groups       -HTML*/
+  "ÐñïâïëÞ Åðéóýíáøçò",                	/* Attachment view    -HTML*/
   "Ìçíýìáôá",                          	/* Messages           -HTML*/
   "Áñ÷Þ",                               /* Starting           -HTML*/
   "ÔÝëïò",                            	/* Ending             -HTML*/

@@ -1939,7 +1939,7 @@ void writeattachments(int amountmsgs, struct emailinfo *email)
 				 lastdatenum, amountmsgs,
 				 email ? email->subdir : NULL);
     else {
-	fprint_menu(fp, ATTACHMENT_INDEX, set_archives, "", "", PAGE_TOP, NULL);
+	fprint_menu(fp, ATTACHMENT_INDEX, set_archives, "", "", PAGE_TOP, email ? email->subdir : NULL);
 	fprint_summary(fp, PAGE_TOP, firstdatenum, lastdatenum, amountmsgs);
 	if (set_showhr)
 	    fprintf(fp, "<hr>\n"); 

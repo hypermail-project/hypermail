@@ -1,6 +1,10 @@
 Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (December 19, 2002)
+  Apply patch from Wolfgang Spraul fixing link from subdir attachment.html to
+ index.html when defaultindex = date
+
  Peter McCluskey (November 26, 2002)
   Changed attachment naming back to what it was before Jose added
  set_nonsequential.
