@@ -1,7 +1,7 @@
 This directory contains the archive specific information for maintaining 
-mailing list archives.  It is expected that the msg2archive.c functionality 
-will be added to hypermail in a future release. Until then... This is what 
-is here and how it works....
+mailing list archives.  Much of the functionality here has been rendered
+obsolete by the folder_by_date option. See ../docs/hmrc.html for more
+info about that option.
 
            README - This file.
              1998 - script for recreation of the hypermail archives 

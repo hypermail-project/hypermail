@@ -1,6 +1,9 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Peter McCluskey (Nov 14 2001)
+  Updated some old documentation, added some security warnings.
+
+Peter McCluskey (Nov 14 2001)
   Changes relevant to security:
   - attachment filenames ending in .shtml get changed to .html.
   - attachment descriptions are passed through convchars to prevent html tags
