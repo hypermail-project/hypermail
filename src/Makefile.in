@@ -51,7 +51,7 @@ OBJS=		base64.o date.o domains.o file.o hypermail.o lang.o lock.o \
 		finelink.o txt2html.o search.o quotes.o trio.o triostr.o \
 		trionan.o
 
-MAILOBJS=	mail.o ../libcgi/libcgi.a
+MAILOBJS=	mail.o ../libcgi/libcgi.a trio.o trionan.o triostr.o
 
 .c.o:
 	$(CC) -c $(CFLAGS) $<
@@ -69,7 +69,7 @@ hypermail$(SUFFIX): $(OBJS)
 	chmod 0755 $@
 
 mail$(SUFFIX):	$(MAILOBJS)
-	$(CC) -o $@ $(CFLAGS) $(MAILOBJS) $(NETLIBS)
+	$(CC) -o $@ $(CFLAGS) $(MAILOBJS) $(NETLIBS) -lm
 	chmod 0755 $@
 
 lang$(SUFFIX): trio.o trionan.o triostr.o lang.c lang.h

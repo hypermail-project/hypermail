@@ -27,6 +27,7 @@
 */
 
 #include "mail.h"
+#include "trio.h"
 
 extern int strcasecmp(const char *, const char *);
 extern FILE *popen(const char *, const char *);
@@ -127,7 +128,8 @@ void cgi_main(cgi_info *ci)
 {
     form_entry *parms, *p;
     char *from, *to, *subject, *replyto, *body, *host;
-    char tmpstr[MAXLEN];
+    char *tmpstr;
+    char tmpstr2[256];
     FILE *f;
 
     /* Only correct remote adresses are valid! */
@@ -159,7 +161,7 @@ void cgi_main(cgi_info *ci)
 	}
     }
 
-    strcpy(tmpstr, lookupnumaddr(ci->remote_addr));
+    tmpstr = lookupnumaddr(ci->remote_addr);
 #ifdef DEBUGGING
     strcpy(hostn, tmpstr);
 #endif
@@ -168,11 +170,12 @@ void cgi_main(cgi_info *ci)
     else
 	host = strsav(ci->remote_addr);
 
-    sprintf(tmpstr, "%s@%s", (ci->remote_user && *(ci->remote_user)) ?
-	    ci->remote_user : "", host);
+    trio_snprintf(tmpstr2, sizeof(tmpstr2), "%s@%s",
+		  (ci->remote_user && *(ci->remote_user)) ?
+		  ci->remote_user : "", host);
 
     if (from == NULL || from[0] == '\0')
-	from = strsav(tmpstr);
+	from = strsav(tmpstr2);
 
     switch (mcode(ci)) {
 
@@ -198,9 +201,9 @@ void cgi_main(cgi_info *ci)
 	if (body == NULL || body[0] == '\0')
 	    progerr("No message has been written.");
 
-	sprintf(tmpstr, "%s -t", SENDMAIL);
+	trio_snprintf(tmpstr2, sizeof(tmpstr2), "%s -t", SENDMAIL);
 
-	if ((f = popen(tmpstr, "w")) != NULL) {
+	if ((f = popen(tmpstr2, "w")) != NULL) {
 	    fprintf(f, "From: %s\nTo: %s\n", from, to);
 
 	    if (replyto != NULL && replyto[0] != '\0')
@@ -240,9 +243,9 @@ void cgi_main(cgi_info *ci)
 	break;
 
     default:
-	sprintf(tmpstr, "Unrecognized method used: \"%s\".",
-		ci->request_method);
-	progerr(tmpstr);
+	trio_snprintf(tmpstr2, sizeof(tmpstr2),
+		      "Unrecognized method used: \"%s\".", ci->request_method);
+	progerr(tmpstr2);
     }
     free_form_entries(parms);
 }
