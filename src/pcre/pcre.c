@@ -255,7 +255,14 @@ functions, and put in the file chartables.c. These tables are used by PCRE
 whenever the caller of pcre_compile() does not provide an alternate set of
 tables. */
 
+/*
+** LCC's make won't generate chartables.c.  Use the prebuilt one instead.
+*/
+#ifdef __LCC__
+#include "../../lcc/chartables.c"
+#else
 #include "chartables.c"
+#endif
 
 
 

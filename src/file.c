@@ -24,7 +24,12 @@
 #include "struct.h"
 #include <errno.h>
 #ifdef HAVE_DIRENT_H
+#ifdef __LCC__
+#include "../lcc/dirent.h"
+#include <direct.h>
+#else
 #include <dirent.h>
+#endif
 #else
 #include <sys/dir.h>
 #endif
@@ -32,7 +37,15 @@
 #include "gdbm.h"
 #endif
 #ifdef HAVE_LIBFNV
+/*
+** Since LCC won't use configure which moves fnv.h to this directory,
+** include it in its original location.
+*/
+#ifdef __LCC__
+#include "fnv/fnv.h"
+#else
 #include "fnv.h"
+#endif
 #endif /* HAVE_LIBFNV */
 
 extern int snprintf(char *str, size_t size, const  char  *format, ...);
@@ -73,7 +86,15 @@ void check1dir(char *dir)
     struct stat sbuf;
 
     if (stat(dir, &sbuf)) {
+    /*
+    ** LCC only has the short mkdir().  Fortunately, we do a chmod
+    ** immediately afterward, so it's a don't care.
+    */
+#ifdef __LCC__
+	if (errno != ENOENT || mkdir(dir) < 0) {
+#else
 	if (errno != ENOENT || mkdir(dir, set_dirmode) < 0) {
+#endif
             if (errno != EEXIST) {
 		snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_CANNOT_CREATE_DIRECTORY], dir);
 		progerr(errmsg);
@@ -109,7 +130,12 @@ void checkdir(char *dir)
 	    ch = *p;
 	    *p = '\0';
 	    if (stat(dir, &sbuf)) {
+	    /* See comment in check1dir */
+#ifdef __LCC__
+		if (errno != ENOENT || mkdir(dir) < 0) {
+#else
 		if (errno != ENOENT || mkdir(dir, set_dirmode) < 0) {
+#endif
 		    if (errno != EEXIST) {
 						snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_CANNOT_CREATE_DIRECTORY], dir);
 			progerr(errmsg);
@@ -249,11 +275,20 @@ void readconfigs(char *path, int cmd_show_variables)
 	char tmppath[MAXFILELEN]; /*AUDIT biege: pathname + filename is more then 4KB long on linux */
         struct passwd *pp;
 
+#ifndef __LCC__
+	/*
+	** Getting password data from /etc/passwd is pretty silly in
+	** Win9x systems since nearly everybody builds this file after
+	** they set up $HOME.  Just skip this try at finding a default
+	** location for the config file and go on to try $HOME.
+	*/
         if ((pp = getpwuid(getuid())) != NULL) {
 			snprintf(tmppath, sizeof(tmppath), "%s%s", pp->pw_dir, path + 1);	/* AUDIT biege: who gurantees that path+1 contains data? */
             ConfigInit(tmppath);
         } 
-	else if ((ep = getenv("HOME")) != NULL) { /* AUDIT biege: possible BOF.. but it's not setuid.. so why to care? */
+	else
+#endif
+            if ((ep = getenv("HOME")) != NULL) { /* AUDIT biege: possible BOF.. but it's not setuid.. so why to care? */
 			snprintf(tmppath, sizeof(tmppath), "%s%s", ep, path + 1);	/* AUDIT biege: who gurantees that path+1 contains data? */
             ConfigInit(tmppath);
         }
@@ -272,6 +307,15 @@ void readconfigs(char *path, int cmd_show_variables)
 
 void symlink_latest()
 {
+    /*
+    ** Symlinks work so differently in Windows that I think we'll just
+    ** skip that whole thing and ignore that option.
+    */
+#ifdef __LCC__
+    snprintf(errmsg, sizeof(errmsg),
+	"WARNING: latest_folder not supported in Win32 environment.\n");
+    fprintf(stderr, "%s", errmsg);
+#else
     char filename[MAXFILELEN];
     
     struct stat stbuf;
@@ -291,6 +335,7 @@ void symlink_latest()
 	progerr(errmsg);
 	return;
     }
+#endif
 }
 
 int find_max_msgnum()

@@ -11,7 +11,11 @@
  */
 
 #include "dmatch.h"
+#ifdef __LCC__
+#include "../lcc/config.h"
+#else
 #include "../config.h"
+#endif
 
 #ifdef HAVE_CTYPE_H
 #include <ctype.h>

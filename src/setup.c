@@ -3,7 +3,13 @@
 */
 
 #include "hypermail.h"
+
+#ifdef __LCC__
+#include "../lcc/defaults.h"
+#else
 #include "defaults.h"
+#endif
+
 #include "setup.h"
 #include "struct.h"
 #include "setup.h"

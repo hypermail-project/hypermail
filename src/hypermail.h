@@ -28,7 +28,12 @@
 #define VAR
 #endif
 
+#ifdef __LCC__
+#include "../lcc/config.h"
+#else
 #include "../config.h"
+#endif
+
 #include "../patchlevel.h"
 
 #ifdef HAVE_UNISTD_H

@@ -38,9 +38,23 @@
 #endif
 
 #ifdef HAVE_DIRENT_H
+#ifdef __LCC__
+#include "../lcc/dirent.h"
+#include <direct.h>
+#else
 #include <dirent.h>
+#endif
 #else
 #include <sys/dir.h>
+#endif
+
+/*
+** LCC doesn't have lstat() defined in sys/stat.h.  We'll define it
+** in lcc_extras.h, but really it just calls stat().
+*/
+#ifdef __LCC__
+#include <sys/stat.h>
+#include "../lcc/lcc_extras.h"
 #endif
 
 extern char *mktemp(char *);

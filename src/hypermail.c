@@ -22,7 +22,13 @@
 #define MAIN_FILE 1
 
 #include "hypermail.h"
+
+#ifdef __LCC__
+#include "../lcc/defaults.h"
+#else
 #include "defaults.h"
+#endif
+
 #include "setup.h"
 #include "parse.h"
 #include "print.h"

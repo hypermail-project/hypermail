@@ -33,9 +33,17 @@
 #include "proto.h"
 
 #ifdef HAVE_DIRENT_H
+#ifdef __LCC__
+#include "../lcc/dirent.h"
+#else
 #include <dirent.h>
+#endif
+#else
+#ifdef __LCC__
+#include <direct.h>
 #else
 #include <sys/dir.h>
+#endif
 #endif
 
 static char *indextypename[NO_INDEX];

@@ -37,7 +37,15 @@ modules, but which are not relevant to the outside. */
 
 /* Get the definitions provided by running "configure" */
 
+/*
+** LCC doesn't run configure, so config.h won't be copied to this
+** directory.  Point to the substitute config.h instead.
+*/
+#ifdef __LCC__
+#include "../../lcc/config.h"
+#else
 #include "config.h"
+#endif
 
 /* To cope with SunOS4 and other systems that lack memmove() but have bcopy(),
 define a macro for memmove() if HAVE_MEMMOVE is false, provided that HAVE_BCOPY
@@ -71,7 +79,16 @@ for (i = 0; i < n; ++i) *(--dest) =  *(--src);
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+/*
+** LCC doesn't run configure, so pcre.h won't be generated.  Use the
+** substitute instead.
+*/
+#ifdef __LCC__
+#include "../../lcc/pcre.h"
+#else
 #include "pcre.h"
+#endif
 
 /* In case there is no definition of offsetof() provided - though any proper
 Standard C system should have one. */
