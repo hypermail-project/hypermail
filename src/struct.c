@@ -598,6 +598,43 @@ struct body *hashnumlookup(int num, struct emailinfo **emailp)
 }
 
 /*
+ * returns info about the message associated with the given msgid.
+ */
+
+struct emailinfo *hashlookupbymsgid(char *msgid)
+{
+    struct hashemail *ep;
+    if (!msgid || !*msgid)
+	return NULL;
+    ep = etable[hash(msgid)];
+    while (ep) {
+	if (strcmp(msgid, ep->data->msgid) == 0) {
+	    return ep->data;
+	}
+	ep = ep->next;
+    }
+
+    return NULL;
+}
+
+int insert_older_msgs(int num)
+{
+    int i;
+    int num_added = 0;
+    for(i = set_startmsgnum; i < num; ++i) {
+	struct emailinfo *emp;
+	if (hashnumlookup(i, &emp)) {
+	    authorlist = addheader(authorlist, emp, 1, 0);
+	    subjectlist = addheader(subjectlist, emp, 0, 0);
+	    datelist = addheader(datelist, emp, 2, 0);
+	    ++num_added;
+	}
+    }
+    return num_added;
+}
+
+
+/*
  * Find the nearest non-deleted email to num by adding direction to num.
  */
 
@@ -802,9 +839,9 @@ struct reply *addreply(struct reply *rp, int fromnum, struct emailinfo *email, i
     }
     else {
 #ifdef FASTREPLYCODE
-		for (tempnode = (last_node ? *last_node : rp); tempnode->next != NULL; tempnode = tempnode->next);
-	tempnode->next = newnode;
-	if (rp == threadlist && threadlist_by_msgnum && email)
+      for (tempnode = (last_node ? *last_node : rp); tempnode->next != NULL; tempnode = tempnode->next);
+      tempnode->next = newnode;
+      if (rp == threadlist && threadlist_by_msgnum && email)
 	    threadlist_by_msgnum[email->msgnum] = tempnode;
 #else
 		for (tempnode = rp; tempnode->next != NULL; tempnode = tempnode->next);
@@ -828,7 +865,7 @@ struct reply *addreply2(struct reply *rp, struct emailinfo *from_email, struct e
 	    return rp;		/* don't add 2nd time */
 	}
     }
-	from_email->replylist = addreply(from_email->replylist, from_email->msgnum, email, maybereply, NULL);
+    from_email->replylist = addreply(from_email->replylist, from_email->msgnum, email, maybereply, NULL);
 #endif
     return addreply(rp, from_email->msgnum, email, maybereply, last_node);
 }

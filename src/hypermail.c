@@ -596,7 +596,7 @@ int main(int argc, char **argv)
 	amount_old = max_msgnum + 1; /* counts gaps as messages */
 
 	/* start numbering at this number */
-		amount_new = num_displayable + parsemail(set_mbox, use_stdin, set_readone, set_increment, set_dir, set_inlinehtml, amount_old);
+	amount_new = num_displayable + parsemail(set_mbox, use_stdin, set_readone, set_increment, set_dir, set_inlinehtml, amount_old);
 	if (set_linkquotes)
 	    analyze_headers(max_msgnum + 1);
 
@@ -619,10 +619,18 @@ int main(int argc, char **argv)
 	}
     }
     else {
+	if (set_mbox_shortened) {
+	    if (!set_usegdbm) progerr("mbox_shortened option requires that the usegdbm option be on");
+	    max_msgnum = set_startmsgnum - 1;
+	    loadoldheaders(set_dir);
+	}
 	amount_new = parsemail(set_mbox, use_stdin, set_readone, set_increment, set_dir, 
 			       set_inlinehtml, set_startmsgnum);	/* number from 0 */
-	if (!matches_existing(0)) {
-		fprintf(stderr, "Warning: first message in mailbox does not " "match first message in archive\n" "or obsolete gdbm file present.\n");
+	if (!set_mbox_shortened && !matches_existing(0)) {
+	    progerr("First message in mailbox does not "
+		    "match first message in archive\n"
+		    "or obsolete gdbm file present.\n"
+		    "Maybe you want to enable the mbox_shortened option?\n");
 	}
 	if (set_linkquotes)
 	    analyze_headers(max_msgnum + 1);

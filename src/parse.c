@@ -397,7 +397,7 @@ void crossindexthread2(int num)
     for (rp = ep->replylist; rp != NULL; rp = rp->next) {
 	if (!(rp->data->flags & USED_THREAD)) {
 	    rp->data->flags |= USED_THREAD;
-	    if (0) printf("add thread.b %d %d\n", num, rp->data->msgnum);
+	    if (0) printf("add thread.b %d %d %d\n", num, rp->data->msgnum, rp->msgnum);
 	    threadlist = addreply(threadlist, num, rp->data, 0,
 				  &threadlist_end);
 	    printedlist = markasprinted(printedthreadlist, rp->msgnum);
@@ -2001,7 +2001,30 @@ int parsemail(char *mbox,	/* file name */
 
 		while (rmlastlines(bp));
 
-		emp =
+		if (set_mbox_shortened && !increment && num == startnum
+		    && max_msgnum >= set_startmsgnum) {
+		    emp = hashlookupbymsgid(msgid);
+		    if (!emp) {
+		      snprintf(errmsg, sizeof(errmsg),
+			       "Message with msgid '%s' not found in .hm2index",
+msgid);
+		      progerr(errmsg);
+		    }
+		    num = emp->msgnum;
+		    num_added = insert_older_msgs(num);
+		}
+		emp = NULL;
+		if (set_mbox_shortened) {
+		    if (hashnumlookup(num, &emp)) {
+		        if(strcmp(msgid, emp->msgid)) {
+			    snprintf(errmsg, sizeof(errmsg),
+				     "msgid mismatch %s %s", msgid, emp->msgid);
+			    progerr(errmsg);
+			}
+		    }
+		}
+		if (!emp)
+		  emp =
 		    addhash(num, date, namep, emailp, msgid, subject,
 			    inreply, fromdate, charset, NULL, NULL, bp);
                 /* 

@@ -84,6 +84,7 @@ extern bool set_nonsequential;
 extern bool set_warn_surpressions;
 extern bool set_files_by_thread;
 extern bool set_href_detection;
+extern bool set_mbox_shortened;
 
 extern int set_showhtml;
 extern int set_thrdlevels;

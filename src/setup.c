@@ -66,6 +66,7 @@ bool set_nonsequential;
 bool set_warn_surpressions;
 bool set_files_by_thread;
 bool set_href_detection;
+bool set_mbox_shortened;
 
 int set_showhtml;
 int set_thrdlevels;
@@ -730,7 +731,16 @@ struct Config cfg[] = {
     {"href_detection", &set_href_detection, BTRUE, CFG_SWITCH,
      "# Set this to On to assume that any string on the body of the message\n"
      "# that says <A HREF=\"     </A> is a URL, together with its markup\n"
-     "and treat it as such.", TRUE},
+     "# and treat it as such.", TRUE},
+
+    {"mbox_shortened", &set_mbox_shortened, BFALSE, CFG_SWITCH,
+     "# Set this to On to enable use of mbox that has had some of its\n"
+     "# initial messages deleted. Requires usegdbm = 1.\n"
+     "# The first message in the mbox must have a Message-ID header.\n"
+     "# The mbox may not be altered in any way other than deleting from\n"
+     "# beginning of the mbox or appending new messages to the end (unless\n"
+     "# you rebuild the archive from scratch using a complete mbox).\n"
+     "# Experimental as of 2003-12-01.", FALSE},
 
 };
 

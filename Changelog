@@ -4,6 +4,10 @@ Version Changes for Hypermail
 ============================
 HYPERMAIL VERSION pre-2.1.9:
 ============================
+ Peter McCluskey (Dec 3, 2003)
+  Added a mbox_shortened option to handle mboxes that have had messages
+ deleted from the start of the mbox.
+
  Peter McCluskey (Dec 1, 2003)
   Fix mismatch in <ul>, </ul> in date.html with indextable = 0.
 

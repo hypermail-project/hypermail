@@ -14,6 +14,8 @@ struct emailinfo *hashreplylookup(int, char *, char *, int *);
 
 struct emailinfo *hashmsgidlookup(char *, int *);
 int hashreplynumlookup(int, char *, char *, int *);
+struct emailinfo *hashlookupbymsgid(char *);
+int insert_older_msgs(int);
 
 struct body *hashnumlookup(int, struct emailinfo **);
 struct emailinfo *neighborlookup(int, int);
