@@ -1339,7 +1339,7 @@ void print_headers(FILE *fp, struct emailinfo *email, int in_thread_file)
 	free(ptr);
     }
     else {
-      fprintf(fp, "%s ^lt;<em>%s</em>&gt;", email->name, 
+      fprintf(fp, "%s &lt;<em>%s</em>&gt;", email->name, 
 	      (strcmp(email->emailaddr, "(no email)") != 0) ? email->emailaddr : "no email");
     }
   }

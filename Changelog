@@ -1,6 +1,14 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+============================
+HYPERMAIL VERSION pre-2.1.9:
+============================
+
+ Kent Landfield (Jul 10, 2003)
+  - Small typo in print.c corrected.
+       fprintf(fp, "%s ^lt;<em>%s</em>&gt;"...
+
 ========================
 HYPERMAIL VERSION 2.1.8:
 ========================
