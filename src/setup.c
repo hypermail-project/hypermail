@@ -847,24 +847,34 @@ void dump_config(void)
 
     printf("set_language = %s\n",set_language ? set_language : "Not Used");
     printf("set_htmlsuffix = %s\n",set_htmlsuffix ? set_htmlsuffix : "Not Used");
-    printf("set_mbox = %s\n",*set_mbox ? set_mbox : "Not Used");
+    printf("set_mbox = %s\n", set_mbox ? set_mbox : "Not Used");
     printf("set_archives = %s\n",set_archives ? set_archives : "Not set");
     printf("set_custom_archives = %s\n",set_custom_archives ? set_custom_archives : "Not set");
     printf("set_about = %s\n",set_about ? set_about : "Not set");
     printf("set_dir = %s\n",set_dir ? set_dir : "Not set");
     printf("set_defaultindex = %s\n",set_defaultindex ? set_defaultindex : "Not set");
-    
+    printf("set_default_top_index = %s\n",set_default_top_index ? set_default_top_index : "Not set");
+
     printf("set_label = %s\n",set_label ? set_label : "Not set");
+    printf("set_append_filename = %s\n",set_append_filename ? set_append_filename : "Not set");
     printf("set_dateformat = %s\n",set_dateformat ? set_dateformat : "Not set");
     printf("set_stripsubject = %s\n",set_stripsubject ? set_stripsubject : "Not set");
     printf("set_mailcommand = %s\n",set_mailcommand ? set_mailcommand : "Not set");
-    printf("set_bodymailcommand = %s\n",set_bodymailcommand ? set_bodymailcommand : "Not set");
+    printf("set_replymsg_command = %s\n",set_replymsg_command ? set_replymsg_command : "Not set");
+    printf("set_newmsg_command = %s\n",set_newmsg_command ? set_newmsg_command : "Not set");
     printf("set_mailto = %s\n",set_mailto ? set_mailto : "Not set");
     printf("set_hmail = %s\n",set_hmail ? set_hmail : "Not set");
     printf("set_domainaddr = %s\n",set_domainaddr ? set_domainaddr : "Not set");
     printf("set_htmlbody = %s\n",set_htmlbody ? set_htmlbody : "Not set");
     printf("set_icss_url = %s\n",set_icss_url ? set_icss_url : "Not set");
     printf("set_mcss_url = %s\n",set_mcss_url ? set_mcss_url : "Not set");
+
+    printf("set_attachmentlink = %s\n",set_attachmentlink ? set_attachmentlink : "Not set");
+    printf("set_link_to_replies = %s\n",set_link_to_replies ? set_link_to_replies : "Not set");
+    printf("set_quote_link_string = %s\n",set_quote_link_string ? set_quote_link_string : "Not set");
+    printf("set_folder_by_date = %s\n",set_folder_by_date ? set_folder_by_date : "Not set");
+    printf("set_describe_folder = %s\n",set_describe_folder ? set_describe_folder : "Not set");
+    printf("set_latest_folder = %s\n",set_latest_folder ? set_latest_folder : "Not set");
 
     /* Boolean or interger */
 
@@ -884,16 +894,32 @@ void dump_config(void)
     printf("set_indextable = %d\n",set_indextable);
     printf("set_iquotes = %d\n",set_iquotes);
     printf("set_eurodate = %d\n",set_eurodate);
+    printf("set_isodate = %d\n",set_isodate);
+    printf("set_gmtime = %d\n",set_gmtime);
     printf("set_require_msgids = %d\n",set_require_msgids);
     printf("set_discard_dup_msgids = %d\n",set_discard_dup_msgids);
     printf("set_usemeta = %d\n",set_usemeta);
     printf("set_uselock = %d\n",set_uselock);
+    printf("set_locktime = %d\n",set_locktime);
     printf("set_ietf_mbox = %d\n",set_ietf_mbox);
+#ifdef GDBM
+    printf("set_usegdbm = %d\n",set_usegdbm);
+#endif
+    printf("set_append = %d\n",set_append);
     printf("set_thrdlevels = %d\n",set_thrdlevels);
     printf("set_dirmode = %04o\n",set_dirmode);
     printf("set_filemode = %04o\n",set_filemode);
     printf("set_spamprotect = %04o\n",set_spamprotect);
     printf("set_attachmentsindex = %04o\n",set_attachmentsindex);
+    printf("set_linkquotes = %d\n",set_linkquotes);
+    printf("set_searchbackmsgnum = %d\n",set_searchbackmsgnum);
+    printf("set_quote_hide_threshold = %d\n",set_quote_hide_threshold);
+    printf("set_thread_file_depth = %d\n",set_thread_file_depth);
+    printf("set_monthly_index = %d\n",set_monthly_index);
+    printf("set_yearly_index = %d\n",set_yearly_index);
+    printf("set_msgsperfolder = %d\n",set_msgsperfolder);
+    printf("set_iso2022jp = %d\n",set_iso2022jp);
+    printf("set_delete_level = %d\n",set_delete_level);
 
     if (!set_ihtmlheader)
         printf("set_ihtmlheader = Not set\n");
@@ -934,6 +960,11 @@ void dump_config(void)
     print_list("set_prefered_types",set_prefered_types);
     print_list("set_ignore_types",set_ignore_types);
     print_list("set_show_headers", set_show_headers);
+    print_list("set_avoid_top_indices", set_avoid_top_indices);
+    print_list("set_avoid_indices", set_avoid_indices);
+    print_list("set_deleted", set_deleted);
+    print_list("set_expires", set_expires);
+    print_list("set_delete_msgnum", set_delete_msgnum);
 
 }
 

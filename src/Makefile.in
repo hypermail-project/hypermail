@@ -27,10 +27,11 @@ INSTALL_PROG=@INSTALL@
 #WNOERROR=-Werror
 #WARNINGS=$(WNOERROR) -ansi -pedantic -Wall -Wtraditional -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Dlint
 
-CFLAGS=@CFLAGS@ @INCLUDES@ $(WARNINGS)
+CFLAGS=@CFLAGS@ @INCLUDES@  -I../trio $(WARNINGS)
 YACC=@YACC@
 NETLIBS=@LIBS@
-LDFLAGS=@LDFLAGS@
+LDFLAGS=@LDFLAGS@ -L../trio -ltrio
+MISC_LIBS= -ltrio -lm
 OPT_LIBS=@EXTRA_LIBS@
 
 INCS=		domains.h hypermail.h lang.h proto.h \
@@ -55,7 +56,7 @@ MAILOBJS=	mail.o ../libcgi/libcgi.a
 all:   hypermail$(SUFFIX) mail$(SUFFIX)
 
 hypermail$(SUFFIX): $(OBJS) 
-	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(OPT_LIBS) $(OBJS) 
+	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(OBJS) $(OPT_LIBS) $(MISC_LIBS)
 	chmod 0755 $@
 
 mail$(SUFFIX):	$(MAILOBJS)

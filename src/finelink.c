@@ -37,8 +37,8 @@ static char *get_path(struct emailinfo *ep, struct emailinfo *ep2)
 {
     char *path = "";
     if (ep2->subdir && ep2->subdir != ep->subdir)
-	path = maprintf("%s%s", ep2->subdir->rel_path_to_top,
-			ep2->subdir->subdir);
+	trio_asprintf(&path, "%s%s", ep2->subdir->rel_path_to_top,
+		      ep2->subdir->subdir);
     return path;
 }
 
@@ -311,15 +311,16 @@ static char *url_replying_to(struct emailinfo *email,
 	hashreplynumlookup(*quoting_msgnum, email->inreplyto, email->subject,
 			   &subjmatch);
     hashnumlookup(*quoting_msgnum, &ep);
-    anchor = maprintf("%.4dqlink%d", *quoting_msgnum, quote_num);
+    trio_asprintf(&anchor, "%.4dqlink%d", *quoting_msgnum, quote_num);
     if (statusnum != -1) {
 	struct emailinfo *ep2;
 	hashnumlookup(statusnum, &ep2);
 	if (add_anchor(statusnum, *quoting_msgnum, quote_num,
 		       anchor, line1, 0, count_quoted_lines, NULL)) {
 	    char *path = get_path(ep, ep2);
-	    char *buf = maprintf("%s%.4d.%s#%s",
-				 path, statusnum, set_htmlsuffix, anchor);
+	    char *buf;
+	    trio_asprintf(&buf, "%s%.4d.%s#%s",
+			  path, statusnum, set_htmlsuffix, anchor);
 	    if (maybe_reply)
 		set_new_reply_to(statusnum, strlen(line2));
 	    if (*path)
@@ -340,8 +341,9 @@ static char *url_replying_to(struct emailinfo *email,
 	    if (add_anchor(statusnum, *quoting_msgnum, quote_num, 
 			   anchor, tptr, 1, count_quoted_lines, NULL)) {
 	        char *path = get_path(ep, ep2);
-		char *buf = maprintf("%s%.4d.%s#%s",
-				     path, statusnum, set_htmlsuffix, anchor);
+		char *buf;
+		trio_asprintf(&buf, "%s%.4d.%s#%s",
+			      path, statusnum, set_htmlsuffix, anchor);
 		free(tptr);
 		if (maybe_reply)
 		    set_new_reply_to(statusnum, strlen(buf));
@@ -387,9 +389,9 @@ static char *url_replying_to(struct emailinfo *email,
 	        struct emailinfo *ep2;
 		struct body *bp0 = hashnumlookup(match_info.msgnum, &ep2);
 		char *path = get_path(ep, ep2);
-		char *buf = maprintf("%s%.4d.%s#%s", path,
-				     match_info.msgnum, set_htmlsuffix,
-				     anchor);
+		char *buf;
+		trio_asprintf(&buf, "%s%.4d.%s#%s", path,
+			      match_info.msgnum, set_htmlsuffix, anchor);
 		set_new_reply_to(match_info.msgnum,
 				 match_info.match_len_bytes);
 		free(parsed2);
@@ -426,8 +428,8 @@ handle_quoted_text(FILE *fp, struct emailinfo *email, const struct body *bp,
     int count_quoted_lines = 0;
     const char *fmt2 = set_iquotes ? "<em>%s</em><br>" : "%s<br>";
     char *cvtd_line = ConvURLsString(unquote(line), email->msgid, email->subject);
-    char *buffer1 = (char *)emalloc(strlen(cvtd_line) + strlen(fmt2) + 1);
-    sprintf(buffer1, fmt2, cvtd_line ? cvtd_line : "");
+    char *buffer1;
+    trio_asprintf(&buffer1, fmt2, cvtd_line ? cvtd_line : "");
     if (cvtd_line)
 	free(cvtd_line);
     found_quote = (quote_num > 0);

@@ -70,7 +70,7 @@ int togdbm(void *gp, struct emailinfo *ep)
   char *exp_time_str = strsav(ep->exp_time == -1 ? ""
 			      : secs_to_iso(ep->exp_time));
   char is_deleted_str[32];
-  msnprintf(is_deleted_str, sizeof(is_deleted_str), "%d", ep->is_deleted);
+  trio_snprintf(is_deleted_str, sizeof(is_deleted_str), "%d", ep->is_deleted);
 
   key.dsize = sizeof(num); /* the key is the message number */
   key.dptr = (char *) &num;
@@ -623,8 +623,8 @@ void printattachments(FILE *fp, struct header *hp,
 	    subj = convchars(em->subject);
 
 	    /* See if there's a directory corresponding to this message */
-	    attdir = maprintf("%s%c" DIR_PREFIXER "%04d",
-			      set_dir, PATH_SEPARATOR, em->msgnum);
+	    trio_asprintf(&attdir, "%s%c" DIR_PREFIXER "%04d",
+			  set_dir, PATH_SEPARATOR, em->msgnum);
 	    if (isdir(attdir)) {
 	        DIR *dir = opendir(attdir);
 
@@ -662,13 +662,14 @@ void printattachments(FILE *fp, struct header *hp,
 			    first_time = 0;
 			    fprintf(fp, "<ol>\n");
 			}
-			filename = maprintf("%s%c%s", attdir,
-					    PATH_SEPARATOR, entry->d_name);
+			trio_asprintf(&filename, "%s%c%s", attdir,
+				      PATH_SEPARATOR, entry->d_name);
 			if (!stat(filename, &fileinfo))
 			    file_size = fileinfo.st_size;
 			free(filename);
-			filename = maprintf(DIR_PREFIXER "%04d%c%s", em->msgnum,
-					    PATH_SEPARATOR, entry->d_name);
+			trio_asprintf(&filename, DIR_PREFIXER "%04d%c%s",
+				      em->msgnum,
+				      PATH_SEPARATOR, entry->d_name);
 			stripped_filename = strchr(entry->d_name, '-');
 			if (stripped_filename)
 			    fprintf(fp, fmt2, filename, stripped_filename+1,

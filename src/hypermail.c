@@ -407,7 +407,7 @@ int main(int argc, char **argv)
 			     strrchr(set_mbox, '/') + 1 : set_mbox);
 
     if (set_dir[strlen(set_dir) - 1] != PATH_SEPARATOR)
-	set_dir = maprintf("%s%c", set_dir, PATH_SEPARATOR);
+	trio_asprintf(&set_dir, "%s%c", set_dir, PATH_SEPARATOR);
 
     if (!set_label || !strcasecmp(set_label, "NONE"))
 	set_label = set_mbox ?

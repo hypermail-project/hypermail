@@ -202,7 +202,7 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
      * whitespace in TITLE so weblint is happy. 
      */
 
-    title = maprintf("%s: %s", label, rp = convchars(subject));
+    trio_asprintf(&title, "%s: %s", label, rp = convchars(subject));
     free(rp);
 
     if (!set_iso2022jp && strlen(title) > TITLESTRLEN) {

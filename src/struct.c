@@ -937,13 +937,11 @@ struct emailsubdir *new_subdir(char *subdir, struct emailsubdir *last_subdir,
     for (p = subdir; *p; ++p)
 	count += (*p == '/');
     while(--count > 0) {
-	p = maprintf("../%s", new_sd->rel_path_to_top);
+	trio_asprintf(&p, "../%s", new_sd->rel_path_to_top);
 	free(new_sd->rel_path_to_top);
 	new_sd->rel_path_to_top = p;
     }
-    new_sd->full_path = maprintf("%s%s%s", set_dir,
-				 (set_dir[strlen(set_dir) - 1] == '/') ? ""
-				 : "/", subdir);
+    trio_asprintf(&new_sd->full_path, "%s%s", set_dir, subdir);
     if (!isdir(new_sd->full_path)) {
 	checkdir(new_sd->full_path);	/* make subdir(s) if needed */
 	if (set_latest_folder)

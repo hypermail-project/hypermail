@@ -83,9 +83,9 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 		else if (level < MAXSTACK) {
 		    char *filename;
 		    char subject[TITLESTRLEN];
-		    filename_stack[level] = 
-		      maprintf("%u%s", reply_list_count,
-			       index_name[subdir != NULL][THREAD_INDEX]);
+		    trio_asprintf(&filename_stack[level],
+				  "%u%s", reply_list_count,
+				  index_name[subdir != NULL][THREAD_INDEX]);
 		    filename = htmlfilename(filename_stack[level], email, "");
 		    unlink(filename);	/* so chmod won't fail if someone else owned it */
 		    fp_stack[level - 1] = fp;

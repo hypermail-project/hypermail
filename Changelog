@@ -1,5 +1,22 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Peter McCluskey (May 1 2001)
+  - convert mprintf calls to trio calls
+
+Peter McCluskey (Apr 27 2001)
+  - allow incremental update with folder_by_date on empty archive, improve
+  error messages for missing gdbm file with folder_by_date, incremental update.
+
+Peter McCluskey (Apr 26 2001)
+  - fixed so that avoid_top_indices = folders works.
+
+Peter McCluskey (Apr 24 2001)
+  - fix urls at end of index page with folder_by_date.
+
+Peter McCluskey (Apr 20 2001)
+  - patch from Hisashi Gotoh <gotoh@horae.dti.ne.jp> to fix message/rfc822
+   handling with showhtml = 0.
+
 Peter McCluskey (Apr 18 2001)
   - changed configure script to check several directories for gdbm.h,
     provide --with-gdbm=DIR option.

@@ -39,6 +39,7 @@ char *dirpath(char *);
 void readconfigs(char *, int);
 
 int find_max_msgnum(void);
+int is_empty_archive(void);
 void symlink_latest(void);
 struct emailsubdir *msg_subdir(int, time_t);
 char *msg_href(struct emailinfo *, struct emailinfo *);

@@ -740,7 +740,8 @@ char *makemailcommand(char *mailcommand, char *email, char *id, char *subject)
 
     /* remade to deal with any-length strings */
     /* tmpsubject = maprintf("%s%s", (hasre) ? "" : "Re: ", (convsubj) ? convsubj : ""); */
-    tmpsubject = maprintf("%s%s", (convsubj && !hasre) ? "Re: " : "", (convsubj) ? convsubj : "");
+    trio_asprintf(&tmpsubject, "%s%s", (convsubj && !hasre)
+		  ? "Re: " : "", (convsubj) ? convsubj : "");
 
 
 	if ((cp = strrchr(email, ' ')) != NULL)
@@ -849,16 +850,16 @@ char *parseemail(char *input,	/* string to parse */
 			PushNString(&buff, lastpos, email - lastpos);
 		    }
 
-                    msnprintf(mailaddr, sizeof(mailaddr),"%.*s%s%s", 
-                            ptr-email, email, at, mailbuff);
+                    trio_snprintf(mailaddr, sizeof(mailaddr),"%.*s%s%s", 
+				  ptr-email, email, at, mailbuff);
 
 		    if (valid_root_domain(mailaddr)) {
 			char *mailcmd = makemailcommand(set_mailcommand,
 							mailaddr, mid,
 							msubject);
-			msnprintf(tempbuff, sizeof(tempbuff),
-				  "<a href=\"%s\">%.*s%s%s</a>", mailcmd,
-				  ptr - email, email, at, mailbuff);
+			trio_snprintf(tempbuff, sizeof(tempbuff),
+				      "<a href=\"%s\">%.*s%s%s</a>", mailcmd,
+				      ptr - email, email, at, mailbuff);
 
 			free(mailcmd);
 
@@ -1040,9 +1041,9 @@ char *parseurl(char *input)
 		}
 	    }
 	    if(accepted) {
-	        msnprintf(tempbuff, sizeof(tempbuff),
-			  "<a href=\"%s%s\">%s%s</a>",
-			  thisprotocol, urlbuff, thisprotocol, urlbuff);
+	        trio_snprintf(tempbuff, sizeof(tempbuff),
+			      "<a href=\"%s%s\">%s%s</a>",
+			      thisprotocol, urlbuff, thisprotocol, urlbuff);
 		PushString(&buff, tempbuff); /* append the tag buffer */
 		inputp += strlen(urlbuff);
 	    } else {

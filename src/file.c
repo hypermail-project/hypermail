@@ -271,11 +271,10 @@ void symlink_latest()
     char filename[MAXFILELEN];
     char dirname[MAXFILELEN];
     struct stat stbuf;
-    extern int errno;
-    msnprintf(filename, MAXFILELEN, "%s%s.%s",
-	      set_dir, set_latest_folder, set_htmlsuffix);
-    msnprintf(dirname, MAXFILELEN, "%sindex.%s",
-	      latest_folder_path, set_htmlsuffix);
+    trio_snprintf(filename, MAXFILELEN, "%s%s.%s",
+		  set_dir, set_latest_folder, set_htmlsuffix);
+    trio_snprintf(dirname, MAXFILELEN, "%sindex.%s",
+		  latest_folder_path, set_htmlsuffix);
 
     if (!stat(filename, &stbuf) && unlink(filename)) {
 	sprintf(errmsg, "%s \"%s\" (latest_folder option).",
@@ -319,7 +318,8 @@ int find_max_msgnum()
 	    if (!*p && p > entry->d_name) {
 	        num = atoi(entry->d_name);
 		if (num > max_folder) {
-		    char *full_path = maprintf("%s%d", set_dir, num);
+		    char *full_path;
+		    trio_asprintf(&full_path, "%s%d", set_dir, num);
 		    if (isdir(full_path))
 		        max_folder = num;
 		    free(full_path);
@@ -327,7 +327,7 @@ int find_max_msgnum()
 	    }
 	}
 	closedir(dir);
-	tmpptr = maprintf("%s%d", set_dir, max_folder);
+	trio_asprintf(&tmpptr, "%s%d", set_dir, max_folder);
 	free(s_dir);
 	s_dir = tmpptr;
 	if (max_folder == -1)
@@ -358,13 +358,39 @@ int find_max_msgnum()
     return max_num;
 }
 
+int is_empty_archive()
+{
+    DIR *dir;
+#ifdef HAVE_DIRENT_H
+    struct dirent *entry;
+#else
+    struct direct *entry;
+#endif
+    int num_files = 0;
+    char *s_dir = strsav(set_dir);
+    int len = strlen(s_dir);
+    if (len > 0 && s_dir[len-1] == PATH_SEPARATOR)
+	s_dir[len-1] = 0;
+    dir = opendir(s_dir);
+    if (dir == NULL)
+	return 1;
+    while ((entry = readdir(dir))) {
+	const char *p = entry->d_name;
+	if (*p != '.') {
+	    ++num_files;
+	    break;
+	}
+    }
+    closedir(dir);
+    free(s_dir);
+    return num_files == 0;
+}
+
 static char *msgsperfolder_label(char *frmptr, int subdir_no)
 {
     register char *aptr;
     char dtstr[DATESTRLEN];
     char c;
-    struct tm *now;
-    time_t clk;
 
     struct Push buff;
 
@@ -415,7 +441,7 @@ struct emailsubdir *msg_subdir(int msgnum, time_t date)
     char *fmt = set_describe_folder;
     if (set_msgsperfolder > 0) {
 	int subdir_no = msgnum / set_msgsperfolder;
-	msnprintf(s, DATESTRLEN, "%d/", subdir_no);
+	trio_snprintf(s, DATESTRLEN, "%d/", subdir_no);
 	if (!fmt)
 	    fmt = "%d";
 	desc = msgsperfolder_label(fmt, subdir_no);
@@ -447,13 +473,13 @@ char *msg_href(struct emailinfo *to_email, struct emailinfo *from_email)
 {
     static char buffer[MAXFILELEN];
     if (!from_email && to_email->subdir)
-        msnprintf(buffer, MAXFILELEN, "<a href=\"%s%.4d.%s\">",
+        trio_snprintf(buffer, MAXFILELEN, "<a href=\"%s%.4d.%s\">",
 		  to_email->subdir->subdir, to_email->msgnum, set_htmlsuffix);
     else if(!to_email->subdir || to_email->subdir == from_email->subdir)
-        msnprintf(buffer, MAXFILELEN, "<a href=\"%.4d.%s\">",
+        trio_snprintf(buffer, MAXFILELEN, "<a href=\"%.4d.%s\">",
 		  to_email->msgnum, set_htmlsuffix);
     else
-        msnprintf(buffer, MAXFILELEN, "<a href=\"%s%s%.4d.%s\">",
+        trio_snprintf(buffer, MAXFILELEN, "<a href=\"%s%s%.4d.%s\">",
 		  to_email->subdir->rel_path_to_top,
 		  to_email->subdir->subdir, to_email->msgnum, set_htmlsuffix);
     return buffer;
@@ -461,14 +487,18 @@ char *msg_href(struct emailinfo *to_email, struct emailinfo *from_email)
 
 char *articlehtmlfilename(struct emailinfo *email)
 {
-    return maprintf("%s%.4d.%s", email->subdir ? email->subdir->full_path
-		    : set_dir, email->msgnum, set_htmlsuffix);
+    char *buf;
+    trio_asprintf(&buf, "%s%.4d.%s", email->subdir ? email->subdir->full_path
+		  : set_dir, email->msgnum, set_htmlsuffix);
+    return buf;
 }
 
 char *htmlfilename(const char *file, struct emailinfo *email,
 		   const char *suffix)
 {
-    return maprintf("%s%s%s%s", email && email->subdir
-		    ? email->subdir->full_path : set_dir,
-		    file, *suffix ? "." : "", suffix);
+    char *buf;
+    trio_asprintf(&buf, "%s%s%s%s", email && email->subdir
+		  ? email->subdir->full_path : set_dir,
+		  file, *suffix ? "." : "", suffix);
+    return buf;
 }

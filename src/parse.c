@@ -246,7 +246,7 @@ char *tmpname(char *dir, char *pfx)
     char *f, *name;
     static int cntr = 0;
 
-    name = maprintf("%s/%s%dXXXXXX", dir, pfx, cntr++);
+    trio_asprintf(&name, "%s/%s%dXXXXXX", dir, pfx, cntr++);
     if (NULL == name)
 	return (NULL);
 
@@ -1010,8 +1010,8 @@ void emptydir(char *directory)
 		while ((entry = readdir(dir))) {
 		    if (!strcmp(".", entry->d_name) ||
 			!strcmp("..", entry->d_name)) continue;
-		    filename = maprintf("%s%c%s", realdir,
-					PATH_SEPARATOR, entry->d_name);
+		    trio_asprintf(&filename, "%s%c%s", realdir,
+				  PATH_SEPARATOR, entry->d_name);
 		    fprintf(stderr, "\nWe delete %s\n", filename);
 		    unlink(filename);
 		    free(filename);
@@ -1135,15 +1135,15 @@ int parsemail(char *mbox,	/* file name */
 	if(set_append_filename && strncmp(set_append_filename, "$DIR/", 5)) {
 	    strcpy(filename, set_append_filename);
 	}
-	else if(snprintf(filename, sizeof(filename), "%s%s%s", dir,
-			 (dir[strlen(dir) - 1] == '/') ? "" : "/",
-			 set_append_filename ? set_append_filename + 5 : "mbox") 
+	else if(trio_snprintf(filename, sizeof(filename), "%s%s", dir,
+			      set_append_filename ? set_append_filename + 5
+			      : "mbox") 
 	   == sizeof(filename)) {
 	    progerr("Can't build mbox filename");
 	}
 	if(!(fpo = fopen(filename, "a"))) {
-	    snprintf(errmsg, sizeof(errmsg), "%s \"%s\".",
-		     lang[MSG_CANNOT_OPEN_MAIL_ARCHIVE], filename);
+	    trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\".",
+			  lang[MSG_CANNOT_OPEN_MAIL_ARCHIVE], filename);
 	    progerr(errmsg);
 	}
     }
@@ -2061,8 +2061,8 @@ int parsemail(char *mbox,	/* file name */
 			    if (att_dir == NULL) {
 
 				/* first check the DIR_PREFIXER */
-				att_dir = maprintf("%s%c" DIR_PREFIXER "%04d",
-					     dir, PATH_SEPARATOR, num);
+				trio_asprintf(&att_dir,"%s%c" DIR_PREFIXER "%04d",
+					      dir, PATH_SEPARATOR, num);
 				check1dir(att_dir);
 				/* If this is a repeated run on the same archive we already
 				 * have HTML'ized, we risk extracting the same attachments
@@ -2077,8 +2077,8 @@ int parsemail(char *mbox,	/* file name */
 				if (set_usemeta) {
 				    /* make the meta dir where we'll store the meta info,
 				       such as content-type */
-				    meta_dir = maprintf("%s%c" META_DIR, att_dir,
-						 PATH_SEPARATOR);
+				    trio_asprintf(&meta_dir, "%s%c" META_DIR,
+						  att_dir, PATH_SEPARATOR);
 				    check1dir(meta_dir);
 				}
 			    }
@@ -2098,9 +2098,9 @@ int parsemail(char *mbox,	/* file name */
 				else
 				    fname = FILE_SUFFIXER;
 
-				binname = maprintf("%s%c%02d-%s",
-						   att_dir, PATH_SEPARATOR,
-						   att_counter, fname);
+				trio_asprintf(&binname, "%s%c%02d-%s",
+					      att_dir, PATH_SEPARATOR,
+					      att_counter, fname);
 				/* @@ move this one up */
 				/* att_counter++; */
 			    }
@@ -2129,12 +2129,11 @@ int parsemail(char *mbox,	/* file name */
 
 					ptr = strrchr(binname, PATH_SEPARATOR);
 					*ptr = '\0';
-					meta_file =
-					    maprintf("%s%c%s"
-						     META_EXTENSION,
-						     meta_dir,
-						     PATH_SEPARATOR,
-						     ptr + 1);
+					trio_asprintf(&meta_file, "%s%c%s"
+						      META_EXTENSION,
+						      meta_dir,
+						      PATH_SEPARATOR,
+						      ptr + 1);
 					*ptr = PATH_SEPARATOR;
 					file_ptr = fopen(meta_file, "w");
 					if (file_ptr) {
@@ -2194,7 +2193,7 @@ int parsemail(char *mbox,	/* file name */
 					/* if we know our browsers can show this type of context
 					   as-is, we make a <img> tag instead of <a href>! */
 
-					snprintf(buffer, sizeof(buffer),
+					trio_snprintf(buffer, sizeof(buffer),
 						 "%s<img src=\"%s%c%s\" alt=\"%s\">\n",
 						 (set_showhr ? "<hr noshade>\n" :
 						  ""),
@@ -2219,7 +2218,7 @@ int parsemail(char *mbox,	/* file name */
 					if ((sp = strchr(desc, '\n')) !=
 					    NULL) *sp = '\0';
 
-					snprintf(buffer, sizeof(buffer),
+					trio_snprintf(buffer, sizeof(buffer),
 						 "%s<ul>\n<li>%s %s: <a href=\"%s%s\">%s</a>\n</ul>\n",
 						 (set_showhr ? "<hr noshade>\n" :
 						  ""), type,
@@ -2234,7 +2233,7 @@ int parsemail(char *mbox,	/* file name */
 				    bp =
 					addbody(bp, &lp, buffer,
 						BODY_HTMLIZED | bodyflags);
-				    snprintf(buffer, sizeof(buffer),
+				    trio_snprintf(buffer, sizeof(buffer),
 					     "<!-- attachment=\"%.80s\" -->\n",
 					     file);
 				    bp =
@@ -2437,9 +2436,7 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
     struct body *lp = NULL;
 
     struct emailsubdir *subdir = ep ? ep->subdir : msg_subdir(num, 0);
-    char *filename = maprintf("%s%s%.4d.%s", set_dir,
-			      subdir ? subdir->subdir : "",
-			      num, set_htmlsuffix);
+    char *filename;
 
     FILE *fp;
 
@@ -2449,6 +2446,8 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
 	sprintf(inreply_start, "<strong>%s:</strong> <a href=\"",
 		lang[MSG_IN_REPLY_TO]);
     }
+    trio_asprintf(&filename, "%s%s%.4d.%s", set_dir,
+		  subdir ? subdir->subdir : "", num, set_htmlsuffix);
 
     /*
      * fromdate == <!-- received="Wed Jun  3 10:12:00 1998 CDT" -->
@@ -2674,10 +2673,9 @@ static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
 	int jump = 1000;	 /* search for biggest message number */
 	while (jump && first_read_body >= 0) {
 	    subdir = msg_subdir(first_read_body, 0);
-	    filename = maprintf("%s%s%s%.4d.%s", set_dir,
-				(dir[strlen(dir) - 1] == '/') ? "" : "/",
-				subdir ? subdir->subdir : "",
-				first_read_body, set_htmlsuffix);
+	    trio_asprintf(&filename,"%s%s%.4d.%s", set_dir,
+			  subdir ? subdir->subdir : "",
+			  first_read_body, set_htmlsuffix);
 	    if ((fp = fopen(filename, "r")) != NULL) {
 	        fclose(fp);
 		if (jump < 0) jump = -jump/2;
@@ -2698,12 +2696,25 @@ static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
 	    return 0;
 	if (!hashnumlookup(first_read_body, &e0)) {
 #ifdef GDBM
-	    if (set_usegdbm)
-	        sprintf(errmsg,
-			"set_folder_by_date error old msg %d num_from_gdbm %d",
-			first_read_body, num_from_gdbm);
+	    if (set_usegdbm) {
+	        if (num_from_gdbm == -1) {
+		    if (is_empty_archive())
+		        return 0;
+		    sprintf(errmsg,
+			    "Error: This archive does not appear to be empty, "
+			    "and it has no gdbm file\n(%s). If you want to "
+			    "use incremental updates with the folder_by_date\n"
+			    "option, you must start with an empty archive or "
+			    "with an archive\nthat was generated using the "
+			    "usegdbm option.", GDBM_INDEX_NAME);
+		}
+		else
+		    sprintf(errmsg,
+			    "Error set_folder_by_date msg %d num_from_gdbm %d",
+			    first_read_body, num_from_gdbm);
+	    }
 	    else
-	        sprintf(errmsg, "folder_by_date requires usegdbm option");
+	        sprintf(errmsg, "folder_by_date with incremental update requires usegdbm option");
 #else
 	        sprintf(errmsg, "folder_by_date requires usegdbm option"
 			". gdbm support has not been compiled into this"
@@ -2787,8 +2798,8 @@ static int loadoldheadersfromGDBMindex(char *dir)
        *   isodate      v2.0
        */
 
-      indexname = maprintf((dir[strlen(dir)-1] == '/') ? "%s%s" : "%s/%s",
-			   dir, GDBM_INDEX_NAME);
+      trio_asprintf(&indexname, (dir[strlen(dir)-1] == '/') ? "%s%s" : "%s/%s",
+		    dir, GDBM_INDEX_NAME);
 
       if(gp = gdbm_open(indexname, 0, GDBM_READER, 0, 0)) {
 
@@ -2869,7 +2880,7 @@ static int loadoldheadersfromGDBMindex(char *dir)
 	      if (num == max_num) {
 		  char *filename = articlehtmlfilename(emp);
 		  if (!isfile(filename)) {
-		      snprintf(errmsg, sizeof(errmsg),
+		      trio_snprintf(errmsg, sizeof(errmsg),
 			       "%s \"%s\". If you deleted files,"
 			       " you need to delete the gdbm file %s as well.",
 			       lang[MSG_CANNOT_OPEN_MAIL_ARCHIVE],
