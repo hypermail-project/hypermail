@@ -578,9 +578,7 @@ int main(int argc, char **argv)
 		      set_dir, set_inlinehtml, 0);	/* number from 0 */
 	if (set_linkquotes)
 	    analyze_headers(max_msgnum + 1);
-	if (amount_new) {	/* this is the amount of mails to write */
-	    writearticles(0, max_msgnum + 1);
-	}
+	writearticles(0, max_msgnum + 1);
     }
 
     if (amount_new) {		/* Always write the index files */
