@@ -22,6 +22,7 @@ of older versions.
    and unsafe_chars options to restrict attachment filenames.
    Also, it is probably a bad idea to enable cgi execution on a directory
    that hypermail puts files in.
+   Do not use the crappy cgi program called "mail".
 
 Before Building Hypermail:
 ==========================
@@ -151,3 +152,7 @@ style sheets have been put in all files to maintain that style.)
 version 2.1.4, it defaults to off again. You may want to turn it on
 again occasionally to insure that all of your archive uses the same style
 (assuming you have a copy of the archive in mbox format).
+
+ The cgi program called "mail" has been disabled. If you've been using
+it, you should either stop using it or look carefully enough at what
+it does to understand whether it is safe for you to enable its functionality.

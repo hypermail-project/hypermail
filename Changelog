@@ -2,6 +2,24 @@ Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+ Peter McCluskey (January 24, 2003)
+  Release version 2.1.6 tar file.
+  Fix buffer overflow when progress = 2 (triggered by long attachment
+ names). Was a security risk.
+  Fix buffer overflow in mail (cgi) program that probably created security
+ risk if gethostbyaddr returned h_name of about 80 chars for an ip address.
+ Disabled the functionality of the mail program and replaced it by default
+ with warning about abuse by spammers. Added warnings about use of program.
+  Change size of boundbuffer (in parse.c) to 256, limit sscanf that fills it
+ to 255 bytes. This prevents a buffer overflow with long mime boundaries. The
+ buffer overflow didn't seemed to produce only minor problems, but it's hard
+ to rule out security risks.
+  Add check for inline attachment name overflowing attachname buffer (like
+ the check that Jose added today for non-inlined attachments).
+  Add check for append_filename and alts_text exceeding buffer size.
+  Delete attachment directory of messages that are discarded due to a missing
+ or duplicate message-id.
+
  Jose Kahan (jose@w3.org) (January 24, 2003)
   Fixed a buffer overflow reported by Ulf Harnhammar from VSU security.
 
