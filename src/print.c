@@ -248,12 +248,12 @@ void fprint_menu(FILE *fp, mindex_t idx, char *archives, char *currentid,
 	    if (subdir->prior_subdir)
 	        fprintf(fp, "<th%s><a href=\"%s%s%s\">%s, %s</a></th>",
 			colspan, subdir->rel_path_to_top,
-			subdir->prior_subdir->subdir, index_name[idx],
+			subdir->prior_subdir->subdir, index_name[dlev][idx],
 			lang[MSG_PREV_DIRECTORY], lang[MSG_DATE_VIEW + idx]);
 	    if (subdir->next_subdir)
 	        fprintf(fp, "<th%s><a href=\"%s%s%s\">%s, %s</a></th>",
 			colspan, subdir->rel_path_to_top,
-			subdir->next_subdir->subdir, index_name[idx],
+			subdir->next_subdir->subdir, index_name[dlev][idx],
 			lang[MSG_NEXT_DIRECTORY], lang[MSG_DATE_VIEW + idx]);
 	    if (show_index[0][FOLDERS_INDEX])
 	        fprintf(fp, "<th><a href=\"%s%s\">%s</a></th>",
