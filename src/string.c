@@ -566,6 +566,10 @@ char *unconvchars(char *line)
 		PushByte(&buff, '\"');
 		line += 5;
 	    }
+	    else if (!strncmp("#64;", line + 1, 4)) {
+		PushByte(&buff, '@');
+		line += 4;
+	    }
 	    else
 		PushByte(&buff, *line);
 	}
@@ -628,8 +632,10 @@ static char *translateurl(char *url)
     for (p = url; *p; p++) {
 	if (*p == '&')
 	    PushString(&buff, "&amp;");
+	else if (*p == '@' && set_mailcommand)
+	  PushString(&buff, "&#64;");
 	else
-	    PushByte(&buff, *p);
+	  PushByte(&buff, *p);
     }
     RETURN_PUSH(buff);
 }
