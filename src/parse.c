@@ -217,12 +217,12 @@ void print_progress(int num, char *msg, char *filename)
 
     if (msg != NULL) {
 	if (filename != NULL) {
-	    sprintf(bufstr, "%4d %-s %-s", num, msg, filename);
+	    trio_snprintf(bufstr, sizeof(bufstr), "%4d %-s %-s", num, msg, filename);
 	    if (set_showprogress > 1)
 		newline = 1;
 	}
 	else {
-	    sprintf(bufstr, "%4d %-s.", num, msg);
+	    trio_snprintf(bufstr, sizeof(bufstr), "%4d %-s.", num, msg);
 	    newline = 1;
 	}
     }
@@ -2338,6 +2338,9 @@ int parsemail(char *mbox,	/* file name */
 				binfile = open(binname, OPENBITMASK,
 					       set_filemode);
 
+#if DEBUG_PARSE
+				printf("%4d open attachment %s\n", num, binname);
+#endif
 				if (-1 != binfile) {
 				    chmod(binname, set_filemode);
 				    if (set_showprogress)
