@@ -2,6 +2,10 @@ Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+- Jose Kahan (Jun 28, 2003)
+  - Code cleaning. Removed the deprecated code for set_showhr and
+    set_usetable options.
+
  Kent Landfield (Jun 28, 2003)
   - Arkadiusz Miskiewicz <arekm@sse.pl> reported progerr() was being 
     called with NULL instead of the previously constructed error message. 
