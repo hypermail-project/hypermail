@@ -13,13 +13,17 @@
 ** notice must be maintained in any copy made.
 **                                                               
 */
+
 #include <stdio.h>
-#include <sys/types.h>
 #include <unistd.h>
-#include <ctype.h>
-#include <time.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
+#include <fcntl.h>
+#include <time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
 #include "lists.h"
 
 char s[BUFSIZ];			/* read buffer                      */
@@ -61,18 +65,7 @@ char *months[] = { "Jan", "Feb", "Mar", "Apr", "May",
 extern int opterr;
 extern char *optarg;
 
-/* Prototypes */
-FILE *efopen(char *, char *);
-int usage(void);
-
-#ifdef lint
-extern int getopt(int, char * const *, const char *);
-extern FILE *popen(const char *, const char *);
-extern int pclose (FILE *);
-extern int strcasecmp(const char *, const char *);
-#endif
- 
-int usage(void)
+static int usage(void)
 {
     (void)fprintf(stderr, "usage: %s [options] (file on stdin only)\n", progname);
     (void)fprintf(stderr, "       -A archive-basedir\n");
@@ -87,15 +80,22 @@ int usage(void)
     return (-1);
 }
 
-FILE *efopen(char *file, char *mode)
+static FILE *safe_tmpfile(void)
 {
-    FILE *fp;
+  int fd;
+  char *tfile;
 
-    if ((fp = fopen(file, mode)) == NULL) {
-	(void)fprintf(stderr, "Can't open file %s\n", file);
-	exit(10);
-    }
-    return (fp);
+  tfile = strdup("hn-inXXXXXX");
+
+  if ((fd = mkstemp(tfile)) < 0)
+    return(NULL);
+
+  unlink(tfile);
+
+  if (fchmod(fd, S_IRUSR | S_IWUSR) != 0)
+    return(NULL);
+
+  return(fdopen(fd, "w+b"));
 }
 
 int main(int argc, char **argv)
@@ -160,11 +160,14 @@ int main(int argc, char **argv)
     month = months[now->tm_mon];
 
     /*
-       ** Create temporary message file
-       ** and save the inbound message.
-     */
+    ** Create temporary message file
+    ** and save the inbound message.
+    */
 
-    msgfp = tmpfile();
+    if ((msgfp = safe_tmpfile()) == NULL) {
+         fprintf(stderr,"%s: Can't open tempfile\n",progname);
+	 exit(10);
+    }
 
     inheader = 1;		/* guilty until proven innocent */
 
@@ -186,20 +189,24 @@ int main(int argc, char **argv)
     fflush(msgfp);
 
     /* 
-       ** Append it to the current month's message file
-     */
-    sprintf(cmdstr, "%s/%s.%.4d%.2d", mailboxdir, listname, year, 
-		now->tm_mon+1);
+    ** Append it to the current month's message file
+    */
+
+    /* AUDIT Thomas Biege: mailboxdir + listname are cmd line options */
+    snprintf(cmdstr, sizeof(cmdstr), "%s/%s.%.2d%.2d", mailboxdir, listname,
+             year, now->tm_mon + 1);
 
     if (verbose)
 	fprintf(stderr, "Appending message to [%s]\n", cmdstr);
 
     if (!test) {
+        /*  AUDIT Thomas Biege: "../" in mailboxdir or listname can be used
+        **               to write to files below the target direc.!
+        **               Take Care! I'll not fix it.
+        */
 	if ((mailbox = fopen(cmdstr, "a+")) == NULL) {
-	    fprintf(stderr, "%s: Can't append message to %s\n", progname,
-		    cmdstr);
-	    fprintf(stderr,
-		    "uid = %ld - gid = %ld euid = %ld - egid = %ld\n",
+	    fprintf(stderr,"%s: Can't append message to %s\n",progname,cmdstr);
+	    fprintf(stderr, "uid = %ld - gid = %ld euid = %ld - egid = %ld\n",
 		    (long)getuid(), (long)getgid(), (long)geteuid(),
 		    (long)getegid());
 
@@ -208,7 +215,6 @@ int main(int argc, char **argv)
 	rewind(msgfp);
 	while (fgets(s, sizeof(s), msgfp) != NULL)
 	    fputs(s, mailbox);
-	fputs("\n", mailbox);
 	fclose(mailbox);
     }
 
@@ -217,16 +223,19 @@ int main(int argc, char **argv)
     */
 
     if (configfile == NULL)
-	sprintf(cmdstr, "%s -u -i -d %s/%d/%s -l \"%s\" -b %s",
-		hypermail, archive, year, month, label, about_link);
+        snprintf(cmdstr, sizeof(cmdstr), "%s -u -i -d %s/%d/%s -l \"%s\" -b %s",
+                 hypermail, archive, year, month, label, about_link);
     else
-	sprintf(cmdstr, "%s -u -i -c %s", hypermail, configfile);
+        snprintf(cmdstr,sizeof(cmdstr),"%s -u -i -c %s",hypermail,configfile);
 
     if (verbose)
 	fprintf(stderr, "Piping message to [%s]\n", cmdstr);
 
     if (!test) {
-	if ((hypfp = popen(cmdstr, "w")) != NULL) {
+       /* 
+       ** Need to consider replacing with a safer popen.
+       */
+        if ((hypfp = popen(cmdstr, "w")) != NULL) {
 	    rewind(msgfp);
 	    while (fgets(s, sizeof(s), msgfp) != NULL)
 		fputs(s, hypfp);
@@ -234,6 +243,8 @@ int main(int argc, char **argv)
 	    pclose(hypfp);
 	}
     }
-    fclose(msgfp);
+    fclose(msgfp); /* not needed for [s_]tmpfile() */
     return (0);			/* terminate this process */
 }
+
+

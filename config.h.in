@@ -134,3 +134,6 @@
 /* Whether you have GDBM */
 #undef GDBM
 
+/* Whether you want function version of ctype functions  */
+#undef NO_MACRO
+

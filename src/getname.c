@@ -16,20 +16,20 @@ static int blankstring(char *str)
 
 char *spamify(char *input)
 {
-  int insertlen=strlen(set_antispam_at);
+	int insertlen = strlen(set_antispam_at);
   /* we should replace the @-letter in the email
      address */
-  int newlen=strlen(input)+insertlen;
-  char *atptr=strchr(input, '@');
-  if(atptr) {
+	int newlen = strlen(input) + insertlen;
+	char *atptr = strchr(input, '@');
+	if (atptr) {
     char *newbuf = malloc(newlen);
-    int index=atptr-input;
+		int index = atptr - input;
     /* copy the part before the @ */
     memcpy(newbuf, input, index);
 
-    memcpy(newbuf+index, set_antispam_at, insertlen);
+		memcpy(newbuf + index, set_antispam_at, insertlen);
     /* append the part after the @ */
-    strcpy(newbuf+index+insertlen, input+index+1);
+		strcpy(newbuf + index + insertlen, input + index + 1);
     /* correct the pointer and free the old */
     free(input);
     return newbuf;
@@ -41,10 +41,10 @@ char *spamify(char *input)
 char *spamify_replacedomain(char *input, char *antispamdomain)
 {
   /* replace everything after the @-letter in the email address */
-  int newlen    = strlen(input)+4;
+	int newlen = strlen(input) + 4;
   int domainlen = strlen(antispamdomain);
 
-  char *atptr=strchr(input, '@');
+	char *atptr = strchr(input, '@');
 
   if (domainlen > 0) {
      newlen = newlen + domainlen;
@@ -56,13 +56,14 @@ char *spamify_replacedomain(char *input, char *antispamdomain)
     /* copy the part before the @ */
     memcpy(newbuf, input, index);
     /* append _at_ */
-    memcpy(newbuf+index, "_at_", 4);
+		memcpy(newbuf + index, "_at_", 4);
     if (domainlen > 0) {
       /* append the new domain */
-      strcpy(newbuf+index+4, antispamdomain);
-    } else {
+			strcpy(newbuf + index + 4, antispamdomain);
+		}
+		else {
       /* append the part after the @ */
-      strcpy(newbuf+index+4, input+index+1);
+			strcpy(newbuf + index + 4, input + index + 1);
     }
     /* correct the pointer and free the old */
     free(input);
@@ -116,6 +117,7 @@ char *spamify_replacedomain(char *input, char *antispamdomain)
 ** From: <name.hidden@era.ericsson.se>›Name.Hidden@era.ericsson.seœ
 */
 
+/* AUDIT biege: this code is really tricky and may lead to BOFs in email[] and/or name[] */
 void getname(char *line, char **namep, char **emailp)
 {
     int i;
@@ -149,15 +151,13 @@ void getname(char *line, char **namep, char **emailp)
 	    c = strchr(line, ':') + 1;
 	    while (*c == ' ' || *c == '\t')
 		c++;
-	    for (i = 0; *c && *c != '(' && *c != ' ' &&
-		 *c != '\t' && *c != '\n' && i < len; c++)
+			for (i = 0; *c && *c != '(' && *c != ' ' && *c != '\t' && *c != '\n' && i < len; c++)
 		email[i++] = *c;
 	    email[i] = '\0';
 	}
 	else if ((c = strchr(line, '<'))) {	/* From: <kent> */
 	    c++;
-	    for (i = 0; *c && *c != '>' && *c != ' ' &&
-		 *c != '\t' && *c != '\n' && i < len; c++)
+			for (i = 0; *c && *c != '>' && *c != ' ' && *c != '\t' && *c != '\n' && i < len; c++)
 		email[i++] = *c;
 	    email[i] = '\0';
 	}
@@ -170,8 +170,7 @@ void getname(char *line, char **namep, char **emailp)
 	    c = strchr(line, ':') + 1;
 	    while (*c == ' ' || *c == '\t')
 		c++;
-	    for (i = 0; *c && *c != ' ' && *c != '\t' &&
-		 *c != '\n' && *c != ',' && i < len; c++)
+			for (i = 0; *c && *c != ' ' && *c != '\t' && *c != '\n' && *c != ',' && i < len; c++)
 		email[i++] = *c;
 	    email[i] = '\0';
 
@@ -192,12 +191,10 @@ void getname(char *line, char **namep, char **emailp)
 	}
     }
     else {
-	while (*c != ' ' && *c != '\t' && *c != '<' && *c != '"' &&
-	       *c != ':') c--;
+		while (*c != ' ' && *c != '\t' && *c != '<' && *c != '"' && *c != ':')
+			c--;
 	c++;
-	for (i = 0; *c && *c != '>' && *c != ' ' && *c != '\t' &&
-	     *c != '"' && *c != '\n' && *c != ']' && *c != ',' &&
-	     i < len; c++)
+		for (i = 0; *c && *c != '>' && *c != ' ' && *c != '\t' && *c != '"' && *c != '\n' && *c != ']' && *c != ',' && i < len; c++)
 	    email[i++] = *c;
 	email[i] = '\0';
     }
@@ -223,8 +220,7 @@ void getname(char *line, char **namep, char **emailp)
 		++c;
 		rmparen = 1;
 	    }
-	    for (i = 0, len = NAMESTRLEN - 1;
-		 *c && *c != '\"' && *c != '\n' && i < len; c++)
+			for (i = 0, len = NAMESTRLEN - 1; *c && *c != '\"' && *c != '\n' && i < len; c++)
 		name[i++] = *c;
 
 	    if (rmparen && name[(i - 1)] == ')')
@@ -240,8 +236,7 @@ void getname(char *line, char **namep, char **emailp)
 	else if (*c == '<') {	/* Comment may be on the end */
 	    /* From: <bill@celestial.com> Bill Campbell */
 	    c = strchr(line, '>') + 1;
-	    for (i = 0, len = NAMESTRLEN - 1; *c && *c != '\n' && i < len;
-		 c++)
+			for (i = 0, len = NAMESTRLEN - 1; *c && *c != '\n' && i < len; c++)
 		name[i++] = *c;
 
 	    comment_fnd = 1;
@@ -260,8 +255,7 @@ void getname(char *line, char **namep, char **emailp)
 	while (*c == ' ' || *c == '\t')
 	    c++;
 
-	for (i = 0, len = NAMESTRLEN - 1;
-	     *c && *c != '\"' && *c != '[' && *c != '\n' && i < len; c++)
+		for (i = 0, len = NAMESTRLEN - 1; *c && *c != '\"' && *c != '[' && *c != '\n' && i < len; c++)
 	    name[i++] = *c;
 
 	name[--i] = '\0';
@@ -287,29 +281,28 @@ void getname(char *line, char **namep, char **emailp)
 
     if (!comment_fnd) {
 	int in_ascii = TRUE, esclen = 0;
-	for (i = 0, len = NAMESTRLEN - 1;
-	     *c && *c != '<' && *c != '\"' && *c != ')' && *c != '(' &&
-	     *c != '\n' && i < len; c++)
-	{
+		for (i = 0, len = NAMESTRLEN - 1; *c && *c != '<' && *c != '\"' && *c != ')' && *c != '(' && *c != '\n' && i < len; c++) {
 		if (set_iso2022jp) {
 			iso2022_state(c, &in_ascii, &esclen);
 			if (esclen) {
-				for (; esclen; esclen--, c++) name[i++] = *c;
-				for (; in_ascii == FALSE && i < len;
-				     c++, iso2022_state(c, &in_ascii, &esclen)) {
+					for (; esclen; esclen--, c++)
+						name[i++] = *c;
+					for (; in_ascii == FALSE && i < len; c++, iso2022_state(c, &in_ascii, &esclen)) {
 					name[i++] = *c;
 				}
 				c--;
-			} else {
+				}
+				else {
 				name[i++] = *c;
 			}
-		} else {
+			}
+			else {
 			name[i++] = *c;
 		}
 	}
     }
 
-    if (i > 0 && name[i-1] == ' ' && (*c == '<' || *c == '('))
+	if (i > 0 && name[i - 1] == ' ' && (*c == '<' || *c == '('))
 	name[--i] = '\0';
     else
 	name[i] = '\0';
@@ -525,16 +518,13 @@ void getname(char *buffer, char **namep, char **emailp)
 #endif
 
 	    /* pass all initiating white spaces or quotes */
-	    while (*startofcomment &&
-		   (isspace(*startofcomment) || *startofcomment == '\"')) {
+			while (*startofcomment && (isspace(*startofcomment) || *startofcomment == '\"')) {
 		startofcomment++;
 		commentlen--;
 	    }
 
 	    /* don't count the trailing white spaces or quotes */
-	    while (commentlen &&
-		   (isspace(startofcomment[commentlen - 1]) ||
-		    startofcomment[commentlen - 1] == '\"')) {
+			while (commentlen && (isspace(startofcomment[commentlen - 1]) || startofcomment[commentlen - 1] == '\"')) {
 		commentlen--;
 	    }
 	    PushNString(&namebuf, startofcomment, commentlen);

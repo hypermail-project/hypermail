@@ -2,6 +2,7 @@
 #include "setup.h"
 #include "print.h"
 #include "printfile.h"
+#include "struct.h"
 
 /*
 ** printfile - print html header/footer file and fill in values 

@@ -76,7 +76,7 @@ long convtoyearsecs(char *date)
 
 char *getlocaltime(void)
 {
-    static char s[DATESTRLEN];
+    static char s[DATESTRLEN + 5] = { 0 };
     time_t tp;
     struct tm *tmptr;
 

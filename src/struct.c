@@ -54,8 +54,7 @@ unsigned hash(char *s)
     return (hashval % HASHSIZE);
 }
 
-void fill_email_dates(struct emailinfo *e, char *date, char *fromdate,
-		      char *isodate, char *isofromdate)
+void fill_email_dates(struct emailinfo *e, char *date, char *fromdate, char *isodate, char *isofromdate)
 {
     bool fromdate_valid = 1, date_valid = 1;
     /* fromdate may be empty (zero length string rather than NULL)
@@ -86,9 +85,7 @@ void fill_email_dates(struct emailinfo *e, char *date, char *fromdate,
 	}
 	if (fromdate_valid && !date_valid) {
 #ifdef PH_DATE_DEBUG
-	    fprintf(stderr,
-		    "%d: %s: using fromdate '%s' for both (date '%s')\n",
-		    num, msgid, fromdate, date);
+			fprintf(stderr, "%d: %s: using fromdate '%s' for both (date '%s')\n", num, msgid, fromdate, date);
 #endif
 	    e->fromdatestr = strsav(fromdate);
 	    e->datestr = strsav(fromdate);
@@ -96,9 +93,7 @@ void fill_email_dates(struct emailinfo *e, char *date, char *fromdate,
 	}
 	else if (!fromdate_valid && date_valid) {
 #ifdef PH_DATE_DEBUG
-	    fprintf(stderr,
-		    "%d: %s: using date '%s' for both (fromdate '%s')\n",
-		    num, msgid, date, fromdate);
+			fprintf(stderr, "%d: %s: using date '%s' for both (fromdate '%s')\n", num, msgid, date, fromdate);
 #endif
 	    e->fromdatestr = strsav(date);
 	    e->datestr = strsav(date);
@@ -106,9 +101,7 @@ void fill_email_dates(struct emailinfo *e, char *date, char *fromdate,
 	}
 	else if (!fromdate_valid && !date_valid) {
 #ifdef PH_DATE_DEBUG
-	    fprintf(stderr,
-		    "%d: %s: fromdate '%s' and date '%s' both bad\n", num,
-		    msgid, fromdate, date);
+			fprintf(stderr, "%d: %s: fromdate '%s' and date '%s' both bad\n", num, msgid, fromdate, date);
 #endif
 	    e->fromdatestr = strsav(fromdate);
 	    e->datestr = strsav(date);
@@ -127,10 +120,7 @@ void fill_email_dates(struct emailinfo *e, char *date, char *fromdate,
 		    date_parsed[24] = '\0';
 		    fromdate_parsed[24] = '\0';
 		    rbs_bigtime++;
-		    fprintf(stderr,
-			    "%d [%d:%d]: %s: received before sent\n %-38.38s %-30.38s\n %-38.38s %-38.38s\n",
-			    num, rbs, rbs_bigtime, msgid, fromdate, date,
-			    fromdate_parsed, date_parsed);
+					fprintf(stderr, "%d [%d:%d]: %s: received before sent\n %-38.38s %-30.38s\n %-38.38s %-38.38s\n", num, rbs, rbs_bigtime, msgid, fromdate, date, fromdate_parsed, date_parsed);
 		}
 	    }
 #endif
@@ -145,10 +135,7 @@ void fill_email_dates(struct emailinfo *e, char *date, char *fromdate,
 ** handily looked up and retrieved using any of these criteria.
 */
 
-struct emailinfo *addhash(int num, char *date, char *name, 
-		char *email, char *msgid, char *subject, 
-		char *inreply, char *fromdate, char *charset, 
-		char *isodate, char *isofromdate, struct body *sp)
+struct emailinfo *addhash(int num, char *date, char *name, char *email, char *msgid, char *subject, char *inreply, char *fromdate, char *charset, char *isodate, char *isofromdate, struct body *sp)
 {
     struct emailinfo *e;
     struct hashemail *h;
@@ -164,8 +151,7 @@ struct emailinfo *addhash(int num, char *date, char *name,
 	/* SEVERE ERROR, all mails MUST have a Message-ID, ignore it! */
 	if (set_require_msgids) {
 	    if (set_warn_surpressions)
-	        printf("Message-ID is missing, ignoring message with subject '%s'.\n",
-		       subject ? subject : "<unknown>");
+				printf("Message-ID is missing, ignoring message with subject '%s'.\n", subject ? subject : "<unknown>");
 	    return NULL;
 	}
 	else {
@@ -186,7 +172,7 @@ struct emailinfo *addhash(int num, char *date, char *name,
     }
 
     if ((msgid_dup && set_discard_dup_msgids) && set_showprogress) {
-	printf ("%d: Message-ID collision, '%s' already present - discarding message.\n", num, msgid);
+		printf("%d: Message-ID collision, '%s' already present - discarding message.\n", num, msgid);
 	return NULL;
     }
 
@@ -200,8 +186,7 @@ struct emailinfo *addhash(int num, char *date, char *name,
 	newmsgid = emalloc(MSGDSTRLEN);
 	do {
 	    msgid_dup = 0;
-	    sprintf(newmsgid, "%d.%4.4d@hypermail.dummy", time(NULL),
-		    freedummy);
+			sprintf(newmsgid, "%d.%4.4d@hypermail.dummy", time(NULL), freedummy);
 	    h = (struct hashemail *)etable[hash(newmsgid)];
 	    while (h) {
 		if (!strcmp(h->data->msgid, newmsgid)) {
@@ -218,8 +203,7 @@ struct emailinfo *addhash(int num, char *date, char *name,
 	        if (msgid_missing) 
 		    printf("\n%d Message-ID missing, using %s instead.\n", num, newmsgid);
 	        else
-		    printf("\n%d Message-ID collision, '%s' already present - using %s instead.\n", 
-                           num, msgid, newmsgid);
+					printf("\n%d Message-ID collision, '%s' already present - using %s instead.\n", num, msgid, newmsgid);
             }
 	    msgid = newmsgid;
 	}
@@ -228,7 +212,7 @@ struct emailinfo *addhash(int num, char *date, char *name,
 	        if (msgid_missing)
 		    printf("\n%d Message-ID missing, failed to find free id - dropping message.\n", num);
 	        else
-		    printf ("\n%d Message-ID collision, '%s' already present - failed to find free id - dropping message.\n", num, msgid);
+					printf("\n%d Message-ID collision, '%s' already present - failed to find free id - dropping message.\n", num, msgid);
             }
 	    return NULL;
 	}
@@ -306,7 +290,7 @@ struct emailinfo *addhash(int num, char *date, char *name,
     return e;			/* the actual mail struct pointer */
 }
 
-int insert_in_lists(struct emailinfo *emp, const bool *require_filter, int rlen)
+int insert_in_lists(struct emailinfo *emp, const bool * require_filter, int rlen)
 {
     int i;
     if (set_delete_msgnum) {
@@ -314,13 +298,13 @@ int insert_in_lists(struct emailinfo *emp, const bool *require_filter, int rlen)
 	sprintf(num_str, "%d", emp->msgnum);
 	if (inlist(set_delete_msgnum, num_str)) {
 	    if (!emp->is_deleted) {
-	        if(emp->subdir)
+				if (emp->subdir)
 		    --emp->subdir->count;
 	    }
 	    emp->is_deleted = FILTERED_DELETE;
 	}
     }
-    for(i = 0; i < rlen; ++i) {
+	for (i = 0; i < rlen; ++i) {
 	if (!require_filter[i]) {
 	    emp->is_deleted = FILTERED_REQUIRED;
 	}
@@ -334,17 +318,27 @@ int insert_in_lists(struct emailinfo *emp, const bool *require_filter, int rlen)
 	deletedlist = h;
 	if (set_warn_surpressions && require_filter) {
 	    const char *option = "??";
-	    switch(emp->is_deleted)
-	    {
-	    case FILTERED_DELETE:   option = "deleted or delete_msgnum"; break;
-	    case FILTERED_EXPIRE:   option = "expires"; break;
-	    case FILTERED_OUT:      option = "filter_out or filter_out_full_body"; break;
-	    case FILTERED_REQUIRED: option = "filter_require or filter_require_full_body"; break;
-	    case FILTERED_OLD: option = "delete_older"; break;
-	    case FILTERED_NEW: option = "delete_newer"; break;
+			switch (emp->is_deleted) {
+			case FILTERED_DELETE:
+				option = "deleted or delete_msgnum";
+				break;
+			case FILTERED_EXPIRE:
+				option = "expires";
+				break;
+			case FILTERED_OUT:
+				option = "filter_out or filter_out_full_body";
+				break;
+			case FILTERED_REQUIRED:
+				option = "filter_require or filter_require_full_body";
+				break;
+			case FILTERED_OLD:
+				option = "delete_older";
+				break;
+			case FILTERED_NEW:
+				option = "delete_newer";
+				break;
 	    }
-	    printf("message %d deleted under option %s. msgid: %s\n",
-		   emp->msgnum+1, option, emp->msgid);
+			printf("message %d deleted under option %s. msgid: %s\n", emp->msgnum + 1, option, emp->msgid);
 	}
     }
     else {
@@ -368,8 +362,7 @@ int insert_in_lists(struct emailinfo *emp, const bool *require_filter, int rlen)
 */
 #ifdef USE_OBSOLETE_HASHREPLYLOOKUP
 
-struct emailinfo *hashreplylookup(int msgnum, char *inreply,
-				  int *issubjmatch)
+struct emailinfo *hashreplylookup(int msgnum, char *inreply, int *issubjmatch)
 {
     struct hashemail *ep;
 
@@ -379,8 +372,7 @@ struct emailinfo *hashreplylookup(int msgnum, char *inreply,
     *issubjmatch = 0;
     ep = etable[hash(inreply)];
     while (ep) {
-	if ((msgnum != ep->data->msgnum) &&
-	    (strcmp(inreply, ep->data->msgid) == 0)) {
+		if ((msgnum != ep->data->msgnum) && (strcmp(inreply, ep->data->msgid) == 0)) {
 #if DEBUG_THREAD
 	    fprintf(stderr, "match on msgid [%d]\n", ep->data->msgnum);
 #endif
@@ -391,8 +383,7 @@ struct emailinfo *hashreplylookup(int msgnum, char *inreply,
 
     ep = etable[hash(inreply)];
     while (ep != NULL) {
-	if ((msgnum != ep->data->msgnum) &&
-	    (strstr(inreply, ep->data->datestr))) {
+		if ((msgnum != ep->data->msgnum) && (strstr(inreply, ep->data->datestr))) {
 #if DEBUG_THREAD
 	    fprintf(stderr, "match on date [%d]\n", ep->data->msgnum);
 #endif
@@ -403,8 +394,7 @@ struct emailinfo *hashreplylookup(int msgnum, char *inreply,
 
     ep = etable[hash(inreply)];
     while (ep != NULL) {
-	if ((msgnum != ep->data->msgnum) &&
-	    (strcmp(inreply, ep->data->subject) == 0)) {
+		if ((msgnum != ep->data->msgnum) && (strcmp(inreply, ep->data->subject) == 0)) {
 	    *issubjmatch = 1;
 #if DEBUG_THREAD
 	    fprintf(stderr, "match on subject [%d]\n", ep->data->msgnum);
@@ -450,14 +440,12 @@ struct emailinfo *hashmsgidlookup(char *msgid, int *issubjmatch)
  * found by comparing subjects, maybereply is set to 1.
 */
 
-struct emailinfo *hashreplylookup(int msgnum, char *inreply, char *subject,
-				  int *maybereply)
+struct emailinfo *hashreplylookup(int msgnum, char *inreply, char *subject, int *maybereply)
 {
     struct hashemail *ep;
 
 #if DEBUG_THREAD > 1
-    fprintf(stderr, "hashreplynumlookup(%d, '%s'...)\n", msgnum,
-	    (inreply == NULL) ? "" : inreply);
+	fprintf(stderr, "hashreplynumlookup(%d, '%s'...)\n", msgnum, (inreply == NULL) ? "" : inreply);
 #endif
     *maybereply = 0;
 
@@ -467,8 +455,7 @@ struct emailinfo *hashreplylookup(int msgnum, char *inreply, char *subject,
 	while (ep) {
 	    if (strcmp(inreply, ep->data->msgid) == 0) {
 #if DEBUG_THREAD
-		fprintf(stderr, "match on msgid   %4d %4d\n", msgnum,
-			ep->data->msgnum);
+				fprintf(stderr, "match on msgid   %4d %4d\n", msgnum, ep->data->msgnum);
 #endif
 		return ep->data;
 	    }
@@ -477,11 +464,9 @@ struct emailinfo *hashreplylookup(int msgnum, char *inreply, char *subject,
 
 	ep = etable[hash(inreply)];
 	while (ep) {
-	    if ((msgnum != ep->data->msgnum) &&
-		(strstr(inreply, ep->data->datestr))) {
+			if ((msgnum != ep->data->msgnum) && (strstr(inreply, ep->data->datestr))) {
 #if DEBUG_THREAD
-		fprintf(stderr, "match on date    %4d %4d\n", msgnum,
-			ep->data->msgnum);
+				fprintf(stderr, "match on date    %4d %4d\n", msgnum, ep->data->msgnum);
 #endif
 		return ep->data;
 	    }
@@ -490,12 +475,10 @@ struct emailinfo *hashreplylookup(int msgnum, char *inreply, char *subject,
 
 	ep = etable[hash(inreply)];
 	while (ep != NULL) {
-	    if ((msgnum != ep->data->msgnum) &&
-		(strcmp(inreply, ep->data->subject) == 0)) {
+			if ((msgnum != ep->data->msgnum) && (strcmp(inreply, ep->data->subject) == 0)) {
 		*maybereply = 1;
 #if DEBUG_THREAD
-		fprintf(stderr, "match on subject %4d %4d\n", msgnum,
-			ep->data->msgnum);
+				fprintf(stderr, "match on subject %4d %4d\n", msgnum, ep->data->msgnum);
 #endif
 		return ep->data;
 	    }
@@ -513,7 +496,7 @@ struct emailinfo *hashreplylookup(int msgnum, char *inreply, char *subject,
 	struct emailinfo *lowest_so_far = NULL;
 	int match = 0;
 
-	s = emalloc(strlen(subject) + 1);
+	s = emalloc(strlen(subject) + 1);	/* AUDIT biege: can we trigger a DoS here by using a very long "Subject"? */
 	saved_s = strcpy(s, subject);
 
         if (isre(s, NULL))
@@ -523,11 +506,9 @@ struct emailinfo *hashreplylookup(int msgnum, char *inreply, char *subject,
 #endif
                 ep = etable[hash(s)];
                 while (ep != NULL) {
-                    if ((strcasecmp(s, ep->data->subject) == 0) &&
-                        (msgnum != ep->data->msgnum)) {
+					if ((strcasecmp(s, ep->data->subject) == 0) && (msgnum != ep->data->msgnum)) {
                         match = 1;
-                        if (lowest_so_far == NULL
-			    || ep->data->msgnum < lowest_so_far->msgnum)
+						if (lowest_so_far == NULL || ep->data->msgnum < lowest_so_far->msgnum)
                             lowest_so_far = ep->data;
                     }
                     ep = ep->next;
@@ -541,16 +522,13 @@ struct emailinfo *hashreplylookup(int msgnum, char *inreply, char *subject,
 	    *maybereply = 1;
 	    if (lowest_so_far != NULL && lowest_so_far->msgnum < msgnum) {
 #if DEBUG_THREAD
-		fprintf(stderr, "match on extra   %4d %4d\n", msgnum,
-			lowest_so_far->msgnum);
+				fprintf(stderr, "match on extra   %4d %4d\n", msgnum, lowest_so_far->msgnum);
 #endif
 		return lowest_so_far;
 	    }
 	    else {
 #if DEBUG_THREAD
-		fprintf(stderr,
-			"match on extra   %4d %4d discarded - less than %d\n",
-			msgnum, lowest_so_far ? lowest_so_far->msgnum : -1, msgnum);
+				fprintf(stderr, "match on extra   %4d %4d discarded - less than %d\n", msgnum, lowest_so_far ? lowest_so_far->msgnum : -1, msgnum);
 #endif
 		return NULL;
 	    }
@@ -567,8 +545,7 @@ struct emailinfo *hashreplylookup(int msgnum, char *inreply, char *subject,
 ** Same as the above function, but only returns the article number.
 */
 
-int hashreplynumlookup(int msgnum, char *inreply, char *subject,
-		       int *maybereply)
+int hashreplynumlookup(int msgnum, char *inreply, char *subject, int *maybereply)
 {
     struct emailinfo *email = hashreplylookup(msgnum, inreply, subject,
 					      maybereply);
@@ -670,8 +647,7 @@ struct boundary *bound(struct boundary *bnd, char *line)
 ** Add a line to a linked list that makes up an article's body.
 */
 
-struct body *addbody(struct body *bp, 
-                     struct body **lp,	/* points to the last pointer */
+struct body *addbody(struct body *bp, struct body **lp,	/* points to the last pointer */
 		     char *line, int flags)
 {
     struct body *tempnode;
@@ -735,11 +711,10 @@ int rmlastlines(struct body *bp)
 {
     struct body *tempnode;
 
-    if(NULL == bp)
+	if (NULL == bp)
       return 0;
 
-    for (tempnode = bp; tempnode->next != NULL &&
-	 (tempnode->next->line)[0] != '\0'; tempnode = tempnode->next);
+	for (tempnode = bp; tempnode->next != NULL && (tempnode->next->line)[0] != '\0'; tempnode = tempnode->next);
     if ((tempnode->line)[0] == '\n') {
 	(tempnode->line)[0] = '\0';
 	return 1;
@@ -749,13 +724,11 @@ int rmlastlines(struct body *bp)
 
 /* copy bp on to the end of origbp, deallocate bp */
 
-struct body *
-append_body(struct body *origbp, struct body **origlp, struct body *bp)
+struct body *append_body(struct body *origbp, struct body **origlp, struct body *bp)
 {
     while (bp) {
 	struct body *next;
-	origbp = addbody(origbp, origlp, bp->line,
-			 (bp->header ? BODY_HEADER : 0)
+		origbp = addbody(origbp, origlp, bp->line, (bp->header ? BODY_HEADER : 0)
 			 | (bp->html ? BODY_HTMLIZED : 0)
 			 | (bp->attached ? BODY_ATTACHED : 0));
 	next = bp->next;
@@ -782,10 +755,7 @@ void free_body(struct body *bp)
 ** the message it may be referring to is put in this list.  
 */
 
-struct reply *addreply(struct reply *rp,
-		       int fromnum,
-		       struct emailinfo *email, int maybereply,
-		       struct reply **last_node)
+struct reply *addreply(struct reply *rp, int fromnum, struct emailinfo *email, int maybereply, struct reply **last_node)
 {
     struct reply *tempnode, *newnode;
 
@@ -812,14 +782,12 @@ struct reply *addreply(struct reply *rp,
     }
     else {
 #ifdef FASTREPLYCODE
-	for (tempnode = (last_node ? *last_node : rp); tempnode->next != NULL;
-	     tempnode = tempnode->next);
+		for (tempnode = (last_node ? *last_node : rp); tempnode->next != NULL; tempnode = tempnode->next);
 	tempnode->next = newnode;
 	if (rp == threadlist && threadlist_by_msgnum && email)
 	    threadlist_by_msgnum[email->msgnum] = tempnode;
 #else
-	for (tempnode = rp; tempnode->next != NULL; tempnode =
-	     tempnode->next);
+		for (tempnode = rp; tempnode->next != NULL; tempnode = tempnode->next);
 	tempnode->next = newnode;
 #endif
     }
@@ -829,9 +797,8 @@ struct reply *addreply(struct reply *rp,
     return rp;
 }
 
-struct reply *addreply2(struct reply *rp, struct emailinfo *from_email,
-			struct emailinfo *email, int maybereply,
-			struct reply **last_node) {
+struct reply *addreply2(struct reply *rp, struct emailinfo *from_email, struct emailinfo *email, int maybereply, struct reply **last_node)
+{
 #ifdef FASTREPLYCODE
     struct reply *tempnode;
     for (tempnode = rp; tempnode != NULL; tempnode = tempnode->next) {
@@ -841,8 +808,7 @@ struct reply *addreply2(struct reply *rp, struct emailinfo *from_email,
 	    return rp;		/* don't add 2nd time */
 	}
     }
-    from_email->replylist = addreply(from_email->replylist, from_email->msgnum,
-				     email, maybereply, NULL);
+	from_email->replylist = addreply(from_email->replylist, from_email->msgnum, email, maybereply, NULL);
 #endif
     return addreply(rp, from_email->msgnum, email, maybereply, last_node);
 }
@@ -862,8 +828,7 @@ struct printed *markasprinted(struct printed *pp, int num)
     if (pp == NULL)
 	pp = newnode;
     else {
-	for (tempnode = pp; tempnode->next != NULL;
-	     tempnode = tempnode->next);
+		for (tempnode = pp; tempnode->next != NULL; tempnode = tempnode->next);
 	tempnode->next = newnode;
     }
     return pp;
@@ -888,8 +853,7 @@ int wasprinted(struct printed *list, int num)
 ** subject, or author. This is necessary for printing the index files.
 */
 
-struct header *addheader(struct header *hp,
-			 struct emailinfo *email, int sorttype, int depth)
+struct header *addheader(struct header *hp, struct emailinfo *email, int sorttype, int depth)
 {
     int isbigger;
     long yearsecs;
@@ -922,8 +886,7 @@ struct header *addheader(struct header *hp,
 	isbigger = (strcasecmp(email->name, hp->data->name) > 0) ? 0 : 1;
 	break;
     case 0:
-	isbigger = (strcasecmp(email->unre_subject,
-			       hp->data->unre_subject) > 0) ? 0 : 1;
+		isbigger = (strcasecmp(email->unre_subject, hp->data->unre_subject) > 0) ? 0 : 1;
 	break;
     case 2:
 	yearsecs = email->fromdate;
@@ -943,13 +906,12 @@ struct header *addheader(struct header *hp,
     else
 	hp->right = addheader(hp->right, email, sorttype, depth + 1);
 
-    if(sorttype == 2 && depth < max_depth/2 && !(++count_d % 3)) {
+	if (sorttype == 2 && depth < max_depth / 2 && !(++count_d % 3)) {
 	/* semi-random rebalancing */
 	struct header **hpp = (set_reverse ? &hp->left : &hp->right);
 	struct header *hp1 = *hpp;
-	if(hp1 != NULL && (hp1->right != NULL || hp1->left != NULL)) {
-	    if(hp1->right != NULL
-	       && (hp1->left == NULL || (count_d & 1))) {
+		if (hp1 != NULL && (hp1->right != NULL || hp1->left != NULL)) {
+			if (hp1->right != NULL && (hp1->left == NULL || (count_d & 1))) {
 		struct header *p = hp1->right;
 		hp1->right = p->left;
 		p->left = hp1;
@@ -967,8 +929,7 @@ struct header *addheader(struct header *hp,
     return hp;
 }
 
-struct emailsubdir *new_subdir(char *subdir, struct emailsubdir *last_subdir,
-			       char *description, time_t date)
+struct emailsubdir *new_subdir(char *subdir, struct emailsubdir *last_subdir, char *description, time_t date)
 {
     struct emailsubdir *sd = folders;
     struct emailsubdir *new_sd;
@@ -979,8 +940,7 @@ struct emailsubdir *new_subdir(char *subdir, struct emailsubdir *last_subdir,
     while (sd) {
 	if (!strcmp(subdir, sd->subdir))
 	    return sd;
-	if (sd->a_date < date
-	    && (!insert_point || sd->a_date > insert_point->a_date))
+		if (sd->a_date < date && (!insert_point || sd->a_date > insert_point->a_date))
 	    insert_point = sd;
 	if (sd->next_subdir == NULL)
 	    break;
@@ -1009,7 +969,7 @@ struct emailsubdir *new_subdir(char *subdir, struct emailsubdir *last_subdir,
     new_sd->description = description;
     new_sd->a_date = date;
     if (set_base_url != NULL) {
-	if (set_base_url[strlen(set_base_url)-1] != '/')
+		if (set_base_url[strlen(set_base_url) - 1] != '/')
 	    trio_asprintf(&new_sd->rel_path_to_top, "%s/", set_base_url);
 	else
 	    new_sd->rel_path_to_top = strsav(set_base_url);
@@ -1019,18 +979,15 @@ struct emailsubdir *new_subdir(char *subdir, struct emailsubdir *last_subdir,
 	count = 0;
 	for (p = subdir; *p; ++p)
 	    count += (*p == '/');
-	while(--count > 0) {
+		while (--count > 0) {
 	    trio_asprintf(&p, "../%s", new_sd->rel_path_to_top);
 	    free(new_sd->rel_path_to_top);
 	    new_sd->rel_path_to_top = p;
 	}
-	if (set_latest_folder != NULL && set_folder_by_date != NULL
-	    && strchr(set_folder_by_date, '/')) {
+		if (set_latest_folder != NULL && set_folder_by_date != NULL && strchr(set_folder_by_date, '/')) {
 	    static int warned = 0;
 	    if (!warned) {
-	      fprintf(stderr, "Warning: the latest_folder option combined with "
-		      "a folder_by_date option that includes a '/' will produce "
-		      "some invalid links unless you use the base_url option!!.\n");
+				fprintf(stderr, "Warning: the latest_folder option combined with " "a folder_by_date option that includes a '/' will produce " "some invalid links unless you use the base_url option!!.\n");
 	      warned = 1;
 	    }
 	}
@@ -1117,7 +1074,7 @@ int inlist_pos(struct hmlist *listname, char *wildcard)
 
 static int regex_index(struct hmlist *listname, int index)
 {
-    static int start[5] = { -1, -1, -1, -1, -1};
+	static int start[5] = { -1, -1, -1, -1, -1 };
     if (start[0] == -1) {
 	struct hmlist *tlist;
 	start[1] = start[0] = 0;
@@ -1133,11 +1090,16 @@ static int regex_index(struct hmlist *listname, int index)
 	for (tlist = set_filter_require_full_body; tlist != NULL; tlist = tlist->next)
 	    ++start[4];
     }
-    if (index == -1) return start[4];
-    if (listname == set_filter_out) return start[0] + index;
-    if (listname == set_filter_require) return start[1] + index;
-    if (listname == set_filter_out_full_body) return start[2] + index;
-    if (listname == set_filter_require_full_body) return start[3] + index;
+	if (index == -1)
+		return start[4];
+	if (listname == set_filter_out)
+		return start[0] + index;
+	if (listname == set_filter_require)
+		return start[1] + index;
+	if (listname == set_filter_out_full_body)
+		return start[2] + index;
+	if (listname == set_filter_require_full_body)
+		return start[3] + index;
     return -1;
 }
 
@@ -1161,8 +1123,8 @@ int inlist_regex_pos(struct hmlist *listname, char *str)
 	if (!pcre_list) {
 	    int n = regex_index(NULL, -1);
 	    int i;
-	    pcre_list = (pcre **)emalloc(n * sizeof(pcre *));
-	    extra_list = (pcre_extra **)emalloc(n * sizeof(pcre_extra *));
+			pcre_list = (pcre **) emalloc(n * sizeof(pcre *));
+			extra_list = (pcre_extra **) emalloc(n * sizeof(pcre_extra *));
 	    for (i = 0; i < n; ++i) {
 	        pcre_list[i] = NULL;
 	        extra_list[i] = NULL;
@@ -1171,14 +1133,12 @@ int inlist_regex_pos(struct hmlist *listname, char *str)
 	if ((p = pcre_list[index]) == NULL) {
 	    p = pcre_compile(tlist->val, 0, &errptr, &epos, NULL);
 	    if (!p) {
-	        sprintf(errmsg, "Error at position %d of regular expression '%s': %s",
-			epos, tlist->val, errptr);
+		snprintf(errmsg, sizeof(errmsg), "Error at position %d of regular expression '%s': %s", epos, tlist->val, errptr);
 		progerr(errmsg);
 	    }
 	    extra = pcre_study(p, 0, &errptr);
 	    if (errptr) {
-	        sprintf(errmsg, "Error studying regular expression '%s': %s",
-			tlist->val, errptr);
+		snprintf(errmsg, sizeof(errmsg), "Error studying regular expression '%s': %s", tlist->val, errptr);
 		progerr(errmsg);
 	    }
 	    pcre_list[index] = p;

@@ -58,6 +58,11 @@ dnl ===========================================================================
 INSTALL="install-sh"
 
 case "$host" in
+  *-*-solaris*)
+    # Solaris flags 
+    AC_DEFINE(NO_MACRO)
+    ;;
+
   *-*-hpux*)
     # HPUX flags 
     if test -z "$GCC"; then

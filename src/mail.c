@@ -49,6 +49,7 @@ char *strsav(char *s)
     return p;
 }
 
+#ifdef I_LIKE_SPAMMERS
 static void progerr(const char *s)
 {
     printf("<html>\n");
@@ -63,6 +64,7 @@ static void progerr(const char *s)
 
     exit(0);
 }
+#endif
 
 char *lookupnumaddr(char *numaddress)
 {
@@ -126,11 +128,13 @@ void printform(char *to, char *from, char *subject,
 
 void cgi_main(cgi_info *ci)
 {
+#ifdef I_LIKE_SPAMMERS
     form_entry *parms, *p;
     char *from, *to, *subject, *replyto, *body, *host;
     char *tmpstr;
     char tmpstr2[256];
     FILE *f;
+#endif
 
     /* Only correct remote adresses are valid! */
     if (ci == 0 || ci->remote_addr == 0)

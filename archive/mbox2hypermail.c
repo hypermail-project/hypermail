@@ -19,10 +19,13 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
-
 #include "lists.h"
 
+#undef isspace
+
 #define USAGE  "usage: %s -D YYYY [ -tvd ] [ mailbox ]\n"
+
+#define MAX_MONTH_LEN 20
 
 char *progname;			/* name of executable            */
 char lastline[BUFSIZ];		/* read-behind  buffer           */
@@ -78,9 +81,19 @@ int main(int argc, char **argv)
 		break;
 	    case 'M':
 		month = optarg;
+                if (strlen(month) > MAX_MONTH_LEN) {
+		    (void)fprintf(errfp, "%s: Invalid month format, %d character month maximum.\n", progname, MAX_MONTH_LEN);
+		    return (1);
+                }
 		break;
 	    case 'Y':
 		year = optarg;
+                /* check and make sure it is a year.*/
+                if (strlen(year) > 4) {
+		    (void)fprintf(errfp, "%s: Invalid year format, 4 digit year maximum.\n", progname);
+		    return (1);
+                }
+    
 		break;
 	    case 'd':
 		debug++;
@@ -172,7 +185,7 @@ void process_messages(char *flname)
 	fprintf(stderr, "Processing mailbox %s\n", flname);
 
     /*
-       ** Standard input or a mailbox file ? 
+    ** Standard input or a mailbox file ? 
      */
     if (flname != NULL)
 	mailbox = efopen(flname, "r");
@@ -189,7 +202,7 @@ void process_messages(char *flname)
     sprintf(msgfile, "/tmp/msgfile-%s.%ld", year, (long)getpid());
     msgfp = efopen(msgfile, "w");
 
-    if (month != NULL) {
+    if (month != NULL) {  /* AUDIT biege: external input -> cmd exec + bof */
 	if (configfile != NULL)
 	    sprintf(cmdstr, "/bin/cat %s | %s -u -i -c %s -d %s/%s/%s",
 		    msgfile, HYPERMAIL, configfile, ARCHIVE, year, month);

@@ -108,8 +108,7 @@ static char *setindex(char *dfltindex, char *indextype, char *suffix)
 
 void version(void)
 {
-    printf("%s: %s: %s %s: %s\n", PROGNAME,
-	   lang[MSG_VERSION], VERSION, lang[MSG_PATCHLEVEL], PATCHLEVEL);
+    printf("%s: %s: %s %s: %s\n", PROGNAME, lang[MSG_VERSION], VERSION, lang[MSG_PATCHLEVEL], PATCHLEVEL);
     exit(0);
 }
 
@@ -196,8 +195,8 @@ int main(int argc, char **argv)
 #define GETOPT_OPTSTRING ("a:Ab:c:d:gil:L:m:n:o:ps:tTuvVxX0:1M?")
 
     /* get pre config options here */
-    while ((i = getopt(argc,argv, GETOPT_OPTSTRING )) != -1) {
-        switch((char) i) {
+	while ((i = getopt(argc, argv, GETOPT_OPTSTRING)) != -1) {
+		switch ((char)i) {
 	case 'c':
 	    configfile = strreplace(configfile, optarg);
 	    break;
@@ -206,8 +205,7 @@ int main(int argc, char **argv)
 	    break;
 	case 'V':
 	    version();
-	 /*NOTREACHED*/ 
-	case 'a':
+		 /*NOTREACHED*/ case 'a':
 	case 'A':
 	case 'b':
 	case 'd':
@@ -252,8 +250,8 @@ int main(int argc, char **argv)
 
     /* now get the post-config options! */
 
-    while ((i = getopt(argc,argv, GETOPT_OPTSTRING)) != -1) {
-        switch((char) i) {
+	while ((i = getopt(argc, argv, GETOPT_OPTSTRING)) != -1) {
+		switch ((char)i) {
 	case 'A':
 	    set_append = 1;
 	    break;
@@ -356,16 +354,14 @@ int main(int argc, char **argv)
 	locale_code = NULL;
 
     if ((tlang = valid_language(set_language, &locale_code)) == NULL) {
-	sprintf(errmsg, "\"%s\" %s.", set_language,
-		lang[MSG_LANGUAGE_NOT_SUPPORTED]);
+	snprintf(errmsg, sizeof(errmsg), "\"%s\" %s.", set_language, lang[MSG_LANGUAGE_NOT_SUPPORTED]);
 	cmderr(errmsg);
     }
 
 #ifdef HAVE_LOCALE_H
-    if ( ! setlocale(LC_ALL, locale_code) ) {
-        sprintf(errmsg, "WARNING: locale \"%s\", not supported.\n",
-		locale_code);
-        fprintf(stderr, errmsg);
+	if (!setlocale(LC_ALL, locale_code)) {
+	    snprintf(errmsg, sizeof(errmsg), "WARNING: locale \"%s\", not supported.\n", locale_code);
+	    fprintf(stderr, "%s", errmsg);/* AUDIT biege: avoid format-bug warning */
     }
 #endif
 	
@@ -429,49 +425,35 @@ int main(int argc, char **argv)
 	set_dir = strreplace(set_dir, DIRNAME);
 
     if (!set_dir || !strcasecmp(set_dir, "NONE"))
-	set_dir = strreplace(set_dir, (strrchr(set_mbox, '/')) ?
-			     strrchr(set_mbox, '/') + 1 : set_mbox);
+		set_dir = strreplace(set_dir, (strrchr(set_mbox, '/')) ? strrchr(set_mbox, '/') + 1 : set_mbox);
 
     if (set_dir[strlen(set_dir) - 1] != PATH_SEPARATOR)
 	trio_asprintf(&set_dir, "%s%c", set_dir, PATH_SEPARATOR);
 
     if (!set_label || !strcasecmp(set_label, "NONE"))
-	set_label = set_mbox ?
-	    (strreplace(set_label, (strrchr(set_mbox, '/')) ?
-			strrchr(set_mbox, '/') + 1 : set_mbox)) : "stdin";
+		set_label = set_mbox ? (strreplace(set_label, (strrchr(set_mbox, '/')) ? strrchr(set_mbox, '/') + 1 : set_mbox)) : "stdin";
 
     /*
      * Which index file will be called "index.html"?
      */
 
-    index_name[1][DATE_INDEX] = setindex(set_defaultindex, "date",
-				      set_htmlsuffix);
-    index_name[1][THREAD_INDEX] = setindex(set_defaultindex, "thread",
-					set_htmlsuffix);
-    index_name[1][SUBJECT_INDEX] = setindex(set_defaultindex, "subject",
-					 set_htmlsuffix);
-    index_name[1][AUTHOR_INDEX] = setindex(set_defaultindex, "author",
-					set_htmlsuffix);
+	index_name[1][DATE_INDEX] = setindex(set_defaultindex, "date", set_htmlsuffix);
+	index_name[1][THREAD_INDEX] = setindex(set_defaultindex, "thread", set_htmlsuffix);
+	index_name[1][SUBJECT_INDEX] = setindex(set_defaultindex, "subject", set_htmlsuffix);
+	index_name[1][AUTHOR_INDEX] = setindex(set_defaultindex, "author", set_htmlsuffix);
     if (set_attachmentsindex) {
 	index_name[1][ATTACHMENT_INDEX]
 	    = setindex(set_defaultindex, "attachment", set_htmlsuffix);
     }
     if (set_folder_by_date || set_msgsperfolder) {
-	index_name[0][DATE_INDEX] = setindex(set_default_top_index, "date",
-					     set_htmlsuffix);
-	index_name[0][THREAD_INDEX] = setindex(set_default_top_index, "thread",
-					       set_htmlsuffix);
-	index_name[0][SUBJECT_INDEX] = setindex(set_default_top_index,
-						"subject", set_htmlsuffix);
-	index_name[0][AUTHOR_INDEX] = setindex(set_default_top_index, "author",
-					       set_htmlsuffix);
+		index_name[0][DATE_INDEX] = setindex(set_default_top_index, "date", set_htmlsuffix);
+		index_name[0][THREAD_INDEX] = setindex(set_default_top_index, "thread", set_htmlsuffix);
+		index_name[0][SUBJECT_INDEX] = setindex(set_default_top_index, "subject", set_htmlsuffix);
+		index_name[0][AUTHOR_INDEX] = setindex(set_default_top_index, "author", set_htmlsuffix);
 	if (set_attachmentsindex) {
-	    index_name[0][ATTACHMENT_INDEX] = setindex(set_default_top_index,
-						       "attachment",
-						       set_htmlsuffix);
+			index_name[0][ATTACHMENT_INDEX] = setindex(set_default_top_index, "attachment", set_htmlsuffix);
 	}
-	index_name[0][FOLDERS_INDEX] = setindex(set_default_top_index,
-						"folders", set_htmlsuffix);
+		index_name[0][FOLDERS_INDEX] = setindex(set_default_top_index, "folders", set_htmlsuffix);
     }
     else {
 	index_name[0][DATE_INDEX] = index_name[1][DATE_INDEX];
@@ -508,9 +490,7 @@ int main(int argc, char **argv)
     /* the nonsequential mode won't work unless we compiled the FNV hash library
        (./configure --enable-libfnv) */
     if (set_nonsequential)
-      progerr("the nonsequential mode is only available if you enabled the\n compilation"
-	      "of the fnv hash library. Try doing a\n\t./configure --enable-libfnv\n"
-	      "and recompile if you want to use this option.");
+		progerr("the nonsequential mode is only available if you enabled the\n compilation" "of the fnv hash library. Try doing a\n\t./configure --enable-libfnv\n" "and recompile if you want to use this option.");
 #endif /* HAVE_LIBFNV */
 
     /* 
@@ -554,7 +534,7 @@ int main(int argc, char **argv)
     if (use_mbox && use_stdin) {
 	cmderr(lang[MSG_CANNOT_READ_FROM_BOTH_FILE_AND_STDIN]);
     }
-    if(set_append && use_mbox) {
+	if (set_append && use_mbox) {
         cmderr(lang[MSG_CANNOT_BOTH_READ_AND_WRITE_TO_MBOX]);
     }
 
@@ -584,15 +564,13 @@ int main(int argc, char **argv)
 	amount_old = max_msgnum + 1; /* counts gaps as messages */
 
 	/* start numbering at this number */
-	amount_new = num_displayable
-	  + parsemail(set_mbox, use_stdin, set_readone,
-		      set_increment, set_dir, set_inlinehtml, amount_old);
+		amount_new = num_displayable + parsemail(set_mbox, use_stdin, set_readone, set_increment, set_dir, set_inlinehtml, amount_old);
 	if (set_linkquotes)
 	    analyze_headers(max_msgnum + 1);
 
 	/* write the index of msgno/msgid_hash filenames */
 	if (set_nonsequential)
-	    write_messageindex (0, max_msgnum + 1);
+		write_messageindex(0, max_msgnum + 1);
 
 	writearticles(amount_old, max_msgnum + 1);
 
@@ -609,20 +587,16 @@ int main(int argc, char **argv)
 	}
     }
     else {
-	amount_new =
-	    parsemail(set_mbox, use_stdin, set_readone, set_increment,
-		      set_dir, set_inlinehtml, 0);	/* number from 0 */
+	amount_new = parsemail(set_mbox, use_stdin, set_readone, set_increment, set_dir, set_inlinehtml, 0);	/* number from 0 */
 	if (!matches_existing(0)) {
-	    fprintf(stderr, "Warning: first message in mailbox does not "
-		    "match first message in archive\n"
-		    "or obsolete gdbm file present.\n");
+		fprintf(stderr, "Warning: first message in mailbox does not " "match first message in archive\n" "or obsolete gdbm file present.\n");
 	}
 	if (set_linkquotes)
 	    analyze_headers(max_msgnum + 1);
 
 	/* write the index of msgno/msgid_hash filenames */
 	if (set_nonsequential)
-	  write_messageindex (0, max_msgnum + 1);
+		write_messageindex(0, max_msgnum + 1);
 
 	writearticles(0, max_msgnum + 1);
     }
@@ -665,7 +639,7 @@ int main(int argc, char **argv)
 	    writeattachments(amount_new, NULL);
 	}
 	if (set_writehaof) 
-		writehaof(amount_new,NULL);
+            writehaof(amount_new, NULL);
 	if (set_folder_by_date || set_msgsperfolder)
 	    write_toplevel_indices(amount_new);
 	if (set_monthly_index || set_yearly_index)
@@ -679,12 +653,6 @@ int main(int argc, char **argv)
 
     if (set_uselock)
 	unlock_archive();
-
-#if 0
-    /* cleanup */
-    /* debug this before we activate it again (Daniel 1999-02-08) */
-    ConfigCleanup();
-#endif
 
     if (configfile)
 	free(configfile);

@@ -37,14 +37,11 @@ static char *get_path(struct emailinfo *ep, struct emailinfo *ep2)
 {
     char *path = "";
     if (ep2->subdir && ep2->subdir != ep->subdir)
-	trio_asprintf(&path, "%s%s", ep2->subdir->rel_path_to_top,
-		      ep2->subdir->subdir);
+		trio_asprintf(&path, "%s%s", ep2->subdir->rel_path_to_top, ep2->subdir->subdir);
     return path;
 }
 
-static struct body *place_anchor(const String_Match * match_info,
-				 struct body *bp, char *buffer, FILE *fp2,
-				 char **ptr, const char *anchor)
+static struct body *place_anchor(const String_Match * match_info, struct body *bp, char *buffer, FILE *fp2, char **ptr, const char *anchor)
 {
     if (match_info) {
 	int index;
@@ -92,9 +89,7 @@ static struct body *place_anchor(const String_Match * match_info,
     return bp;
 }
 
-static int
-place_a_end(const String_Match * match_info, struct body **bp,
-	    char *buffer, FILE *fp2, char **ptr)
+static int place_a_end(const String_Match * match_info, struct body **bp, char *buffer, FILE *fp2, char **ptr)
 {
     int index;
     char token[MAXLINE];
@@ -132,10 +127,7 @@ place_a_end(const String_Match * match_info, struct body **bp,
 ** Alter the message being quoted to add an anchor specifying the quoted text
 */
 
-static int
-add_anchor(int msgnum, int quoting_msgnum, int quote_num,
-	   const char *anchor, char *line, int find_substr,
-	   int count_quoted_lines, const String_Match * match_info)
+static int add_anchor(int msgnum, int quoting_msgnum, int quote_num, const char *anchor, char *line, int find_substr, int count_quoted_lines, const String_Match * match_info)
 {
     char *filename;
     char *tmpfilename;
@@ -170,14 +162,12 @@ add_anchor(int msgnum, int quoting_msgnum, int quote_num,
 	if (msgnum > quoting_msgnum)
 	    return 0;		/* just a forward ref */
 	if (set_showprogress)
-	    fprintf(stderr, "Couldn't read message number %d (linked from %d). "
-		    "May mean message deleted with delete_level = 0.\n",
-		    msgnum, quoting_msgnum);
+			fprintf(stderr, "Couldn't read message number %d (linked from %d). " "May mean message deleted with delete_level = 0.\n", msgnum, quoting_msgnum);
 	return -1;
     }
-    tmpfilename = htmlfilename("tmp", ep, "tmp");
+    tmpfilename = htmlfilename("tmp", ep, "tmp");	/* AUDIT biege: where is the tmp-file created? cwd? what about checking the return-value */
     if ((fp2 = fopen(tmpfilename, "w")) == NULL) {
-	sprintf(errmsg, "Couldn't write \"%s\".", tmpfilename);
+	snprintf(errmsg, sizeof(errmsg), "Couldn't write \"%s\".", tmpfilename);
 	progerr(NULL);
     }
     while (fgets(buffer, sizeof(buffer), fp1)) {
@@ -190,9 +180,7 @@ add_anchor(int msgnum, int quoting_msgnum, int quote_num,
 	        struct emailinfo *ep2;
 		if (hashnumlookup(quoting_msgnum, &ep2)) {
 		    char *path = get_path(ep, ep2);
-		    fprintf(fp2, "<a href=\"%s%.4d.%s#qlink%d\">%s</a>",
-			    path, quoting_msgnum, set_htmlsuffix,
-			    quote_num, set_link_to_replies);
+					fprintf(fp2, "<a href=\"%s%.4d.%s#qlink%d\">%s</a>", path, quoting_msgnum, set_htmlsuffix, quote_num, set_link_to_replies);
 		    if (*path)
 		        free(path);
 		}
@@ -203,8 +191,7 @@ add_anchor(int msgnum, int quoting_msgnum, int quote_num,
 		    count_quoted_lines = -1;
 		    break;	/* reply quoted more lines than exist? */
 		}
-		if (match_info
-		    && place_a_end(match_info, &bp, buffer, fp2, &ptr)) {
+				if (match_info && place_a_end(match_info, &bp, buffer, fp2, &ptr)) {
 		    wrote_a_end = TRUE;
 		    count_quoted_lines = 0;
 		    if (bp)
@@ -224,14 +211,12 @@ add_anchor(int msgnum, int quoting_msgnum, int quote_num,
 		    else
 			++count_quoted_lines;
 		}
-	    } while (--count_quoted_lines > 0
-		     && fgets(buffer, sizeof(buffer), fp1));
+			} while (--count_quoted_lines > 0 && fgets(buffer, sizeof(buffer), fp1));
 	    if (!wrote_a_end)
 		fputs("</a>", fp2);
 	    if (count_quoted_lines > 0)	/* got eof? */
 		break;		/* avoid last fputs */
-	    else if (count_quoted_lines == 0
-		     && !fgets(buffer, sizeof(buffer), fp1))
+			else if (count_quoted_lines == 0 && !fgets(buffer, sizeof(buffer), fp1))
 		break;
 	}
 	else if (in_body && bp && (tmpptr = remove_hypermail_tags(buffer))) {
@@ -256,13 +241,11 @@ add_anchor(int msgnum, int quoting_msgnum, int quote_num,
 	remove(tmpfilename);
     else {
 	if (rename(tmpfilename, filename) == -1) {
-	    sprintf(errmsg, "Couldn't rename \"%s\" to %s.",
-		    tmpfilename, filename);
+	    snprintf(errmsg, sizeof(errmsg), "Couldn't rename \"%s\" to %s.", tmpfilename, filename);
 	    progerr(NULL);
 	}
 	if (chmod(filename, set_filemode) == -1) {
-	    sprintf(errmsg, "Couldn't chmod \"%s\" to %o.",
-		    filename, set_filemode);
+	    snprintf(errmsg, sizeof(errmsg), "Couldn't chmod \"%s\" to %o.", filename, set_filemode);
 	    progerr(NULL);
 	}
     }
@@ -293,34 +276,26 @@ static char *unquote_and_strip(char *line)
 */
 /* #define MAX_ANCHOR_LEN 128 */
 
-static char *url_replying_to(struct emailinfo *email,
-			     char *line1,	/* first line of quoted text, with html */
+static char *url_replying_to(struct emailinfo *email, char *line1,	/* first line of quoted text, with html */
 			     const char *line2,	/* first line of quoted text, w/o html */
-			     const struct body *bp,
-			     int quote_num,
-			     int *quoting_msgnum,
-			     int count_quoted_lines,
-			     int maybe_reply)
+			     const struct body *bp, int quote_num, int *quoting_msgnum, int count_quoted_lines, int maybe_reply)
 {
     String_Match match_info;
     char *p;
     int subjmatch = 0;
     char *anchor;
     struct emailinfo *ep;
-    int statusnum =
-	hashreplynumlookup(*quoting_msgnum, email->inreplyto, email->subject,
+	int statusnum = hashreplynumlookup(*quoting_msgnum, email->inreplyto, email->subject,
 			   &subjmatch);
     hashnumlookup(*quoting_msgnum, &ep);
     trio_asprintf(&anchor, "%.4dqlink%d", *quoting_msgnum, quote_num);
     if (statusnum != -1) {
 	struct emailinfo *ep2;
 	hashnumlookup(statusnum, &ep2);
-	if (add_anchor(statusnum, *quoting_msgnum, quote_num,
-		       anchor, line1, 0, count_quoted_lines, NULL)) {
+		if (add_anchor(statusnum, *quoting_msgnum, quote_num, anchor, line1, 0, count_quoted_lines, NULL)) {
 	    char *path = get_path(ep, ep2);
 	    char *buf;
-	    trio_asprintf(&buf, "%s%.4d.%s#%s",
-			  path, statusnum, set_htmlsuffix, anchor);
+			trio_asprintf(&buf, "%s%.4d.%s#%s", path, statusnum, set_htmlsuffix, anchor);
 	    if (maybe_reply)
 		set_new_reply_to(statusnum, strlen(line2));
 	    if (*path)
@@ -330,7 +305,7 @@ static char *url_replying_to(struct emailinfo *email,
 	}
 	if (strlen(line2) > 6 && (p = strstr(line2, "..."))) {
 	    char *parsed;
-	    char *tptr = (char *)emalloc(p - line2 + 1 + strlen(p + 3));
+	    char *tptr = (char *)emalloc(p - line2 + 1 + strlen(p + 3));	/* AUDIT biege: IOF unlikely */
 	    strncpy(tptr, line2, p - line2);
 	    strcpy(tptr + (p - line2), p + 3);
 	    parsed = ConvURLsString(tptr, email->msgid, email->subject);
@@ -338,12 +313,10 @@ static char *url_replying_to(struct emailinfo *email,
 	    tptr = stripwhitespace(parsed ? parsed : "");
 	    if (parsed)
 		free(parsed);
-	    if (add_anchor(statusnum, *quoting_msgnum, quote_num, 
-			   anchor, tptr, 1, count_quoted_lines, NULL)) {
+			if (add_anchor(statusnum, *quoting_msgnum, quote_num, anchor, tptr, 1, count_quoted_lines, NULL)) {
 	        char *path = get_path(ep, ep2);
 		char *buf;
-		trio_asprintf(&buf, "%s%.4d.%s#%s",
-			      path, statusnum, set_htmlsuffix, anchor);
+				trio_asprintf(&buf, "%s%.4d.%s#%s", path, statusnum, set_htmlsuffix, anchor);
 		free(tptr);
 		if (maybe_reply)
 		    set_new_reply_to(statusnum, strlen(buf));
@@ -372,28 +345,23 @@ static char *url_replying_to(struct emailinfo *email,
 	    free(stripped);
 	    PushString(&exact_line, unquote(bp->line));
 	}
-	search_for_quote(PUSH_STRING(full_line), PUSH_STRING(exact_line),
-			 *quoting_msgnum, &match_info);
+		search_for_quote(PUSH_STRING(full_line), PUSH_STRING(exact_line), *quoting_msgnum, &match_info);
 	free(PUSH_STRING(full_line));
 	free(PUSH_STRING(exact_line));
     }
     if (match_info.msgnum >= 0) {
-	char *parsed =
-	    ConvURLsString(match_info.last_matched_string, email->msgid,
+		char *parsed = ConvURLsString(match_info.last_matched_string, email->msgid,
 			   email->subject);
 	if (parsed) {
 	    char *parsed2 = stripwhitespace(parsed);
 	    free(parsed);
-	    if (add_anchor(match_info.msgnum, *quoting_msgnum, quote_num,
-		 anchor, parsed2, 1, count_quoted_lines, &match_info)) {
+	    if (add_anchor(match_info.msgnum, *quoting_msgnum, quote_num, anchor, parsed2, 1, count_quoted_lines, &match_info)) {
 	        struct emailinfo *ep2;
 		struct body *bp0 = hashnumlookup(match_info.msgnum, &ep2);
 		char *path = get_path(ep, ep2);
 		char *buf;
-		trio_asprintf(&buf, "%s%.4d.%s#%s", path,
-			      match_info.msgnum, set_htmlsuffix, anchor);
-		set_new_reply_to(match_info.msgnum,
-				 match_info.match_len_bytes);
+		trio_asprintf(&buf, "%s%.4d.%s#%s", path, match_info.msgnum, set_htmlsuffix, anchor);
+		set_new_reply_to(match_info.msgnum, match_info.match_len_bytes);
 		free(parsed2);
 		if (*path)
 		    free(path);
@@ -417,10 +385,7 @@ static char *url_replying_to(struct emailinfo *email,
 ** of another message
 */
 
-int
-handle_quoted_text(FILE *fp, struct emailinfo *email, const struct body *bp,
-		   char *line, int inquote, int quote_num,
-		   bool replace_quoted, int maybe_reply)
+int handle_quoted_text(FILE *fp, struct emailinfo *email, const struct body *bp, char *line, int inquote, int quote_num, bool replace_quoted, int maybe_reply)
 {
     char *url1;
     int quoting_msgnum = email->msgnum;
@@ -429,9 +394,7 @@ handle_quoted_text(FILE *fp, struct emailinfo *email, const struct body *bp,
     char *fmt2;
     char *cvtd_line = ConvURLsString(unquote(line), email->msgid, email->subject);
     char *buffer1;
-    trio_asprintf(&fmt2, set_iquotes ? "<em class=\"%s\">%%s</em><br>"
-		  : "<span class=\"%s\">%%s</span><br>",
-		  find_quote_class(line));
+	trio_asprintf(&fmt2, set_iquotes ? "<em class=\"%s\">%%s</em><br>" : "<span class=\"%s\">%%s</span><br>", find_quote_class(line));
     trio_asprintf(&buffer1, fmt2, cvtd_line ? cvtd_line : "");
     if (cvtd_line)
 	free(cvtd_line);
@@ -449,14 +412,11 @@ handle_quoted_text(FILE *fp, struct emailinfo *email, const struct body *bp,
 	}
     }
     else if ((!inquote || !found_quote)
-	     && (url1 = url_replying_to(email, buffer1, cvtd_line,
-					bp, ++quote_num, &quoting_msgnum,
-					count_quoted_lines, maybe_reply))) {
+		 && (url1 = url_replying_to(email, buffer1, cvtd_line, bp, ++quote_num, &quoting_msgnum, count_quoted_lines, maybe_reply))) {
 	static const char *fmt1 = "<a href=\"%s\">%s</a>%s<br>\n";
 	char *tmpline;
 	char *p2;
-	bool replacing = replace_quoted && set_quote_link_string &&
-	    set_quote_link_string[0];
+		bool replacing = replace_quoted && set_quote_link_string && set_quote_link_string[0];
 	char *part2 = strcasestr(line, "<a href=");
 	if (!part2) {
 	    part2 = "";
@@ -525,8 +485,7 @@ void set_new_reply_to(int msgnum, int match_len)
     }
     else {
 	if (msgnum == alt_msgnum || alt_msgnum == -1) {
-	    if (++count_alt > count_last
-		|| (count_alt == count_last && match_len > best_match_len)) {
+			if (++count_alt > count_last || (count_alt == count_last && match_len > best_match_len)) {
 		count_last = count_alt;
 		new_reply_to = msgnum;
 		if (match_len > best_match_len)
@@ -549,9 +508,7 @@ int get_new_reply_to()
  * "In reply to"
 */
 
-void
-replace_maybe_replies(const char *filename, struct emailinfo *ep,
-		      int new_reply_to)
+void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_reply_to)
 {
     char tmpfilename[MAXFILELEN];
     char buffer[MAXLINE];
@@ -563,13 +520,13 @@ replace_maybe_replies(const char *filename, struct emailinfo *ep,
 
     if (!hashnumlookup(new_reply_to, &ep2))
 	return;
-    sprintf(tmpfilename, "%s/aaaa.tmp", set_dir);
+    snprintf(tmpfilename, sizeof(tmpfilename), "%s/aaaa.tmp", set_dir);	/* AUDIT biege: poss. BOF. */
     if ((fp1 = fopen(filename, "r")) == NULL) {
-	sprintf(errmsg, "Couldn't read \"%s\".", filename);
+        snprintf(errmsg, sizeof(errmsg), "Couldn't read \"%s\".", filename);
 	progerr(NULL);
     }
     if ((fp2 = fopen(tmpfilename, "w")) == NULL) {
-	sprintf(errmsg, "Couldn't write \"%s\".", tmpfilename);
+        snprintf(errmsg, sizeof(errmsg), "Couldn't write \"%s\".", tmpfilename);
 	progerr(NULL);
     }
     while (fgets(buffer, sizeof(buffer), fp1)) {
@@ -582,11 +539,7 @@ replace_maybe_replies(const char *filename, struct emailinfo *ep,
 		char *tmpptr = convchars(ep2->subject);
 		if (tmpptr) {
 		    char *path = get_path(ep, ep2);
-		    fprintf(fp2, "<li> <strong>%s:</strong> "
-			    "<a href=\"%s%.4d.%s\">%s: \"%s\"</a>\n",
-			    lang[MSG_IN_REPLY_TO], path, new_reply_to,
-			    set_htmlsuffix, ep2->name,
-			    tmpptr ? tmpptr : "");
+                    fprintf(fp2, "<li> <strong>%s:</strong> " "<a href=\"%s%.4d.%s\">%s: \"%s\"</a>\n", lang[MSG_IN_REPLY_TO], path, new_reply_to, set_htmlsuffix, ep2->name, tmpptr ? tmpptr : "");
 		    free(tmpptr);
 		}
 	    }
@@ -608,10 +561,9 @@ replace_maybe_replies(const char *filename, struct emailinfo *ep,
 		int surpress = 0;
 		for (i = 0; patts[i]; ++i) {
 		    char temp[256];
-		    sprintf(temp, patts[i], lang[indices[i / 2]]);
+		    snprintf(temp,sizeof(temp), patts[i], lang[indices[i / 2]]);
 		    if ((ptr = strcasestr(buffer, temp))
-			&& (i < 4 || new_reply_to == atoi(ptr + strlen(temp))))
-		    {
+					    && (i < 4 || new_reply_to == atoi(ptr + strlen(temp)))) {
 			surpress = 1;
 			break;
 		    }
@@ -632,8 +584,7 @@ replace_maybe_replies(const char *filename, struct emailinfo *ep,
     fclose(fp2);
 
     if (rename(tmpfilename, filename) == -1) {
-	sprintf(errmsg, "Couldn't rename \"%s\" to %s.",
-		tmpfilename, filename);
+	snprintf(errmsg, sizeof(errmsg), "Couldn't rename \"%s\" to %s.", tmpfilename, filename);
 	progerr(NULL);
     }
 }

@@ -72,19 +72,15 @@ void check1dir(char *dir)
     if (stat(dir, &sbuf)) {
 	if (errno != ENOENT || mkdir(dir, set_dirmode) < 0) {
             if (errno != EEXIST) {
-	        sprintf(errmsg, "%s \"%s\".",
-			lang[MSG_CANNOT_CREATE_DIRECTORY], dir);
+				snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_CANNOT_CREATE_DIRECTORY], dir);
 		progerr(errmsg);
 	    }
 	}
 	if (set_showprogress)
-	    printf(" %s \"%s\", %s %o.\n",
-		   lang[MSG_CREATING_DIRECTORY], dir,
-		   lang[MSG_MODE], set_dirmode);
+			printf(" %s \"%s\", %s %o.\n", lang[MSG_CREATING_DIRECTORY], dir, lang[MSG_MODE], set_dirmode);
 
 	if (chmod(dir, set_dirmode) == -1) {
-	    sprintf(errmsg, "%s \"%s\" to %o.",
-		    lang[MSG_CANNOT_CHMOD], dir, set_dirmode);
+			snprintf(errmsg, sizeof(errmsg), "%s \"%s\" to %o.", lang[MSG_CANNOT_CHMOD], dir, set_dirmode);
 	    progerr(errmsg);
 	}
     }
@@ -112,19 +108,15 @@ void checkdir(char *dir)
 	    if (stat(dir, &sbuf)) {
 		if (errno != ENOENT || mkdir(dir, set_dirmode) < 0) {
 		    if (errno != EEXIST) {
-		        sprintf(errmsg, "%s \"%s\".",
-				lang[MSG_CANNOT_CREATE_DIRECTORY],dir);
+						snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_CANNOT_CREATE_DIRECTORY], dir);
 			progerr(errmsg);
 		    }
 		}
 		if (set_showprogress)
-		    printf(" %s \"%s\", %s %o.\n",
-			   lang[MSG_CREATING_DIRECTORY], dir,
-			   lang[MSG_MODE], set_dirmode);
+					printf(" %s \"%s\", %s %o.\n", lang[MSG_CREATING_DIRECTORY], dir, lang[MSG_MODE], set_dirmode);
 
 		if (chmod(dir, set_dirmode) == -1) {
-		    sprintf(errmsg, "%s \"%s\" to %o.",
-			    lang[MSG_CANNOT_CHMOD], dir, set_dirmode);
+					snprintf(errmsg, sizeof(errmsg), "%s \"%s\" to %o.", lang[MSG_CANNOT_CHMOD], dir, set_dirmode);
 		    progerr(errmsg);
 		}
 	    }
@@ -251,15 +243,15 @@ void readconfigs(char *path, int cmd_show_variables)
 {
     if (path && path[0] == '~') {
     	char *ep; 
-        char tmppath[MAXFILELEN];
+	char tmppath[MAXFILELEN]; /*AUDIT biege: pathname + filename is more then 4KB long on linux */
         struct passwd *pp;
 
         if ((pp = getpwuid(getuid())) != NULL) {
-            sprintf(tmppath, "%s%s", pp->pw_dir, path + 1);
+			snprintf(tmppath, sizeof(tmppath), "%s%s", pp->pw_dir, path + 1);	/* AUDIT biege: who gurantees that path+1 contains data? */
             ConfigInit(tmppath);
         } 
-        else if ((ep = getenv("HOME")) != NULL) {
-            sprintf(tmppath, "%s%s", ep, path + 1);
+	else if ((ep = getenv("HOME")) != NULL) { /* AUDIT biege: possible BOF.. but it's not setuid.. so why to care? */
+			snprintf(tmppath, sizeof(tmppath), "%s%s", ep, path + 1);	/* AUDIT biege: who gurantees that path+1 contains data? */
             ConfigInit(tmppath);
         }
         /* 
@@ -276,26 +268,23 @@ void readconfigs(char *path, int cmd_show_variables)
 }
 
 void symlink_latest()
- { 
+{
     char filename[MAXFILELEN];
     
     struct stat stbuf;
 
     if (!latest_folder_path)
 	return;			/* haven't created new folder this time? */
-    trio_snprintf(filename, MAXFILELEN, "%s%s",
-                  set_dir, set_latest_folder);
+	trio_snprintf(filename, MAXFILELEN, "%s%s", set_dir, set_latest_folder);
 
     if (!stat(filename, &stbuf) && unlink(filename)) {
-	sprintf(errmsg, "%s \"%s\" (latest_folder option).",
-		lang[MSG_CANNOT_UNLINK], filename);
+		snprintf(errmsg, sizeof(errmsg), "%s \"%s\" (latest_folder option).", lang[MSG_CANNOT_UNLINK], filename);
 	progerr(errmsg);
 	return;
     }
 
     if (symlink(latest_folder_path, filename)) {
-	sprintf(errmsg, "%s \"%s\" (latest_folder option).",
-		lang[MSG_CANNOT_CREATE_SYMLINK], filename);
+		snprintf(errmsg, sizeof(errmsg), "%s \"%s\" (latest_folder option).", lang[MSG_CANNOT_CREATE_SYMLINK], filename);
 	progerr(errmsg);
 	return;
     }
@@ -313,8 +302,8 @@ int find_max_msgnum()
     int num;
     char *s_dir = strsav(set_dir);
     int len = strlen(s_dir);
-    if (len > 0 && s_dir[len-1] == PATH_SEPARATOR)
-	s_dir[len-1] = 0;
+	if (len > 0 && s_dir[len - 1] == PATH_SEPARATOR)
+		s_dir[len - 1] = 0;
     dir = opendir(s_dir);
     if (dir == NULL)
 	return -1;
@@ -344,8 +333,7 @@ int find_max_msgnum()
 	    return -1;
 	dir = opendir(s_dir);
 	if (dir == NULL) {
-	    sprintf(errmsg, "internal error find_max_msgnum opening \"%s\".",
-		    s_dir);
+			snprintf(errmsg, sizeof(errmsg), "internal error find_max_msgnum opening \"%s\".", s_dir);
 	    progerr(errmsg);
 	}
     }
@@ -376,7 +364,7 @@ char *messageindex_name(void)
 {
   char *buf;
 
-  trio_asprintf (&buf, "%s%s", set_dir,"msgindex");
+	trio_asprintf(&buf, "%s%s", set_dir, "msgindex");
   return (buf);
 }
 
@@ -394,15 +382,14 @@ int find_max_msgnum_id()
     char *buf;
     
     /* open the index file */
-    buf = messageindex_name ();
-    fp = fopen (buf, "r");
-    free (buf);
-    if (fp)
-      {
-	fgets (line, sizeof(line), fp);
-	if (2 == sscanf (line, "%04d %04d", &startnum, &maxnum))
+	buf = messageindex_name();
+	fp = fopen(buf, "r");
+	free(buf);
+	if (fp) {
+		fgets(line, sizeof(line), fp);
+		if (2 == sscanf(line, "%04d %04d", &startnum, &maxnum))
 	  max_num = maxnum;
-	fclose (fp);
+		fclose(fp);
       }
 
     return max_num;
@@ -411,7 +398,7 @@ int find_max_msgnum_id()
 /* 
 ** Get a list of msgid corresponding to hypermail msg numbers
 */
-char ** read_msgnum_id_table(int max_num)
+char **read_msgnum_id_table(int max_num)
 {
     char **table;
     int read_msgs;
@@ -422,28 +409,25 @@ char ** read_msgnum_id_table(int max_num)
     if (max_num == -1)
       return NULL;
 
-    table = (char **) calloc (sizeof (char *), max_num + 1);
+	table = (char **)calloc(sizeof(char *), max_num + 1);
 
     /* open the index file */
-    buf = messageindex_name ();
-    fp = fopen (buf, "r");
-    free (buf);
+	buf = messageindex_name();
+	fp = fopen(buf, "r");
+	free(buf);
 
     /* skip the max_msgnum (first) line */
-    fgets (line, sizeof(line), fp);
+	fgets(line, sizeof(line), fp);
 
     read_msgs = 0;
-    while (fgets (line, sizeof (line), fp) && read_msgs <= max_num)
-      {
+	while (fgets(line, sizeof(line), fp) && read_msgs <= max_num) {
 	char *msgid;
 	int num;
-	msgid = malloc (strlen (line) + 1) ;
-	sscanf (line, "%d %s\n", &num, msgid);
+		msgid = malloc(strlen(line) + 1);
+		sscanf(line, "%d %s\n", &num, msgid);
 	/* was the message skipped? */
-	if (read_msgs < num)
-	  {
-	    while (read_msgs < num)
-	      {
+		if (read_msgs < num) {
+			while (read_msgs < num) {
 		table[read_msgs] = NULL;
 		read_msgs++;
 	      }
@@ -451,7 +435,7 @@ char ** read_msgnum_id_table(int max_num)
 	table[read_msgs] = msgid;
 	read_msgs++;
       }
-    fclose (fp);
+	fclose(fp);
     
     return table;
 }
@@ -468,8 +452,8 @@ void free_msgnum_id_table(char *table[], int max_num)
 
   for (i = 0; i < max_num; i++)
     if (table[i])
-      free (table[i]);
-  free (table);
+			free(table[i]);
+	free(table);
 }
 
 int is_empty_archive()
@@ -483,8 +467,8 @@ int is_empty_archive()
     int num_files = 0;
     char *s_dir = strsav(set_dir);
     int len = strlen(s_dir);
-    if (len > 0 && s_dir[len-1] == PATH_SEPARATOR)
-	s_dir[len-1] = 0;
+	if (len > 0 && s_dir[len - 1] == PATH_SEPARATOR)
+		s_dir[len - 1] = 0;
     dir = opendir(s_dir);
     if (dir == NULL)
 	return 1;
@@ -523,15 +507,15 @@ static char *msgsperfolder_label(char *frmptr, int subdir_no)
 		PushString(&buff, dtstr);
 		continue;
 	    case 'D':		/* directory number, starting with 1 */
-		sprintf(dtstr, "%d", subdir_no+1);
+				sprintf(dtstr, "%d", subdir_no + 1);
 		PushString(&buff, dtstr);
 		continue;
 	    case 'm':		/* number of first message in directory */
-		sprintf(dtstr, "%d", set_msgsperfolder*subdir_no);
+				sprintf(dtstr, "%d", set_msgsperfolder * subdir_no);
 		PushString(&buff, dtstr);
 		continue;
 	    case 'M':		/* number of last message possible */
-		sprintf(dtstr, "%d", set_msgsperfolder*(subdir_no + 1) - 1);
+				sprintf(dtstr, "%d", set_msgsperfolder * (subdir_no + 1) - 1);
 		PushString(&buff, dtstr);
 		continue;
 	    default:
@@ -561,13 +545,13 @@ struct emailsubdir *msg_subdir(int msgnum, time_t date)
 	desc = msgsperfolder_label(fmt, subdir_no);
     }
     else if (set_folder_by_date) {
-	strftime(s, DATESTRLEN-1, set_folder_by_date, localtime(&date));
+		strftime(s, DATESTRLEN - 1, set_folder_by_date, localtime(&date));
 	if (!fmt)
 	    fmt = set_folder_by_date;
 	strftime(desc_buf, DATESTRLEN, fmt, localtime(&date));
 	desc = strsav(desc_buf);
 
-	if(s[0] && s[strlen(s) - 1] != '/')
+		if (s[0] && s[strlen(s) - 1] != '/')
 	    strcat(s, "/");
     }
     else
@@ -586,8 +570,8 @@ char *message_name (struct emailinfo *email)
 {
   static char buffer[8 + sizeof (time_t) * 2 + 1];
 
-  if (set_nonsequential && email->msgid)
 #ifdef HAVE_LIBFNV
+  if (set_nonsequential && email->msgid)
     {
       /* Call the FNV msg hash library */
       Fnv32_t hash_val; 
@@ -602,11 +586,13 @@ char *message_name (struct emailinfo *email)
       return buffer;
     }
   else
-#endif /* HAVE_LIBFNV */
     {
+#endif /* HAVE_LIBFNV */
       sprintf (buffer, "%.4d", email->msgnum);
       return buffer;
+#ifdef HAVE_LIBFNV
     }
+#endif /* HAVE_LIBFNV */
 }
 
 /*
@@ -619,9 +605,9 @@ char *msg_href(struct emailinfo *to_email, struct emailinfo *from_email)
  * the buffer returned before the next call to this function.
  */
 {
-    static char buffer[MAXFILELEN+11];
-    trio_snprintf(buffer,MAXFILELEN+11, "<a href=\"%s\">",
-		    msg_relpath(to_email, from_email));
+    static char buffer[MAXFILELEN + 11];
+    trio_snprintf(buffer, MAXFILELEN + 11, "<a href=\"%s\">", 
+                   msg_relpath(to_email, from_email));
     return buffer;
 }
 
@@ -634,18 +620,15 @@ char *msg_relpath(struct emailinfo *to_email, struct emailinfo *from_email)
     static char buffer[MAXFILELEN];
     char *name;
 
-    name = message_name (to_email);
+    name = message_name(to_email);
 
     if (!from_email && to_email->subdir)
-        trio_snprintf(buffer, MAXFILELEN, "%s%s.%s",
-		  to_email->subdir->subdir, name, set_htmlsuffix);
-    else if(!to_email->subdir || to_email->subdir == from_email->subdir)
-        trio_snprintf(buffer, MAXFILELEN, "%s.%s",
-		  name, set_htmlsuffix);
+	trio_snprintf(buffer, MAXFILELEN, "%s%s.%s", to_email->subdir->subdir, name, set_htmlsuffix);
+    else if (!to_email->subdir || to_email->subdir == from_email->subdir)
+	trio_snprintf(buffer, MAXFILELEN, "%s.%s", name, set_htmlsuffix);
     else
-        trio_snprintf(buffer, MAXFILELEN, "%s%s%s.%s",
-		  to_email->subdir->rel_path_to_top,
-		  to_email->subdir->subdir, name, set_htmlsuffix);
+	trio_snprintf(buffer, MAXFILELEN, "%s%s%s.%s", to_email->subdir->rel_path_to_top, to_email->subdir->subdir, name, set_htmlsuffix);
+
     return buffer;
 }
 
@@ -654,33 +637,30 @@ char *articlehtmlfilename(struct emailinfo *email)
     char *buf;
     char *name;
 
-    name = message_name (email);
+    name = message_name(email);
 
-    trio_asprintf(&buf, "%s%s.%s", email->subdir ? email->subdir->full_path
-		  : set_dir, name, set_htmlsuffix);
+    trio_asprintf(&buf, "%s%s.%s", email->subdir ? email->subdir->full_path : set_dir, name, set_htmlsuffix);
     return buf;
 }
 
-char *htmlfilename(const char *file, struct emailinfo *email,
-		   const char *suffix)
+char *htmlfilename(const char *file, struct emailinfo *email, const char *suffix)
 {
     char *buf;
-    trio_asprintf(&buf, "%s%s%s%s", email && email->subdir
-		  ? email->subdir->full_path : set_dir,
-		  file, *suffix ? "." : "", suffix);
+
+    trio_asprintf(&buf, "%s%s%s%s", email && email->subdir ? email->subdir->full_path : set_dir, file, *suffix ? "." : "", suffix);
+
     return buf;
 }
 
 char *haofname(struct emailinfo *email)
 {
     char *buf;
-	trio_asprintf(&buf,"%s%s", 
-		email && email->subdir ? email->subdir->full_path : set_dir, 
-		HAOF_NAME);
+
+    trio_asprintf(&buf, "%s%s", email && email->subdir ? email->subdir->full_path : set_dir, HAOF_NAME);
+
     return buf;
 
 }
-
 
 /* matches_existing returns 0 if it finds a file with the same msgnum as
  argument eptr but different contents. A return value of 1 does not
@@ -693,15 +673,17 @@ int matches_existing(int msgnum)
   if (hashnumlookup(msgnum, &eptr) == NULL)
       return -1;
 
-  if(set_usegdbm) {
+  if (set_usegdbm) {
       char *indexname;
       GDBM_FILE gp;
       int num;
+#ifdef NOTUSED
       int num_added = 0;
+#endif
 
       trio_asprintf(&indexname, "%s%s", set_dir, GDBM_INDEX_NAME);
 
-      if((gp = gdbm_open(indexname, 0, GDBM_READER, 0, 0))) {
+      if ((gp = gdbm_open(indexname, 0, GDBM_READER, 0, 0))) {
 
 	/* we _can_ read the index */
 
@@ -709,7 +691,7 @@ int matches_existing(int msgnum)
 	datum key;
 	int max_num;
 
-	key.dptr = (char *) &num;
+	key.dptr = (char *)&num;
 	key.dsize = sizeof(num);
 
 	num = -1;
@@ -719,24 +701,26 @@ int matches_existing(int msgnum)
 	else
 	    max_num = atoi(content.dptr);
 
-	if (eptr->msgnum <= max_num)
-	{
+	if (eptr->msgnum <= max_num) {
 	  char *dp, *dp_end;
-	  char *name=NULL;
-	  char *email=NULL;
-	  char *date=NULL;
-	  char *msgid=NULL;
-	  char *inreply=NULL;
-	  char *fromdate=NULL;
-	  char *charset=NULL;
-	  char *isodate=NULL;
-	  char *isofromdate=NULL;
+	  char *name = NULL;
+	  char *email = NULL;
+	  char *date = NULL;
+	  char *msgid = NULL;
+	  char *fromdate = NULL;
+
+#ifdef NOTUSED
+	  char *inreply = NULL;
+	  char *charset = NULL;
+	  char *isodate = NULL;
+	  char *isofromdate = NULL;
+#endif
 
 	  num = eptr->msgnum;
-	  key.dptr = (char *) &num;
+	  key.dptr = (char *)&num;
 	  key.dsize = sizeof(num);
 	  content = gdbm_fetch(gp, key);
-	  if(!(dp = content.dptr)) {
+	  if (!(dp = content.dptr)) {
 	      return 1;
 	  }
 	  dp_end = dp + content.dsize;

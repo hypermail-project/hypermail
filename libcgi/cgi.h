@@ -31,6 +31,24 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include "../config.h"
+
+#ifdef NO_MACRO
+#undef isspace
+#undef isdigit
+#undef isalpha
+#undef isupper
+#undef islower
+#undef isxdigit
+#undef isalnum
+#undef ispunct
+#undef isprint
+#undef isgraph
+#undef iscntrl
+#undef isascii
+#endif
+
+
 
 #define MCODE_GET 1
 #define MCODE_POST 2

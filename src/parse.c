@@ -375,7 +375,8 @@ void crossindexthread2(int num)
     struct emailinfo *ep;
     if(!hashnumlookup(num, &ep)) {
 	char errmsg[512];
-	sprintf(errmsg, "internal error crossindexthread2 %d", num);
+        snprintf(errmsg, sizeof(errmsg), 
+                 "internal error crossindexthread2 %d", num);
 	progerr(errmsg);
     }
 
@@ -417,7 +418,10 @@ void crossindexthread2(int num)
 void crossindexthread1(struct header *hp)
 {
     int isreply;
+
+#ifndef FASTREPLYCODE
     struct reply *rp;
+#endif
 
     if (hp) {
 	crossindexthread1(hp->left);
@@ -737,7 +741,10 @@ char *getreply(char *line)
 static char *
 extract_rfc2047_content(char *iptr)
 {
-    char *end_ptr, *ptr, *blurb = NULL;
+    char *end_ptr, *ptr;
+#ifdef NOTUSED
+    char *blurb = NULL;
+#endif
     struct Push buff;
 
     INIT_PUSH(buff);
@@ -782,7 +789,9 @@ static char *mdecodeRFC2047(char *string, int length)
     char charset[129];
     char encoding[33];
     char dummy[129];
+#ifdef NOTUSED
     char equal;
+#endif
     int value;
 
     char didanything = FALSE;
@@ -1085,8 +1094,9 @@ int parsemail(char *mbox,	/* file name */
 	      char *dir, int inlinehtml,	/* if HTML should be inlined */
 	      int startnum)
 {
-    FILE *fp, *fpo;
+    FILE *fp;
     struct Push raw_text_buf;
+    FILE *fpo = NULL;
     char *date = NULL;
     char *subject = NULL;
     char *msgid = NULL;
@@ -1131,7 +1141,11 @@ int parsemail(char *mbox,	/* file name */
     char alternative_file[129];	/* file name where we store the non-inline alternatives */
     char alternative_lastfile[129];	/* last file name where we store the non-inline alternatives */
     int att_counter = 0;	/* used to generate a unique name for attachments */
-    struct hmlist *att_name_list = NULL, *att_name_last; /* keeps track of attachment file name used so far for this message */
+    /* 
+    ** keeps track of attachment file name used so far for this message 
+    */
+    struct hmlist *att_name_list = NULL; 
+    struct hmlist *att_name_last = NULL;
 
     /* -- end of alternative parser variables -- */
 
@@ -1182,8 +1196,8 @@ int parsemail(char *mbox,	/* file name */
     if (use_stdin || !mbox || !strcasecmp(mbox, "NONE"))
 	fp = stdin;
     else if ((fp = fopen(mbox, "r")) == NULL) {
-	sprintf(errmsg, "%s \"%s\".",
-		lang[MSG_CANNOT_OPEN_MAIL_ARCHIVE], mbox);
+        snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", 
+                 lang[MSG_CANNOT_OPEN_MAIL_ARCHIVE], mbox);
 	progerr(errmsg);
     }
     if(set_append) {
@@ -1521,7 +1535,9 @@ int parsemail(char *mbox,	/* file name */
 			}
 		    }
 		    else if (!strncasecmp(head->line, "Content-Base:", 13)) {
+#ifdef NOTUSED
 			char *ptr = head->line + 13;
+#endif
                         content=CONTENT_IGNORE;
 			/* we must make sure this is not parsed more times
 			   than this */
@@ -1557,7 +1573,8 @@ int parsemail(char *mbox,	/* file name */
 			}
 
 			if (alternativeparser) {
-			    struct body *next, *temp_bp;
+			    struct body *next;
+			    struct body *temp_bp = NULL;
 
 			    /* We are parsing alternatives... */
 
@@ -1871,12 +1888,10 @@ int parsemail(char *mbox,	/* file name */
 			    char code[64];
 
 			    sscanf(ptr, "%63s", code);
-			    sprintf(line, " ('%s' %s)\n",
-				    code,
-				    lang[MSG_ENCODING_IS_NOT_SUPPORTED]);
+                            snprintf(line, sizeof(line), " ('%s' %s)\n", code, 
+                                     lang[MSG_ENCODING_IS_NOT_SUPPORTED]);
 
-			    bp =
-				addbody(bp, &lp, line,
+			    bp = addbody(bp, &lp, line,
 					BODY_HTMLIZED | bodyflags);
 			}
 #if DEBUG_PARSE
@@ -2089,7 +2104,9 @@ int parsemail(char *mbox,	/* file name */
 				bodyflags &= ~BODY_ATTACHED;
 			    }
 			    if (alternativeparser) {
+#ifdef NOTUSED
 				struct body *next;
+#endif
 				/* we no longer have alternatives */
 				alternativeparser = FALSE;
 				/* reset the alternative variables (I think we can skip
@@ -2729,8 +2746,8 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
       return 0;
 
     if (set_linkquotes) {
-	sprintf(inreply_start, "<strong>%s:</strong> <a href=\"",
-		lang[MSG_IN_REPLY_TO]);
+        snprintf(inreply_start, sizeof(inreply_start), 
+                "<strong>%s:</strong> <a href=\"", lang[MSG_IN_REPLY_TO]);
     }
 
     /* prepare the name of the file that stores the message */
@@ -3009,7 +3026,7 @@ static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
 	        if (num_from_gdbm == -1) {
 		    if (is_empty_archive())
 		        return 0;
-		    sprintf(errmsg,
+                    snprintf(errmsg, sizeof(errmsg),
 			    "Error: This archive does not appear to be empty, "
 			    "and it has no gdbm file\n(%s). If you want to "
 			    "use incremental updates with the folder_by_date\n"
@@ -3018,14 +3035,15 @@ static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
 			    "usegdbm option.", GDBM_INDEX_NAME);
 		}
 		else
-		    sprintf(errmsg,
+                    snprintf(errmsg, sizeof(errmsg),
 			    "Error set_folder_by_date msg %d num_from_gdbm %d",
 			    first_read_body, num_from_gdbm);
 	    }
 	    else
-	        sprintf(errmsg, "folder_by_date with incremental update requires usegdbm option");
+                snprintf(errmsg, sizeof(errmsg), "folder_by_date with incremental update requires usegdbm option");
 #else
-	        sprintf(errmsg, "folder_by_date requires usegdbm option"
+                snprintf(errmsg, sizeof(errmsg),
+	                "folder_by_date requires usegdbm option"
 			". gdbm support has not been compiled into this"
 			" copy of hypermail. You probably need to install"
 			"gdbm and rerun configure.");
@@ -3122,7 +3140,7 @@ static int loadoldheadersfromGDBMindex(char *dir)
       trio_asprintf(&indexname, (dir[strlen(dir)-1] == '/') ? "%s%s" : "%s/%s",
 		    dir, GDBM_INDEX_NAME);
 
-      if(gp = gdbm_open(indexname, 0, GDBM_READER, 0, 0)) {
+      if ((gp = gdbm_open(indexname, 0, GDBM_READER, 0, 0))) {
 
 	/* we _can_ read the index */
 
@@ -3196,8 +3214,8 @@ static int loadoldheadersfromGDBMindex(char *dir)
 	      dp += strlen(dp) + 1;
 	  }
 
-	  if(emp = addhash(num, date, name, email, msgid, subject, inreply,
-			   fromdate, charset, isodate, isofromdate, bp)) {
+	  if ((emp = addhash(num, date, name, email, msgid, subject, inreply,
+			   fromdate, charset, isodate, isofromdate, bp))) {
 	      emp->exp_time = exp_time;
 	      emp->is_deleted = is_deleted;
 	      check_expiry(emp);
@@ -3409,14 +3427,15 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 	return;
 
     if (remove_maybes || set_linkquotes) {
-	sprintf(current_maybe_pattern,
-		"<LI><STRONG>%s:</STRONG> <A HREF=", lang[MSG_MAYBE_REPLY]);
-	sprintf(current_reply_pattern,
-		"<LI><STRONG>%s:</STRONG> <A HREF=", lang[MSG_REPLY]);
-	sprintf(current_nextinthread_pattern,
-		"<LI><STRONG>%s:</STRONG> <A HREF=", lang[MSG_NEXT_IN_THREAD]);
-	sprintf(current_next_pattern,
-		"<LI><STRONG>%s:</STRONG> <A HREF=", lang[MSG_NEXT_MESSAGE]); 
+        snprintf(current_maybe_pattern, sizeof(current_maybe_pattern), 
+                "<LI><STRONG>%s:</STRONG> <A HREF=", lang[MSG_MAYBE_REPLY]);
+        snprintf(current_reply_pattern, sizeof(current_reply_pattern), 
+                "<LI><STRONG>%s:</STRONG> <A HREF=", lang[MSG_REPLY]);
+        snprintf(current_nextinthread_pattern, 
+                sizeof(current_nextinthread_pattern), 
+                "<LI><STRONG>%s:</STRONG> <A HREF=", lang[MSG_NEXT_IN_THREAD]);
+        snprintf(current_next_pattern, sizeof(current_next_pattern), 
+                "<LI><STRONG>%s:</STRONG> <A HREF=", lang[MSG_NEXT_MESSAGE]);
     }
     if (set_linkquotes) {
       struct reply *rp;

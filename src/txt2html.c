@@ -70,8 +70,7 @@ static int convert_to_hrule(const char *line)
     int count_hrule_chars = 0;
     while (*line && isspace(*line))
 	++line;
-    while (*line == '-' || *line == '_' || *line == '~'
-	   || *line == '=' || *line == '*') {
+	while (*line == '-' || *line == '_' || *line == '~' || *line == '=' || *line == '*') {
 	if (!count_hrule_chars || *line == line[-1])
 	    ++count_hrule_chars;
 	else
@@ -94,7 +93,7 @@ static int find_vertical_repeats(const struct body *bp)
     i = (isquote(bp->line) ? strlen(get_quote_prefix()) : 0);
     if (i > strlen(bp->line))
 	return 0;
-    for ( ; i < MAXLINE; ++i) {
+	for (; i < MAXLINE; ++i) {
 	int j;
 	const struct body *bp2 = bp->next;
 	if (!bp->line[i] || i > strlen(bp2->line) || !bp2->line[i]) {
@@ -149,8 +148,7 @@ static int is_preformatted(const char *line)
     while (*line) {
 	if (isspace(*line)) {
 	    if (*line == '\t')
-		count_whitespace +=
-		    tab_width - (count_whitespace % tab_width);
+				count_whitespace += tab_width - (count_whitespace % tab_width);
 	    else
 		++count_whitespace;
 	    if (count_whitespace >= preformat_whitespace_min) {
@@ -174,9 +172,7 @@ static int is_preformatted(const char *line)
  * <LI>?
 */
 
-static void
-listprefix(char *line, struct Push *number,
-	   struct Push *prefix, struct Push *rawprefix)
+static void listprefix(char *line, struct Push *number, struct Push *prefix, struct Push *rawprefix)
 {
     const char *p;
     int is_prefix = 0;
@@ -242,11 +238,9 @@ static void set_list_indent(int n)
     list_indent[n * indent_width] = 0;
 }
 
-static int
-startlist(FILE *fp, const char *number,
-	  const char *prefix, const char *rawprefix)
+static int startlist(FILE *fp, const char *number, const char *prefix, const char *rawprefix)
 {
-    strcpy(list_prefix[listnum], prefix);
+    strcpy(list_prefix[listnum], prefix);	/* AUDIT biege: does it fit? */
     if (*number) {
 	/* It doesn't start with 1,a,A.  Let's not screw with it. */
 	if ((*number != '1') && (*number != 'a') && (*number != 'A'))
@@ -276,8 +270,8 @@ static void endlist(FILE *fp, int n)
 	    fprintf(fp, "\n%s</ol>\n", list_indent);
 	}
 	else {
-	    sprintf(errmsg, "Encountered list of unknown type %d\n",
-		    list[listnum - 1]);
+            snprintf(errmsg, sizeof(errmsg),
+                "Encountered list of unknown type %d\n", list[listnum - 1]);
 	    progerr(NULL);
 	}
     }
@@ -293,8 +287,8 @@ static char *continuelist(FILE *fp, char *line)
 	if (*p != '-' && *p != '=' && *p != 'o' && *p != '*')
 	    return line;
 	++p;
-	while (*p == p[-1] &&
-	       (*p == '-' || *p == '=' || *p == 'o' || *p == '*')) ++p;
+		while (*p == p[-1] && (*p == '-' || *p == '=' || *p == 'o' || *p == '*'))
+			++p;
 	while (*p && isspace(*p))
 	    ++p;
 	fprintf(fp, "%s<li> ", list_indent);
@@ -365,8 +359,7 @@ static char *liststuff(FILE *fp, char *line, int line_indent)
 
     /* Maybe we're going back up to a previous list */
     for (i = listnum - 1; (i >= 0) && strcmp(prefix, list_prefix[i]); --i) {
-	if (len > 1
-	    && !strcmp(PUSH_STRING(prefix_alternate), list_prefix[i]))
+		if (len > 1 && !strcmp(PUSH_STRING(prefix_alternate), list_prefix[i]))
 		break;
     }
     free(PUSH_STRING(prefix_alternate));
@@ -400,8 +393,7 @@ static char *liststuff(FILE *fp, char *line, int line_indent)
 	endlist(fp, listnum - i);
     }
     else if (!listnum || (i != listnum)) {
-	if ((line_indent > 0) || is_blank_prev
-	    || was_break || was_header || prior_was_hrule)
+		if ((line_indent > 0) || is_blank_prev || was_break || was_header || prior_was_hrule)
 	    islist |= startlist(fp, number, prefix, rawprefix);
 	else {
 	    free(prefix);
@@ -441,8 +433,7 @@ static int iscaps(const char *line)
     return found_enough_uppercase;
 }
 
-static char *unhyphenate1(struct Push *uwbuf, const char *next_line,
-			  char *line, int len)
+static char *unhyphenate1(struct Push *uwbuf, const char *next_line, char *line, int len)
 {
     struct Push buffer;
     while (*next_line && isalpha(*next_line))
@@ -451,8 +442,8 @@ static char *unhyphenate1(struct Push *uwbuf, const char *next_line,
 	return line;
     while (*next_line && strchr(")}].,:;'\">", *next_line))
 	PushByte(uwbuf, *next_line++);	/* include any punct with word */
-    if (isupper(PUSH_STRING(*uwbuf)[0]) &&
-	islower((PUSH_STRING(*uwbuf))[1])) return line;	/* capitalization probably means separate word */
+	if (isupper(PUSH_STRING(*uwbuf)[0]) && islower((PUSH_STRING(*uwbuf))[1]))
+		return line;	/* capitalization probably means separate word */
     INIT_PUSH(buffer);
     PushNString(&buffer, line, len - 2);
     PushString(&buffer, PUSH_STRING(*uwbuf));	/* concatenate 2 parts of word */
@@ -503,9 +494,7 @@ static char *unhyphenate_2nd_line(char *line)
 char *id, char *subject,
 	 int msgnum, char *inreply, const char *dir, 
 */
-void
-txt2html(FILE *fp, struct emailinfo *email, const struct body *bp,
-	 bool replace_quoted, int maybe_reply)
+void txt2html(FILE *fp, struct emailinfo *email, const struct body *bp, bool replace_quoted, int maybe_reply)
 {
     int is_caps_line = 0;
     int is_blank_line = 1;
@@ -531,12 +520,9 @@ txt2html(FILE *fp, struct emailinfo *email, const struct body *bp,
     if (in_pre_block > 1 && !isquote(line)) {
 	--in_pre_block;
     }
-    else if (in_pre_block && preformat_trigger_lines != 0
-	     && !is_preformatted(line) && !insig && !is_blank_line
-	     && !find_repetition(bp)
+	else if (in_pre_block && preformat_trigger_lines != 0 && !is_preformatted(line) && !insig && !is_blank_line && !find_repetition(bp)
 	     && !has_many_carets(line) && !has_many_carets(next_line)
-	     && (endpreformat_trigger_lines == 1
-		 || !is_preformatted(next_line))) {
+		 && (endpreformat_trigger_lines == 1 || !is_preformatted(next_line))) {
 	in_pre_block = 0;
 	fprintf(fp, "</pre>\n");
     }
@@ -556,13 +542,7 @@ txt2html(FILE *fp, struct emailinfo *email, const struct body *bp,
 	}
     }
 
-    if (!in_pre_block && !islist && endpreformat_trigger_lines != 0
-	&& !isquote(line) && !was_hrule
-	&& (preformat_trigger_lines == 0 || is_sig_start(line) ||
-	    find_repetition(bp) || has_many_carets(line) ||
-	    has_many_carets(next_line) || (is_preformatted(line) &&
-					   (preformat_trigger_lines == 1 ||
-					    is_preformatted(next_line))))) {
+	if (!in_pre_block && !islist && endpreformat_trigger_lines != 0 && !isquote(line) && !was_hrule && (preformat_trigger_lines == 0 || is_sig_start(line) || find_repetition(bp) || has_many_carets(line) || has_many_carets(next_line) || (is_preformatted(line) && (preformat_trigger_lines == 1 || is_preformatted(next_line))))) {
 	fprintf(fp, "<pre>\n");
 	in_pre_block = find_repetition(bp);	/* set #lines from find_vertical_repeats */
 	if (!in_pre_block)
@@ -570,24 +550,17 @@ txt2html(FILE *fp, struct emailinfo *email, const struct body *bp,
 	if (is_sig_start(line))
 	    insig = 1;
     }
-    if (!is_blank_line && !in_pre_block && !was_break && !was_caps
-	&& !was_hrule && !was_par && !islist && (is_blank_prev
-						 || (line_indent >
-						     prev_indent +
-						     par_indent))) {
+	if (!is_blank_line && !in_pre_block && !was_break && !was_caps && !was_hrule && !was_par && !islist && (is_blank_prev || (line_indent > prev_indent + par_indent))) {
 	fprintf(fp, "<p>\n");
 	was_par = 1;
     }
 
-    if (!islist && !in_pre_block && !is_blank_line && !inquote
-	&& !is_blank_prev && prev_line_length < short_line_length
-	&& !was_hrule && !was_par && !islist && !was_break) {
+	if (!islist && !in_pre_block && !is_blank_line && !inquote && !is_blank_prev && prev_line_length < short_line_length && !was_hrule && !was_par && !islist && !was_break) {
 	fprintf(fp, "<br>\n");
 	was_break = 1;
     }
 
-    if (unhyphenation && !is_blank_line && !in_pre_block && !inquote
-	&& !was_break && strlen(line) >= 2 && line[strlen(line) - 2] == '-') {
+	if (unhyphenation && !is_blank_line && !in_pre_block && !inquote && !was_break && strlen(line) >= 2 && line[strlen(line) - 2] == '-') {
 	char *new_line = unhyphenate(line, next_line);
 	if (new_line != line) {
 	    free(line);
@@ -608,8 +581,7 @@ txt2html(FILE *fp, struct emailinfo *email, const struct body *bp,
 	    ConvURLs(fp, chomp(line), email->msgid, email->subject);
 	    fprintf(fp, "</i><br>\n");
 	}
-	else if (handle_quoted_text(fp, email, bp, line, inquote, quote_num,
-				    replace_quoted, maybe_reply)) {
+		else if (handle_quoted_text(fp, email, bp, line, inquote, quote_num, replace_quoted, maybe_reply)) {
 	    ++quote_num;
 	    inquote = 1;
 	}

@@ -22,6 +22,9 @@
 # include <types.h>
 # include <time.h>
 #else
+# ifdef HAVE_STDLIB_H
+#  include <stdlib.h>
+# endif
 # include <sys/types.h>
 # ifdef TIME_WITH_SYS_TIME
 #  include <sys/time.h>
@@ -34,5 +37,20 @@
 #  endif
 # endif
 #endif				/* defined (vms) */
+
+#ifdef NO_MACRO
+#undef isspace
+#undef isdigit
+#undef isalpha
+#undef isupper
+#undef islower
+#undef isxdigit
+#undef isalnum
+#undef ispunct
+#undef isprint
+#undef isgraph
+#undef iscntrl
+#undef isascii
+#endif
 
 time_t get_date (const char *p, const time_t *now);

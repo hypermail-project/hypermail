@@ -65,17 +65,18 @@ int uudecode(FILE *input,	/* get file data from (if needed) */
     register int n;
     register char ch, *p;
     int mode;
-    char buf[MAXPATHLEN];
+    char buf[MAXPATHLEN] = { 0 };
+    char scanfstring[MAXPATHLEN] = { 0 };
     int outlen = 0;
 
     if (length)
 	*length = 0;		/* in case we abort early */
     
-
-    buf[0] = 0;
     if (init) {
 	/* search for header line */
-	while (2 != sscanf(iptr, "begin %o %s", &mode, buf)) {
+	/* AUDIT biege: BOF in buf! */
+	sprintf(scanfstring, "begin %%o %%%us", sizeof(buf));
+	while (2 != sscanf(iptr, scanfstring, &mode, buf)) {
 	    if (!fgets(buf, MAXPATHLEN, input)) {
 		return 2;
 	    }
@@ -94,8 +95,7 @@ int uudecode(FILE *input,	/* get file data from (if needed) */
 
 	/* first, just make sure this isn't the end line: */
 
-	if (!strcmp(buf, "end") || !strcmp(buf, "end\n") ||
-	    !strcmp(buf, "end\r\n")) {
+		if (!strcmp(buf, "end") || !strcmp(buf, "end\n") || !strcmp(buf, "end\r\n")) {
 	    /* muu->state = UU_HASENDED; */
 	    if (length)
 		*length = 0;
@@ -106,8 +106,7 @@ int uudecode(FILE *input,	/* get file data from (if needed) */
 	for (++p; n > 0; p += 4, n -= 3) {
 	    if (n >= 3) {
 
-		if (!(IS_DEC(*p) && IS_DEC(*(p + 1)) &&
-		      IS_DEC(*(p + 2)) && IS_DEC(*(p + 3))))
+		if (!(IS_DEC(*p) && IS_DEC(*(p + 1)) && IS_DEC(*(p + 2)) && IS_DEC(*(p + 3))))
 		    return 33;
 
 		ch = DEC(p[0]) << 2 | DEC(p[1]) >> 4;

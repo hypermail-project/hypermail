@@ -99,15 +99,9 @@ static BIGRAM_TYPE reverse_bits(BIGRAM_TYPE i)
 #define ENCODE_TOKEN(a)	encode_token((a), strlen(a))
 #define COMPARE_TOKEN(a, b)	token_digest_order(token_length, token_crc32, (b))
 
-static int
-token_digest_order(const int token_length, const unsigned int token_crc32,
-		   const struct search_text *const p)
+static int token_digest_order(const int token_length, const unsigned int token_crc32, const struct search_text *const p)
 {
-    return
-	((token_length > p->token_length) ? 1
-	 : (token_length < p->token_length) ? -1
-	 : (token_crc32 > p->token_crc32) ? 1
-	 : (token_crc32 < p->token_crc32) ? -1 : 0);
+	return ((token_length > p->token_length) ? 1 : (token_length < p->token_length) ? -1 : (token_crc32 > p->token_crc32) ? 1 : (token_crc32 < p->token_crc32) ? -1 : 0);
 }
 
 /* crc32.c -- compute the CRC-32 of a data stream
@@ -120,7 +114,7 @@ http://sunsite.doc.ic.ac.uk/public/packages//NetBSD-current/src/lib/libz/zlib.h
 
 static unsigned int crc32_lower(register const unsigned char *buf,	/* pointer to bytes to pump through */
 				int len)
- {				/* number of bytes in buf[] */
+{				/* number of bytes in buf[] */
     /* Run a set of bytes through the crc shift register.  If buf is a NULL
        pointer, then initialize the crc shift register contents instead.
        Return the current crc in either case. */
@@ -221,8 +215,7 @@ static int encode_token(const char *token
 #else
 	r = token_length - p->token_length;
 	if (!r)
-	    r = ((token_crc32 > p->token_crc32) ? 1
-		 : (token_crc32 < p->token_crc32) ? -1 : 0);
+			r = ((token_crc32 > p->token_crc32) ? 1 : (token_crc32 < p->token_crc32) ? -1 : 0);
 #endif				/* !BY_TOKEN_STRING */
 	if (!r)
 	    return p->itok;
@@ -247,12 +240,9 @@ static int addb(const char *token, struct body *bp)
 #endif
     static struct search_text *next_token = NULL;
     if (!text_tree) {
-	next_token =
-	    (struct search_text *)malloc(max_tokens *
-					 sizeof(struct search_text));
+	next_token = (struct search_text *)malloc(max_tokens * sizeof(struct search_text));
 	if (!next_token) {
-	    sprintf(errmsg, "Couldn't allocate %d bytes of memory.",
-		    max_tokens * sizeof(struct search_text));
+	    snprintf(errmsg, sizeof(errmsg), "Couldn't allocate %d bytes of memory.", max_tokens * sizeof(struct search_text));
 	    progerr(NULL);
 	}
 	memset(next_token, 0, max_tokens * sizeof(struct search_text));
@@ -264,8 +254,7 @@ static int addb(const char *token, struct body *bp)
 	if (!p) {
 	    *pp = p = next_token++;
 	    if (next_token >= text_tree + max_tokens) {
-		sprintf(errmsg, "Too many distinct tokens(%d)",
-			max_tokens);
+		snprintf(errmsg, sizeof(errmsg), "Too many distinct tokens(%d)", max_tokens);
 		progerr(NULL);
 	    }
 	    p->left = p->right = NULL;
@@ -281,8 +270,7 @@ static int addb(const char *token, struct body *bp)
 	    p->count = 1;
 #endif
 	    if (!next_itoken >= max_tokens) {
-		sprintf(errmsg,
-			"Internal error - too many distinct tokens.");
+		snprintf(errmsg, sizeof(errmsg), "Internal error - too many distinct tokens.");
 		progerr(NULL);
 	    }
 	    return p->itok;
@@ -304,8 +292,7 @@ static int addb(const char *token, struct body *bp)
 static int bi_times_entered;
 
 
-static void
-add_bigram(BIGRAM_TYPE b1, BIGRAM_TYPE b2, struct body *bp, char *ptr)
+static void add_bigram(BIGRAM_TYPE b1, BIGRAM_TYPE b2, struct body *bp, char *ptr)
 {
     static struct bigram_tree_entry *next_bigram = NULL;
     struct bigram_tree_entry **pp = &bigram_tree;
@@ -314,17 +301,12 @@ add_bigram(BIGRAM_TYPE b1, BIGRAM_TYPE b2, struct body *bp, char *ptr)
     if (!bigram_tree) {
 	if (0)
 	    printf("bigram_count %d\n\n", bigram_count);
-	bigram_tree =
-	    (struct bigram_tree_entry *)malloc(bigram_count *
-					       sizeof(struct
-						      bigram_tree_entry));
+		bigram_tree = (struct bigram_tree_entry *)malloc(bigram_count * sizeof(struct bigram_tree_entry));
 	if (!bigram_tree) {
-	    sprintf(errmsg, "Couldn't allocate %d bytes of memory.",
-		    bigram_count * sizeof(struct bigram_tree_entry));
+			snprintf(errmsg, sizeof(errmsg), "Couldn't allocate %d bytes of memory.", bigram_count * sizeof(struct bigram_tree_entry));
 	    progerr(NULL);
 	}
-	memset(bigram_tree, 0,
-	       bigram_count * sizeof(struct bigram_tree_entry));
+		memset(bigram_tree, 0, bigram_count * sizeof(struct bigram_tree_entry));
 	next_bigram = bigram_tree;
     }
     ++bi_times_entered;
@@ -392,8 +374,7 @@ static struct body *next_body_pos(struct body *bp, char **ptr)
     return bp;
 }
 
-struct body *tokenize_body(struct body *bp, char *token, char **ptr,
-			   int *bigram_index, int ignore)
+struct body *tokenize_body(struct body *bp, char *token, char **ptr, int *bigram_index, int ignore)
 {
     int i = 0;
     static const char *ignore_words[] = {
@@ -475,16 +456,12 @@ static void add_search_text(struct body *bp, int msgnum)
     char token[MAXLINE];
     if (!start_time)
 	start_time = time(NULL);
-    while ((bp = tokenize_body(bp, token, &ptr, &bigram_index, TRUE)) !=
-	   NULL) {
+	while ((bp = tokenize_body(bp, token, &ptr, &bigram_index, TRUE)) != NULL) {
 	addb(token, bp);
 	++bigram_count;
     }
     if (0)
-	printf
-	    ("avg b %d avg bi %d (%d) msgnum %d %d allocated %d elapsed %ld\n",
-	     b_loops_done / b_times_entered, 0, bi_times_entered, msgnum,
-	     tree_alloc / 1024, time(NULL) - start_time, next_itoken);
+		printf("avg b %d avg bi %d (%d) msgnum %d %d allocated %d elapsed %ld\n", b_loops_done / b_times_entered, 0, bi_times_entered, msgnum, tree_alloc / 1024, time(NULL) - start_time, next_itoken);
 }
 
 static void add_bigrams(struct body *bp, int msgnum)
@@ -499,8 +476,7 @@ static void add_bigrams(struct body *bp, int msgnum)
     int itok;
     if (!start_time)
 	start_time = time(NULL);
-    while ((bp = tokenize_body(bp, token, &ptr, &bigram_index, TRUE)) !=
-	   NULL) {
+	while ((bp = tokenize_body(bp, token, &ptr, &bigram_index, TRUE)) != NULL) {
 	itok = ENCODE_TOKEN(token);
 	if (last_itok)
 	    add_bigram(last_itok, itok, bp, ptr);
@@ -508,10 +484,7 @@ static void add_bigrams(struct body *bp, int msgnum)
 	last_itok = itok;
     }
     if (0 && b_times_entered && bi_times_entered)
-	printf
-	    ("avg b %d msgnum %d %d allocated %d elapsed %ld\n",
-	     b_loops_done / b_times_entered, msgnum,
-	     tree_alloc / 1024, time(NULL) - start_time, next_itoken);
+		printf("avg b %d msgnum %d %d allocated %d elapsed %ld\n", b_loops_done / b_times_entered, msgnum, tree_alloc / 1024, time(NULL) - start_time, next_itoken);
 }
 
 static void add_old_replies()
@@ -530,11 +503,9 @@ static void add_old_replies()
 #ifdef FASTREPLYCODE
 	    struct emailinfo *email2;
 	    hashnumlookup(rp2->frommsgnum, &email2);
-	    replylist = addreply2(replylist, email2, rp2->data, 0,
-				  &replylist_end);
+			replylist = addreply2(replylist, email2, rp2->data, 0, &replylist_end);
 #else
-	    replylist = addreply(replylist, rp2->frommsgnum, rp2->data, 0,
-				 &replylist_end);
+			replylist = addreply(replylist, rp2->frommsgnum, rp2->data, 0, &replylist_end);
 #endif
 	}
     }
@@ -560,8 +531,7 @@ static void find_replyto_from_html(int num)
 #ifdef FASTREPLYCODE
 		    struct emailinfo *email2;
 		    if (hashnumlookup(msgn, &email2))
-		        replylist_tmp = addreply2(replylist_tmp, email2,
-						  ep, 0, NULL);
+						replylist_tmp = addreply2(replylist_tmp, email2, ep, 0, NULL);
 #else
 		    replylist_tmp = addreply(replylist_tmp, msgn, ep, 0, NULL);
 #endif
@@ -581,8 +551,7 @@ void analyze_headers(int max_num)
     int min_search_msgnum = 0;
     int num = max_num;
 
-    if (set_searchbackmsgnum > 0 && set_increment
-	&& num - set_searchbackmsgnum > min_search_msgnum)
+	if (set_searchbackmsgnum > 0 && set_increment && num - set_searchbackmsgnum > min_search_msgnum)
 	min_search_msgnum = num - set_searchbackmsgnum;
 
     for (i = 0; i < num; ++i)
@@ -616,9 +585,7 @@ static void print_count(struct search_text *t)
 	print_count(t->right);
 }
 
-static int
-better_match(struct body *bp, const char *matched_string,
-	     const char *last_matched_string)
+static int better_match(struct body *bp, const char *matched_string, const char *last_matched_string)
 {
     int i;
     const char *ptr = bp->line;
@@ -626,9 +593,7 @@ better_match(struct body *bp, const char *matched_string,
 	int last_matches = (last_matched_string[i] == *ptr);
 	int new_matches = (matched_string[i] == *ptr);
 	if (0)
-	    printf("better_match? %d,%d @ %d\n%.70s\nVS:\n%.70s\n",
-		   new_matches, last_matches, i, last_matched_string + i,
-		   matched_string + i);
+			printf("better_match? %d,%d @ %d\n%.70s\nVS:\n%.70s\n", new_matches, last_matches, i, last_matched_string + i, matched_string + i);
 	if (!new_matches)
 	    return 0;
 	if (!last_matches)
@@ -638,17 +603,14 @@ better_match(struct body *bp, const char *matched_string,
 	    if (!bp)
 		break;
 	    ptr = bp->line;
-	    if (last_matched_string[i] == '\n' ||
-		matched_string[i] == '\n') ++i;
+			if (last_matched_string[i] == '\n' || matched_string[i] == '\n')
+				++i;
 	}
     }
     return 0;
 }
 
-static void
-check_match(struct bigram_list *bigram, struct body *bp, char *ptr,
-	    int max_msgnum, String_Match * match_info,
-	    const char *match_start_ptr, const char *exact_line)
+static void check_match(struct bigram_list *bigram, struct body *bp, char *ptr, int max_msgnum, String_Match * match_info, const char *match_start_ptr, const char *exact_line)
 {
     int match_len = 1;
     int alloc_len = 0;
@@ -670,8 +632,7 @@ check_match(struct bigram_list *bigram, struct body *bp, char *ptr,
 	    bp2 = tokenize_body(bp2, token2, &ptr2, &b2_index, TRUE);
 	    bp3 = tokenize_body(bp3, token3, &ptr3, &b_index, TRUE);
 	    if (0)
-		printf("compare_match: %d %s, %20.20s\n", match_len,
-		       token3, ptr3);
+				printf("compare_match: %d %s, %20.20s\n", match_len, token3, ptr3);
 	    if (!bp2 || !bp3)
 		break;
 	    if (ENCODE_TOKEN(token2) != ENCODE_TOKEN(token3))
@@ -693,12 +654,8 @@ check_match(struct bigram_list *bigram, struct body *bp, char *ptr,
 	    ++match_len_bytes;
 	}
 	if (0)
-	    printf("compare_match: %d %d msgnum %d\n", match_len,
-		   match_info->match_len_tokens, msgnum);
-	if (match_len > match_info->match_len_tokens ||
-	    (match_len == match_info->match_len_tokens &&
-	     better_match(bp, exact_line,
-			  match_info->last_matched_string))) {
+			printf("compare_match: %d %d msgnum %d\n", match_len, match_info->match_len_tokens, msgnum);
+		if (match_len > match_info->match_len_tokens || (match_len == match_info->match_len_tokens && better_match(bp, exact_line, match_info->last_matched_string))) {
 	    match_info->match_len_tokens = match_len;
 	    match_info->match_len_bytes = match_len_bytes;
 	    match_info->msgnum = msgnum;
@@ -717,21 +674,17 @@ check_match(struct bigram_list *bigram, struct body *bp, char *ptr,
 	    for (bp3 = bigram->bp->next; bp3; bp3 = bp3->next) {
 		char *p = match_info->last_matched_string;
 		int add_len = strlen(bp3->line);
-		if (match_len + add_len + 2 > alloc_len)
-		{
-		    alloc_len = 2*(match_len + add_len + 2);
-		    match_info->last_matched_string =
-		        (char *)realloc(p, alloc_len);
+				if (match_len + add_len + 2 > alloc_len) {
+					alloc_len = 2 * (match_len + add_len + 2);
+					match_info->last_matched_string = (char *)realloc(p, alloc_len);
 		}
 		strcat(match_info->last_matched_string + match_len, bp3->line);
 		match_len += add_len;
-		if (add_len > 0 && bp3->line[add_len-1] != '\n')
-		    strcat(match_info->last_matched_string + match_len++,"\n");
+				if (add_len > 0 && bp3->line[add_len - 1] != '\n')
+					strcat(match_info->last_matched_string + match_len++, "\n");
 	    }
 	    if (0)
-		printf("%d +++ %s; %s\nbp->line %s\n", bigram->bp->msgnum,
-		       match_info->last_matched_string,
-		       match_info->stop_match, bp->line);
+				printf("%d +++ %s; %s\nbp->line %s\n", bigram->bp->msgnum, match_info->last_matched_string, match_info->stop_match, bp->line);
 	}
     }
 }
@@ -740,15 +693,13 @@ check_match(struct bigram_list *bigram, struct body *bp, char *ptr,
 ** Find the best match for a line from the bodies of prior messages  
 */
 
-int search_for_quote(char *search_line, char *exact_line, int max_msgnum,
-		     String_Match * match_info)
+int search_for_quote(char *search_line, char *exact_line, int max_msgnum, String_Match * match_info)
 {
     char *ptr = search_line;
     char token[MAXLINE];
     int last_itok = 0;
     int search_len = strlen(search_line);
-    const char *stop_ptr =
-	search_line + (search_len >= 80 ? 40 : (search_len + 1) / 2);
+	const char *stop_ptr = search_line + (search_len >= 80 ? 40 : (search_len + 1) / 2);
     static int count_tokens = 0;
     static int count_matches = 0;
     static int count_searched = 0;
@@ -778,22 +729,16 @@ int search_for_quote(char *search_line, char *exact_line, int max_msgnum,
 	struct bigram_list *bigram;
 	bigram = find_bigram(last_itok, itok);
 	if (!bigram)
-	    printf
-		("Warning, internal inconsistency in search_for_quote:\n(%d,%d) %s %d best %d, msg %d %s || %s\n",
-		 last_itok, itok, token, dummy,
-		 match_info->match_len_tokens, max_msgnum, ptr,
-		 search_line);
+			printf("Warning, internal inconsistency in search_for_quote:\n(%d,%d) %s %d best %d, msg %d %s || %s\n", last_itok, itok, token, dummy, match_info->match_len_tokens, max_msgnum, ptr, search_line);
 	++count_tokens;
 	while (bigram) {
 	    ++count_matches;
-	    check_match(bigram, bp, ptr, max_msgnum,
-			match_info, match_start_ptr, exact_line);
+			check_match(bigram, bp, ptr, max_msgnum, match_info, match_start_ptr, exact_line);
 	    if (match_info->match_len_bytes == search_len)
 		break;
 	    bigram = bigram->next;
 	}
-	if (match_info->last_matched_string != NULL
-	    && strlen(match_info->last_matched_string) > search_len / 2)
+		if (match_info->last_matched_string != NULL && strlen(match_info->last_matched_string) > search_len / 2)
 	    break;
 	if (ptr > stop_ptr)	/* very little chance of improving match */
 	    break;		/* in 2nd half of string */
@@ -805,30 +750,19 @@ int search_for_quote(char *search_line, char *exact_line, int max_msgnum,
 	tokenize_body(bp, token, &next_exact_ptr, &dummy, TRUE);
     }
     if (0)
-	printf("%d times %d searches %d tokens %d matches tries %f\n",
-	       max_msgnum, count_searched,
-	       count_tokens, count_matches,
-	       (float)count_matches / count_tokens);
+		printf("%d times %d searches %d tokens %d matches tries %f\n", max_msgnum, count_searched, count_tokens, count_matches, (float)count_matches / count_tokens);
     len = match_info->match_len_bytes;
     if (max_msgnum == -1)
-	printf("best_match_len %d (%d) len %d search_len %d %d; %s.\n",
-	       match_info->match_len_tokens, match_info->msgnum, len,
-	       search_len, match_info->match_len_bytes,
-	       match_info->last_matched_string);
-    if (match_info->match_len_tokens > 1 &&
-	(len > search_len / 2 || len > 40)) {
+		printf("best_match_len %d (%d) len %d search_len %d %d; %s.\n", match_info->match_len_tokens, match_info->msgnum, len, search_len, match_info->match_len_bytes, match_info->last_matched_string);
+	if (match_info->match_len_tokens > 1 && (len > search_len / 2 || len > 40)) {
 	if ((ptr = strchr(match_info->last_matched_string, '\n')) != NULL)
 	    *ptr = 0;		/* multi-line used for compares in check_match, but would screw up line-by-line compare outside */
 	return TRUE;
     }
-    if (match_info->match_len_tokens > 1
-	&& (len > search_len / 2 || len > 40)
+	if (match_info->match_len_tokens > 1 && (len > search_len / 2 || len > 40)
 	&& len > match_info->match_len_bytes / 2)
 	if (0)
-	    printf
-		("#almost %d best_match_len %d len %d search_len %d %d.\n",
-		 max_msgnum, match_info->match_len_tokens, len, search_len,
-		 match_info->match_len_bytes);
+			printf("#almost %d best_match_len %d len %d search_len %d %d.\n", max_msgnum, match_info->match_len_tokens, len, search_len, match_info->match_len_bytes);
 
     if (match_info->last_matched_string != NULL)
 	free(match_info->last_matched_string);

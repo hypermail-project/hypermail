@@ -77,6 +77,21 @@
 #define GDBM 1
 #endif
 
+#ifdef NO_MACRO
+#undef isspace
+#undef isdigit
+#undef isalpha
+#undef isupper
+#undef islower
+#undef isxdigit
+#undef isalnum
+#undef ispunct
+#undef isprint
+#undef isgraph
+#undef iscntrl
+#undef isascii
+#endif
+
 /*
 * this redefines the standard *printf() to use ours 
 */
