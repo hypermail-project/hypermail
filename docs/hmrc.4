@@ -49,7 +49,8 @@ put a '.' in the value.  It would result in "file..html", probably
 not what you want. 
 .TP
 .B language = two letter language specification
-This is a two-letter string specifying the default language to use.
+This is a two-letter string specifying the default language to use, or a
+longer string specifying a language and locale.
 Set this the value of the language table you wish to use when running
 and generating archives. 
 
@@ -62,9 +63,12 @@ and generating archives.
       fi - Finnish
       fr - French
       is - Icelandic 
-      se - Swedish
+      sv - Swedish
 
 .nr
+The directory /usr/share/i18n/locales on many systems has the locale
+codes that are available on that system.
+
 .TP
 .B uselock = boolean_number
 Controls whether to use hypermail's built-in locking mechanism.  By default,
@@ -451,15 +455,6 @@ Set this to the list's submission address.  When enabled, this can be
 used to submit a new message to the list served by the hypermail archive. 
 .B "NONE" 
 means don't use it. 
-.TP
-.B body = html <BODY> statement
-This is the 
-.B <BODY> 
-line to use when generating the HTML pages.  Set this to 
-.B "NONE" 
-to use the builtin 
-.B <BODY> 
-line by default.
 .TP
 .B icss_url = "URL"
 This will link an external stylesheet found at the given URL to
