@@ -58,6 +58,8 @@ extern bool set_usetable;
 extern bool set_indextable;
 extern bool set_iquotes;
 extern bool set_eurodate;
+extern bool set_gmtime;
+extern bool set_isodate;
 extern bool set_require_msgids;
 extern bool set_discard_dup_msgids;
 extern bool set_usemeta;

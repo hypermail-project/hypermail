@@ -34,6 +34,8 @@ bool set_usetable;
 bool set_indextable;
 bool set_iquotes;
 bool set_eurodate;
+bool set_gmtime;
+bool set_isodate;
 bool set_require_msgids;
 bool set_discard_dup_msgids;
 bool set_usemeta;
@@ -240,6 +242,15 @@ struct Config cfg[] = {
     {"eurodate", &set_eurodate, BFALSE, CFG_SWITCH,
      "# Set this to On to display article received dates with\n"
      "# days before months instead of months before days.\n"},
+
+    {"isodate", &set_isodate, BFALSE, CFG_SWITCH,
+     "# Set this to On to display article received dates in\n"
+     "# YYYY-MM-DD HH:MM:SS format. If used with the gmtime option, a\n"
+     "# Z will be inserted between the DD and HH.\n"},
+
+    {"gmtime", &set_gmtime, BFALSE, CFG_SWITCH,
+     "# Set this to On to display article received dates using\n"
+     "# Greenwich Mean Time (UTC) rather than local time.\n"},
 
     {"discard_dup_msgids", &set_discard_dup_msgids, BTRUE, CFG_SWITCH,
      "# Set this to Off to accept messages with a Message-ID matching\n"

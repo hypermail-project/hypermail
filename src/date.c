@@ -78,11 +78,13 @@ char *getlocaltime(void)
 {
     static char s[DATESTRLEN];
     time_t tp;
+    struct tm *tmptr;
 
     time(&tp);
+    tmptr = (set_gmtime ? gmtime(&tp) : localtime(&tp));
 
     if (set_dateformat != NULL) {
-	strftime(s, DATESTRLEN, set_dateformat, localtime(&tp));
+	strftime(s, DATESTRLEN, set_dateformat, tmptr);
         /* 
 	 * Need to check if the timezone %Z was specified. 
 	 * If so do not print it out automatically.
@@ -92,11 +94,15 @@ char *getlocaltime(void)
     }
     else {
 	if (set_eurodate)
-	    strftime(s, DATESTRLEN, "%a %d %b %Y - %H:%M:%S",
-		     localtime(&tp));
+	    strftime(s, DATESTRLEN, "%a %d %b %Y - %H:%M:%S", tmptr);
+	else if (set_isodate) {
+	    if (set_gmtime)
+	        strftime(s, DATESTRLEN, "%Y-%m-%dZ%H:%M:%S", tmptr);
+	    else
+	        strftime(s, DATESTRLEN, "%Y-%m-%d %H:%M:%S", tmptr);
+	}
 	else
-	    strftime(s, DATESTRLEN, "%a %b %d %Y - %H:%M:%S",
-		     localtime(&tp));
+	    strftime(s, DATESTRLEN, "%a %b %d %Y - %H:%M:%S", tmptr);
 
         sprintf(s, "%s %s", s, timezonestr);
     }
@@ -112,7 +118,8 @@ void gettimezone(void)
     time_t tp;
 
     time(&tp);
-    strftime(timezonestr, TIMEZONELEN, "%Z", localtime(&tp));
+    strftime(timezonestr, TIMEZONELEN, "%Z",
+	     set_gmtime ? gmtime(&tp) : localtime(&tp));
 }
 
 /*
@@ -124,18 +131,18 @@ void getthisyear(void)
     time_t tp;
 
     time(&tp);
-    strftime(thisyear, YEARLEN, "%Y", localtime(&tp));
+    strftime(thisyear, YEARLEN, "%Y", set_gmtime ? gmtime(&tp) : localtime(&tp));
 }
 
 int year_of_datenum(time_t t)
 {
-  struct tm *tptr = localtime(&t);
+  struct tm *tptr = (set_gmtime ? gmtime(&t) : localtime(&t));
   return tptr->tm_year + 1900;
 }
 
 int month_of_datenum(time_t t)
 {
-  struct tm *tptr = localtime(&t);
+  struct tm *tptr = (set_gmtime ? gmtime(&t) : localtime(&t));
   return tptr->tm_mon;
 }
 
@@ -147,17 +154,22 @@ int month_of_datenum(time_t t)
 char *getdatestr(time_t yearsecs)
 {
     static char date[DATESTRLEN];
+    struct tm *tmptr = (set_gmtime ? gmtime(&yearsecs) : localtime(&yearsecs));
 
     if (set_dateformat != NULL) {
-	strftime(date, DATESTRLEN, set_dateformat, localtime(&yearsecs));
+	strftime(date, DATESTRLEN, set_dateformat, tmptr);
     }
     else {
 	if (set_eurodate)
-	    strftime(date, DATESTRLEN, "%a %d %b %Y - %H:%M:%S %Z",
-		     localtime(&yearsecs));
+	    strftime(date, DATESTRLEN, "%a %d %b %Y - %H:%M:%S %Z", tmptr);
+	else if (set_isodate) {
+	    if (set_gmtime)
+	        strftime(date, DATESTRLEN, "%Y-%m-%dZ%H:%M:%S", tmptr);
+	    else
+	        strftime(date, DATESTRLEN, "%Y-%m-%d %H:%M:%S", tmptr);
+	}
 	else
-	    strftime(date, DATESTRLEN, "%a %b %d %Y - %H:%M:%S %Z",
-		     localtime(&yearsecs));
+	    strftime(date, DATESTRLEN, "%a %b %d %Y - %H:%M:%S %Z", tmptr);
     }
     return date;
 }
