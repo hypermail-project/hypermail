@@ -96,7 +96,14 @@ This shows the version information for the executing Hypermail.
 Once displayed, Hypermail exits without doing any processing.
 .TP
 .B \-u
-This updates archives by one message only.  With this option, only one email message will be read in from a file or standard input.  This message will be added to the end of the existing HTML file archive and will be integrated into it by links and cross-references.  All archive index files will be regenerated to include the new message.
+This option tells Hypermail to add message(s) to the end of the existing HTML file archive and integrate them into it by links and cross-references. All archive index files will be regenerated to include the new message.
+ Hypermail used to require that you only send it one message at a time when
+using the -u option, but it should now work reasonably when
+given mailboxes containing multiple messages.
+ When using the -u option, don't send any messages that
+Hypermail has already processed. If you want Hypermail to recognize that
+some messages are old messages that shouldn't be added to the archive again,
+send it a mailbox with a complete set of messages and avoid the -u option. 
 .TP
 .B \-x
 This tells Hypermail to explicitly overwrite any previous HTML files that may exist.  Use this option only when it is desirable to completely rewrite the entire archive.
@@ -533,5 +540,10 @@ Bernhard Reiter <bernhard@climate2.geog.uwm.edu>
 Hisashi Gotoh <gotoh@horae.dti.ne.jp>
 David Eisner <cradle@glue.umd.edu>
 Andy Yoder <ayoder@heisenbug.org>
+Peter Karlsson <peter@softwolves.pp.se>
+Moritz Willers <Moritz.Willers@ubsw.com>
+David Bau <davidbau@hotmail.com>
+Brian Kirkby <bkirkby@Concentrico.net>
+William King <William.King@dadaboom.com>
 .nr
 .TP

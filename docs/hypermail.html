@@ -89,7 +89,7 @@ Options:
   -s htmlsuffix : HTML file suffix (.html, .htm, ..)
   -t            : Use Tables
   -T            : Use index tables
-  -u            : Update archive by one article
+  -u            : Append all input messages
   -v            : Show configuration variables only
   -V            : Show version information and exit
   -x            : Overwrite previous messages
@@ -214,7 +214,11 @@ The <STRONG>-u</STRONG> option tells Hypermail to add message(s) to the end of t
 using the <STRONG>-u</STRONG> option, but it should now work reasonably when
 given mailboxes containing multiple messages.
 <P>
-If the mailbox that is being read from is an archive that new messages are always being added to, don't use either of these options. Hypermail will then read in all the messages given it but will only write new messages that have been appended to the mailbox.
+When using the <STRONG>-u</STRONG> option, don't send any messages that
+Hypermail has already processed. If you want Hypermail to recognize that
+some messages are old messages that shouldn't be added to the archive again,
+send it a mailbox with a complete set of messages and avoid the
+<STRONG>-u</STRONG> option. 
 <P>
 <PRE>
    example 1: cat "one.letter" | hypermail -i -u -d "/wu-ftpd/mail-archives"
@@ -596,7 +600,7 @@ to <A HREF="mailto:hypermail-bugs@landfield.com">&lt;hypermail-bugs@landfield.co
 </EM>
 <P>
 <SMALL><EM><STRONG>
-Last updated October 9, 1999
+Last updated December 26, 2001
 </STRONG></EM></SMALL>
 
 </BODY>
