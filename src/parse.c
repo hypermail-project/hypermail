@@ -2026,7 +2026,7 @@ int parsemail(char *mbox,	/* file name */
 		    require_filter[pos] = FALSE;
 		for (pos = 0; pos < require_filter_full_len; ++pos)
 		    require_filter_full[pos] = FALSE;
-		if (set_txtsuffix)
+		if (set_txtsuffix && emp)
 		    write_txt_file(emp, &raw_text_buf);
 
 		if (hasdate)
