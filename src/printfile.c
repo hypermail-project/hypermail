@@ -205,7 +205,7 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
     title = maprintf("%s: %s", label, rp = convchars(subject));
     free(rp);
 
-    if (strlen(title) > TITLESTRLEN) {
+    if (!set_iso2022jp && strlen(title) > TITLESTRLEN) {
 	rp = title + (TITLESTRLEN - 1);
 	*rp-- = '\0';
     }

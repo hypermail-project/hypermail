@@ -116,6 +116,7 @@
 #endif
 
 #include "mprintf.h"
+#include "setup.h"
 
 #define BUFFSIZE 256 /* buffer for long-to-str and float-to-str calcs */
 #define MAX_PARAMETERS 128 /* lame static limit */
@@ -1044,6 +1045,19 @@ static int StoreNonPrintable(int output, struct nsprintf *infop)
   return -1;
 }
 
+static int
+hm_isprint(int ch)
+{
+	if (set_iso2022jp) {
+		if (isprint(ch) || isspace(ch) || ch == '\033')
+			return(1);
+	} else {
+		if (isprint(ch) || isspace(ch))
+			return(1);
+	}
+	return(0);
+}
+
 /* fputc() look-alike */
 static int addbyter(int output, FILE *data)
 {
@@ -1051,7 +1065,7 @@ static int addbyter(int output, FILE *data)
  
   if(infop->length < infop->max) {
     /* only do this if we haven't reached max length yet */
-    if (isprint(output) || isspace(output))
+    if (hm_isprint(output))
       {
 	infop->buffer[0] = (char)output; /* store */
 	infop->buffer++; /* increase pointer */

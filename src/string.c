@@ -387,12 +387,26 @@ int isquote(const char *line)
 char *convchars(char *line)
 {
     struct Push buff;
+    int in_ascii = TRUE, esclen = 0;
 
     INIT_PUSH(buff);		/* init macro */
 
     /* avoid strlen() for speed */
 
     for (; *line; line++) {
+
+	if (set_iso2022jp) {
+		iso2022_state(line, &in_ascii, &esclen);
+		if (esclen && in_ascii == FALSE) {
+			for (; in_ascii == FALSE && *line; line++) {
+				PushByte(&buff, *line);
+				iso2022_state(line, &in_ascii, &esclen);
+			}
+			line--;
+			continue;
+		}
+	}
+
 	switch (*line) {
 	case '<':
 	    PushString(&buff, "&lt;");
@@ -458,8 +472,21 @@ char *unconvchars(char *line)
 static void translatechars(char *start, char *end, struct Push *buff)
 {
     char *p;
+    int in_ascii = TRUE, esclen = 0;
 
     for (p = start; p <= end; p++) {
+
+	if (set_iso2022jp) {
+		iso2022_state(p, &in_ascii, &esclen);
+		if (esclen && in_ascii == FALSE) {
+			for (; in_ascii == FALSE && p <= end; p++) {
+				PushByte(buff, *p);
+				iso2022_state(p, &in_ascii, &esclen);
+			}
+			p--;
+			continue;
+		}
+	}
 
 	switch (*p) {
 	case '<':
@@ -540,11 +567,13 @@ char *replace(char *string, char *oldpiece, char *newpiece)
 char *replacechar(char *string, char old, char *new)
 {
     struct Push buff;
+    int in_ascii = TRUE, esclen = 0;
 
     INIT_PUSH(buff);
 
     for (; *string; string++) {
-	if (*string == old) {
+	if (set_iso2022jp) iso2022_state(string, &in_ascii, &esclen);
+	if (in_ascii == TRUE && *string == old) {
 	    PushString(&buff, new);
 	}
 	else
@@ -640,6 +669,8 @@ char *parseemail(char *input,	/* string to parse */
     
     char *at;
 
+    int in_ascii = TRUE, esclen = 0;
+
     if(set_spamprotect)
       at="_at_";
     else
@@ -656,6 +687,16 @@ char *parseemail(char *input,	/* string to parse */
 
 #define VALID_IN_EMAIL_USERNAME   "a-zA-Z0-9_.%-"
 #define VALID_IN_EMAIL_DOMAINNAME "a-zA-Z0-9.-"
+
+	    if (set_iso2022jp) {
+		    for (; ptr > input; input++) {
+			    iso2022_state(input, &in_ascii, &esclen);
+			    if (!esclen) continue;
+			    input += esclen;
+			    if (in_ascii == TRUE)
+				    backoff = ptr - input;
+		    }
+	    }
 
 	    /* check left side */
 	    while (backoff) {
@@ -826,6 +867,7 @@ char *parseurl(char *input)
 
 	if (leftmost) { /* we found at least one protocol prefix */
 	    int accepted = FALSE;
+	    int urlscan = FALSE;
 
 	    /* 
 	     * all the charaters between the position where we started
@@ -836,7 +878,11 @@ char *parseurl(char *input)
 	    translatechars(inputp, leftmost-1, &buff);
 	    inputp = leftmost + strlen(thisprotocol);
 
-	    if (sscanf(inputp, "%255[^] )>\"\'\n[\t\\]", urlbuff)) {
+	    if (set_iso2022jp)
+		    urlscan = sscanf(inputp, "%255[^] \033)>\"\'\n[\t\\]", urlbuff);
+	    else
+		    urlscan = sscanf(inputp, "%255[^] )>\"\'\n[\t\\]", urlbuff);
+	    if (urlscan) {
 	        char *r;
 	
 		/* 
@@ -883,3 +929,93 @@ char *parseurl(char *input)
     }
     RETURN_PUSH(buff);
 } /* end parseurl() */
+
+/*
+ * Support RFC1468 (and RFC1554, 94 character sets)
+ *
+ * reference
+ * - RFC1468: Japanese Character Encoding for Internet Messages (ISO-2022-JP)
+ * - RFC1554: ISO-2022-JP-2: Multilingual Extension of ISO-2022-JP
+ * - RFC1557: Korean Character Encoding for Internet Messages
+ * - RFC2234: Japanese Character Encoding for Internet Messages
+ */
+
+/*
+ * state
+ *	TRUE: ascii (default)
+ *	FALSE: non-ascii
+ * esclen
+ *	n: escape sequence length
+ */
+void
+iso2022_state(const char *str, int *state, int *esclen)
+{
+	if (*state != TRUE && *state != FALSE)
+		*state = TRUE;
+
+	if (*str != '\033') {
+		*esclen = 0;
+		return;
+	}
+
+	switch (*(str+1)) {
+	case '$':	
+		if (*(str+2) == 'B' || *(str+2) == '@' || *(str+2) == 'A') {
+			/*
+			 * ESC $ B	JIS X 0208-1983 to G0
+			 * ESC $ @	JIS X 0208-1976 to G0
+			 * ESC $ A	GB2312-1980 to G0
+			 */
+			*state = FALSE;
+			*esclen = 3;
+		} else if ((*(str+2) == '(' && *(str+3) == 'C') ||
+			   (*(str+2) == '(' && *(str+3) == 'D')) {
+			/*
+			 * ESC $ ) C	KSC 5601-1987 to G0
+			 * ESC $ ( D	JIS X 0212-1990 to G0
+			 */
+			*state = FALSE;
+			*esclen = 4;
+		} else {
+			/* keep state */
+			*esclen = 1;
+		}
+		break;
+	case '(':
+		if (*(str+2) == 'B' || *(str+2) == 'J') {
+			/*
+			 * ESC ( B	ASCII to G0
+			 * ESC ( J	JIS X 0201-Roman to G0
+			 */
+			*state = TRUE;
+			*esclen = 3;
+		} else {
+			/* keep state */
+			*esclen = 1;
+		}
+		break;
+	default:
+		/* keep state */
+		*esclen = 1;
+	}
+}
+
+char *
+hm_strchr(const char *str, int ch)
+{
+	if (!set_iso2022jp) {
+		return(strchr(str, ch));
+	} else {
+		int in_ascii = TRUE, esclen = 0;
+	
+		for (; *str; str++) {
+			iso2022_state(str, &in_ascii, &esclen);
+			if (esclen) str += esclen;
+			if (in_ascii == TRUE) {
+				if (*str == ch)
+					return((char *)str);
+			}
+		}
+		return((char *)NULL);
+	}
+}

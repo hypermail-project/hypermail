@@ -101,6 +101,9 @@ char *makemailcommand(char *, char *, char *, char *);
 char *parseemail(char *, char *, char *);
 char *parseurl(char *);
 
+char *hm_strchr(const char *, int);
+void iso2022_state(const char *str, int *state, int *esc);
+
 /*
 ** quotes.c
 */

@@ -125,4 +125,6 @@ extern char *set_latest_folder;
 extern int set_msgsperfolder;
 extern char *set_describe_folder;
 
+extern bool set_iso2022jp;
+
 #endif

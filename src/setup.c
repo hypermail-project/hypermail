@@ -101,6 +101,8 @@ char *set_latest_folder;
 char *set_describe_folder;
 int set_msgsperfolder;
 
+bool set_iso2022jp;
+
 struct Config cfg[] = {
     {"language", &set_language, LANGUAGE, CFG_STRING,
      "# A two-letter string specifying the language to use!\n"
@@ -492,6 +494,9 @@ struct Config cfg[] = {
      "# a symbolic link by this name to the most recently created\n"
      "# subdirectory. Note that many web servers are configured to\n"
      "# not follow symbolic links for security reasons.\n"},
+
+    {"iso2022jp", &set_iso2022jp, BFALSE, CFG_SWITCH,
+     "# Set this to On to support ISO-2022-JP messages.\n"},
 };
 
 /* ---------------------------------------------------------------- */
@@ -757,6 +762,7 @@ int ConfigInit(char *filename)
 {
     FILE *f;
     char line[MAXLINE];
+    int r = TRUE;
 
     PreConfig();
 
@@ -772,12 +778,12 @@ int ConfigInit(char *filename)
 	    fclose(f);
 	}
 	else
-	    return FALSE;
+	    r = FALSE;
     }
 
     PostConfig();
 
-    return TRUE;
+    return r;
 }
 
 void ConfigCleanup(void)
