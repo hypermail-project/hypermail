@@ -614,7 +614,9 @@ void printattachments(FILE *fp, struct header *hp,
 		      struct emailinfo *subdir_email)
 {
     char *subj;
-    char* attdir;
+    char *attdir;
+    const char *rel_path_to_top = (subdir_email ?
+				   subdir_email->subdir->rel_path_to_top : "");
 
     if (hp != NULL) {
 	struct emailinfo *em = hp->data;
@@ -650,9 +652,9 @@ void printattachments(FILE *fp, struct header *hp,
 		    char *filename, *stripped_filename;
 		    const char *fmt2 =
 		      (set_indextable ? 
-		       "<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"%s\">%s</a></td>"
+		       "<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"%s%s\">%s</a></td>"
 		       "<td colspan=\"2\" align=\"center\">(%d %s)</td></tr>\n"
-		       : "<li><a href=\"%s\">%s</a> (%d %s)\n");
+		       : "<li><a href=\"%s%s\">%s</a> (%d %s)\n");
 
 		    int first_time = 1;
 		    while ((entry = readdir(dir))) {
@@ -673,7 +675,8 @@ void printattachments(FILE *fp, struct header *hp,
 				      PATH_SEPARATOR, entry->d_name);
 			stripped_filename = strchr(entry->d_name, '-');
 			if (stripped_filename)
-			    fprintf(fp, fmt2, filename, stripped_filename+1,
+			    fprintf(fp, fmt2, rel_path_to_top,
+				    filename, stripped_filename+1,
 				    file_size, lang[MSG_BYTES]);
 			free(filename);
 		    }
