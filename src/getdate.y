@@ -11,6 +11,7 @@
 */
 
 #include "../config.h"
+#include "setup.h"
 
 #ifdef HAVE_CONFIG_H
 # ifdef FORCE_ALLOCA_H
@@ -887,7 +888,7 @@ time_t get_date (const char *p, const time_t *now)
 
   yyInput = p;
   Start = now ? *now : time ((time_t *) NULL);
-  tmp = localtime (&Start);
+  tmp = (set_gmtime ? gmtime(&Start) : localtime (&Start));
   yyYear = tmp->tm_year + TM_YEAR_ORIGIN;
   yyMonth = tmp->tm_mon + 1;
   yyDay = tmp->tm_mday;
