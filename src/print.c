@@ -255,9 +255,10 @@ void fprint_menu(FILE *fp, mindex_t idx, char *archives, char *currentid,
 		    colspan, subdir->rel_path_to_top,
 		    subdir->next_subdir->subdir, index_name[idx],
 		    lang[MSG_NEXT_DIRECTORY], lang[MSG_DATE_VIEW + idx]);
-	fprintf(fp, "<th><a href=\"%s%s\">%s</a></th>",
-		subdir->rel_path_to_top, index_name[0][FOLDERS_INDEX],
-		lang[MSG_FOLDERS_INDEX]);
+	if (show_index[0][FOLDERS_INDEX])
+	    fprintf(fp, "<th><a href=\"%s%s\">%s</a></th>",
+		    subdir->rel_path_to_top, index_name[0][FOLDERS_INDEX],
+		    lang[MSG_FOLDERS_INDEX]);
     }
 
     if (archives && *archives)
@@ -360,9 +361,10 @@ void print_index_header_links(FILE *fp, mindex_t called_from,
 		    subdir->rel_path_to_top, subdir->next_subdir->subdir,
 		    index_name[dlev][called_from], lang[MSG_NEXT_DIRECTORY],
 		    lang[MSG_DATE_VIEW + called_from]);
-	fprintf(fp, " <a href=\"%s%s\">%s</a>",
-		subdir->rel_path_to_top, index_name[0][FOLDERS_INDEX],
-		lang[MSG_FOLDERS_INDEX]);
+	if (show_index[0][FOLDERS_INDEX])
+	    fprintf(fp, " <a href=\"%s%s\">%s</a>",
+		    subdir->rel_path_to_top, index_name[0][FOLDERS_INDEX],
+		    lang[MSG_FOLDERS_INDEX]);
     }
 
     if (set_about && *set_about)
@@ -470,9 +472,10 @@ void print_index_footer_links(FILE *fp, mindex_t called_from,
 		    subdir->rel_path_to_top, subdir->next_subdir->subdir,
 		    index_name[dlev][called_from], lang[MSG_NEXT_DIRECTORY],
 		    lang[MSG_DATE_VIEW + called_from]);
-	fprintf(fp, " <a href=\"%s%s\">%s</a>",
-		subdir->rel_path_to_top, index_name[0][FOLDERS_INDEX],
-		lang[MSG_FOLDERS_INDEX]);
+	if (show_index[0][FOLDERS_INDEX])
+	    fprintf(fp, " <a href=\"%s%s\">%s</a>",
+		    subdir->rel_path_to_top, index_name[0][FOLDERS_INDEX],
+		    lang[MSG_FOLDERS_INDEX]);
     }
 
     if (set_about && *set_about)
@@ -2582,22 +2585,26 @@ void write_toplevel_indices(int amountmsgs)
     else
 	newfile = 1;
 
-    if ((fp = fopen(filename, "w")) == NULL) {
+    if (!show_index[0][FOLDERS_INDEX])
+	fp = NULL;
+    else if ((fp = fopen(filename, "w")) == NULL) {
 	sprintf(errmsg, "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
 	progerr(errmsg);
     }
-    print_index_header(fp, set_label, set_dir, subject, filename);
-    if (!set_usetable) 
-        print_index_header_links(fp, FOLDERS_INDEX, firstdatenum, lastdatenum,
-				 amountmsgs, NULL);
-    else {
-	fprint_menu(fp, FOLDERS_INDEX, set_archives, "", "", PAGE_TOP, NULL);
-	fprint_summary(fp, PAGE_TOP, firstdatenum, lastdatenum, amountmsgs);
-	/* JK: added an extra <p> here */
-	if (set_showhr)
-	    fprintf(fp, "<hr noshade><p>\n"); 
+    if (fp) {
+	print_index_header(fp, set_label, set_dir, subject, filename);
+	if (!set_usetable) 
+            print_index_header_links(fp, FOLDERS_INDEX, firstdatenum,
+				     lastdatenum, amountmsgs, NULL);
+	else {
+	    fprint_menu(fp, FOLDERS_INDEX, set_archives, "", "", PAGE_TOP, NULL);
+	    fprint_summary(fp, PAGE_TOP, firstdatenum, lastdatenum, amountmsgs);
+	    /* JK: added an extra <p> here */
+	    if (set_showhr)
+	        fprintf(fp, "<hr noshade><p>\n"); 
+	}
+	fprintf(fp, "<table>\n");
     }
-    fprintf(fp, "<table>\n");
     for (sd = folders; sd != NULL; sd = sd->next_subdir) {
 	int started_line = 0;
 	int empties = 0;
@@ -2624,6 +2631,7 @@ void write_toplevel_indices(int amountmsgs)
 		    break;
 	    }
 
+	    if (!fp) continue;
 	    if (!sd->count) {
 		if(started_line)
 		    fprintf(fp, "<td></td>");
@@ -2641,30 +2649,32 @@ void write_toplevel_indices(int amountmsgs)
 			sd->subdir, index_name[1][j], indextypename[j]);
 	    }
 	}
-	if (started_line) fprintf(fp, "</tr>\n");
+	if (started_line && fp) fprintf(fp, "</tr>\n");
     }
-    fprintf(fp,"</table>\n");
+    if (fp) {
+	fprintf(fp,"</table>\n");
 
-    if (!set_usetable) {
-	/* 
-	 * Print out archive information links at the bottom of the index
-	 */
-	print_index_footer_links(fp, FOLDERS_INDEX, lastdatenum, amountmsgs,
-				 NULL);
-    }
-    else {
-	if (set_showhr)
-	    fprintf(fp, "<hr noshade>\n");
-	fprint_summary(fp, PAGE_BOTTOM, firstdatenum, lastdatenum, amountmsgs);
-	fprint_menu(fp, FOLDERS_INDEX, set_archives, "", "", PAGE_BOTTOM, NULL);
-    }
-    printfooter(fp, ihtmlfooterfile, set_label, set_dir, subject, filename);
+	if (!set_usetable) {
+	    /* 
+	     * Print out archive information links at the bottom of the index
+	     */
+	    print_index_footer_links(fp, FOLDERS_INDEX, lastdatenum,
+				     amountmsgs, NULL);
+	}
+	else {
+	    if (set_showhr)
+	        fprintf(fp, "<hr noshade>\n");
+	    fprint_summary(fp, PAGE_BOTTOM, firstdatenum, lastdatenum, amountmsgs);
+	    fprint_menu(fp, FOLDERS_INDEX, set_archives, "", "", PAGE_BOTTOM, NULL);
+	}
+	printfooter(fp, ihtmlfooterfile, set_label, set_dir, subject, filename);
+	fclose(fp);
 
-    if (newfile && chmod(filename, set_filemode) == -1) {
-	sprintf(errmsg, "%s \"%s\": %o.",
-		lang[MSG_CANNOT_CHMOD], filename, set_filemode);
-	progerr(errmsg);
+	if (newfile && chmod(filename, set_filemode) == -1) {
+	    sprintf(errmsg, "%s \"%s\": %o.",
+		    lang[MSG_CANNOT_CHMOD], filename, set_filemode);
+	    progerr(errmsg);
+	}
     }
-    fclose(fp);
     free(filename);
 }
