@@ -17,6 +17,7 @@ configure.in
 install-sh
 maketgz
 patchlevel.h
+acconfig.h
 # 
 # Archive directory files 
 #

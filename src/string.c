@@ -197,11 +197,10 @@ void strcpymax(char *dest, const char *src, int n)
     *dest = 0;
 }
 
+#ifndef HAVE_STRCASESTR
 /*
 ** strcasestr() - case insensitive strstr()
 */
-
-#if 1
 
 /* Stolen-- stolen!-- from glibc 2.1. Please don't sue me. */
 
@@ -289,25 +288,6 @@ foundneedle:
   return (char*) haystack;
 ret0:
   return 0;
-}
-
-#else
-char *strcasestr(char *haystack, const char *needle)
-{
-    int nlen = strlen(needle);
-    int hlen = strlen(haystack);
-
-    int i;
-    int max;
-
-    max = hlen - nlen;
-
-    for (i = 0; i <= max; i++) {
-	if (!strncasecmp(haystack, needle, nlen))
-	    return haystack;
-	haystack++;
-    }
-    return NULL;
 }
 #endif
 

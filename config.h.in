@@ -18,6 +18,8 @@
 /* Define if your <sys/time.h> declares struct tm.  */
 #undef TM_IN_SYS_TIME
 
+#undef HAVE_GDBM_H
+
 /* Define if you have the getopt function.  */
 #undef HAVE_GETOPT
 
@@ -39,14 +41,11 @@
 /* Define if you have the strcasecmp function.  */
 #undef HAVE_STRCASECMP
 
-/* Define if you have the strcmpi function.  */
-#undef HAVE_STRCMPI
+/* Define if you have the strcasestr function.  */
+#undef HAVE_STRCASESTR
 
 /* Define if you have the strdup function.  */
 #undef HAVE_STRDUP
-
-/* Define if you have the stricmp function.  */
-#undef HAVE_STRICMP
 
 /* Define if you have the strstr function.  */
 #undef HAVE_STRSTR
@@ -71,9 +70,6 @@
 
 /* Define if you have the <fcntl.h> header file.  */
 #undef HAVE_FCNTL_H
-
-/* Define if you have the <gdbm.h> header file.  */
-#undef HAVE_GDBM_H
 
 /* Define if you have the <locale.h> header file.  */
 #undef HAVE_LOCALE_H
@@ -131,3 +127,7 @@
 
 /* Define if you have the <unistd.h> header file.  */
 #undef HAVE_UNISTD_H
+
+/* Whether you have GDBM */
+#undef GDBM
+

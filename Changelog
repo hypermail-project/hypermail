@@ -1,6 +1,10 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Peter McCluskey (Dec 1 2001)
+   Applied patches from William King to string function defines and gdbm
+   configuration.
+
 Peter McCluskey (Nov 30 2001)
    - Add Polish language support from Piotr Waskiewicz. Change some hardcoded
    From's to new macro MSG_FROM, change a Date to MSG_CDATE.
