@@ -5,7 +5,12 @@ Version Changes for Hypermail
 HYPERMAIL VERSION pre-2.1.9:
 ============================
 
- Jose Kahan (Aug  14, 2003)
+ Jose Kahan (Aug  18, 2003)
+  - Made the links to the different indexes show the index of the current entry.
+    This change originated from the feedback we got on the WAI enhanced archievs.
+    People find that this small changes increases the usability of the archive.
+
+ Jose Kahan (Aug  18, 2003)
   - The links to the first message (aka #first) were not working in the
     by attachment, by author, and by subject indexes.
 
