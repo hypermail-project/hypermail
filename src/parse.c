@@ -3251,6 +3251,8 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 	if (subjmatch && remove_maybes)
 	  return;
       }
+      if (replynum == -1)
+	  return;
     }
     else {
 	if (!email->inreplyto || !email->inreplyto[0])
