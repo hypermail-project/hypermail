@@ -2192,7 +2192,7 @@ void writeattachments(int amountmsgs, struct emailinfo *email)
     /* 
      * Print the index page footer.
      */
-	printfooter(fp, ihtmlfooterfile, set_label, set_dir, lang[MSG_BY_DATE], attname, TRUE);
+    printfooter(fp, ihtmlfooterfile, set_label, set_dir, lang[MSG_BY_DATE], attname, TRUE);
 
     fclose(fp);
 
