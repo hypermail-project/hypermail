@@ -5,6 +5,14 @@ Version Changes for Hypermail
 HYPERMAIL VERSION pre-2.1.9:
 ============================
 
+ Jose Kahan (Aug  13, 2003)
+  - The mailcommand option didn't work when applied to a paragraph that had
+    a previously converted href string that includes the '@' char. I added
+    a quick hack to ConvURlsString to avoid doing the mailto: convertion if an href
+    already exists in that line. The best solution would be to do something 
+    similar to ConvURLsWithHrefs.
+    Also fixed a memory leak.
+
  Jose Kahan (Aug  4, 2003)
   - As a side effect of PNK's use of an SGML entity for the @ char, the 
     mailcommand option stopped working on all the headers except for

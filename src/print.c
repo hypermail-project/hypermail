@@ -857,15 +857,19 @@ static char *ConvURLsWithHrefs(const char *line, char *mailid, char *mailsubject
     struct Push retbuf;
     char *tmpline5;
     char *tmpline6;
-    char *tmpline1 = (char *)emalloc(strlen(line) + 1);
+    char *tmpline1;
 
+    /* only do the convertion if a complete href is found */
+    p = strcasestr(c, "</a>");
+    if (!p)
+      return NULL;
+
+    tmpline1 = (char *)emalloc(strlen(line) + 1);
     strncpy(tmpline1, line, c - line);	/* AUDIT biege: who gurantees that c-line doesnt become smaller 0? IOF? */
     tmpline1[c - line] = 0;
     INIT_PUSH(retbuf);
-    p = strcasestr(c, "</a>");
-	if (!p)
-		return NULL;
-	/* complete href found; run ConvURLsString on text outside it */
+
+    /* complete href found; run ConvURLsString on text outside it */
     tmpline5 = ConvURLsString(tmpline1, mailid, mailsubject, charset);
 	if (!tmpline5)
 		return NULL;
@@ -979,6 +983,13 @@ char *ConvURLsString(char *line, char *mailid, char *mailsubject, char *charset)
 
     parsed = parseurl(line, charset);
 
+    /* as at this point we don't know how to separate the href convertions from mailto
+       ones in the same line, we keep frmo doing the mailto convertion if we find a
+       complete href */
+    if (parsed && strcasestr(parsed, "</a>"))
+      return parsed;
+
+    /* we didn't find any previous href convertion, we try to do a mailto: convertion */
     if (use_mailcommand) {
 	/* Exclude headers that are not mail type headers */
 
