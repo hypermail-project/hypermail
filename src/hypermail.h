@@ -114,7 +114,7 @@
 #define TRUE  1
 
 #define PROGNAME    "hypermail"
-#define HMURL       "http://www.hypermail.org/"
+#define HMURL       "http://www.hypermail-project.org/"
 
 #define INDEXNAME   "index"
 #define DIRNAME     "archive"

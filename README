@@ -78,7 +78,8 @@ SWISH has been taken over by the SWISH-E project
 good things with it.  April 17, 1998 Kevin passed hypermail development 
 to Kent Landfield (http://www.hypermail.org/). Kent had been 
 supporting an enhanced version of hypermail he had been using for the 
-last few years.
+last few years. It has gradually become a group effort, with Peter McCluskey
+<pcm@rahul.net> often acting as the leader.
 
 General:
 ========
@@ -127,28 +128,15 @@ Getting Help:
     Please send all bug reports, feature requests, patches, and other 
     program-related things to 
 
-		hypermail-bugs@hypermail.org.
+		hypermail@hypermail-project.org.
 
-    The Hypermail Development mailing list (hypermail@hypermail.org) is 
-    a good place to ask questions about usage, potential bugs, or to talk 
-    about features you'd like to see.  The list is a majordomo-based list.
-    To subscribe send a message to majordomo@hypermail.org with 
-
-                  "subscribe hypermail" 
-
-    (minus the quotes) as the body of the message. The Subject: line 
-    is ignored.  The list's submission address is hypermail@hypermail.org.
-
-    If you would simply like to be alerted to important Hypermail 
-    announcements and don't wish to follow the development list's 
-    traffic you can subscribe to the Hypermail Announcements list. 
-    That is a very low traffic moderated list intended for announcements 
-    only (concerning new releases or patches). This too is a majordomo
-    based list so to subscribe, send a message to majordomo@hypermail.org 
-    with
-                "subscribe hypermail-announce"
-
-    as the body of the message.
+    You will need to subscribe to the list in order to send mail to it.
+    The Hypermail Development mailing list (hypermail@hypermail-project.org)
+    is a good place to ask questions about usage, potential bugs, or to talk 
+    about features you'd like to see.  The list is a Smartlist-based list. To
+    subscribe send a message with the word "subscribe" in the Subject: field
+    to hypermail-request@hypermail-project.org.
+    The list's submission address is hypermail@hypermail-project.org.
 
 Additionally:
 =============

@@ -14,7 +14,7 @@
 #     For the very latest version, check the hypermail cvs repository:
 #     http://cvs.hypermail.org/cgi-bin/cvsweb.cgi/hypermail/contrib/#hypetombox.pl
 #     Or get the version in a recent hypermail distribution at
-#     http://sourceforge.net/projects/hypermail/ or http://www.hypermail.org.
+#     http://sourceforge.net/projects/hypermail/ or http://www.hypermail-project.org.
 #
 #     A few more mods by Fyodor (fyodor@insecure.org) [9/24/00]:
 #        * Added -H (additional header) option (useful for filtering messages)
