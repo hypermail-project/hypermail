@@ -1769,7 +1769,7 @@ void writearticles(int startnum, int maxnum)
 		}
 	    }
 	    if (!was_correct)
-	        fixreplyheader(set_dir, num, TRUE);
+	        fixreplyheader(set_dir, num, TRUE, num);
 	}
 
 	if (newfile && chmod(filename, set_filemode) == -1) {

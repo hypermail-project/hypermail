@@ -28,6 +28,9 @@
 #else
 #include <sys/dir.h>
 #endif
+#ifdef GDBM
+#include "gdbm.h"
+#endif
 
 /*
 ** Does a file exist?
@@ -503,4 +506,86 @@ char *htmlfilename(const char *file, struct emailinfo *email,
 		  ? email->subdir->full_path : set_dir,
 		  file, *suffix ? "." : "", suffix);
     return buf;
+}
+
+/* matches_existing returns 0 if it finds a file with the same msgnum as
+ argument eptr but different contents. A return value of 1 does not
+ guarantee that they match, it only says a difference wasn't found. */
+
+int matches_existing(int msgnum)
+{
+#ifdef GDBM
+  struct emailinfo *eptr;
+  if (hashnumlookup(msgnum, &eptr) == NULL)
+      return -1;
+
+  if(set_usegdbm) {
+      char *indexname;
+      GDBM_FILE gp;
+      int num;
+      int num_added = 0;
+
+      trio_asprintf(&indexname, "%s%s", set_dir, GDBM_INDEX_NAME);
+
+      if(gp = gdbm_open(indexname, 0, GDBM_READER, 0, 0)) {
+
+	/* we _can_ read the index */
+
+	datum content;
+	datum key;
+	int max_num;
+
+	key.dptr = (char *) &num;
+	key.dsize = sizeof(num);
+
+	num = -1;
+	content = gdbm_fetch(gp, key);
+	if (!content.dptr)
+	    max_num = -1;
+	else
+	    max_num = atoi(content.dptr);
+
+	if (eptr->msgnum <= max_num)
+	{
+	  char *dp, *dp_end;
+	  char *name=NULL;
+	  char *email=NULL;
+	  char *date=NULL;
+	  char *msgid=NULL;
+	  char *inreply=NULL;
+	  char *fromdate=NULL;
+	  char *charset=NULL;
+	  char *isodate=NULL;
+	  char *isofromdate=NULL;
+
+	  num = eptr->msgnum;
+	  key.dptr = (char *) &num;
+	  key.dsize = sizeof(num);
+	  content = gdbm_fetch(gp, key);
+	  if(!(dp = content.dptr)) {
+	      return 1;
+	  }
+	  dp_end = dp + content.dsize;
+	  fromdate = dp;
+	  dp += strlen(dp) + 1;
+	  date = dp;
+	  dp += strlen(dp) + 1;
+	  name = dp;
+	  dp += strlen(dp) + 1;
+	  email = dp;
+	  dp += strlen(dp) + 1;
+	  dp += strlen(dp) + 1;
+	  msgid = dp;
+
+	  if (strcmp(msgid, eptr->msgid))
+	      return 0;
+	}
+
+	gdbm_close(gp);
+      } /* end case of able to read gdbm index */
+
+      free(indexname);
+  }  
+#endif
+  return 1;
 }

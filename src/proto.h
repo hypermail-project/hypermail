@@ -45,6 +45,7 @@ struct emailsubdir *msg_subdir(int, time_t);
 char *msg_href(struct emailinfo *, struct emailinfo *);
 char *articlehtmlfilename(struct emailinfo *);
 char *htmlfilename(const char *, struct emailinfo *, const char *);
+int matches_existing(int);
 
 /*
 ** hypermail.c functions

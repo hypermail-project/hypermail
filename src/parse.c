@@ -3148,7 +3148,7 @@ void fixnextheader(char *dir, int num, int direction)
 	while (bp) {
 	    fprintf(fp, "%s", bp->line);
 	    if (!strncmp(bp->line, "<!-- next=", 10)) {
-		email = neighborlookup(num, 1);
+		email = neighborlookup(num-1, 1);
 		if (email != NULL) {
 		    if (set_usetable) {
 			dp = bp->next;
@@ -3192,12 +3192,12 @@ void fixnextheader(char *dir, int num, int direction)
 ** incrementally updated.
 */
 
-void fixreplyheader(char *dir, int num, int remove_maybes)
+void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 {
     char *filename;
     char line[MAXLINE];
 
-    int subjmatch;
+    int subjmatch = 0;
     int replynum = -1;
 
     struct body *bp, *cp, *status;
@@ -3263,6 +3263,8 @@ void fixreplyheader(char *dir, int num, int remove_maybes)
 	    return;
 	replynum = email2->msgnum;
     }
+    if (replynum >= max_update)	/* was created this session, must be current */
+	return;
 
     if (email2 == NULL)
 	hashnumlookup(replynum, &email2);
@@ -3298,24 +3300,18 @@ void fixreplyheader(char *dir, int num, int remove_maybes)
 	while (bp) {
 	    if (!strncmp(bp->line, "<!-- reply", 10)) {
 	        char *del_msg = (email2->is_deleted ? lang[MSG_DEL_SHORT] : "");
-	        if (last_reply) {
-		  char buf1[MAXLINE];
-		  ptr = convchars(email->subject);
-		  sprintf(buf1,
-			  "<li><strong>%s:</strong>%s %s%s: \"%s\"</a>\n",
-			  lang[MSG_REPLY], del_msg, msg_href(email, email2),
-			  email->name, ptr);
+		char *ptr1;
+		ptr = convchars(email->subject);
+		trio_asprintf(&ptr1,
+			      "<li><strong>%s:</strong>%s %s%s: \"%s\"</a>\n",
+			      lang[subjmatch ? MSG_MAYBE_REPLY : MSG_REPLY],
+			      del_msg, msg_href(email, email2),
+			      email->name, ptr);
+		free(ptr);
 
-		  if (strcmp(buf1, last_reply))
-		      fputs(buf1, fp);
-		}
-		else {
-		    fprintf(fp, "<li><strong>%s:</strong>", lang[MSG_REPLY]);
-		    fprintf(fp, "%s %s", del_msg, msg_href(email, email2));
-		    fprintf(fp, "%s: \"%s\"</a>\n", email->name,
-			    ptr = convchars(email->subject));
-		    free(ptr);
-		}
+		if (!last_reply || strcmp(ptr1, last_reply))
+		    fputs(ptr1, fp);
+		free(ptr1);
 	    }
 	    if (next_in_thread - 1 == replynum
 		&& (strcasestr(bp->line, current_next_pattern)
@@ -3352,7 +3348,7 @@ void fixreplyheader(char *dir, int num, int remove_maybes)
 ** has been incrementally updated.
 */
 
-void fixthreadheader(char *dir, int num)
+void fixthreadheader(char *dir, int num, int max_update)
 {
     char *filename;
     char line[MAXLINE];
@@ -3378,7 +3374,7 @@ void fixthreadheader(char *dir, int num)
 	}
     }
 
-    if (rp == NULL)
+    if (rp == NULL || threadnum >= max_update)
 	return;
 
     filename = articlehtmlfilename(rp->data);
