@@ -15,6 +15,24 @@ Version Changes for Hypermail
    - Modified various Makefile.in files to assure clean/clobber/distclean 
      worked universally.  
 
+ Peter McCluskey (Feb 1, 2003)
+  Changes to make stack overflow less common.
+
+ Peter McCluskey (January 29, 2003)
+  Fixed faulty freeing of memory that caused core dump with files_by_thread
+ option.
+  Fixed missing function call argument with files_by_thread option. I suspect
+ this was causing some random behavior, but I only found it due to valgrind.
+  Fix for placement of link to next msg with incremental update, usetable = 0.
+
+ Peter McCluskey (January 28, 2003)
+  Fix from Zvi Har'El to leading zeroes in anchors in index pages with
+ indextable=0.
+  Changes to Swedish from Peter Karlsson.
+
+ Peter McCluskey (January 26, 2003)
+  Fix for placement of link to next msg with incremental update.
+
  Peter McCluskey (January 24, 2003)
   Release version 2.1.6 tar file.
   Fix buffer overflow when progress = 2 (triggered by long attachment
