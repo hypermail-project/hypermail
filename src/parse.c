@@ -2516,7 +2516,7 @@ msgid);
 					struct emailinfo e;
 					fill_email_dates(&e, date, fromdate,
 							 NULL, NULL);
-					subdir = msg_subdir(num, e.date);
+					subdir = msg_subdir(num, e.fromdate);
 				    }
 
 				    if (inline_force ||

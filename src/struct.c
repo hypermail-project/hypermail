@@ -251,7 +251,7 @@ struct emailinfo *addhash(int num, char *date, char *name, char *email, char *ms
 	e->name = strsav(name);
 
     fill_email_dates(e, date, fromdate, isodate, isofromdate);
-    e->subdir = msg_subdir(e->msgnum, e->date);
+    e->subdir = msg_subdir(e->msgnum, e->fromdate);
     if (e->subdir && set_increment != -1) {
 	if (!e->subdir->first_email)
 	    e->subdir->first_email = e;

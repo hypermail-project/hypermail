@@ -4,6 +4,13 @@ Version Changes for Hypermail
 ============================
 HYPERMAIL VERSION pre-2.1.9:
 ============================
+ Peter McCluskey (Jan 9, 2004)
+  Change to make mbox_shortened option work a little better with
+ discard_dup_msgids = 0.
+  Change folder_by_date option to use "From " date rather than "Date: "
+ to decide which subdirectory to use. This makes it consistent with
+ top level index page.
+
  Peter McCluskey (Dec 26, 2003)
   Add increment = -1 mode to enable automatic determination of whether
  to update or append in most cases.
