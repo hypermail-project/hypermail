@@ -44,7 +44,6 @@ extern int opterr;
 /*
 ** Prints user startup errors stops. 
 */
-
 void cmderr(char *errorstr)
 {
     fprintf(stderr, "\n%s: %s: %s\n", lang[MSG_ERROR], PROGNAME, errorstr);

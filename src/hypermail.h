@@ -316,6 +316,8 @@ VAR char *top_index[NO_INDEX];
 VAR char *index_name[MAX_DIRECTORY_LEVELS][NO_INDEX];
 VAR int show_index[MAX_DIRECTORY_LEVELS][NO_INDEX];
 
+VAR char *antispamdomain;
+
 VAR int use_mailcommand;
 VAR int use_mailto;
 VAR int use_domainaddr;

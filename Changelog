@@ -1,5 +1,9 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (August 7, 2002)
+  Add contrib/msg2hypermailarchive.py from Bernhard Reiter.
+  Add antispamdomain option from Vincent McIntyre.
+
  Peter McCluskey (August 3, 2002)
    Fix expires option to work in incremental mode.
    Add delete_older option.

@@ -48,6 +48,13 @@ mailto = webmusket@landfield.com
 domainaddr = landfield.com
 #hmail = hypermail@landfield.com
 
+spamprotect = 1
+# antispamdomain =                     #correctly ignored
+# antispamdomain = ""                  #leaves quote marks in the url
+# antispamdomain = " "                 #works, leaves a space in the url
+# antispamdomain = "email_protected"   #works
+antispamdomain = "email.domain.hidden" #works
+
 text_types = message/DELIVERY-STATUS
 inline_types = "image/gif image/jpeg image/png"
 ignore_types = text/x-vcard

@@ -1336,11 +1336,18 @@ int parsemail(char *mbox,	/* file name */
 		    else if (!strncasecmp(head->line, "From:", 5)) {
 			getname(head->line, &namep, &emailp);
 			head->parsedheader = TRUE;
-                        if(set_spamprotect) {
-                          emailp=spamify(emailp);
-                          /* we need to "fix" the name as well, as sometimes
-                             the email ends up in the name part */
-                          namep=spamify(namep);
+                        if (set_spamprotect) {
+			  if (set_antispamdomain) {
+			    emailp=spamify_replacedomain(emailp,set_antispamdomain);
+			    /* we need to "fix" the name as well, as sometimes
+			       the email ends up in the name part */
+			    namep=spamify_replacedomain(namep,set_antispamdomain);
+			  } else {
+			    emailp=spamify(emailp);
+			    /* we need to "fix" the name as well, as sometimes
+			       the email ends up in the name part */
+			    namep=spamify(namep);
+			  }
                         }
 		    }
 		    else if (!strncasecmp(head->line, "Message-Id:", 11)) {

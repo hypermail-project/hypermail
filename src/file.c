@@ -273,8 +273,7 @@ void readconfigs(char *path, int cmd_show_variables)
 }
 
 void symlink_latest()
-{
-    char filename[MAXFILELEN];
+ {  char filename[MAXFILELEN];
     char dirname[MAXFILELEN];
     struct stat stbuf;
 

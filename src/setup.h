@@ -131,6 +131,8 @@ extern char *set_attachmentlink;
 extern char *set_unsafe_chars;
 extern bool set_linkquotes;
 
+extern char *set_antispamdomain;
+
 extern char *set_folder_by_date;
 extern char *set_latest_folder;
 extern char *set_base_url;

@@ -19,6 +19,7 @@ char *set_dir;
 char *set_defaultindex;
 char *set_default_top_index;
 char *set_txtsuffix;
+char *set_antispamdomain;
 
 bool set_overwrite;
 bool set_inlinehtml;
@@ -441,7 +442,15 @@ struct Config cfg[] = {
 
     {"spamprotect", &set_spamprotect, BFALSE, CFG_SWITCH,
      "# Set this to On to make hypermail not output real email addresses\n"
-     "# in the output HTML but instead it will obfuscate them a little.\n"},
+     "# in the output HTML but instead it will obfuscate them a little.\n"
+     "# You can control the obfuscation with set_antispamdomain.\n"},
+  
+    {"antispamdomain", &set_antispamdomain, NULL, CFG_STRING,
+     "# By default hypermail only does a small amount of massaging\n"
+     "# of email addresses. Use this to completely replace the domain\n"
+     "# from which a message originates (everything after the @)\n"
+     "# with some string to confuse screen-scraping programs.\n"
+     "# It is probably wise to make this an invalid mail domain.\n"}, 
 
     {"spamprotect_id", &set_spamprotect_id, BFALSE, CFG_SWITCH,
      "# Set this to On to make hypermail not output real email message\n"
@@ -1028,8 +1037,9 @@ void dump_config(void)
     printf("set_folder_by_date = %s\n",set_folder_by_date ? set_folder_by_date : "Not set");
     printf("set_describe_folder = %s\n",set_describe_folder ? set_describe_folder : "Not set");
     printf("set_latest_folder = %s\n",set_latest_folder ? set_latest_folder : "Not set");
+    printf("set_antispamdomain = %s\n",set_antispamdomain ? set_antispamdomain : "Not set");
 
-    /* Boolean or interger */
+    /* Boolean or integer */
 
     printf("set_overwrite = %d\n",set_overwrite);
     printf("set_inlinehtml = %d\n",set_inlinehtml);
