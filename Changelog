@@ -9,6 +9,7 @@ Version Changes for Hypermail
   about analyzing it's security problems.
    Changes to get strerror, memmove from pcre when missing (e.g. on SunOS).
   How was this working on SunOS before?
+   Fix faulty sizeof in snprintf for MSG_ENCODING_IS_NOT_SUPPORTED.
 
  Kent Landfield (kent@hypermail.org) (February 12, 2003)
   - Converted msg2archive.c to use Thomas Biege's <thomas@suse.de>

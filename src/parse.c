@@ -1888,7 +1888,8 @@ int parsemail(char *mbox,	/* file name */
 			    char code[64];
 
 			    sscanf(ptr, "%63s", code);
-                            snprintf(line, sizeof(line), " ('%s' %s)\n", code, 
+                            snprintf(line, sizeof(line_buf) - set_ietf_mbox,
+				     " ('%s' %s)\n", code, 
                                      lang[MSG_ENCODING_IS_NOT_SUPPORTED]);
 
 			    bp = addbody(bp, &lp, line,
