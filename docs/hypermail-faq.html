@@ -35,6 +35,7 @@ little here.  That will change shortly.
 <LI><A HREF="#15">Can I throttle hypermail's CPU usage ?</A>
 <LI><A HREF="#16">How can I make my archive searchable ?</A>
 <LI><A HREF="#17">How does hypermail decide whether messages are in the same thread?</A>
+<LI><A HREF="#18">How can I have multiple mailboxes produce one archive?</A>
 </OL>
 
 <P ALIGN=CENTER><IMG SRC="/images/common/yellowline.gif" WIDTH=400 HEIGHT=2 ALT="----"></P>
@@ -138,6 +139,10 @@ config file (usually ~/.hmrc) (available in version 2.1). A summary.html
 file will provide links to all the monthly indices.
 This is probably appropriate for archives with a few thousand messages,
 but for larger archives I recommend splitting into multiple directories.
+<p>
+ There's a script at
+<a href="http://users.netrus.net/troc/perl.html">http://users.netrus.net/troc/perl.html</a>
+called mms (monthly mail splitter) which has also been reported useful.
 
 <P ALIGN=CENTER><IMG SRC="/images/common/yellowline.gif" WIDTH=300 HEIGHT=2 ALT="----"></P>
 <P>
@@ -407,6 +412,22 @@ prior messages with such text matches, it will treat the one with the longest
 match as the message being replied to. The exact algorithms for deciding what
 is quoted text are a bit complex. These matches override the In-Reply-To:
 and References: info (this rule may deserve further thought).
+
+<H3><A HREF="#" NAME="18">How can I have multiple mailboxes produce one archive?</A></H3>
+<P>
+  One simple way is to combine them into one mailbox, and send that to
+hypermail. Something like "cat file1 file2 file3 >combined" should do that.
+<p>
+ Another way is to invoke hypermail several times, using the -u flag for
+any mailboxes that you want added after the html archive has been started:
+<pre>
+ hypermail -m file1
+ hypermail -u -m file2
+ hypermail -u -m file3
+</pre>
+<p>
+ Do not try to send hypermail more than one mailbox at a time, or send
+it a second mailbox without using the -u flag or the increment=1 option.
 
 <P ALIGN=CENTER><IMG SRC="/images/common/yellowline.gif" WIDTH=400 HEIGHT=2 ALT="----"></P>
 <BR>
