@@ -93,6 +93,7 @@ extern int set_locktime;
 extern int set_searchbackmsgnum;
 extern int set_quote_hide_threshold;
 extern int set_thread_file_depth;
+extern int set_startmsgnum;
 
 extern int set_save_alts;
 extern char *set_alts_text;

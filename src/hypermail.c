@@ -589,6 +589,9 @@ int main(int argc, char **argv)
 	int num_displayable;
 	if (set_linkquotes)
 	    replylist = NULL;
+	/* we have to start with the msgnum - 1 so that the rest of the
+	   code works ok when there are no old headers. */
+	max_msgnum = set_startmsgnum - 1;
 	num_displayable = loadoldheaders(set_dir);
 	amount_old = max_msgnum + 1; /* counts gaps as messages */
 
@@ -616,7 +619,8 @@ int main(int argc, char **argv)
 	}
     }
     else {
-	amount_new = parsemail(set_mbox, use_stdin, set_readone, set_increment, set_dir, set_inlinehtml, 0);	/* number from 0 */
+	amount_new = parsemail(set_mbox, use_stdin, set_readone, set_increment, set_dir, 
+			       set_inlinehtml, set_startmsgnum);	/* number from 0 */
 	if (!matches_existing(0)) {
 		fprintf(stderr, "Warning: first message in mailbox does not " "match first message in archive\n" "or obsolete gdbm file present.\n");
 	}

@@ -78,6 +78,8 @@ int set_searchbackmsgnum;
 int set_quote_hide_threshold;
 int set_thread_file_depth;
 
+int set_startmsgnum;
+
 int set_save_alts;
 char *set_alts_text;
 
@@ -576,6 +578,14 @@ struct Config cfg[] = {
      "# but that is rarely useful. This option is currently disabled\n"
      "# if the indextable option is turned on, and probably needs to\n"
      "# be less than thrdlevels.\n", FALSE},
+
+    {"startmsgnum", &set_startmsgnum, INT(0), CFG_INTEGER,
+     "# Sets the number of the first message of an archive. This option is\n"
+     "# only active when adding new messages to brand new archive.\n"
+     "# If not set, the default number will be 0000.\n"\
+     "# Note that if you change this setting, you are stuck with it. If you\n"
+     "# rebuild your archive, you must use the same value or you'll break any\n"
+     "# link pointing to your archive.\n", FALSE},
 
     {"folder_by_date", &set_folder_by_date, NULL, CFG_STRING,
      "# This string causes the messages to be put in subdirectories\n"

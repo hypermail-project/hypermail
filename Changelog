@@ -1,6 +1,16 @@
 Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ Jose Kahan (Jun 10, 2003)
+  - The incremental option (-u) always started new archives with 0001, rather
+    than 0000. It will now start with 0000 as before
+    For those people who had this problem and don't want to break any links to their
+    archives when rebuilding them, there's a new configuration option allowing you
+    to tell from which number you want to start your archive: setmsgnum. You should
+    only set it up once and not modify it for an existing archive or your links may 
+    break.
+
  Peter McCluskey (May 22, 2003)
   - add Italian support from Gabriele Bartolini and Marco Nenciarini.
 
