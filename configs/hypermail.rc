@@ -1,0 +1,44 @@
+#hm_listname = hypermail
+#hm_mboxdir = /ftp/hypermail/mail-archive/mailbox
+#hm_archives = NONE
+hm_dir = /ftp/hypermail/mail-archive/%y/%M
+hm_label = Hypermail Development List
+hm_about = /hypermail/mail-archive/
+hm_mbox = NONE
+hm_defaultindex = thread
+hm_usetable = 1
+hm_show_msg_links = 1
+hm_showreplies = 0
+hm_showheaders = 0
+hm_show_headers = From,Subject,Date,Message-ID
+hm_showhtml = 1
+hm_showbr = 1
+hm_showhr = 1
+hm_iquotes = 1
+hm_progress = 0
+hm_overwrite = 0
+hm_increment = 1
+hm_reverse = 0
+hm_thrdlevels = 3
+hm_eurodate = 0
+hm_dirmode = 0755
+hm_filemode = 0644
+hm_locktime = 3600
+hm_hmail = hypermail@landfield.com
+hm_mailcommand = mailto:$TO?subject=$SUBJECT&replyto=$ID
+#hm_mailcommand = mailto:$TO&replyto=$ID?subject=$SUBJECT
+#hm_mailcommand = mailto:$TO?subject=$SUBJECT
+#hm_mailcommand = /cgi-bin/mail?to=$TO&replyto=$ID&subject=$SUBJECT
+hm_mailto = webmaster@landfield.com
+hm_domainaddr = landfield.com
+hm_ihtmlheaderfile = /usr/local/lib/hypermail/hypermail-index.hyp
+hm_mhtmlheaderfile = /usr/local/lib/hypermail/hypermail-msg.hyp
+hm_ihtmlfooterfile = /usr/local/lib/hypermail/hypermail-footer.hyp
+hm_mhtmlfooterfile = /usr/local/lib/hypermail/hypermail-footer.hyp
+#hm_body=<BODY BGCOLOR="#F4D659" TEXT="#333333">
+
+hm_inline_types = image/gif image/jpeg
+hm_ignore_types = text/x-vcard
+hm_ignore_types = application/x-msdownload
+hm_prefered_types = text/plain text/html 
+

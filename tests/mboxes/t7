@@ -1,0 +1,87 @@
+From owner-hypermail Thu Apr 23 12:22 CDT 1998
+Received: (from lists@localhost)
+	by landfield.com (8.8.8/8.8.8) id MAA15666
+	for hypermail-outgoing; Thu, 23 Apr 1998 12:20:58 -0500 (CDT)
+Received: (from root@localhost)
+	by landfield.com (8.8.8/8.8.8) id MAA15660
+	for hypermail; Thu, 23 Apr 1998 12:20:50 -0500 (CDT)
+From: Kent Landfield <kent>
+Message-Id: <199804231720.MAA15660@landfield.com>
+Subject: Re: Ideas
+To: hypermail
+Date: Thu, 23 Apr 1998 12:20:47 -0500 (CDT)
+In-Reply-To: <9804230546.AA06415@a.cni.org> from "Craig A Summerhill" at Apr 23, 98 01:46:19 am
+X-Mailer: ELM [version 2.4 PL25]
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: owner-hypermail@landfield.com
+Precedence: bulk
+Reply-To: Kent Landfield <kent>
+X-Lines: 62
+Content-Type: text/plain; charset="US-ASCII"
+Content-Length: 2971
+Status: OR
+
+# It occurs to me that one of the first things you need to do is to get 
+# some sense of prioritization on that list of proposed enhancements.
+# In that manner, you can perhaps break it into manageable chunks.
+
+This makes total sense. 
+
+     0) Merge existing contributed patches
+
+# Off the top of my head, I will offer my top priorities for Hypermail:
+# 
+#    1) Full MIME compliance -- 
+
+Daniel Stenberg <Daniel.Stenberg@sth.frontec.se> submitted a patch that
+is a first step to supporting MIME.  It replaces attachments with the
+message  "** attachment type 'application/octet-stream;' left out".
+It does the proper parsing for most everything else so extending that
+to deal with the attachments will need to be done.  It is a great start.
+
+I'd like to see the attachments dealt with so that certain types of know
+formats could be automagically converted, much like MHonArc does. One
+issue will be storage. While many messages have just one enclosure, some
+have more than one so we will need to handle those.
+
+#    2) Correct RFC821/822 Header Parsing -- this is the single biggest
+#       reason that Hypermail dumps core on me.  I have compensated for
+#       the most offending instances of this by using Perl and shell 
+#       pre-processing to "re-write" headers before they are handed  
+#       off Hypermail.  But this is really inefficient, and I keep finding
+#       new instances of such problems cropping up all the time.
+
+Yes this is a biggy. I'd be interested in any sample headers sets or
+needed workarounds that could be used in testing and verification of
+fixes.  
+
+#    3) Configurable Setting (.hmrc file) to a Pointer/URL for Custom 
+#       Header and Footer Files -- currently, Hypermail does not include
+#       anything except the HTML message body (payload, I guess) when 
+#       it does it's output.  
+
+Yes. My {list}_print.c method of the past needs to be left there. ;) We
+need to be able to specify a template in some fashion that would allow
+for list index and list message page customzation.
+
+#    4) Configurable Setting (.hmrc file) or Compile Time Variable to 
+#       Domain-ize Addresses -- addresses appearing in the RFC822 field 
+#       which lack hostname can't be made into proper HREFs when Hypermail
+#       does it's thing.  For a good example of the problem I am talking 
+#       about, look at message numbers 0001.html and 0002.html on 
+#       ftp://ftp.landfield.com/hypermail/mail-archive/1998/.
+
+Hmmmm... You know I've not been paying attention. You are right. This 
+should be easy enough to fix and it needs to be.
+
+Thanks Craig.  Good set of priorities. Sounds like a good plan.
+
+-- 
+Kent Landfield                        Phone: 1-817-545-2502             
+Email: kent@landfield.com             http://www.landfield.com/
+Email: kent@nfr.net                   http://www.nfr.net/
+Please send comp.sources.misc related mail to kent@landfield.com
+Search the Usenet Hypertext FAQ Archive at http://www.faqs.org/faqs/
+
+

@@ -1,0 +1,32 @@
+<!--
+
+    hypermail archive overview file DTD 0.1
+    Experimental and intermediate by Bernhard Reiter v0.1 29.11.1999
+    Might be available from http://ffii.org/~breiter/probe
+
+    I want to build nicer overview link files from hypermail archives.
+    So hypermail can create a file with this format in each
+    archive directory and scripts can pick it up.
+    (If I hack it in, that is.)
+
+-->
+
+<!ELEMENT haof (indices, mails)>
+<!ATTLIST haof
+          version     CDATA #REQUIRED> 
+
+<!ELEMENT indices (dateindex | subjectindex | threadindex | authorindex )*>
+<!ELEMENT dateindex (#PCDATA)>
+<!ELEMENT subjectindex (#PCDATA)>
+<!ELEMENT threadindex (#PCDATA)>
+<!ELEMENT authorindex (#PCDATA)>
+
+<!ELEMENT mails (mail)+>
+<!ELEMENT mail (subject | date | fromname | fromemail | message-id | file )*>
+<!ELEMENT subject (#PCDATA)>
+<!ELEMENT date (#PCDATA)>
+<!ELEMENT fromname (#PCDATA)>
+<!ELEMENT fromemail (#PCDATA)>
+<!ELEMENT message-id (#PCDATA)>
+<!ELEMENT file (#PCDATA)>
+

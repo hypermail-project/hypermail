@@ -1,0 +1,239 @@
+                             Hypermail
+
+                          Version:  2.0
+
+This is a beta release of the 2.0 version of hypermail.  It is expected 
+that this will go through a beta period before being officially released 
+as Hypermail 2.0.
+
+Please refer to Changelog for the list of changes made to this release.
+
+Hypermail Background:
+=====================
+
+Hypermail was originally designed and developed by Tom Gruber for
+Enterprise Integration Technologies (EIT) using Common Lisp. 
+
+It was later rewritten in C by Kevin Hughes in 1994 while Kevin 
+worked at EIT. 
+
+License Evolution:
+------------------
+
+In the spring of 1997, Kevin Hughes heavily pressed Hewlett-Packard
+(who was now the legal owner of Hypermail, since EIT was bought by
+VeriFone, which was bought by Hewlett-Packard) into placing a free
+software license onto his old EIT software.  They officially put the
+GNU license on *all* of Kevin's old EIT software, opening it up to
+more open methods of development and distribution. So now Hypermail
+is under GNU.
+
+EIT's net.disappearance:
+------------------------
+
+A very old and established government contractor company called 
+Electronic Instrumentation and Technology Inc. made legal moves to 
+obtain the eit.com domain. Since VeriFone/HP had no interest in keeping 
+EIT, dissolved it completely.  As this company had a trademark on EIT, 
+the domain name was given to them. Elizabeth Batson of EIT/VeriFone/HP 
+informed Kevin he could maintain all his old software himself wherever 
+he wished to put it.
+
+Kevin and ongoing Hypermail Development:
+----------------------------------------
+
+Kevin left Hewlett-Packard in 1997 and helped form a new company 
+called Veo Systems (www.veosystems.com) with his old boss Marty 
+Tenenbaum, who founded EIT. Kevin did not have the time to maintain 
+any of his old software, so he was looking for different parties to 
+help maintain it and take over different pieces. For instance, Getstats 
+has been obsoleted by Analog (http://www.statslab.cam.ac.uk/~sret1/analog/). 
+SWISH has been taken over by the SWISH-E project 
+(http://sunsite.berkeley.edu/SWISH-E/) and many people have been doing 
+good things with it.  April 17, 1998 Kevin passed hypermail development 
+to Kent Landfield (http://www.landfield.com/hypermail/). Kent had been 
+supporting an enhanced version of hypermail he had been using for the 
+last few years.
+
+General:
+========
+
+Hypermail 1.02 was the last supported version of hypermail until recently. 
+This is the start of its rebirth as a supported, publically available tool.
+
+This version has been tested on the platforms listed below. If you would 
+like to send portability patches or confirmation that it works on a certain
+platform, please do.  There should not be toooo many changes that need to be 
+made.
+
+This version of hypermail allows an administrator to customize the header
+and footers to match their local needs.  This allows you to have hypermail 
+facilities better integrated into your web site. 
+
+This version is an integration of patches that Kevin had received through
+the years, and new features through the individual efforts many people.  
+This has been run through lint, Insight and Purify and has been cleaned up 
+accordingly. There are still some minor issues that will be cleaned up
+shortly. 
+
+   * archive - general archive utilites that are useful in managing
+               list archives. It is expected that some of the functionality
+               in msg2archive.c will find it's way into future versions of 
+               hypermail,
+   * contrib - contributed hypermail relate utilities
+   * configs - sample hypermail configuration files,
+   * docs    - documentation and documentation support files,
+   * libcgi  - support library for the mail utility,
+   * src     - here's the beef,
+   * tests   - directory for supporting local testing,
+
+Before Building Hypermail:
+==========================
+
+   * Hypermail now uses "configure" to generate the Makefiles. In the
+     top level directory, type "configure" to create the Makefiles.
+     If it does not work on your system, please let me know. 
+
+   * Additional utilities have been added to support maintaining hypermail
+     and Unix mailbox archives side-by-side.  The tools can be very useful.
+     See the archive/README for additional information. It is expected that 
+     the functionality of msg2archive.c will be merged into hypermail in 
+     the future.
+
+Building Hypermail:
+===================
+
+   Hypermail has been normally compiled and run on Unix-based systems
+   in the past. Today it can be configured and built using Cygwin 
+   software.  I have either compiled and tested this code successfully 
+   on the following platforms or others have told me of their success.
+
+        Solaris 2.5.x, SunOS 4.1.3, FreeBSD 2.2.5, FreeBSD 3.0-RELEASE,
+        BSDI/3.x, Linux kernel 2.0.18 and 2.0.30, Redhat 5.x && 6.x,
+        NT using CygWin-b19 <http://www.cygnus.com/misc/gnu-win32>,
+        Irix6.2, HP-UX 10.20, SCO OS 5.0.5
+
+   For more information on Cygwin and build hypermail on a Windows-based 
+   system, see the file docs/Install-win32.txt.  
+
+   Generic Build:
+
+    1) Type "./configure". This creates the makefiles and the
+       config.h file needed to build the software.
+
+    2) Type "make". This will build the software. You can test
+       it locally and when you are ready to install it ...
+
+Testing Hypermail:
+==================
+
+    If you wish to test the new hypermail before installing it
+
+       	- chdir to tests/
+
+	- copy a mailbox you have to a local file named "testmail"
+
+	- type "sh ./testhm"
+
+    This will generate an archive under a newly created "testdir/"
+    directory.  Check it out with your favorite browser.
+
+    When you are done testing, 
+
+        - remove the testdir directory,
+
+        - remove the testmail file.
+
+    (See the README in tests/ for more information.)
+
+Installing Hypermail:
+=====================
+
+    Now that you are ready to install Hypermail, 
+
+        - chdir to the src/ directory
+
+        - Type "make install". 
+
+Building cgi-bin/mail:
+======================
+
+    A small CGI program, "mail", is included with this source
+    for you to use with Hypermail. To compile and install it:
+
+    1) Edit the Makefile and change the variable "cgidir" to
+       point to the directory that holds your site's CGI programs.
+
+    2) Type "make mail" to compile the mail program.
+
+    3) Type "make mail.install" to install the program in your
+       CGI directory. 
+
+Documentation:
+==============
+
+    To install the HTML documentation:
+
+    1) Edit the Makefile and change "htmldir" to point to the
+       directory in which you want the documentation.
+
+    2) Type "make html.install". You should be able to view the
+       HTML documentation using any World-Wide Web browser. 
+
+    The latest, most up-to-date Hypermail documentation can be found at:
+
+        http://www.landfield.com/hypermail/
+
+Warning:
+========
+
+Take the time to read the KNOWN_BUGS file so that you are aware of 
+things that might affect your use of hypermail.
+
+CVS Server:
+===========
+
+Thanks to Ashley M. Kirchner <ashley@pcraft.com>, we have a CVS 
+server with the most recent sources at all times. Study the file
+README.CVS for details in how to use it.
+
+UPDATE: April 29th, the CVS server got switched to a different machine.
+        Please pay attention to the new path locations (from README.CVS)
+
+Getting Help:
+=============
+
+    Please send all bug reports, feature requests, patches, and other 
+    program-related things to 
+
+		hypermail-bugs@landfield.com.
+
+    The Hypermail Development mailing list (hypermail@landfield.com) is 
+    a good place to ask questions about usage, potential bugs, or to talk 
+    about features you'd like to see.  The list is a majordomo-based list.
+    To subscribe send a message to majordomo@landfield.com with 
+
+                  "subscribe hypermail" 
+
+    (minus the quotes) as the body of the message. The Subject: line 
+    is ignored.  The list's submission address is hypermail@landfield.com.
+
+    If you would simply like to be alerted to important Hypermail 
+    announcements and don't wish to follow the development list's 
+    traffic you can subscribe to the Hypermail Announcements list. 
+    That is a very low traffic moderated list intended for announcements 
+    only (concerning new releases or patches). This too is a majordomo
+    based list so to subscribe, send a message to majordomo@landfield.com 
+    with
+                "subscribe hypermail-announce"
+
+    as the body of the message.
+
+Additionally:
+=============
+
+    You'll find the image "hypermail.gif" included with the source;
+    this icon is for your use in your Hypermail-related pages and links 
+    to them. If you are talented with graphics and would like to donate
+    new icons and images to the hypermail effort, please feel free.
+

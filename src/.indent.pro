@@ -1,0 +1,9 @@
+-nbad -bap -nbbo -nbc -br -brs -ncdb -nce -ci4 -cp33 
+-ncs -d0 -di1 -nfc1 -nfca -hnl -i4 -ip0 -l75 -lp -npcs 
+-npsl -nsc -nsob -nss
+-Tform_entry
+-Tcgi_info
+-TFILE
+-Ttime_t
+-Tva_stack_t
+-Tpattern

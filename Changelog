@@ -1,0 +1,1634 @@
+Version Changes for Hypermail
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Daniel Stenberg (Apr 10, 2000)
+ - I made %<unknown letter> in printfile display exactly as used the other
+   day. Today I changed my email address all over!
+
+ - Added https:// to the recognized URL types to <a>-ify
+
+ Jose Kahan (jose@w3.org) (Jan 17, 2000)
+
+ - The quoted printable decoding didn't take into account the 
+   ietf-mbox option.
+ 
+ Jose Kahan (jose@w3.org) (Dec 24, 1999)
+
+ - Removed an invalid </A> tag when using tables.
+
+ - When using the showhtml option, invalid HTML was generated in the
+   headers: <P><P> before the </PRE>.
+ 
+- Stopped the generation of a Mailto on msgid's.
+ 
+ - Rearranged the format of the index and messages when not using
+   tables. My aim was to make the format more symetrical.
+
+ - Added a new item, "Mail actions",  in the control menu. This item
+   is only active when using the mailcommand and hmail options, and
+   when the tables are turned off. This option duplicates the one found in 
+   the table.
+
+ - Added two new options for linking external stylesheets to the index 
+   and the messages, respectively: icss_url, mcss_url. The link is added
+   as a META element in the header.
+
+ - The default value of the mailcommand mailto: had some typos: non
+   escaped chars, use of reply-to instead of in-reply-to.
+ 
+ - Two protections were missing to avoid having empty HREFs when the
+   about and archives options were defined in the .hmrc file, but wihout
+   any given value.
+
+Jose Kahan (jose@w3.org) (Dec 15, 1999)
+
+ - The inline changes from 29/Nov had the side effect that other
+   inline attachments, like text/html were being linked like inline
+   images.
+
+ Kent Landfield <kent@landfield.com> (Dec 8, 1999)
+
+ - Bjarni R. Einarsson <bre@netverjar.is> pointed out that the
+   "Reply:" and "Maybe Reply:" output was not correct.  pcm@rahul.net 
+   (Peter C. McCluskey) submitted a patch that fixes them as well
+   as the current threading allows. 
+
+ Kent Landfield <kent@landfield.com> (Dec 7, 1999)
+
+ - Added hoaf-28 python index generator written and contributed
+   by Bernhard Reiter <bernhard@climate2.geog.uwm.edu> to the basline.
+
+ - Added ls2mail script written by David Kilzer <ddkilzer@ti.com>
+   to the basline.
+
+ - Converted libcgi.doc to libcgi.html.
+
+ Kent Landfield <kent@landfield.com> (Dec 1, 1999)
+
+ - hypermail-2b28 rolled.
+
+ Kent Landfield <kent@landfield.com> (Nov 29, 1999)
+
+ - Corrected a parsing error in parsemail when dealing with
+   attachments.  If the filename was "quoted" things worked
+   properly. If the filename was not quoted then the name 
+   of the attachment was dropping the first letter of the
+   filename and adding '_' to the end. 
+
+ - Corrected a conditional statement that was limiting storage
+   of 'inline' types to only recording inline types that were
+   of type image/.
+
+ - Changed strstr usage when searching MIME headers to
+   use strcasestr instead as the case sensitivity was
+   getting in the way. 
+
+ Kent Landfield <kent@landfield.com> (Nov 28, 1999)
+ 
+ - Inconsistencies in write* routines called in hypermail.c
+   pointed out by Bernhard Reiter <bernhard@uwm.edu>.  set_* 
+   variables were used but still passing values in with the 
+   function call.  Removed unneeded parameters.
+
+ Kent Landfield <kent@landfield.com> (Nov 22, 1999)
+
+ - The .hmrc resources didn't seem to override the default values, but 
+   rather got added to them.  This was corrected for list usage. If
+   a list value is set in the .hmrc file, it should completely replace
+   the default values.  This need only occur on the first occurance
+   after the builtin initialization.
+
+ - Jeff Katcher pointed out 'At the bottom of index.html and date.html, 
+   "Last message date:" is output twice.  It's only present once on the 
+   author and subject pages.'  This has been corrected so it is only
+   printed once.
+
+ Jose Kahan <jose@w3.org> (Nov 23, 1999)
+
+ - A typo in setup.c:PreConfig gave problems (memory overwrite) when 
+   dealing with CFG_LIST configuration options.
+
+ - uudecode wasn't working with the ietf-mbox option. 
+
+ Kent Landfield <kent@landfield.com> (Nov 22, 1999)
+
+ - Error in setting of defaultindex in configure.in caused no index.html
+   file to be created. configure.in was corrected to set the default 
+   index to "thread" instead of thread.html.
+
+ - Added .indent.pro files to FILES file.
+
+ - Added "-p" option to mkdir so all parent directories will be made if
+   needed.
+
+ - Added requests to TODO file.
+
+ Kent Landfield <kent@landfield.com> (Nov 17, 1999)
+
+ - hypermail-2b27 rolled.
+
+ Kent Landfield <kent@landfield.com> (Nov 17, 1999)
+
+ - Changed the install dependencies for the Makefile.in files
+   so that install-sh is used through out.
+
+ - Assured all includes are checked for in configure.
+
+ - Updated FILES
+
+ - Corrected dependencies on defaults.h
+
+ Kent Landfield <kent@landfield.com> (Nov 14, 1999)
+
+ - Corrected CFG_LIST storage of defaults other than NULL in
+   the function ConfigAddItem().
+ 
+ - Assured struct hmlist variables set_text_types,
+   set_inline_types, set_prefered_types, set_ignore_types,
+   and set_show_headers set to NULL initially. Othewise
+   add_list was checking garbage when called from ConfigAddItem().
+ 
+ - Reworked some of the defaults in setup.c
+ 
+ - Added a dump_configI() routine to print out all internal variables
+   for debugging. Use #ifdef DEBUG to get it included.
+ 
+ - Removed unused defines in setup.h
+ 
+ - Added defaults.h.in so sites could setup reasonable global defaults.   
+ 
+ - Added additional configure support for setting defaults for 
+   language, htmlsuffix, defaultindex and domainaddr in defaults.h. 
+ 
+ - Added cleanup of defaults.h and mail-archive test directory to Makefile
+ 
+ - Removed old method from Makefile.in and lists.h in the archive directory.
+ 
+ - Regenerated configure from configure.in. 
+ 
+ - Regenerated the dependencies in src/Makefile.in 
+ 
+ - Removed some #if 0 code in date.c  
+ 
+ - Changed strdup calls to strsav calls in getname.c and mail.c
+ 
+ - Cleaned up html page output if usetable was selected. 
+ 
+ - Removed unnecessary variable passing into the writedates(), 
+   writethreads(), writesubjects(), writeauthors() routines. 
+ 
+ - Freed up memory alocated for configfile variable. 
+ 
+ - Removed unneeded variables in hypermail.h (previously #if 0'ed) 
+ 
+ - Updated README a bit.
+
+ - Updated Changelog
+
+ Kent Landfield <kent@landfield.com> (Nov 11, 1999)
+
+ - Removed strdup declarations that were causing gcc to fail 
+   on certain systems.
+
+ - Added French language support contributed by Nicolas NOBLE 
+   <pixels@chez.com>
+
+ - Updated documents about "is" and "fr" language support.
+
+ Kent Landfield <kent@landfield.com> (Nov 9, 1999)
+
+ - Added checking the return value of getpwuid() in readconfigs. If
+   the value is NULL then see if the $HOME is set in the environment.
+   This avoids a crash for Win32 users who don't bother to set up
+   /etc/passwd in cygwin environment.
+
+ - Added support for proper naming of executables (hypermail on 
+   Unix hypemail.exe on Dos/Windows/NT).
+
+ - Corrected getlocaltime so it would not print the timezone twice
+   if the timezone was also specified in the dateformat directive.
+
+ - Corrected print.c so From: is printed when the email address
+   is the same as email name.
+
+ - Removed tests/testhm from the baseline. Replaced it with testhm.in
+   so configure can generate the proper path to the test hypermail 
+   executable.
+
+ - Modified configure.in so that it can determine if it is running
+   in cygwin environment. Added tests/testhm.in support.
+
+ - Removed acconfig.h from the baseline as it is no longer needed
+   with the current configure changes.
+
+ - Assured destination directories exist for all installed files.
+
+ - Added uninstall option in makefiles.
+
+ - Cleaned up the docs/Install-win32.txt to reflect the changes made.
+
+ Bjarni R. Einarsson <bre@netverjar.is> (Nov 5, 1999)
+
+ - "is" message table translation.
+
+ - Added a stripsubject feature to hypermail, which
+   makes it remove all occurances of a given word from the subject line,
+   which is really useful for un-cluttering the subjects of some mailing
+   lists (my lists all have their subjects prefixed with [listname]: -
+   which is quite redundant in an archive).
+
+ Jose Kahan <jose@w3.org> (Nov 4, 1999)
+
+ - Cleaned a bit the HTML format as well as the arranging of the indexes,
+   to make them look a bit more coherent.
+
+ - Commented the code that assumed we have an HTML text when finding a
+   line with <HTML>. The best way is to send HTML text using a correct
+   content type.
+
+ - New configuration option, custom_archives, that allows to define
+   a proprietary HTML text to be shown in the Other mailing archives
+   item.
+ 
+ - New configuration option, ietf_mbox, for parsing IETF-formatted mboxes
+   (see the doc).
+
+ Jose Kahan <jose@w3.org> (Nov 2, 1999)
+
+ - When using the showhtml option, </PRE> tags were being added to each
+   line of the signatures.
+
+ Martin Schulze <joey@infodrom.north.de> (October 27, 1999)
+
+ - Some where the showheaders functionality was lost. It has been
+   partially added in.  The 'hm_show_headers = list_of_RFC_Headers_to_display'
+   functionality did not work and has been corrected.
+
+ - If the show_headers directive contains the special character ``*'',
+   hypermail will display all header lines.
+
+ - Hypermail 2.x can now read hypermail 1.02 config files. Needed
+   to assure minimal impact of existing sites that use the older
+   version of hypermail. 
+
+ - hmrc.4 and hypermail.1 have been updated.
+
+ Kent Landfield <kent@landfield.com> (October 27, 1999)
+
+ - Edited documentation to the text more readable by using two spaces 
+   after a fullstop.  
+
+ - Cleaned up prototypes so they are consistent through out the include files.
+
+ - Found many locations where a local variable was shadowing a global
+   variable.  Renamed certain variables to assure no compiler confusion. 
+
+ - Extended the warning switches in WARNINGS in the Makefile.in.
+
+ Kent Landfield <kent@landfield.com> (October 23, 1999)
+
+ - Added additional checks in configure for the operating system. Set -Ae for
+   HP-UX and added checks for functions in libsocket and libnsl. Added sanity
+   checks to assure you are on the same machine if you are using the existing
+   config.cache and added acconfig.h config.guess config.sub support files.
+   Additional cleanup to configure.in and a regenerated configure script. 
+
+ Scott Rose <srose@direct.ca> (October 20, 1999)
+
+ - When a URL has trailing punctuation, it is almost certainly not part of
+   the URL. This version of parseurl() therefore excludes trailing
+   punctuation from URLs it finds.
+
+ - If the content-description of a message was empty, and at the end of a 
+   line, the link to the associated attachment was anchored on null text. 
+   Fixed to assure the text is anchored on the filename in the generated HTML.
+
+ Scott Rose <srose@direct.ca> (October 19, 1999)
+
+ - Added contrib/canonicalize.pl 
+
+   Comparing two archives is complicated by the fact that each message is
+   marked by the time at which it's archived. Attached is a script that
+   standardizes that date, if weakly, useful for such comparisons.
+   
+ - Added contrib/hyperfeed.pl
+
+   Feed messages from an mbox into hypermail one at a time so as 
+   to test the incremental mode of hypermail.
+
+ - The idea here is that we are zipping along through an mbox, gathering
+   information about a message, when we encounter a "From " line that signals 
+   the start of the next message. A side effect is populating dp with the 
+   date from that "From " line. In the existing code, that value is copied 
+   into fromdate[] just before the old message is hashed, which causes it 
+   to be associated with the previous message.  This caused different output
+   depending on incremental or mbox updating. This patch corrects that
+   by moving the date copy until after the addhash function is called.
+
+ Kent (October 18, 1999)
+
+ - Updated parseurl fuction as done by Scott Rose <srose@direct.ca>
+   provided 25% faster processing than the existing version while
+   maintaining the same functionality.
+ 
+ Kent (October 8, 1999)
+
+ - Changed msg2archive.c to be able to use the command line
+
+ - Made changes to runtest to assure msg2archive could be tested.
+ 
+ - Added the indent file .indent.pro in archive, src and lib.
+
+ - Ran indent on all sources in archive, src, and lib.
+
+ - Made changes to configure.in to better support libsocket.a
+
+ - Corrected configure.in check from gethostbyname to gethostbyaddr.
+
+ - Added configure check for inet_addr
+
+ - Added addition header checks and function checks in configure.in
+
+ - Regenerated config.h.in with autoheader
+
+ - Regenerated configure with autoconf
+
+ - Updated the source files to use the HAVE_* definitions in config.h
+ 
+ - Minor editing on the README
+
+ - Minor updates to the TODO file and Changelog file.
+
+ - Updated KNOWN_BUGS with the content of tests/Problems
+
+ - Removed tests/Problems from the baseline as it was duplicating
+   KNOWN_BUGS
+
+ - Removed src/Formatting from the baselien as it was a junk working
+   file of mine that should never have been baselined originally.
+
+ - Added tests/mboxes/embedded.msg as a test file and updated
+   tests/testhm to exersize it.
+
+ - Removed the listing for tests/Problems and src/Formatting, while
+   adding tests/mboxes/embedded.msg to the FILES file.
+
+ - Added the corrected version of hypetombox.pl done by
+   Peter McCluskey (pcm@rahul.net) to the baseline.
+
+ Jose (October 7, 1999)
+ 
+ - Changed the HTML DTD string of the generated strings to HTML 4.0
+   Transitional.
+ 
+ - Updated the doc to correspond to the suppression of the
+   options's hm_ prefix. Made the doc's HTML documents valid HTML 4.0 docs.
+
+ Kent (September 20, 1999)
+
+ - Cleanup of prototypes.
+
+ - Removed the generated getdate.c from the baseline. (Generated
+   from getdate.y.
+
+ - Purified and removed array bounds read problems.
+
+ Daniel (September 17, 1999)
+ - Applied language patches from Jyrki Kuoppala <jkp@kaapeli.fi>
+
+ - Applied Kent Landfields lots of changes. getname() is reverted to an older
+   version since the newer did out-of-bounds reads.
+
+ - Paul Haldane's fix is applied.
+
+ - Peter C. McCluskey <pcm@rahul.net> suggested fixreplyheader() correction
+   has beed applied.
+
+ Daniel (September 13, 1999)
+
+ - Kent Landfield found a bunch of weirdnesses that were corrected, in:
+   * threadprint.c/print_all_threads()
+   * print.c, makemailcommand() usage
+   
+
+ Jose (September 8, 1999)
+ - (This is a big commit as I'm merging my independent developments into
+   the public hypermail tree, which I'll use from now on)
+   If there's a Content-Description header, we now use it to describe
+   MIME attachments (unless they are inlined).
+   Two new options (see the hmrc.4 or hmrc.html file for more info): 
+      + hm_uselock to turn off hypermail's internal locking mechanism
+      + hm_usemeta to store the content type of a MIME attachment in a
+        metadata file (also available thru commandline option -M)
+   If the usemeta option is turned on, the Content-Type header of an
+   attachment is stored in a .meta directory (see hmrc.4 or hmrc.html for
+   more info). 
+   Files where MIME attachments are now prefixed with a two-digit counter,
+   a la dd-name. This is to avoid having having to create temporary files,
+   and to preserver links.  The counter is incremented for each attachment,
+   regardless of it's being inline or not. I disabled the call to emptydir
+   as it's not useful (will add it as an option later on).
+   External MIME attachments that don't have a filename, are given the name
+   dd-part.
+   Improved handling of MIME rfc822 attachments. 
+   Improved handling of Content-Disposition
+  
+ Ashley (September 7, 1999)
+ - Added configure options for --httpddir, --cgidir and --htmldir with
+   Apache's layout as the default (/usr/local/apache)
+
+ Daniel (August 23, 1999)
+ - Removed the 40-letter limit for subjects in the thread-index when
+   the table option was enabled.
+
+ jose.kahan@w3.org
+ - When the boundary is declared without quotes, parse.c failed to get it
+   properly.
+
+ - print.c: There was a missing <PRE> and this resulted in a not-readable text
+
+ Daniel (August 10, 1999)
+ - I hade a terrible bug that made the attachment directories to get created
+   relative the wrong directory! They were also not getting the proper
+   permissions set.
+
+ Tim Witham <twitham@pcocd2.intel.com> (August 10, 1999)
+ - Had to fix a realloc() with NULL pointer which sunos doesn't handle.
+
+2a24
+====
+  Daniel (August 9, 1999)
+  - I'm consider renaming the series of archives that I'm releasing, back to
+    the beta label. It would be more correct. Kent is with us again and I
+    don't think anyone is gonna continue on the now forever sleeping
+    beta-series. This seems to be the one and only hypermail development
+    branch and I believe we now have it stable enough.
+
+  - 'attachmentlink' is a new config file item that controls how attachments'
+    links are made. By using this you can make a wrapper cgi script on your
+    server that issues a warning to the user that it may be dangerous to run
+    attachments or whatever you think is appropriate. Default it behavs as it
+    used to do before this feature was added.
+
+  Daniel (August 8, 1999)
+  - Applied Jose Kahan <Jose.Kahan@inrialpes.fr>'s patches:
+ 
+    The alternate content parsing was broken in that you couldn't give a list
+    of preferences. Also, if you first parse an alternate with a low priority,
+    then another one with a higher priority, the memory and, eventually, files
+    created to store the former alternate content weren't erased.
+
+    I found a minor bug. When decoding messages with multiple MIME
+    attachments, the decode variable (where the content encoding format is
+    stored), isn't updated.
+
+  Daniel (August 6, 1999)
+   - Fixed the subject overflow
+
+   - Made attachments get saved in their own subdirectories.
+
+2a23
+====
+  Daniel
+  - I'm making a release out of this now since I'm off for a longish
+    vacation next week...
+
+  Paul
+
+  - Applied Tom van Alten's patch to correct improper formatting 
+    of messages when hm_showhtml = 0 and showheaders = 1.
+
+  - New code to (optionally) accept messages wth no msgid.  Default
+    is to require msgids in all messages - use hm_require_msgids = 0 
+    to avoid this check.
+
+  - Made handling of duplicate msgids optional.  By default duplicates
+    are discarded.  To accept them (replacing the msgid with a generated
+    msgid) use hm_discard_dup_msgids = 0.
+
+  - Check return value from addhash when reading old messages.  Messages
+    already archived should be valid but safer to check.
+
+2a22
+====
+  Daniel
+  - Applied a boundary parsing bug correcting patch supplied by
+    Andreas Fuchs <asf@ycom.at>
+
+  Paul Haldane
+  o (May 16th 1999)
+    1) changes to the way we construct threadlist (so that all the messages
+    that should be in the thread are included even if they don't have valid
+    in-reply-to headers)
+
+    2) changes to threadprint.c - simplification of print_all_threads.  Now
+    uses the information in threadlist to find the relationship between
+    messages.  This speeds things up a bit when adding single messages to
+    large archives (I saw a reduction from 28s to 18s for adding a message to
+    a 1,100 message archive).  Slight speed-up when converting large archives
+    - not as noticeable as a large part of time now seems to be in fopen().
+
+    I've updated/added some comments.
+
+    I've added msgnum to the reply struct - this is just a copy of msgnum in
+    ->data->msgnum - this was intended as an optimisation but I suspect it
+    doesn't make much difference.
+
+    Threading is now much better (well, I would say that wouldn't I :->).  it
+    still gets things wrong occasionally - often not really its fault.  Known
+    problems include
+
+    1) duplicate message-ids - results in messages being attached to the wrong
+    thread - actually found an instance of this in my test mailbox.  The
+    obvious heuristic to avoid this would be to compare the subject as well,
+    though this breaks threads where the sender has deliberately changed the
+    subject but intends to continue the thread.
+
+    2) occasionally gets messages in the wrong order because they get attached
+    to different sub-threads - wouldn't happen if MUAs used in-reply-to.
+
+    I've done a quick tweak to duplicate msgid handling in addhash.  Now
+    replaces duplicate msgids with a locally constructed one.  This keeps
+    things happier.
+
+
+2a21
+====
+  Daniel
+  o (May 12th)
+    - Added the tests/stdintest.pl script. It is a small perl hack that passes
+      a series of generated mails into hypermail on stdin. One by one. I've
+      got reports about bugs in that area, but I can't seem to repeat any
+      with this tool. I thought I'd better include this here anyway to better
+      enable others to run more torture tests on hypermail.
+
+  Paul Haldane
+
+  o (May 6th)
+    - Here's a patch that allows the user to decide on the format used to
+      present dates on the generated pages.  If dateformat is set then it uses
+      that (that's the new functionality) otherwise it uses the standard
+      format or euro format depending on the config file.
+
+      I've not given the option to use the date string as originally given in
+      the mail message.  This could be done without too much hassle.
+
+  Daniel
+  
+  o (May 5th)
+    - Corrected a crash in parse.c
+
+    - Added a missing "From:" in print.c
+
+    - Made the bin-names get prefixed with "att-" too.
+
+    - Adjusted getname() to skip all starting white spaces and quotes, and
+      to skip trailing quotes as well as white spaces.
+
+  o (May 4th)
+    - Attachment names could miss the first letter.
+
+2a20
+====
+  Daniel
+
+  o (May 3 1999)
+   - Implementing my new From:-parser into the new source file: getname.c.
+     This should hopefully not only be much better at parsing from lines,
+     but also to it in a more stable manner.
+
+   - Found some additional problems with From-lines I've tried to correct.
+     Like a single-mail archive or mails with no From:-lines at all.
+    
+  Ron Brogden <rb@islandnet.com>
+
+  o A small correction to hypermail.c lets it compile properly on sunos 4.
+
+2a19
+====
+
+  Daniel
+
+  o Now I prefix filenames with "att-" when I save attachments.
+
+  o Several errors correct, most of them by Paul Haldane.
+
+2a18
+====
+
+  Daniel
+
+  o (Apr 7 1999)
+    - Added 'locktime' as a configurable item. It defines the maximum number
+      of seconds to wait for an existing lock to dissapear before it is
+      overridden. If this is 0 or less, the lockfile will lose its power
+      completely. locktime is 3600 by default.
+
+    - I made the 'indextable' option work as Glen Steward wanted it to (that
+      March 30 patch apply wasn't such a big hit). You can either set
+      "indextable = on" in the config file or use the -T command line option
+      to get the indexes in "table" version.
+
+  Paul Haldane
+
+  o (Apr 7 1999)
+    - Major date-parsing re-arrangement. getdate.c added, lots of functions
+      patched. Speed improvements.
+
+2a17
+====
+
+  Daniel
+
+  o (Mar 30, 1999)
+    - First atttempt at applying Glen Steward's table patches. It wasn't
+      a complete success but it can be adjusted from here.
+
+  o (Mar 29, 1999)
+    - Ashley M. Kirchner found a silly bug that occured if the last mail
+      in the box was a double message-id (or similar that makes that
+      particular function return NULL).
+
+  o (Mar 25, 1999)
+    - Threaded index seems to work yet again!
+    - Paul Haldane <Paul.Haldane@newcastle.ac.uk> brought me lots of
+      various patches that made hypermail do better! 
+
+  o (Mar 25, 1999)
+    - Corrected the problem with "re: subject" and "subject" being sorted
+      differently. The explanation was that the "re:" subject had a space
+      left in the beginning of the string!
+
+  o (Mar 25, 1999)
+    My giant work of redoing things now finally seems to work a little at
+    least. What's been done the last week:
+    - All emails now get only ONE single struct allocated for it.
+    - Remade the hash stuff. Hashed entries in the table only stores a struct,
+      links it in the list and POINTS to the email struct.
+    - Added a hash on the 'inreplyto' string to better enable finding mails
+      a mail replies to.
+    - Rewrote the whole darned threaded index functions. threadprint.c is a
+      new source file for threaded index functions.
+    - All indexes will now have full access to the complete email struct and
+      will thus enable dates all over etc. This will enable me to introduce
+      a template feature for how to write an entry in an index. I.e what to
+      include for each entry, subject, author, date, charset, bla bla bla...
+    - Changed the way single mail's "next in thread" links are found.
+    - As a "side-effect" I added a filter to prevent the same message ID
+      twice. The reason for this is that it is more likely for it to be able
+      to screw up the threading if I allow them to co-exist.
+
+  o Ashley M. Kirchner <ashley@pcraft.com> works on the bug report web.
+
+  o (Mar 15, 1999)
+    Roman Shterenzon <roman@xpert.com> pointed out a bug in the HTML-reader
+    that made hypermail crash if the variables were set to "". I mailed back
+    a patch to him I think will correct this problem.
+
+2a16
+====
+  Daniel
+
+  o (Mar 14, 1999)
+    "text_types" is now a recognized config file item, where you can specify
+    MIME types that should be treated by hypermail _exactly_ as if they were
+    text/plain.
+
+  o Corrected the list-check routine, so that the items in the list are the
+    ones using wildcards. This means that suddenly, all those mime-list items
+    support wildcards!
+
+  o (Mar 13, 1999)
+    Craig A Summerhill <craig@cni.org> found a bug. It turned out to be the
+    fact that parse.c wronly assumed content-type text/plain to use
+    ENCODE_NORMAL. It was really silly, since the Content-Transfer-Encoding
+    header could've already appeared and stated another encoding!
+
+  o Adjusted configure.in to do a slightly better -libnsl check.
+
+  o (Mar 11, 1999)
+    CVS server is up again. Added the UPGRADE file to the tree. Thanks to
+    Glen Stewart.
+
+  o (Mar 10, 1999)
+    Pretty extensive re-write of parse.c to deal with the
+    "Content-Disposition" headers better. That line can give a hint whether
+    the file should be stored as a file or showed inlined. It can also
+    have the filename (RFC1806 for details).
+
+  o (Mar 10, 1999)
+    The CVS server is down due to admin work there.
+
+  o (Mar 10, 1999)
+    Fixed parseurl(). It now deals with <www.foobar.com> and similar
+    constructions better. Craig A Summerhill <craig@cni.org> reported.
+
+  o (Mar 8, 1999)
+    Corrected src/Makefile.in to not use options.h anymore!
+    Roman Shterenzon <roman@xpert.com> made me aware of this.
+
+2a15
+====
+  Daniel
+
+  o (Mar 5, 1999) Made "text" equal text/plain in content-type: header
+    lines.
+
+  o Removed options.h completely to reduce the number of mistakes from
+    people trying to edit it!
+
+  o (Mar 4, 1999) Applied Glen Stewart's patch to remove a few <li> tags.
+
+  o Bailey, Raymond <bailey9@MARSHALL.EDU> pointed out a problem in the
+    getname() function. When you got a mail with a From: line where there
+    is a name within quotes that were "attached" to the email part without
+    spaces in between as in "name"<email@email.com> the parser failed to
+    get a name part of this and caused hypermail to dump core.
+
+  o Alisdair Davey <ard@mithra.physics.montana.edu> Helped me point out
+    a bug in mprintf.c. It made the *printf() routines fail on %.*s
+    constructions. I am considering an upgrade of the mprintf stuff to
+    my newer "trio" stuff...
+
+  o Made %f insert the file name of the generated HTML file in headers
+    and footers.
+
+2a14 Pl 2
+=========
+  Daniel
+
+  o Removed a bug that occured when converting a mail into html that had
+    a "in-relpy-to" header but the replied-to mail was not present in the
+    mailbox.
+
+2a14 Pl 1
+=========
+  Daniel (now CVS'ed at cvs.hypermail.yeehaw.net:/cvs/hypermail)
+
+  o Made it de-mime headers even without the mime-version: header present
+  
+
+2alpha14
+========
+  Daniel
+
+  o It should now accept white space in the beginning of config file
+    lines.
+
+  o SetupCleanup() bugs somehow, I'm no longer using it == dirty fix.
+
+  o Updated the "name/email" scanner.
+
+  o Total mail counter was wrong when updating.
+
+  o Renamed to alpha to avoid confusion.
+
+2b13
+====
+  Daniel
+
+  o Two corrections in the mprintf.c. One of them being serious
+
+  o (parse.c) now the QP decoder accepts question marks in the encoded-words
+
+  o Corrected the mprintf() replacement define in mprintf.h
+
+  o Added some more missing free()s in print.c
+
+2b12
+====
+
+  Daniel
+
+  o Now strips trailing white spaces from values in the config file if
+    written without quotes. Paradise Cowgirl <minerva@phix.com> reported.
+
+  o List types in the config were insanely written and caused memory
+    disaster at times. Byron C. Darrah <bdarr@sse.FU.HAC.COM> and
+    Jenni Baier <jenni@renewed.net> both probably experienced this.
+
+  o Decreased the amount of memory allocations used when building hash
+    tables for index sorting. (see addhash() in struct.c)
+
+2b11
+====
+ 
+  Daniel
+ 
+  o Tom von Alten <alien@hpdmlad.boi.hp.com> pointed out a really nasty bug
+    in fixreplyheader() I had introduced! :-(
+
+2.0b10
+======
+
+  Daniel
+
+  o %c is recognized and replaced with a charset tag in mail headers. It
+    should be set as early as possible within the HEAD tag.
+
+  o Saves <!-- charset=blablabla --> in articles.
+
+  o dprintf() was not a successful name, Linux uses it for some odd purpose
+    even in stdio.h! :-/ Renamed my line of functions to m*.
+
+  o Adjusted getname() to be slightly smarter.
+
+  o Started working at adding charset to each single mail. It should be stored
+    per-mail basis now, even though it is never used anywhere...  It should
+    now make a proper META HTTP-EQUIV tag!
+
+2.0b9
+=====
+
+  Daniel
+
+  o Added a new -o option that can set any config options on the command line.
+    E.g set label with -o "label=my new label".
+
+  o Major rewrites of struct.c. There were just too many functions that
+    passed data between them by strcpy()ing them to char buffers. They now
+    pass char pointers in a lot higher degree. In fact, there aren't that
+    many strcpy()s left in the source now. Not that I notice any faster
+    operations, I just know it is neater code.
+
+  o I really don't like the way proto.h has *ALL* prototypes and therefore
+    everything is dependent on that file. I've stared to slowly extract the
+    protos for each .c file into its own .h file. This will allow me to
+    change prototype for a single function without having to recompile the
+    whole lot.
+
+  o Added general "Re:" - awareness functions. isre() returns TRUE if the
+    input string starts with a re-thing and findre() returns the position
+    of the first instance of re in the input string, or NULL if there is
+    none.
+
+    It knows and recognizes "Re:", "Fw:" and "Re[<number>]:" strings. If we
+    ever intend to support local variations of this, I've now made that
+    easier...
+
+  o The new getname() had problems with parens in the real name part when
+    quoted. As in 
+    From: "Windle, Alan M. (PA62)" <test@site.com>
+    It shouldn't be a problem now. It should also work with from-lines like:
+    From: ("Windle, Alan M. (PA62)") test@site.com
+
+    There might be an idea to simply ignore everything within that level of
+    parentheses. I mean, not add that text to the name.
+
+  o The sorted datelist was broken because I must've destroyed unre() when I
+    turned it dynamic. I improved printsubjects() to deal with pointers and
+    it now strcpy()s a lot less data.
+    
+    Did the same change to the printauthors() too.
+
+  o increment and readone are now separate options. Read stdin or use mailbox
+    are mutually exclusive but don't modify increment or readone. The
+    previous system was very confusing and didn't allow e.g updating an
+    archive with two mails passed on stdin!
+
+    I've now tried to update an existing archive with 3 mails passed on stdin
+    and it seemed to work. Works if read from a mailbox too. Even works with
+    the new -1 flag (to indicate there's one mail only). It has an
+    accompanying config file keyword named 'readone'. I think the new -v flag
+    is really great for this, cause it shows all built-in variables and kind
+    of automatically documents them!
+
+  o Ok, I wasn't aware the config file did assume quotes around the strings.
+    I've added support for that (too) now. Distributed this small change
+    to Kent, Tom and John as a patch for 2b8.
+
+2.0b8
+=====
+
+  Daniel
+
+  (Nov 24, 1998)
+  o So, just before I was gonna announce the b7 to the guys I got another
+    report from John Petrakis that pointed out two bugs. One bad free() which
+    he identified and one From:-line that b7 couldn't get name and email from
+    properly. I got really tired and rewrote the whole getname() function to
+    work with all the combinations mentioned in the source, and more. I think
+    this function also has another benefit: it is easier to read than the old
+    one.
+
+  o I found some other bugs with my new setup system which caused the
+    hm_htmlbody = NONE to not work. I am actually against that a line that
+    says NONE sets it to the default. NONE should be NONE, if the keyword
+    isn't used at all it should use the default. Well well, one thing at a
+    time I guess.
+    
+
+2.0b7
+=====
+
+  Daniel (getting deeper and deeper into this now ;-)
+
+  o Entirely new config file parser. Does make adding new config items a
+    lot easier and smoother. Run hypermail -v to make it output a fully
+    working config file (after reading the given input parameters).
+
+    There is no need for the "hm_" prefix on keywords in the config file. You
+    can still use it if you want, but you don't have to.
+
+    Internally, all configurable variables are now named 'set_XXXXX' to better
+    make it visible in the code.
+
+  o readoldheaders() is a lot more robust now. The order of the variables are
+    not set and empty files no longer cause it to dump core.
+
+  o Hypermail from now on only stores the variables inside HTML files that
+    are actually set. name="" is not needed to store.
+
+2.0b6
+=====
+
+  Daniel continues:
+
+  o parseemail() and ConvURLs() needed to deal with NULLs better.
+
+  o loadoldheaders() are no longer dependent on the order of the variables
+    in previously written HTML files.
+
+  o Mails with no subject confused the parser.c
+
+  o Tom von Alten <Tom_vonAlten@boi.hp.com> sent me two files he appearantly
+    got from Kent after the b4 he sent me. (date.c and msg2archive.c)
+
+  o All kinds of lists like hm_show_headers, hm_inline_types and
+    hm_ignore_types now offer the below mentioned wildcards.
+
+  o Added dmatch.c for dos-style * and ? wildcard matching.
+
+  o Cleaning up more memory leaks.
+
+2.0b5 as sent to John Petrakis 19 Nov 1998
+==========================================
+
+  Daniel:
+
+  o Added 'maketgz' to the archive. It is for creating release archives,
+    without having to remove a lot of files first.
+    * first asks for the version number of choice
+    * uses the file FILES to know what files to include.
+    * updates the patchlevel.h file to the entered version number
+    * creates the archive with a directory based on the entered version number 
+    * names the archive based on the entered version number
+
+  o Added a whole bunch of more free() calls.
+
+  o Inlined HTML that was base64 or uuencoded were not previously dealt with
+    properly.
+
+  o Mails with no Message-Id: caused a crash in the hash function.
+
+  o HM_INLINEHTML can now be set to 0 to prevent hypermail from inlining
+    mail parts in HTML.
+
+2.0b4 as sent to Tom von Alten Nov 19, 1998.
+============================================
+
+  Daniel:
+
+  o Dynamic strings all over. I added a generic dynamic-string system which
+    I think works pretty good. Using functions and macros it should also be
+    pretty easy to extend, modify and optimize without any other source
+    modifications. 
+
+    I had to modify stuff all over the place and pretty much too. I hope I've
+    removed at least the worst uses of static buffers and my initial tests
+    prove me right. No lenght limits of any fields of a mail is my goal, and
+    I think it is a fair goal.
+
+    Beware of leaking memory now though. We need to setup some debug-system
+    to track them easily.
+
+    The dynamic string routines could very well be optimized too.
+
+  o My dsprintf system was added. This system offers snprintf() - sprintf with
+    a buffer length parameter and aprintf() - returns an allocated string with
+    the text. I did this to better deal with fully dynamic buffers.
+
+  o Corrected the swedish texts. All 8bit letters were gone!
+
+  o (Nov 16) I recevied the 981013-b4 version. Started work.
+
+2.0b4
+====================
+
+  Kent:
+ 
+  o Date routine corrections.  
+
+       - Y2K capable. Hypermail used a two digit representation
+         for the year through out. It now uses a 4 digit representation.
+
+       - In hypermail.h, October was listed in monthdays as only having
+         30 days.
+
+       - hypermail did not deal with all the major date string formats. 
+         Date: formats starting with a digit (09 Sep 1998 01:27:30 +0300)
+         would cause parsing and threading problems. It now supports
+         that format.
+
+       - Added code to deal correctly with two digit years.
+         The idea as to how to approach this and the basis for
+         the solution is thanks to Byron Darrah.
+
+       - Corrected an off by one day error in getyearsecs(). It was 
+         adding the current day && adding the hours, minutes, and seconds 
+         for that day as well. It only needed to count all the days UP TO
+         the current day and then add the hours, minutes, and seconds for
+         the current day.
+
+       - Incorrect data type passed to fprint_summary(), needed to be
+         long instead of int.
+
+       - Corrected an off by one day in getdatestr(). Days in a month
+         start at 1, not 0.
+
+ 
+  o Add the ability to save hypermail generated html files with any 
+    configurable html suffix such as ".htm", ".html" or ".shtml", etc.
+    This works for the index files as well as the message files. (New 
+    .hmrc variable, hm_htmlsuffix, new environment variable HM_HTMLSUFFIX, 
+    and HTMLSUFFIX define in options.h.)
+
+  o Removed a conditional "if (use_mbox) increment = 0;" that was 
+    preventing the ability to read one message from a file and update 
+    an existing archive and its indexes.
+
+  o Corrected parseurl to allow for a ',' (comma) character to be embedded
+    in the URL.
+
+  o Corrected parseurl to allow for a '&' (ampersand) character to be embedded
+    in the URL.
+
+  o Using -p with -iu on a new archive directory caused a core dump
+    begause 'bignum' was zero.  Corrected to assure bignum > 0.
+
+  o Added language abilities to hypermail. 
+         English  - en
+         Spanish  - es
+         German   - de
+         Swedish  - se
+    initially supported. (lang.c and lang.h added.)
+
+    Thanks to Francisco Iacobelli <fiacobelli@ibersis.cl> for the
+    "es" message table translation.
+
+    Thanks to Martin Schulze <joey@kuolema.Infodrom.North.DE> for the
+    "de" message table translation.
+
+    Thanks to Daniel Stenberg <Daniel.Stenberg@sth.frontec.se> for the
+    "se" message table translation.
+
+  o Changed how error messages are displayed so options message
+    only displayed where appropriate instead of for every message.
+
+  o Corrected getname() to parse yet another funky name format.
+
+  o Corrected printing error when a invalid domain was encountered in
+    an email address.
+
+  o Converted some static internal buffers to dynamically allocated ones
+    at startup saving 6+K. Also resulted in setstrval() not being needed
+    so it was removed.
+
+  o Corrected MIME parsing problem with previously parsed headers.
+
+  o Corrected default labeling problem with stdin generated archives
+    when no label is supplied.
+
+  o Fixed hypermail so it would not crash if started with no arguments
+    and an article on stdin.
+
+  o Added locking to the archive so that there is less chance of corruption
+    of the archive due to multiple copies of hypermail trying to update
+    the same archive at the same time with multiple messages.  This could
+    be improved so as to check for pid of process that owns it...
+
+  o Extended the configure support.
+
+  o Extended the use of hm_progress so that more information about
+    attachment files can be displayed.
+
+  o Updated documentation to reflect changes
+
+  o Corrected getname to deal with names that are all spaces.
+
+  o Corrected configuration variable setting. Moved checks to the
+    right place in the code.
+
+  o Hypermail now supports listproc mailboxes as well as general Unix
+    formated mailboxes. It does not require that a blank line exists 
+    between mail messsages in a mailbox. Thanks to Craig A Summerhill 
+    <craig@cni.org> for the push and the test data.
+
+2.0b3  - 8/15/98 
+=================
+
+  o Added validation of domains so that the generation of mailto: is
+    much more accurate than the previous method.
+
+  o Added support for Content-Disposition MIME Header so as to get the
+    filename from the header.
+
+  o Added verification of filenames to assure they are safe to use and
+    will not cause filesystem problems
+
+  o Fixed a problem with parsing the ending MIME boundary (it expended headers
+    following that)
+
+  o Found and removed a one-byte buffer overflow in the line continuation code.
+
+  o Corrected docs/hypermail.1 and TODO to reflect the proper RFC 822
+    parsing was actually included in version 2.0b1
+
+  o Corrected a typo in string.c that prevented the proper generation 
+    of mailto: links for email names with numbers [0-9] in them. 
+
+  o Corrected the base64 decoder error which caused files to get an 
+    extra zero-byte appended at times. (When storing attachments to disk.)
+
+  o Added additional ported systems to the README
+
+  o Removed the "#ifndef" from the defines in options.h. We do not want to
+    inherit any define values from other places. If there are confilcts
+    then I need to correct them. Inheriting defines can lead to unforeseen
+    results.
+
+  o attachments:
+       - comments are now generated in the output mail for each attachment 
+         that is written in a separate file. The comment looks like:
+            '<!-- attachment="filename" -->' in the standard comment style. 
+
+  o buffers and overflows
+    - mdecodeRFC2047() now has an output buffer size argument
+    - had to remove the use of rmcr() at two places, since that function uses
+      a very strict static buffer limiting the maximum line length pretty bad.
+    - parseurl() now features an output buffer size argument
+    - parseemail() now features an output buffer size argument
+  
+  o multipart/alternative 
+    - added awareness and parser "intelligence" to pick the last prefered
+      content-type within a series of alternatives (as MIME tells us to
+      do). This has not yet been very thoroughly tested.
+    - added the preferedcontent() function that returns wether a content-type
+      is prefered or not (as set with hm_prefered_types). Default prefered 
+      type is 'text/plain' (if hm_prefered_types is unused).
+  
+  o output
+    - added the experiment function printhtml(). It strips off unwanted html
+      tags from the output, even if they are used in attached HTML files. I.e
+      <HTML> and </HTML>.
+    - made 'showheaders' not use <BR> or newlines since the BRs are ignored
+      anyway, and the newlines are already present in each header line.
+    - added 'hm_show_headers' which is a list of what headers to include when 
+      the 'showheaders' option is used. For now, it also controls which 
+      headers to show when attached mails are shown. Although I can imagine 
+      that you'd like separate lists (since for attached mails, you'd like i.e
+      subject which you may not need for the main mail itself). If 
+      'hm_show_headers' isn't used, all headers will be shown.
+    - made the <PRE> system in the printbody() function a little smarter, and
+      now it prevents multiple </PRE> and <P> tags better. It did however
+      introduce another side effect (although a less serious one imho) and 
+      that is an extra pair of <PRE></PRE> after the last attachment when 
+      using 'showhtml'.
+  
+  o parsing
+    - made the multi-line merger function to make all lines get a regular 
+      white space between them when they're put together. Previously, this 
+      character was left as-is, which could be a space or a tab (or any other 
+      isspace()) letter.
+    - check changed to check for "<!-- received" as the start of parsing
+      previous html files in the event that the archive maintainer whishes
+      to add comments in the header template HTML files.
+    - in_list() now checks for list items case insensitive
+    - corrected so Message-ID:, References and Supersedes: lines are not
+      converted into mailto: URLs.
+    - corrected off-by-one in isquote that was causing array boundary read 
+      errors.
+    - corrected off-by-one in printbody line output that was causing array
+      boundary read errors.
+
+Real thanks are in order for Daniel Stenberg and David D. Kilzer. They helped
+greatly with making this release possible by sending in enhancements, comments
+and bug fixes.  Thanks Guys!
+  
+2.0b2  - 6/07/98 
+=================
+
+  o Corrected command line processing for individual messages received 
+    on standard input.
+
+  o Corrected formating of Next message links when incremental updating 
+    is done.
+
+  o Corrected the template filenames in docs/hmrc.html. Added "file" 
+    to them.
+
+  o Added additional systems to the list of ported systems.
+
+  o Reset certain options back to the proper defaults.
+
+  o Corrected problem in printbody in regards to printing HTML embedded
+    in a message. Still work to do here.
+
+  o Changed address options to assure I didn't get landfield.com 
+    information inadvertantly set in hundreds of archives because
+    the admins just took the defaults. ;)
+
+2.0b1  6/05/98 - Kent Landfield
+===============================
+
+WARNING: There have been too many changes to this version to list them
+         all here.  What appears below are some of the highlights.
+
+  o Command line settings override what is in the config file. In the
+    past the command line variables were read and set before the config
+    file was read. (Needed to get the name of the config file from the
+    command line.) This made it hard to have a default list configuration
+    file and make single runs with only one variable changed. Now processing
+    sets the hypermail internal options by:
+  
+  	Using Compiled in defaults specified in options.h,
+            then reads Hypermail Environment variables if set,
+            then looks for and reads any Configuration file specified
+        and finally uses the Command line settings specified by the user.
+
+    NOTE: THIS IS DIFFERENT THAN PAST HYPERMAIL USAGE.
+  
+  o Configurable Setting (.hmrc file) or Compile Time Variable to 
+    Domain-ize Addresses -- addresses appearing in the RFC822 field 
+    which lack hostname can't be made into proper HREFs when Hypermail
+    does it's thing.  They are coded with:  mailto:(no%20email)
+  
+    Because the MTA resides on the same host as the list, it is 
+    often not require to domain-ize these addresses for delivery.
+    In such cases, I think it would nice if Hypermail could be 
+    programmed to output:  mailto:kent@landfield.com  instead.
+    This would probably work well as a *required* definition 
+    during compilation; however, it should not simply rely on 
+    the output from `hostname` in case you want to override with 
+    an MX entry or alternate domain (if you run virtual domains)
+  
+  o Added capability to have customizable index html headers, message
+    html headers and html footers.  Able to use substitution cookies in 
+    the header and footer template files.
+  
+       Substitution cookies supported:
+  
+           %% - '%' character
+           %~ - storage directory
+           %e - email addr of message author - Not valid on index pages
+           %h - HMURL
+           %i - Message-id - Not valid on index pages
+           %l - archive label
+           %m - Mailto address
+           %p - PROGNAME
+           %s - Subject of message or Index Title
+           %v - VERSION
+           %u - Expanded version link (HMURL,PROGNAME,VERSION)
+           \n - newline character
+           \t - tab character
+  
+       Additional cookies generate the complete META lines:
+  
+           %A - Author META HTML - Not valid on index pages
+                  <META NAME="Author" CONTENT="name (email)">
+           %B - <BODY> html statement
+           %S - Subject META TAG - Not valid on index pages
+                  <META NAME="Subject" CONTENT="subject">
+  
+  o Generates META tags in articles Author and Subject.
+  
+  o Now uses "configure" to generate the makefiles. This is rather
+    weak at present and needs to be added to/tested on other systems
+    but at least it's a start.
+  
+  o The config.h was renamed to options.h to support configure usage.
+  
+  o patchlevel.h added to facilitate better patches in the future. Still
+    need to fully integrate it's useage in version displays.
+  
+  o Added example .rc files to show how to customize list's and their
+    looks. 
+  
+  o Removed the _print.c files that had existed in the 103b2 release and 
+    replaced them with template headers/footer files. 
+  
+  o Extended archive path creation to make missing directories.
+  
+  o Added capabilities dir pathing to allow archive creation by date 
+    variables.
+   
+        %d - two digit day of month (1-28/30/31)
+        %D - three letter day of the week
+        %m - two digit month of year (1-12)
+        %M - three letter month of year (Jan, Feb, ..., Dec)
+        %y - four digit year (1990,..2001)
+  
+    RC example:           hm_dir = /some/archive/listname/%y/%M
+    ENV example:          HM_DIR=/some/archive/listname/%y/%M
+    Command line example: -d /some/archive/listname/%y/%M
+  
+    Expands to:  /some/archive/listname/1998/May
+  
+    All files would be archived during that run in that directory.
+    Subsequent executions will put the messages in the directories 
+    according to the date the messages were received on the archive 
+    site.
+  
+  o All "mailto:" links can include the "subject" so that the Subject: 
+    line of netscape mailer is automatically filled in.
+  
+  o Fixed "Re:" and redundant "Re:" variation && MS FW... 
+  
+  o Greatly enhanced getname() to correctly deal with most all email 
+    addresses.  X.400 addresses are not well supported yet. 
+  
+  o Corrected getreply() to better support the In-Reply-To: formats. The 
+    routine needs to revisited when a readline routine is inserted to
+    properly deal with continuation lines.
+  
+  o Added additional documentation describing the Hypermail configuration 
+    file.
+
+  o Added additional documentation describing how to customize HTML 
+    generated pages.
+  
+  o Corrected many petty problems such as:
+     - recursive '%' substitution.  A % in a subject line could cause 
+       an ugly recursion problem in a mail command expansion.
+     - title length problem.  Length of a title needs to be limited to 
+       less than 64 characters as indicated by HTML specs.
+     - Weblinted the generated output and corrected various things.
+     - Removed unused and unneeded variables
+
+  o Change various storage length defines in hypermail.h
+
+Patches Contributed From: "Roy T. Fielding" <fielding@kiwi.ics.uci.edu>
+------------------------------------------------------------------------
+
+  o Fixed the umask default,
+  
+  o Fixed default directory and file creation modes,
+  
+  o Fixed the many date problems, 
+  
+  o Corrected one of the Message-ID bugs, 
+  
+  o Removed annoying #start/#end fragments that mess up the browser history.
+
+Patches Contributed By: Byron Darrah <bdarr@sed.hac.com>
+----------------------------------------------------------
+
+  o Added a menu bar for a header and footer on all pages and removed 
+    the bulleted list items that it replaces.  
+  
+  o Reworked the general appearance of header and footer parts of html pages.
+  
+  o Added the "hm_hmail" configuration parameter and -n command line
+    option for specifying an email address for input to a hypermail
+    archive.
+  
+  o Added "New Message" and "Reply" buttons to the menu bar for submitting
+    messages to a hypermail based list.
+  
+Patches Contributed From: Jared Reisinger <feety@hhhh.org>
+---------------------------------------------------------
+
+  o Fixed configfile substring problem.  
+  
+  o SHOWBR, IQUOTES, SHOWHR, EURODATE, SHOWREPLIES, and MAILCOMMAND 
+    now run-time configurable.  
+  
+  o Fixed post leap-day error.  
+  
+  o More robust Message-ID parsing.  
+  
+  o Better SHOWHTML handling for indented lines.  
+  
+  o Allow IQUOTES when not using SHOWHTML.
+
+Patches Contributed From: Daniel Stenberg <Daniel.Stenberg@sth.frontec.se>
+--------------------------------------------------------------------------
+
+  o I had all calls to the decodeRFC2047() function moved to *after* the
+    merging of long lines.
+  
+  o decodeRFC2047() now correctly concatenates two succeeding "encoded words".
+    I now call the function mdecodeRfc2047() since it now allocates the new
+    string.
+  
+  o Now informs if the attachment wasn't properly decoded when stored to disk.
+    This happens if the Content-Transfer-Encoding specified isn't known to
+    the parser. When this happens, the attachment is stored as 8bit octet-
+    stream.
+  
+  o Now supports the encoding type 'x-uue' for uudecoding. I think there are
+    mailers that use different names for the same encoding type so we better
+    watch out for them in the future...
+  
+  o Added the 'demimed' field to the body struct to keep track of 
+    header lines+ that have been RFC2047 converted already.
+  
+  o Kent Landfield sent me an interesting mail that showed me several weird
+    bugs in the MIME area.
+     A. The Quoted-Printable decoder bugged. A quick fix solved that.
+     B. The quoted printable decoder didn't support unlimited size of the line
+        the encoded text decodes into. I wrote a new function that seems to do
+        it properly.
+     C. Some important headers were not properly supported if they were split
+        up on several lines. I had to rewrite the header parsing system to make
+        this work. It now scans all headers and concatenate them into single
+        lines before any function is trying to parse or decode them.
+     D. It also showed a need for a uudecoder for the 'x-uue' encode type. This
+        is only noted for the future as I haven't written any decoder for this
+        format [yet].
+  
+  o decodeRFC2047 replaces the former RFC1522 function. I made it support
+    'encoded-words' anywhere in the line and several different ones on the
+    same line is now supported. The only flaw I'm still aware of now, is that
+    if there are two encoded-words next to each other, the result should not
+    show the spaces between them. My function unfortunately still does.
+  
+  o renamed decodeRFC1522 to decodeRFC2045.
+  
+  o decodeRFC1522 (quoted printable header decoding) didn't do well if the
+    ending ?= sequence was in the middle of the line. I think this function
+    will need more extensive testing.
+  
+  o Attached mails' headers (To:, From:, Date: and Subject:) are now shown
+    in the html.
+  
+  o Attached mails that contains attachments did force me to add a stack system
+    for the multipart boundary strings. Seems to work now. (Can't wait to see
+    an attached mail that contains an attached mail that contains ... )
+  
+  o strcpymax() introduced to prevent buffer overflows on extra-long headers
+  
+  o Lines starting with 'from ' messed up the parser pretty badly. It now
+    checks for 'From ' lines (case sensitive) with an empty preceding line
+    to split mails.
+  
+  o Now extracts attachments to separate binary files.
+  
+  o Supports multiple lined headers.
+  
+  o Supports quoted-printable and base64 encoded headers.
+  
+  o Supports base64 encoded text/plain
+  
+  o Rewrote the URL and email parsing to allow multiple URLs and email
+    addresses on each line.
+  
+  o Extended the original functionality to much better deal with MIMEd
+    mails and the standards from RFC 1521 and 1522. There are still flaws in
+    compliance with those but the majority of all mails using mimed texts
+    will be presented in a fairly decent fashion.
+
+Patches Contributed From: David D Kilzer <ddkilzer@ti.com>
+-----------------------------------------------------------
+
+  o Fixed problem with 'From: ' header lines in messages with the
+    following format: "From: <email@address.com>" wherein the "name"
+    from the previous email message would be used instead of reverting
+    to the address itself.
+
+  o URLs can now include ampersands (&) if they are preceded by question
+    marks (?) in the URL string.
+
+  o Email messages with no Subject line no longer grab the previous
+    email's subject.
+
+  o Reworked the order of output so that "message" links are always at
+    the top of the page in article pages and date/thread/subject/author
+    pages.
+
+  o Now escape '%' in mail URLs.
+
+  o Escape for '+' was wrong, changed to '%2B' (was '%22').
+
+  o Updated replace() function to recurse on 'afterstring' variable
+    rather than the whole 'newstring'.  More efficient and allows '%'
+    escaping.
+
+  o config.h: Added configuration option for SHOW_MESSAGE_LINKS which
+    turns all message headers and footers off (except for the links to
+    the date, subject, thread and author pages).  SHOW_MESSAGE_LINKS
+    overrides the setting of SHOWREPLIES.
+
+  o print.c (writearticles): Removed use of currentemail, currentid,
+    and currentsubject by forcing use of email2, msgid2, inreply2,
+    subject2, and name2 when calling struct.c (hashreplylookup).  This
+    was needed after I rearranged the order in which articles were
+    printed.
+
+  o string.c (convurls): Added code in two locations for the 
+    Message-Id code segment to recurse on the remaining portion of the
+    line being processed.  Each Message-Id found forces a return from
+    convurls() after a recursive call.  This prevents infinite recursion
+    (a Bad Thing generally speaking).  Note: we assume that Message-Ids
+    and URLs/email addresses do NOT appear in the same line.
+
+  o string.c (convurls): Changed format string from "%.3d" to "%.4d".
+    Fixed major bug in outputting links for Message-Ids.
+
+  o string.c (convurls): Fixed assumption in code for identifying
+    Message-Ids that there was only one Message-Id per line.  We now
+    stop gobbling up text used for a link with a space (' ') or a tab
+    ('\t').
+
+  o string.c (convurls): Added int got_question_mark in URL processing
+    code to permit an ampersand ('&') in a URL provided it comes after a
+    question mark in the same URL (a GET method with POST data).  Added
+    one line of code and changed another to accomplish this.
+
+  o string.c (convurls): Added code to check whether the next item to
+    URL-ize is an email address (containing an at sign, '@').  If it is,
+    we break out of the URL for loop and go process the email address.
+
+  o parse.c (loadoldheaders): Modified initial fgets() call to skip any
+    non-comment lines (i.e. "<html>" and "<head>").
+
+  o string.c (makemailcommand): Added code to escape percent signs 
+    ('%') when escaping spaces (' ') and plus signs ('+').  Percent 
+    signs must be escaped first since other escape sequences use the
+    percent sign followed by a two-digit hexadecimal number.  We're now
+    a little more MIME-compliant.
+
+  o string.c (replace): Changed the replace() function to recurse only
+    on the 'afterstring' portion of the URL instead of the whole rebuilt
+    URL.  This is both more efficient and prevents infinite recursion
+    problems when escaping percent signs ('%') with '%25'.  
+
+  o string.c (makemailcommand): Fixed escape sequence for plus signs
+    ('+') from '%22' to '%2B'.
+
+LOTS of other small patches from lots of other helpful people. I hope to 
+be able to more accurately list them in the final 2.0 version.
+
+1.03b2  3/10/98 - Kent Landfield
+=================================
+
+  o Header corrections made, 
+
+  o all current memory leaks plugged, 
+
+  o variable initialization corrected, 
+
+  o expanded response message recognition, 
+
+  o fixed many threading related bugs. 
+
+  o Restructuring directory layout for ease of support and to 
+    make adding utilities easier. 
+
+  o Added additional archive utilities. 
+
+1.03b1  4/6/97 - Kent Landfield
+================================
+
+  o Corrected memory leaks, 
+
+  o cleaned up HTML produced, 
+
+  o ran purify, lint and insight and cleaned up output.  
+
+  o Added the ability to customize header/footers via crude means
+    but hey, it works.
+
+1.02  8/1/94 - Kevin Hughes
+============================
+        Fixed configfile problem, different usage() output, days[] space
+        fix, NODATE, stripzone() fix, insig fix, SHOWBR, SHOWHR, IQUOTES,
+        THRDLEVELS.
+
+1.01  7/29/94 - Kevin Hughes
+============================
+        Printfooter declaration, getdate() and timezone names changed
+        to avoid library conflicts. Bad #define fixed (null) bug.
+
+1.0   7/29/94 - Kevin Hughes
+============================
+        Configuration file, logic fixes, better "re:" stripping,
+        name tags, default index.html (HM_DEFAULTINDEX), default
+        directory name can be mailbox name, mailto: fix, better dates,
+        better error messages, numbered files are padded to four digits,
+        headers are always in <pre>, next in thread, maybe in reply and
+        maybe reply, MAILCOMMAND, EURODATE, commented source, chmods only
+        new files, <html>, custom mail command variables.
+
+1.0b3 7/14/94 - Kevin Hughes
+============================
+        Environment variables added, ampersands are converted.
+
+1.0b2 7/13/94 - Kevin Hughes
+============================
+        Incremental updating added and various parsing bugs fixed.
+
+1.0b1 7/6/94 - Kevin Hughes
+============================
+        Hypermail rewritten in C. Because the source is so new and
+        relatively untested, it's still considered to be in beta
+        until feedback from users is received.

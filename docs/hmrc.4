@@ -1,0 +1,526 @@
+.TH hmrc 4 "October 27, 1999"
+.SH NAME
+hmrc \- Hypermail configuration file 
+.SH DESCRIPTION
+.B Hypermail
+can use a configuration file to allow you to customize the individual 
+aspects of a list.  In past versions of hypermail it was necessary for 
+all hmrc variables to begin with 'hm_'.  While still supported, it is 
+not necessary to use the 'hm_' prefix any longer and this document
+reflects that.
+.RE
+.LP
+In the configuration file, blank lines and lines beginning with a hash mark
+.RB ( # )
+are considered comments and are ignored.  The format of the "options" need to
+be in lowercase and separated with an equals
+.RB ( = )
+sign, such as:
+.LP
+.PD 0
+.RS
+.B option = value
+.LP
+.B mbox = "/home/john/my_mailbox"
+.LP
+.B filemode = 0600
+.PD
+.RE
+.LP
+You can specify which configuration file to use on the command line or, if 
+not specified, Hypermail will use the one specified as
+.B CONFIGFILE
+in options.h.  If the first character is "~", Hypermail will look for the 
+file under the current user's home directory.
+.SH CONFIGURATION OPTIONS
+.TP
+Below is a list of variables that Hypermail understands. 
+.LP
+Boolean numbers can have the value of
+.B 0
+or
+.B 1.
+.TP
+.B htmlsuffix = "suffix"
+Use this to specify the html file suffix to be used when Hypermail 
+generates the html files.  This is dependent on local needs.  Do not 
+put a '.' in the value.  It would result in "file..html", probably 
+not what you want. 
+.TP
+.B language = two letter language specification
+This is a two-letter string specifying the default language to use.
+Set this the value of the language table you wish to use when running
+and generating archives. 
+
+.in 10
+.B Current supported languages:
+
+      de - German
+      en - English
+      es - Spanish
+      fi - Finnish
+      fr - French
+      is - Icelandic 
+      se - Swedish
+
+.nr
+.TP
+.B uselock = boolean_number
+Controls whether to use hypermail's built-in locking mechanism.  By default,
+this option is set to 
+.B 1.
+Set it to 
+.B 0
+if you have an external locking mechanism,
+like, for example, when using procmail or smartlist.
+.TP
+.B locktime = number-of-seconds
+Set this to the number of seconds that a lock should be honored
+when processing inbound messages.  Defaults to 3600 seconds.
+.TP
+.B usemeta = boolean_number
+This option allows you to use metadata to store the content type of a MIME
+attachment and, later on,  when a user browses the attachment, send back
+this information in the HTTP Content-Type header.  When set to
+.B 1,
+the Content-Type
+header of  a MIME attachment will be stored in a metadata
+file.  Let us say that the MIME attachments for a message are stored in
+directory
+.B att-num.
+The metadata for those attachments will then be stored in directory
+.B att-num/.meta.
+If a MIME attachment is stored in file
+.B att-file,
+its metadata will be stored in file
+.B att-file.meta.
+This convention is directly compatible with the Apache server handling of
+metada.
+.TP
+.B mbox = "filename"
+This is the mailbox to read messages in from.  Set this with a value of
+.B "NONE"
+to read from standard input.
+.TP
+.B ietf_mbox = boolean_number
+Setting this variable to
+.B 1
+will tell hypermail that the mbox is formatted according to the IETF
+mbox convention: all lines, except for the envelope, are prefixed with a
+.B >
+char.
+.TP
+.B archives = "URL"
+This will create a link in the archived index pages labeled
+.I "Other mail archives"
+to the specified URL.  Set this to
+.B "NONE"
+to omit such a link.
+.TP
+.B custom_archives = HTML text
+If this variable is defined, a navigation entry will be
+created below the sorted_by_x list entry, with the text
+.I Other mail archives:
+followed by the value of this variable. Set it to
+.B NONE
+to ommit such an entry.
+.TP
+.B about = "URL"
+This will create a link in the archived index pages labeled
+.I "About this archive"
+to the specified URL.  Set this to
+.B "NONE"
+to omit such a link.
+.TP
+.B indextable = boolean_number
+Setting this variable to 
+.B 1
+will tell Hypermail to generate an message index 
+Subject/Author/Date listings using a table format.  
+Set to 
+.B 0 
+if you want the standard Hypermail index page look and feel. 
+.TP
+.B usetable = boolean_number
+Setting this variable to 
+.B 1
+will tell Hypermail to generate an index menu at the top and bottom 
+of each page in a table format.  Set to 
+.B 0 
+if you want the standard Hypermail page look and feel. 
+.TP
+.B reverse = boolean_number
+Setting this variable to
+.B 1
+will reverse-sort the article entries in the date and thread index files 
+by the date they were received.  That is, the most recent messages will 
+appear at the top of the index rather than the other way around.
+.TP
+.B showheaders = boolean_number
+Set this to
+.B 1
+to show the article header lines in the archived HTML files.  These 
+lines typically include the
+.B "To:", "From:",
+and
+.B "Subject:"
+information found in most email messages.
+.TP
+.B showhtml = boolean_number
+Set this to
+.B 1
+to show the articles in a proportionally-spaced font rather than a 
+fixed-width (monospace) font.
+.TP
+.B showbr = boolean_number
+Set this to
+.B 1
+to place
+.B <br>
+tags at the end of article lines.  Otherwise, all non-quoted article lines 
+will word wrap.  This only takes effect if
+.B showhtml
+is enabled.
+.TP
+.B iquotes = boolean_number
+Set this to
+.B 1
+to italicize quoted lines.
+.TP
+.B showhr = boolean_number
+Set this to
+.B 1
+to place horizontal rules before and after articles.
+.TP
+.B show_msg_links = boolean_number
+Set this to
+.B 1
+to put the individual message links at the top of the individual
+message pages.  Set this to
+.B 0
+to produce pages without the Next, Previous, Reply, In-Reply-To, etc.  links.
+.TP
+.B eurodate = boolean_number
+Set this to
+.B 1
+to display article received dates with days before months instead of months 
+before days.
+.TP
+.B showreplies = boolean_number
+Set this to
+.B 1
+to show all replies to a message as links in article files.
+.TP
+.B discard_dup_msgids = boolean_number
+Set this to 
+.B 0
+to accept messages with a Message-ID matching that of a message 
+already in this archive.  By default such messages are discarded.
+.TP
+.B require_msgids = boolean_number
+Set this to 
+.B 0
+to accept messages without a Message-ID header.  Set this to 
+.B 1
+to discard messages without a Message-ID header.  By default such 
+messages are discarded.
+.TP
+.B dateformat = strftime date format
+Format used in 
+.B strftime(3) 
+call for displaying dates.
+See 
+.B strftime(3) 
+for the valid conversion specifications.
+.TP
+.B stripsubject = "string"
+A string to be stripped from all subject lines. Helps unclutter
+mailing lists which add tags to subject lines.
+.TP
+.B mailto = "address"
+The address of the contact point that is put in the HTML header line 
+   <LINK REV=made HREF=mailto:MAILTO>
+.br
+Setting this to
+.B "NONE"
+disables <LINK...> header generation.
+.TP
+.B mailcommand = "command"
+This specifies the mail command to use when converting email addresses to 
+links.  The variables
+.B $TO, $SUBJECT,
+and
+.B $ID
+can be used in constructing the command string.
+.LP
+.in 10
+.B $TO
+represents the address to send mail to,
+.LP
+.in 10
+.B $SUBJECT
+represents the subject that is being replied to, and
+.LP
+.in 10
+.B $ID
+represents the message ID of the article that is being replied to. 
+.LP
+.in 10
+If 
+defined as
+.B "NONE",
+email addresses will not be converted to links in articles.  A possible 
+command one could use is
+.B "mailto:$TO?subject=$SUBJECT"
+and the Subject: would also be filled in.
+This can be changed to specify a CGI program such as
+.B "/cgi-bin/mail?to=$TO".
+A CGI mail program is included with the source which can be used for 
+this purpose.
+.TP
+.B domainaddr = "domainname"
+Set this to the domainname you want added to a mail address appearing 
+in the RFC822 field which lack a hostname.  When the list resides on the 
+same host as the user sending the message, it is often not required of
+the MTA to domain-ize these addresses for delivery.  In such cases, 
+Hypermail will add the DOMAINADDR to the email address.  If defined as
+.B "NONE",
+this feature is turned off.
+.TP
+.B label = "label name"
+Define this as the label to put in archives. 
+.TP
+.B dir = "directory"
+This is the directory that Hypermail will look for when creating and
+updating archives.  If defined as
+.B "NONE"
+the directory will have the same name as the input mailbox.
+.LP
+.in 10
+Using date substitution cookies, you can tell Hypermail to archive 
+messages in directories by the date they were received.
+.LP
+.in 10
+.B Substitution cookies supported
+
+    %d - two digit day of month (1-28/30/31)
+    %D - three letter day of the week
+    %m - two digit month of year (1-12)
+    %M - three letter month of year (Jan, ..., Dec)
+    %y - four digit year (1990,..2001)
+.LP
+.in 10
+For example, if you wished to have Hypermail archive files by year and month,
+you might use
+.LP
+.in 20
+.B dir = /lists/somelist/%y/%M
+.LP
+.in 10
+When a message was received it would be put into a directory 
+.B /lists/somelist/1998/Jun 
+(if the message arrived in June of 1998).  If the message arrives and there 
+is no storage directory, Hypermail will automatically create it and store 
+the message in the new directory.
+.TP
+.B attachmentlink = attachment link format
+.LP
+.in 10
+.B Substitution cookies supported:
+
+    %p for the full path to the attachment
+    %f for the file name part only
+    %d for the directory name only
+    %n for the message number
+    %c for the content type string
+.TP
+.B dirmode = octal_number
+This is an octal number representing the permissions that new directories 
+are set to when they are created.  If the archives will be made publically 
+available, it's a good idea to define this as
+.B 0755. 
+.TP
+.B filemode = octal_number
+This is an octal number representing the file permissions that new files 
+are set to when they are created.  If the archives will be made publically 
+available, it's a good idea to define this as
+.B 0644.
+.TP
+.B overwrite = boolean_number
+Set this to
+.B 1
+to make Hypermail overwrite existing archives. 
+.TP
+.B increment = boolean_number
+Set this to
+.B 1
+to read one article only and append it to existing archives.
+.TP
+.B progress = [ 0 | 1 | 2 ]
+Set this to
+.B 1
+or
+.B 2
+to always show a progress report as Hypermail works.  With a setting of 1,
+hypermail overwrites the progress information relating to attachment creation.
+With a setting of 2, attachment creation information is listed individually
+with the number of the message the attachments relate to.
+This is written to stdout.
+.TP
+.B thrdlevels = number
+This specifies the number of thread levels to outline in the thread index.  For instance, if
+.B thrdlevels
+is
+.B 2,
+replies to messages will be indented once in the index, but replies to replies, etc., will only be indented once as well.
+.TP
+.B defaultindex = type
+This specifies the default index that users can view when entering the 
+archive.  Valid types are
+.B "date,"
+.B "thread,"
+.B "author,"
+and
+.B "subject."
+.TP
+.B ihtmlheaderfile = path
+Define path as the path to a template file containing valid HTML formatting 
+statements that you wish to included at the top of every index page.  Hypermail
+will print this file as the header of the index so make sure it contains 
+.B <HTML>, <HEAD>, <BODY> 
+and other statements that suit your local customized needs. 
+.TP
+.B ihtmlfooterfile = path
+Define path as the path to a template file containing valid HTML formatting 
+statements that you wish to included at the bottom of every index page. 
+Hypermail will print this file as the trailer of the index so make sure it 
+contains at a minimum a 
+.B </BODY>
+and
+.B </HTML> 
+statement.
+.TP
+.B mhtmlheaderfile = path
+Define path as the path to a template file containing valid HTML formatting 
+statements that you wish to use at the top of every message page.  Hypermail 
+will print this file as the header of the message so make sure it contains 
+.B <HTML>, <HEAD>, <BODY> 
+and other statements that suit your local customized needs.
+.TP
+.B mhtmlfooterfile = path
+Define path as the path to a template file containing valid HTML formatting 
+statements you wish to use at the bottom of every message page.  Hypermail 
+will print this file as the trailer of the message so make sure it contains 
+at a minimum a 
+.B </BODY>
+and
+.B </HTML> 
+statement.
+.TP
+.B hmail =  Mailing_List_Submission_Address
+Set this to the list's submission address.  When enabled, this can be 
+used to submit a new message to the list served by the hypermail archive. 
+.B "NONE" 
+means don't use it. 
+.TP
+.B body = html <BODY> statement
+This is the 
+.B <BODY> 
+line to use when generating the HTML pages.  Set this to 
+.B "NONE" 
+to use the builtin 
+.B <BODY> 
+line by default.
+.TP
+.B icss_url = "URL"
+This will link an external stylesheet found at the given URL to
+the index files. This will happen thru a
+.B LINK
+element in the index document's
+.B HEAD.
+By default this option is desactivated.
+.TP
+.B mcss_url = "URL"
+This will link an external stylesheet found at the given URL to
+the message files. This will happen thru a
+.B LINK
+element in the message document's
+.B HEAD.
+By default this option is desactivated.
+.TP
+.B show_headers = list_of_RFC_Headers_to_display
+This is the list of headers to be displayed if showheaders is set to 
+1 (TRUE).  They can be listed comma or space separated all on a single 
+line.  If it contains the special character ``*''
+.B hypermail
+will display all header lines.
+.TP
+.B readone = boolean_number
+Set this to
+.B 1
+to specify there is only one message in the input.
+.TP
+.B inlinehtml = boolean_number
+This is used to make text/html parts to get inlined within the 
+mail messages.  If set to
+.B 0
+, HTML-parts will be stored as separate files.
+.TP
+.B readone = boolean number
+Set this to 
+.B 1
+to specify there is only one message in the input.
+.TP
+.B text_types = MIME types to be treated as text/plain.
+This is a list of MIME types that you want hypermail to treat
+exactly as if they were text/plain.  This can be listed 
+individually on multiple lines or comma or space separated 
+on a single line.
+.TP
+.B prefered_types = which alternative types to use
+When mails using multipart/mixed types are scanned, this is the 
+list of alternative MIME types that you want used.  This can be 
+listed individually on multiple lines or comma or space separated 
+on a single line.  Note: Order is important.
+.TP
+.B inline_types = which_image_types_should_be_inlined
+This is the list of MIME types that you want inlined as opposed to
+simply linked into the message.  They can be listed individually on 
+multiple lines or comma or space separated on a single line.
+.TP
+.B ignore_types = types_of_MIME_attachments_to_ignore 
+This is the list of MIME attachment types that you do not want to
+do anything with.  They are quietly ignored.  They can be listed 
+individually on multiple lines or comma or space separated on a 
+single line.
+.LP
+.SH HTML TEMPLATE FILE SUBSTITUTION COOKIES
+.LP
+You can insert "substitution cookies" in the header and footer HTML template 
+files so appropriate information can be filled in at runtime. 
+.LP
+.B Substitution cookies supported: 
+.LP
+.nf
+     %% - '%' character
+     %~ - Storage directory
+     %e - Email addres of message author - Not valid on index pages
+     %h - HMURL
+     %i - Message-id - Not valid on index pages
+     %l - Archive label
+     %m - Mailto address
+     %p - PROGNAME
+     %s - Subject of message or Index Title
+     %v - VERSION
+     %u - Expanded version link (HMURL,PROGNAME,VERSION)
+     \\n - newline character
+     \\t - tab character
+.nr
+.LP
+.B Additional cookies generate the complete META lines: 
+.LP
+.nf
+     %A - Author META TAG - Not valid on index pages
+     %S - Subject META TAG 
+.nr
+.TP

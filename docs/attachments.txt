@@ -1,0 +1,120 @@
+Hypermail can deal with attachments enclosed in MIME messages.
+For more information on MIME 
+
+   + RFC 2045, which specifies the various headers used to describe
+     the structure of MIME messages.
+
+   + RFC 2046, which defines the general structure of the MIME media
+     typing system and defines an initial set of media types,
+
+   + RFC 2047 which describes the  Message Header Extensions for 
+     Non-ASCII Text
+
+   + RFC 2048, which specifies various IANA registration procedures
+     for MIME-related facilities, and
+
+   + RFC 2049, which describes MIME conformance criteria and
+     provides some illustrative examples of MIME message formats,
+     acknowledgements, and the bibliography.
+
+   + RFC 2383, which describes Communicating Presentation Information 
+     in Internet Messages: The Content-Disposition Header Field.
+
+Saving Attachments:
+-------------------
+  
+When hypermail encounters an attachment it saves the attachment to disk as a
+separate file. The basename of the filepath specified in the message is used
+as the rightmost part of the filename used to store the attachment file,
+
+    <a href="att-<msgnum>/<num>-budget.doc">budget.doc</a>
+
+<msgnum> - The number used for the message in which this attachment was found.
+<num>    - The MIME part number, simply numbered from top-to-bottom in the
+           mail this attachment was found.
+
+In the event that there is no file name specified in the message then
+a random name is generated instead. 
+ 
+Hypermail prints a comment in the message HTML file to indicate the message 
+has an attachment and what the name of the attachment file is.
+
+           <!-- attachment="filepath1" -->
+           <!-- attachment="filepath2" -->
+           ...
+           <!-- attachment="filepathN" -->
+
+Besides making it much easier for removal or converter processes, standard
+incremental mailbox updates will be able to recognize that there are
+attachments and use the existing filenames or remove them prior to generating
+new ones.
+
+Attachment File Modes:
+----------------------
+
+      For security reasons, all binary attachments written to disk get the
+      same file permissions as the ordinary messages. They should never be to
+      be executable, to any user.
+
+Controlling archiving of attachments
+-------------------------------------
+
+       The user can control the use of attachments by:
+
+       1. Indicating which mime types should not be stored at all.  
+          (i.e. vcard attachments) (see ignore_types)
+
+       2. Specifying a list with 'preferred' content-types when 
+          receiving/decoding mixed/alternative attachments
+          (see prefered_types)
+
+       3. Indicating which content-types of images that is preferred 
+          to get in-lined - <img> instead of <a href>.
+          (see inline_types)
+
+       4. Use the 'attachmentlink' config file keyword to control how to
+          "display" the attachment. You can for example use this to always
+          display a warning page before the actual attachment is displayed or
+          run by a client.
+
+Config file additions: 
+----------------------
+
+   # For each type to be ignored, put an ignore record for that
+   # type. It is added to the list of ignored types when the config
+   # file is read.
+   #
+   ignore_types = text/x-vcard
+   ignore_types = application/x-msdownload
+
+   #
+   # ordered list, Do the first and if that is not present, 
+   # do the next and if that is not present ...
+   #
+   prefered_types = text/plain text/html ...
+
+   #
+   # Determine which image mime types should be inlined for
+   # display in the message. <IMG SRC=..> instead of <A HREF=...>
+   #
+   inline_types = image/gif image/jpeg ...
+
+   #
+   # Format of the attachment links.
+   # %p for the full path to the attachment
+   # %f for the file name part only
+   # %d for the directory name only
+   # %n for the message number
+   # %c for the content type string
+   #
+   attachmentlink = %p
+
+The readconfigs function is now able to look for more than one entry of
+certain types of variables. This can be on one line or on multiple lines. This
+type of parsing is only supported for
+
+	ignore_types
+	inline_types
+	prefered_types
+
+

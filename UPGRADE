@@ -1,0 +1,12 @@
+
+!!!!WARNING!!!!
+
+Hypermail 2.x Upgrade Notes
+
+Hypermail 2.x HTML output files, indexes, etc are not compatible with 1.x 
+files.  When installing 2.x, all existing HTML files in the specified output 
+directory must be removed first.  
+
+Use the original 1.x mailbox files to regenerate the new 2.x archive. 
+If the mailboxes are not available it should be possible to use the 
+script hypetombox.pl in the contrib/ directory.

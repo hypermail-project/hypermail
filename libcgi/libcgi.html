@@ -1,0 +1,232 @@
+<HTML>
+<HEAD>
+<TITLE>Hypermail's CGI Library</TITLE>
+</HEAD>
+<BODY>
+<H1 ALIGN=CENTER><A HREF="http://www.hypermail.org/"><IMG SRC="http://www.hypermail.org/images/hypermail/hypermail-small.gif" WIDTH="188" HEIGHT="59" BORDER=0 ALT="Hypermail.ORG" ALIGN=MIDDLE></A><BR>CGI Library</H1>
+<P>
+These functions help you write virtual document (CGI) programs using C.
+Look at the <A HREF="template.c">template.c</A> file for an illustrative
+example.  Feel free to download 
+<A HREF="http://ftp.hypermail.org/hypermail/">the latest
+distributions</A> from ftp.hypermail.org.
+<P>
+
+<UL>
+<LI><A HREF="#main">main()</A>
+<LI><A HREF="#cgi_main">cgi_main(cgi_info *ci)</A>
+<LI><A HREF="#getcgiinfo">int get_cgi_info(cgi_info *)</A>
+<LI><A HREF="#getformentries">form_entry *get_form_entries(cgi_info *)</A>
+<LI><A HREF="#freeformentries">void free_form_entries(cgi_info *)</A>
+<LI><A HREF="#parmval">char *parmval(form_entry *, char *)</A>
+<LI><A HREF="#synmimeheader">int syn_mimeheader(char *, char *)</A>
+<LI><A HREF="#printmimeheader">int print_mimeheader(char *)</A>
+<LI><A HREF="#synbaseurl">int syn_base_url(char *, cgi_info *)</A>
+<LI><A HREF="#printbaseurl">int print_base_url(cgi_info *)</A>
+<LI><A HREF="#mcode">int mcode(cgi_info *)</A>
+<LI><A HREF="#printsellist">void print_sel_list(char *tname, char **opts, char *init)</A>
+<LI><A HREF="#printinputblank">void print_input_blank(char *tname, unsigned size, char *init)</A>
+<LI><A HREF="#printsubmit">void print_submit(char *label)</A>
+<LI><A HREF="#trim">char *trim(char *s)</A>
+<LI><A HREF="#sanitize">char *sanitize(char *to, char *from)</A>
+<LI><A HREF="#strmaxcpy">char *strmaxcpy(char *s1, char *s2, int n)</A>
+</UL>
+
+<HR NOSHADE>
+<H2>Synopsis</H2>
+<PRE>
+#include "<A HREF="cgi.h">libcgi/cgi.h</A>"
+<A NAME="main" HREF="main.c">main()</A>
+<A NAME="cgimain" HREF="template.c">cgi_main(cgi_info *ci)</A>
+</PRE>
+
+<H3>Description</H3>
+libcgi contains a simple stub of a main program, which merely
+calls <CODE>cgi_main()</CODE> with a struct filled with all the CGI
+vars.  Thus cgi_main is actually the entry point for
+your CGI-processing code.  It is this way to be upwardly-compatible
+with a scheme for virtual document "daemons" that we're hatching.
+
+<HR NOSHADE>
+<H2>Synopsis</H2>
+<PRE>
+#include "<A HREF="cgi.h">libcgi/cgi.h</A>"
+<A HREF="get_cgi_info.c" NAME="getcgiinfo">int get_cgi_info(cgi_info *)</A>
+</PRE>
+<H3>Description</H3>
+This routine paws through the environment and fills up the struct
+provided, which must already be allocated.
+<P>
+This function is called by <CODE>main</CODE>, and the result passed to
+<CODE>cgi_main</CODE>.
+
+<H3>Returns</H3>
+0 if there is a problem.
+
+<HR NOSHADE>
+
+<H2>Synopsis</H2>
+<PRE>
+#include "<A HREF="cgi.h">libcgi/cgi.h</A>"
+<A HREF="form_ent.c" NAME="getformentries">form_entry *get_form_entries(cgi_info *)</A>
+<A HREF="form_ent.c" NAME="freeformentries">void free_form_entries(cgi_info *)</A>
+<A HREF="form_ent.c" NAME="parmval">char *parmval(form_entry *, char *)</A>
+</PRE>
+<H3>Description</H3>
+get_form_entries parses any form inputs information into a linked-list
+of name/value pairs, returning the head pointer of that list. It does
+all plus-to-space and hex code translations.
+<P>
+free_form_entries reclaims all the memory from the provided linked-list.
+<P>
+parmval return the value corresponding to the name in the second
+argument (a caseless string compar) by a linear search through the list
+in the first argument.
+
+<H3>Returns</H3>
+get_form_enties returns the head pointer, or NULL if there is a problem
+or no form input information was available.
+ 
+parmval returns the corresponding value string or NULL if there is a
+problem or no matching name.
+
+<HR NOSHADE>
+
+<H2>Synopsis</H2>
+<PRE>
+#include "<A HREF="cgi.h">libcgi/cgi.h</A>"
+<A HREF="form_ent.c" NAME="synmimeheader">int syn_mimeheader(char *, char *)</A>
+<A HREF="form_ent.c" NAME="printmimeheader">int print_mimeheader(char *)</A>
+</PRE>
+<H3>Description</H3>
+syn_mimeheader creates a MIME header based on the MIME type in
+the second string and writes it into the first string buffer
+(including trailing double-newline).
+<P>
+print_mimeheader creates the same MIME header based on the MIME
+type in its sole argument, and prints it to stdout
+
+<H3>Returns</H3>
+both return 0 if there is a problem
+
+<HR NOSHADE>
+
+<H2>Synopsis</H2>
+<PRE>
+#include "<A HREF="cgi.h">libcgi/cgi.h</A>"
+<A HREF="syn_url.c" NAME="synbaseurl">int syn_base_url(char *, cgi_info *)</A>
+<A HREF="syn_url.c" NAME="printbaseurl">int print_base_url(cgi_info *)</A>
+</PRE>
+<H3>Description</H3>
+syn_base_url reconstructs the virtual document's URL given the
+cgi_info, minus any query string, and fills the provided char
+buffer.
+<P>
+print_base_url does the same but prints to stdout instead
+
+<H3>Returns</H3>
+both return 0 if there is a problem
+
+<HR NOSHADE>
+
+<H2>Synopsis</H2>
+<PRE>
+#include "<A HREF=cgi.h>libcgi/cgi.h</A>"
+<A HREF="mcode.c" NAME="mcode">int mcode(cgi_info *)</A>
+</PRE>
+<H3>Description</H3>
+This function examines the request_method in the cgi information
+and returns an integer code.  These codes are defined in cgi.h.
+
+<H3>Returns</H3>
+0 if it doesn't recognize the method name, otherwise the code as
+defined in cgi.h
+
+<HR NOSHADE>
+
+<H2>Synopsis</H2>
+<PRE>
+#include "<A HREF="cgi.h">libcgi/cgi.h</A>"
+<A HREF="form_tags.c" NAME="printsellist">void print_sel_list(char *tname, char **opts, char *init)</A>
+</PRE>
+<H3>Description</H3>
+Prints an HTML+ selection list construct to stdout.  The name of
+the SELECT tag is given by tname, and the NULL-terminated string
+array opts is turned into separate OPTION tags with values
+corresponding to entries in opts.  If any of these entries
+are a caseless match with init, then that OPTION tag is the
+default selection.
+
+<HR NOSHADE>
+
+<H2>Synopsis</H2>
+<PRE>
+#include "<A HREF="cgi.h">libcgi/cgi.h</A>"
+<A HREF="form_tags.c" NAME="printinputblank">void print_input_blank(char *tname, unsigned size, char *init)</A>
+</PRE>
+<H3>Description</H3>
+Prints an HTML+ INPUT tag (of type text) to stdout.  The tag's
+name is tname, its size is size, and initial value is init.
+
+<HR NOSHADE>
+
+<H2>Synopsis</H2>
+<PRE>
+#include "<A HREF="cgi.h">libcgi/cgi.h</A>"
+<A HREF="form_tags.c" NAME=printsubmit>void print_submit(char *label)</A>
+</PRE>
+<H3>Description</H3>
+Prints an HTML+ INPUT tag of type submit to stdout.  The submit
+button will be labelled by label if non-NULL.
+
+<HR NOSHADE>
+
+<H2>Synopsis</H2>
+<PRE>
+#include "<A HREF="cgi.h">libcgi/cgi.h</A>"
+<A HREF="strops.c" NAME="trim">char *trim(char *s)</A>
+</PRE>
+<H3>Description</H3>
+Changes the string from blank-padded to NULL-padded
+
+<H3>Returns</H3>
+its argument
+
+<HR NOSHADE>
+
+<H2>Synopsis</H2>
+<PRE>
+#include "<A HREF="cgi.h">libcgi/cgi.h</A>"
+<A HREF="strops.c" NAME="sanitize">char *sanitize(char *to, char *from)</A>
+</PRE>
+<H3>Description</H3>
+Prepares the string for inclusion in a URL.  That is, the from
+string is copied to the to buffer except that blanks are turned
+into '+' characters and non-alphanumerics are turned into
+3-character sequences of a '%' followed by two hex digits
+corresponding to the ascii code.
+
+<H3>Returns</H3>
+the to string
+
+<HR NOSHADE>
+
+<H2>Synopsis</H2>
+<PRE>
+#include "<A HREF="cgi.h">libcgi/cgi.h</A>"
+<A HREF="strops.c" NAME=strmaxcpy>char *strmaxcpy(char *s1, char *s2, int n)</A>
+</PRE>
+
+<H3>Description</H3>
+copies at most n-1 characters from s2 into s1, and then
+null-terminates.  Handy for truncating while copying.
+
+<H3>Returns</H3>
+s1 as long as n &gt; 0, NULL otherwise
+
+<P>
+<HR NOSHADE>
+<address>hypermail@hypermail.org</address>
+
+</BODY>
+</HTML>

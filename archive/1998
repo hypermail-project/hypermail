@@ -1,0 +1,90 @@
+#!/bin/sh
+#
+# set -x  # bug squisher
+#
+# The purpose of this script is to allow you to re-generate your
+# hypermail archives at will.   What you need to do is have a Unix
+# mailbox copy of the archive that you want to rebuild.  
+#
+# Please read throught the script to see what it does. Basically
+# it takes a set of mailbox files and converts them into a hypermail
+# archive of messages and will install an index.html file if you have 
+# specified one.  Might want to edit this a bit. I maintain 20+
+# list archives with hypermail so I have 20+ copies of this script
+# around, each customized for the individual archives.  Easyier
+# to do that then have to remember complicated command line options
+# and archive structures. The scripts are self documenting.
+#
+# Paths to things on disk
+#
+# ARCHIVE_DIR = The base directory of the archive 
+# MAILBOX_DIR = Mailbox version of the archive
+# RDMSG       = Location of mbox2hypermail utility
+#
+ARCHIVE_DIR=/ftp/hypermail/mail-archive
+MAILBOX_DIR=${ARCHIVE_DIR}/mailbox
+RDMSG=hrdmsg
+LISTNAME=hypermail
+
+#
+# Ownership of the archives
+#
+# Beware: Hypermail needs to be able to potentially 
+#         write these directories. Know who your mailer
+#         runs as.
+#
+OWNER=lists
+GROUP=daemon
+
+#
+# Create_archive YYYY MON path-to-mailbox 
+#
+#      YYYY - 4 digit year
+#      MON  - 3 Letter month abreviation
+#      
+create_archive()
+{
+    year=$1
+    month=$2
+    mailbox=$3
+
+    if [ ! -d ${ARCHIVE_DIR}/$year ]; then
+        mkdir ${ARCHIVE_DIR}/$year
+    fi
+
+    if [ ! -d ${ARCHIVE_DIR}/$year/$month ]; then
+        mkdir ${ARCHIVE_DIR}/$year/$month
+    else
+        rm -r ${ARCHIVE_DIR}/$year/$month
+        mkdir ${ARCHIVE_DIR}/$year/$month
+    fi
+
+    ${RDMSG} -v -Y $year -M $month $mailbox
+    chown -R ${OWNER}.${GROUP} ${ARCHIVE_DIR}/$year/$month
+}
+
+#
+# Ye Olde Main
+#
+
+create_archive 1998 Jan ${ARCHIVE_DIR}/mailbox/${LISTNAME}.9801
+create_archive 1998 Feb ${ARCHIVE_DIR}/mailbox/${LISTNAME}.9802
+create_archive 1998 Mar ${ARCHIVE_DIR}/mailbox/${LISTNAME}.9803
+create_archive 1998 Apr ${ARCHIVE_DIR}/mailbox/${LISTNAME}.9804
+create_archive 1998 May ${ARCHIVE_DIR}/mailbox/${LISTNAME}.9805
+create_archive 1998 Jun ${ARCHIVE_DIR}/mailbox/${LISTNAME}.9806
+create_archive 1998 Jul ${ARCHIVE_DIR}/mailbox/${LISTNAME}.9807
+create_archive 1998 Aug ${ARCHIVE_DIR}/mailbox/${LISTNAME}.9808
+create_archive 1998 Sep ${ARCHIVE_DIR}/mailbox/${LISTNAME}.9809
+create_archive 1998 Oct ${ARCHIVE_DIR}/mailbox/${LISTNAME}.9810
+create_archive 1998 Nov ${ARCHIVE_DIR}/mailbox/${LISTNAME}.9811
+create_archive 1998 Dec ${ARCHIVE_DIR}/mailbox/${LISTNAME}.9812
+
+if [ -f index.html ]; then
+	cp index.html  ${ARCHIVE_DIR}/1998
+fi
+
+#
+# C'ya
+#
+exit 0

@@ -1,0 +1,434 @@
+#
+# hmrc.example:
+#
+# This is a sample Hypermail configuration file. If you wish
+# to use it, copy it to a new filename and edit as appropriate
+# for you list needs.
+#
+
+# language = [ en | es | de | se ]
+#
+# This is a two-letter string specifying the default language to use.
+# Set this the value of the language table you wish to use when running 
+# and generating archives.
+
+language = en
+
+# htmlsuffix = html
+#
+# Use this to specify the html file suffix to be used when Hypermail 
+# generates the HTML files. This is dependent on local needs. 
+#
+# NOTE: Do not put a '.' in the value. It would result in \"file..html\
+
+htmlsuffix = html
+
+# mbox = [ filename | NONE ]
+#
+# This is the default mailbox to read messages in from. Set this
+# with a value of NONE to read from standard input as the default.
+
+mbox = NONE
+
+# label = [ Title | NONE ]
+#
+# This is the default title you want to call your archives.
+# Set this to NONE to use the name of the input mailbox.
+
+label = Hypermail Development List
+
+# archives = [ URL | NONE ]
+#
+# This will create a link in the archived index pages labeled
+# 'Other mail archives' to the specified URL. Set this to NONE
+# to omit such a link
+
+archives = NONE
+
+# about = [ URL | NONE ]
+#
+# This creates a link in the archived index pages labeled
+# "About this archive". Set this to NONE to omit such a link.
+
+about = NONE
+
+# dir = [ directory path | NONE ]
+#
+# This is the default directory that Hypermail uses when creating
+# and updating archives. If set to NONE, the directory will have the
+# same name as the input mailbox.
+
+dir = NONE
+
+# defaultindex = [ thread | date | subject | author ]
+#
+# This indicates the default type of main index hypermail will generate.
+# Users see this type of index when the archive is first accessed.
+# Valid types are date, thread, author, and subject.
+
+defaultindex = thread
+
+# inlinehtml [ 0 | 1 ]
+#
+# This is used to make text/html parts to get inlined within the 
+# mail messages. If not set on, HTML-parts will be stored as separate 
+# files.
+
+inlinehtml = 1
+
+# reverse = [ 0 | 1 ]
+#
+# Setting this variable to 1 will reverse-sort the article
+# entries in the date and thread index files by the date they
+# were received. That is, the most recent messages will appear
+# at the top of the index rather than the other way around.
+# Set to 0 if you want latest message on the bottom for date and
+# thread indexes.
+
+reverse = 0
+
+# usetable = [ 0 | 1 ]
+#
+# Setting this variable to 1 will tell Hypermail to generate an
+# index menu at the top and bottom of each page in a table format.
+# Set to 0 if you want the standard Hypermail page look and feel.
+
+usetable = 0
+
+# indextable [ 0 | 1 ]
+# 
+# Setting this variable to 1 will tell Hypermail to generate
+# message index Subject/Author/Date listings using a nice table
+# format. Set to 0 if you want the original Hypermail index look.
+
+indextable = 0
+
+# progress = [ 0 | 1 | 2 ]
+#
+# Set this to 1 or 2 to always show a progress report as Hypermail
+# works. With a setting of 1, hypermail overwrites the progress 
+# information relating to attachment creation. With a setting of 2, 
+# attachment creation information is listed individually with the 
+# number of the message the attachments relate to. Set to 0 for 
+# silent operation. Output goes to standard output.
+
+progress = 0
+
+# show_msg_links = [ 0 | 1 ]
+#
+# Set this to 1 if you want links to Next, Prev, Next thread, Reply to, 
+# etc, displayed on the article pages. Setting this to 0 disables these 
+# links from appearing on the generated pages.
+
+show_msg_links = 1
+
+# showheaders = [ 0 | 1 ]
+#
+# Set this to 1 to show the article header lines in the archived HTML
+# files.  These lines typically include the To:, From:, and Subject:
+# information found in most email messages.  Set to 0 if you want to 
+# hide mail headers in articles.
+
+showheaders = 0
+
+# showreplies = [ 0 | 1 ]
+#
+# Set to 1 to show all replies to a message as links in article files.
+# If this is set to 0 no reply links are generated.
+
+showreplies = 1
+
+# showhtml = [ 0 | 1 ]
+#
+# Set this to 1 to show the articles in a proportionally-spaced
+# font rather than a fixed-width (monospace) font. Setting this
+# option to 1 also tells Hypermail to attempt to italicize quoted
+# passages in articles.
+
+showhtml = 0
+
+# showbr = [ 0 | 1 ]
+#
+# Set this to 1 if you want article lines to end with the <br> tag.
+# Else set to 0 to have non-quoted lines word-wrap. Only takes effect
+# if showhtml is set to 1.
+
+showbr = 1
+
+# iquotes = [ 0 | 1 ]
+#
+# Set this to 1 if you want quoted lines to be shown in italics.  Only
+# take effect if showhtml is set to 1.
+
+iquotes = 1
+
+# showhr = [ 0 | 1 ]
+#
+# Set to 1 if you want horizontal rules <HR> before and after
+# the articles. Set to 0 if you don't.
+
+showhr = 1
+
+# overwrite = [ 0 | 1 ]
+#
+# Set to 1 to make Hypermail overwrite existing archives by default.
+
+overwrite = 0
+
+# increment = [ 0 | 1 ]
+#
+# Define as 1 to read in one article only and update existing archives.
+# Define as 0 for it to read and process entire mailboxes.
+# WHICH IS IT ?????
+# Set this to On to append the input to existing archive.
+
+increment = 0
+
+# readone [ 0 | 1 ]
+#
+# Set this to On to specify there is only one message in the input.
+
+readone = 0
+
+# thrdlevels = number
+#
+# This specifies the number of thread levels to outline in the thread
+# index. For instance, if thrdlevels is 2, replies to messages will
+# be indented once in the index, but replies to replies, etc., will only
+# be indented once as well. The normal value is 2.
+
+thrdlevels = 2
+
+# eurodate = [ 0 | 1 ]
+#
+# Set this to reflect how you want dates displayed in the index files.
+# Set as 1 to to use European date format "DD MM YYYY".
+# Define as 0 to to use American date format "MM DD YYYY".
+
+eurodate = 0
+
+# dateformat = strftime() date format 
+#
+# Format used in strftime(3) call for displaying dates.
+# See strftime(3)) for the valid conversion specifications.
+
+dateformat = %D
+
+# attachmentlink = attachment link format 
+#
+# Format of the attachment links.
+#      %p for the full path to the attachment
+#      %f for the file name part only
+#      %d for the directory name only
+#      %n for the message number
+#      %c for the content type string
+
+attachmentlink = %p
+
+# discard_dup_msgids = [ 0 | 1 ]
+#
+# Set this to Off to accept messages with a Message-ID matching
+# that of a message already  in this archive.
+# By default such messages are discarded.
+
+discard_dup_msgids = 1
+
+# require_msgids = [ 0 | 1 ]
+#
+# Set this to 0 to accept messages without a Message-ID header.
+# Set this to 1 to discard messages without a Message-ID header.
+# By default such messages are discarded.
+
+require_msgids = 1
+
+# usemeta = [ 0 | 1 ]
+# 
+# Set this to 1 to store the content type of a MIME attachment in 
+# a metadata file. 
+
+usemeta = 1
+
+# uselock = [ 0 | 1 ]
+#
+# Set this to 1 to use Hypermail's internal locking mechanism.
+#
+
+uselock = 1
+
+# locktime = number-of-seconds
+#
+# The number of seconds that a lock should be honored when processing
+# inbound messages.
+
+locktime = 3600
+
+# dirmode = octal number
+#
+# This is an octal number representing the permissions (rwx modes) that new 
+# directories are set to when they are created. If the archives will be made 
+# publically available, it's a good idea to define this as 0755. This must 
+# be an octal number.
+
+dirmode = 0755
+
+# filemode = octal number
+#
+# This is an octal number representing the permissions that new files
+# are set to when they are created. If the archives will be made publically
+# available, it's a good idea to define this as 0644. This must be an octal
+# number.
+
+filemode = 0644
+
+# mailcommand = [ direct mailto | cgi-bin script path | NONE ]
+#
+# This is the mail command that email links go to, for instance
+# "mailto:$TO" or "/cgi-bin/mail?to=$TO&replyto=$ID&subject=$SUBJECT"
+#
+# In constructing this command, you can specify variables:
+#
+# $TO : the email address of the person you're sending mail to.
+# $ID : the ID of the message you're replying to.
+# $SUBJECT: the subject you're replying to.
+#
+# NONE disables mailcommand usage.
+
+mailcommand = mailto:$TO?subject=$SUBJECT&replyto=$ID
+
+# mailto = [ email-address | NONE ]
+#
+# The address of the contact point that is put in the HTML header line
+# <LINK REV=made HREF=mailto:mailto>
+#
+# The <LINK...> header can be disabled by default by setting
+# mailto to NONE.
+
+mailto = webmaster@landfield.com
+
+# domainaddr = [ domainname | NONE ]
+#
+# Domain-ize Addresses -- addresses appearing in the RFC822 field
+# which lack hostname can't be made into proper HREFs. Because the
+# MTA resides on the same host as the list, it is often not required
+# to domain-ize these addresses for delivery. In such cases, hypermail
+# will add the DOMAINADDR to the email address.
+
+domainaddr = landfield.com
+
+# body = [ HTML <BODY> statement | NONE ]
+#
+# Set this to the <BODY> line to use when generating the HTML pages.
+# Set to "NONE" to use the builtin <BODY> line by default.
+
+body = <BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+
+# hmail = [ Mailing List Submission Address | NONE ]
+#
+# Set this to the list's submission address. When enabled, this can be
+# used to submit a new message to the list served by the hypermail archive.
+# "NONE" means don't use it.
+
+hmail = hypermail@landfield.com
+
+# ihtmlheaderfile = [ path to index header template file | NONE ]
+#
+# Set this to the path to the Index header template file containing
+# valid HTML statements and substitution cookies for runtime expansion.  
+# This will be included at the top of every index page.
+
+ihtmlheaderfile = /lists/hypermail-idxheader.hyp
+
+# ihtmlfooterfile = [ path to index footer template file | NONE ]
+#
+# Set this to the path to the Index footer template file containing
+# valid HTML statements and substitution cookies for runtime expansion.  
+# This will be included at the bottom of every index page.
+
+ihtmlfooterfile = /lists/hypermail-idxfooter.hyp
+
+# mhtmlheaderfile = [ path to message header template file | NONE ]
+#
+# Set this to the path to the Message header template file containing
+# valid HTML statements and substitution cookies for runtime expansion.  
+# This will be included at the top of every message page.
+
+mhtmlheaderfile = /lists/hypermail-msgheader.hyp
+
+# mhtmlfooterfile = [ path to message footer template file | NONE ]
+#
+# Set this to the path to the Message footer template file containing
+# valid HTML statements and substitution cookies for runtime expansion.  
+# This will be included at the bottom of every message page.
+
+mhtmlfooterfile = /lists/hypermail-msgfooter.hyp
+
+######################
+# Multiline variables
+######################
+
+# show_headers = list of RFC 822 Headers to display if hm_showheaders
+#                   is set to 1 (TRUE)
+#
+# This is the list of headers to be displayed. They can be listed 
+# comma or space separated all on a single line such as
+#      show_headers = From,Subject,Date,Message-ID
+# or they can be listed individually or any combination of.
+#      show_headers = From
+#      show_headers = Subject
+#      show_headers = Date
+#      show_headers = Message-ID
+
+show_headers = From,Subject,Date,Message-ID
+
+# inline_types = indicate which types of data should be inlined
+#
+# This is the list of MIME types that you want inlined with <img> tags
+# as opposed to simply linked into the message with a <A HREF>. They 
+# can be listed individually on multiple lines or comma or space 
+# separated on a single line.
+#      inline_types = image/gif image/jpeg
+#      or
+#      inline_types = image/gif
+#      inline_types = image/jpeg
+
+inline_types = image/gif image/jpeg
+
+# ignore_types = indicate which types of attachments to ignore and
+#                   not process.
+#
+# This is the list of MIME attachment types that you do not want to
+# do anything with. They are quietly ignored.  They can be listed 
+# individually on multiple lines or comma or space separated on a 
+# single line.
+#      ignore_types = text/x-vcard application/x-msdownload
+#      or
+#      ignore_types = text/x-vcard
+#      ignore_types = application/x-msdownload
+
+ignore_types = text/x-vcard
+ignore_types = application/x-msdownload
+
+# prefered_types = indicate which of the alternative types to use
+#
+# When mails using multipart/mixed types are scanned, this is the 
+# list of alternative MIME types that you want used. This can be 
+# listed individually on multiple lines or comma or space separated 
+# on a single line.
+#      prefered_types = text/plain text/html 
+#      or
+#      prefered_types = text/plain
+#      prefered_types = text/html 
+# Order is important.
+#
+# NOTE: This option is not fully implemented at present.
+
+prefered_types = text/plain text/html 
+
+# text_types = indicate the MIME types to be treated as text/plain.
+#
+# This is a list of MIME types that you want hypermail to treat
+# exactly as if they were text/plain.  This can be listed 
+# individually on multiple lines or comma or space separated 
+# on a single line.
+
+text_types = text/x-vcard

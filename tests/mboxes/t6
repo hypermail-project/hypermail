@@ -1,0 +1,148 @@
+From brian@hyperreal.org Wed Apr 22 23:13 CDT 1998
+Received: from hyperreal.org (taz.hyperreal.org [204.62.130.147])
+	by landfield.com (8.8.8/8.8.8) with SMTP id XAA27903
+	for <kent@landfield.com>; Wed, 22 Apr 1998 23:13:13 -0500 (CDT)
+Received: (qmail 7191 invoked by uid 24); 23 Apr 1998 04:11:20 -0000
+Message-Id: <3.0.3.32.19980422211640.00a31100@hyperreal.org>
+X-Sender: brian@hyperreal.org
+X-Mailer: QUALCOMM Windows Eudora Pro Version 3.0.3 (32)
+Date: Wed, 22 Apr 1998 21:16:40 -0700
+To: Kent Landfield <kent@landfield.com>
+From: Brian Behlendorf <brian@hyperreal.org>
+Subject: thoughts on ml archives
+Cc: mike@hyperreal.org
+Mime-Version: 1.0
+X-Lines: 128
+Content-Type: text/plain; charset="us-ascii"
+Content-Length: 5529
+Status: OR
+
+
+Here's a message about a system we've been scheming up here, but I haven't
+had the time to implement.  I've got another right after this which is my
+comments on this proposal.  We wouldn't mind at all if you wanted to base
+your efforts on this; I just wish I had any time to do anything with it.
+
+	Brian
+
+>Delivered-To: brian@hyperreal.org
+>From: mike@hyperreal.org
+>MBOX-Line: From mike Fri Dec 26 18:38:31 1997 remote from taz.hyperreal.org
+>Subject: thoughts on ml archives
+>To: brian@hyperreal.org (Brian Behlendorf)
+>Date: Fri, 26 Dec 1997 18:38:31 -0800 (PST)
+>Cc: est@hyperreal.org (Eric Tiedemann), tint@hyperreal.org (Mike Perkowitz)
+>X-Mailer: ELM [version 2.4ME+ PL37 (25)]
+>Sender: mike@hyperreal.org
+>
+>Well here are the ideas I had over the summer regarding an ideal mailing
+>list archival system. I was thinking of using a database.
+>
+>goals:
+>
+>for general browsing through the archives, a set of static index files,
+>updated daily.
+>indexes by date or by thread.
+>
+>monthly (or whatever) mbox file structure preserved.
+>individual messages accessible without having every message broken out into
+>its own file.
+>
+>html-ization of individual messages on the fly, upon delivery.
+>
+>searchability - searches must be fast, using a pre-built index rather than
+>scanning through all the mbox files every time.
+>desired: new messages added to index as they arrive.
+>
+>suggested method:
+>
+>relational databse using mysql. tables as follows:
+>
+>MESSAGE_INFO table
+>==================================
+>umid = unique message id#
+>message_id = message id field from headers
+>mbox_file = name of mbox file containing message
+>mbox_byte_offset = byte offset of start of message within mbox file
+>from = From: field from headers. if none, glean from first line of headers
+>(^From user@foo ...)
+>subject = subject field from headers
+>date = date field from headers
+>gmt_date = date field converted to gmt, for proper ordering and better
+>searching (e.g., 3pm EST comes well before 2:45pm PST)
+>
+>MESSAGE_THREAD table
+>=================================
+>umid = unique message id#
+>xrefs = other umids from headers (In-Reply-To, References)
+>possible_xrefs = other umids guessed from subject, date
+>
+>KEYWORDS tables (one of these for every letter & number)
+>========================================================
+>keyword = keyword that appears in a message
+>location = umids where that keyword can be found
+>
+>
+>I think that's all you'd need.
+>
+>When doing a search, you'd enter keywords
+>to look for in a form. The script would use the KEYWORDS tables 
+>(KEYWORD_A, KEYWORD_B, KEYWORD_C, etc, depending on the
+>first letter of the keywords in your query) to build lists of umids which
+>correspond to the messages where those words are found. The lists are
+>then combined, depending on the nature of the query (AND, OR, NOT
+>would be really easy to do this way), and a list of matching umids is
+>produced.
+>
+>Then the script would look up each umid in the MESSAGE_INFO
+>table to find out exactly where that message is, and it would get info
+>like the subject line, date and sender, all without actually going into
+>the mbox file itself. At this point the list of umids might shrink a little
+>because the query might have specified that the search only applied
+>to certain mbox files. (A possible inefficiency... if only certain mbox
+>files are to be checked, the simple KEYWORDS tables shouldn't
+>have to return hundreds, possibly thousands of umids that 
+>correspond to messages located across the entire archive).
+>
+>Of course the search result is going to have to link to the message
+>somehow, and you may want to include a couple lines of context from
+>the message. Both are accomplished by looking at the mbox_file and
+>mbox_byte_offset. 
+>
+>To get the link, a URL can be calculated. It will point to a script
+>that is given the mbox filename and byte offset as arguments. This
+>script will take care of extracting the message and html-izing it and
+>chucking it out to the user.
+>
+>example:   http://hyperreal/extract?mbox=idm.9706&offset=229148
+>extract.cgi would go look for a message that starts at byte 229148
+>in the file idm.9706.
+>
+>The script could even take umid as an argument instead, and do 
+>the necessary lookups to determine the mbox and offset.
+>
+>To get the lines of context for the search results, a similar script
+>would extract the message, but rather than HTML-ize the whole
+>thing, it would just do a context grep and highlight the
+>appropriate keywords. (This might be inefficient to run such
+>a script on every message in the search results, though.)
+>
+>html-ization would involve more lookups, because you want to have
+>links in the message to the rest of the thread. The extraction script
+>will already have the current message's umid, so it just needs to get 
+>some other umids for xref messages out of the MESSAGE_THREAD
+>table. There may be messages UP the thread chain (xrefs listed for
+>the current umid) and there may be messages DOWN the thread
+>chain (umids that have the current umid listed in their xrefs), so
+>that's two additional lookups.
+>
+>General browsing requires building indices ahead of time. Not
+>sure of the best way to generate them, but shouldn't be too 
+>difficult to do the by-date lists, at least. Thread lists are probably
+>trickier.
+>
+>
+--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--
+"Optimism is a strategy for making                         brian@apache.org
+a better future." - Noam Chomsky                        brian@hyperreal.org
+

@@ -1,0 +1,72 @@
+From craig@cni.org Tue Oct  6 18:26 CDT 1998
+Received: from a.cni.org (a.cni.org [192.100.21.1])
+	by landfield.com (8.9.0/8.9.0) with SMTP id SAA18925;
+	Tue, 6 Oct 1998 18:26:01 -0500 (CDT)
+Received: by a.cni.org id <AA05549@a.cni.org>; Tue, 6 Oct 1998 19:20:00 -0400
+From: Craig A Summerhill <craig@cni.org>
+Message-Id: <9810062320.AA05549@a.cni.org>
+Subject: Re: another bug
+To: hypermail@landfield.com
+Date: Tue, 6 Oct 1998 19:20:00 -0400 (EDT)
+Cc: kent@landfield.com
+In-Reply-To: <199810061703.MAA13834@landfield.com> from "Kent Landfield" at Oct 6, 98 12:03:19 pm
+X-Mailer: ELM [version 2.4 PL23]
+Content-Type: text
+Content-Length: 2299
+X-Lines: 53
+Status: OR
+
+Kent Landfield <kent@landfield.com> wrote:
+> 
+> # This problem has been around since version 1.02, but I forgot about it 
+> # because it doesn't come up too often...
+> # 
+> # If you run Hypermail against an existing mailbox...
+> # 
+> # hypermail -c <path/config> -m <path/mbox> -l "whatever" -d <path/target_dir>
+> # 
+> # and the mbox file that you are processing only has one message in it...
+> # 
+> # hypermail goes out and creates the HTMLed message (0000.html), but 
+> # before the date, author, subject, and thread indexes are created it 
+> # dumps core with this error:
+> # 
+> #    Floating exception (core dumped)
+> 
+> I don't get this when I tried it on the latest version. It may be that
+> the problem isn't the single message in the mailbox but the message itself.
+> It may be triggering a memory corruption bug. If you have a copy of the
+> offending message you can send me I'll verify if it is a problem still.
+
+
+Kent,
+
+Hmm.  That's odd.  It happens consistently on my system; everytime there
+is a mailbox with only one message in it.  It must be some combination
+of the defaults that I set when I compiled the code (I changed some of 
+the suggested settings), and the settings in the .hmrc file I am calling.
+
+I'll send you my compile time settings and .hmrc file later, and see if 
+you can find something in there that is causing it to happen.  (I have 
+been up and working on a system problem for thirty-some hours, I need 
+to go home, shower, and get in bed -- so it may be tomorrow).
+
+It does dump core on me to, BTW.  Is there a core analysis tool I 
+could used that would give you some helpful information?
+
+
+P.S.  One other thought occured to me.  I was wondering if it might be 
+related to the parsing problem I wrote about earlier (which you have 
+fixed in the next release -- thank you).  Perhaps it is expecting a 
+trailing line with white space on it, or something?  The trouble with 
+this idea is that the single message problem was also present in 
+version 1.02, and came along to version 2.x.  However, the parsing 
+problem wasn't present in version 1.02...
+-- 
+
+   Craig A. Summerhill, Systems Coordinator and Program Officer
+   Coalition for Networked Information
+   21 Dupont Circle, N.W., Washington, D.C.   20036
+   Internet: craig@cni.org   AT&Tnet (202) 296-5098
+
+

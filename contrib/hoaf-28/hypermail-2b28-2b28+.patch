@@ -1,0 +1,147 @@
+diff -ru hypermail-2b28/patchlevel.h hypermail/patchlevel.h
+--- hypermail-2b28/patchlevel.h	Mon Dec  6 17:22:27 1999
++++ hypermail/patchlevel.h	Tue Nov 30 23:57:14 1999
+@@ -1,2 +1,2 @@
+-#define VERSION "2b28"
++#define VERSION "2b28+"
+ #define PATCHLEVEL "0"
+diff -ru hypermail-2b28/src/hypermail.c hypermail/src/hypermail.c
+--- hypermail-2b28/src/hypermail.c	Mon Dec  6 17:22:28 1999
++++ hypermail/src/hypermail.c	Tue Nov 30 23:57:14 1999
+@@ -390,6 +390,11 @@
+     authname = setindex(set_defaultindex, "author", set_htmlsuffix);
+ 
+     /*
++     * Set name of the overviewfile. FIXME, this is hardcoded
++     */
++    overviewname = "archive_overview.haof" ;
++
++    /*
+      * General settings for mail command and rewriting.
+      */
+ 
+@@ -496,6 +501,7 @@
+ 	writethreads(amount_new);
+ 	writesubjects(amount_new);
+ 	writeauthors(amount_new);
++	writeoverview(amount_new);
+     }
+     else {
+ 	printf("No mails to output!\n");
+diff -ru hypermail-2b28/src/hypermail.h hypermail/src/hypermail.h
+--- hypermail-2b28/src/hypermail.h	Mon Dec  6 17:22:28 1999
++++ hypermail/src/hypermail.h	Tue Nov 30 23:57:14 1999
+@@ -252,6 +252,7 @@
+ VAR char *datename;		/* By date index file               */
+ VAR char *subjname;		/* By subject index file            */
+ VAR char *thrdname;		/* By thread index file             */
++VAR char *overviewname;		/* Easily parsable overview file    */
+ 
+ VAR int use_mailcommand;
+ VAR int use_mailto;
+diff -ru hypermail-2b28/src/print.c hypermail/src/print.c
+--- hypermail-2b28/src/print.c	Mon Dec  6 17:22:28 1999
++++ hypermail/src/print.c	Tue Nov 30 23:57:14 1999
+@@ -366,6 +366,34 @@
+     }
+ }
+ 
++/*
++** Pretty-prints the items for the overviewfile.
++*/
++
++void printoverviewitems(FILE *fp, struct header *hp)
++{
++    char *subj;
++    if (hp != NULL) {
++	struct emailinfo *em = hp->data;
++	printoverviewitems(fp, hp->left);
++	subj = convchars(em->subject);
++	fprintf(fp,
++	    "      <mail>\n"
++	    "        <subject>%s</subject>\n"
++	    "        <date>%s</date>\n"
++	    "        <fromname>%s</fromname>\n"
++	    "        <fromemail>%s</fromemail>\n" 
++	    "        <message-id>%s</message-id>\n"
++	    "        <file>\"%.4d.%s\"</file>\n"
++	    "      </mail>\n\n"
++	    ,subj, getdatestr(em->date), em->name, em->emailaddr, em->msgid,
++	    em->msgnum, set_htmlsuffix);
++
++	free(subj);
++	printoverviewitems(fp, hp->right);
++    }
++}
++
+ int showheader(char *header)
+ {
+     return (inlist(set_show_headers, header) || inlist(set_show_headers, "*"));
+@@ -1482,6 +1510,67 @@
+ 
+     printfooter(fp, ihtmlfooterfile, set_label, set_dir,
+ 		lang[MSG_BY_AUTHOR], authname);
++
++    fclose(fp);
++
++    if (newfile && chmod(filename, set_filemode) == -1) {
++	sprintf(errmsg, "%s \"%s\": %o.",
++		lang[MSG_CANNOT_CHMOD], filename, set_filemode);
++	progerr(errmsg);
++    }
++
++    if (set_showprogress)
++	putchar('\n');
++}
++
++/*
++** Write the overviewfile. Might be XML based. Should be easily parseble.
++*/
++
++void writeoverview(int amountmsgs)
++{
++    int newfile;
++    char filename[MAXFILELEN];
++    FILE *fp;
++
++    sprintf(filename, "%s%s%s", set_dir,
++	    (set_dir[strlen(set_dir) - 1] == '/') ? "" : "/", overviewname);
++
++    if (isfile(filename))
++	newfile = 0;
++    else
++	newfile = 1;
++
++    if ((fp = fopen(filename, "w")) == NULL) {
++	sprintf(errmsg, "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
++	progerr(errmsg);
++    }
++
++    if (set_showprogress)
++	printf("%s \"%s\"...", lang[MSG_WRITING_DATE_INDEX], filename);
++
++
++    fprintf(fp,"<?xml version=\"1.0\"?>\n\n");
++    fprintf(fp,"  <!DOCTYPE haof PUBLIC "
++	 "\"-//Bernhard Reiter//DTD HOAF 0.1//EN\"\n" 
++	 "\"http://ffii.org/~breiter/probe/haof-0.1.dtd\">\n\n"
++	   );
++    fprintf(fp,"  <haof version=\"0.1\">\n\n");
++
++    fprintf(fp,"    <indices>\n");
++    fprintf(fp,"       <dateindex>%s</dateindex>\n",datename);
++    fprintf(fp,"       <threadindex>%s</threadindex>\n",thrdname);
++    fprintf(fp,"       <subjectindex>%s</subjectindex>\n",subjname);
++    fprintf(fp,"       <authorindex>%s</authorindex>\n",authname);
++    fprintf(fp,"    </indices>\n\n");
++    
++    fprintf(fp,"    <mails>\n\n");
++    printoverviewitems(fp,datelist);
++    fprintf(fp,"    </mails>\n");
++    
++
++    fprintf(fp,"  </haof>");
++
+ 
+     fclose(fp);
+ 

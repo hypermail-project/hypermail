@@ -1,0 +1,79 @@
+From owner-hypermail Sat Sep 26 06:16 CDT 1998
+Received: by landfield.com (8.9.0/8.9.0) id GAA20916
+	for hypermail-outgoing; Sat, 26 Sep 1998 06:16:19 -0500 (CDT)
+Received: from relay7.UU.NET (relay7.UU.NET [192.48.96.17])
+	by landfield.com (8.9.0/8.9.0) with ESMTP id GAA20890
+	for <hypermail@landfield.com>; Sat, 26 Sep 1998 06:14:42 -0500 (CDT)
+Received: from relay7.UU.NET by relay7.UU.NET with ESMTP 
+	(peer crosschecked as: root@localhost)
+	id QQfijh19139; Fri, 25 Sep 1998 10:17:34 -0400 (EDT)
+Received: from morrison.matrox.com by relay7.UU.NET with ESMTP 
+	(peer crosschecked as: [204.50.136.19])
+	id QQfijh19076; Fri, 25 Sep 1998 10:17:28 -0400 (EDT)
+Received: (from mtxmail@localhost)
+	by morrison.matrox.com (8.8.8/8.8.8) id KAA23068;
+	Fri, 25 Sep 1998 10:14:08 -0400 (EDT)
+Received: from venus.matrox.com(138.11.0.5) by morrison-250 via smap (V2.0)
+	id xma022977; Fri, 25 Sep 98 10:13:18 -0400
+Received: from focus.matrox.com (focus.matrox.com [192.168.16.2])
+	by venus.matrox.com (8.8.7/8.8.7) with ESMTP id KAA09310;
+	Fri, 25 Sep 1998 10:13:17 -0400 (EDT)
+Received: from gbuchan.matrox.com ([192.168.17.51]) by focus.matrox.com (8.7.5/8.7.3) with SMTP id KAA15383; Fri, 25 Sep 1998 10:13:14 -0400 (EDT)
+Message-Id: <199809251413.KAA15383@focus.matrox.com>
+X-Sender: gbuchan@focus.matrox.com
+X-Mailer: QUALCOMM Windows Eudora Pro Version 4.0
+Date: Fri, 25 Sep 1998 10:13:10 -0400
+To: "Jeffrey K. MacKie-Mason" <jmm@umich.edu>, hypermail@landfield.com
+From: "Gordon H. Buchan" <gbuchan@matrox.com>
+Subject: Re: adding new messages to prior hypermail archive
+In-Reply-To: <360B2905.E41100C9@umich.edu>
+Mime-Version: 1.0
+Sender: owner-hypermail@landfield.com
+Precedence: bulk
+Reply-To: "Gordon H. Buchan" <gbuchan@matrox.com>
+X-Lines: 40
+Content-Type: text/plain; charset="us-ascii"
+Content-Length: 1590
+Status: OR
+
+At 01:24 AM 9/25/98 -0400, Jeffrey K. MacKie-Mason wrote:
+>
+>I archived some 460 messages from a mailbox with Hypermail 1.02 about 3
+>years ago.  Now I want to use hypermail 2.03b to process a new mailbox
+>and add the messages to the prior archive.  I've tested 2.03b on the new
+>mailbox, and it works fine when I give it an empty directory in which to
+>create a new hypermail archive.  However, when I point it at the
+>directory with the prior 460-message archive, it changes the date stamp
+>on the index files to today, but it doesn't append the 65 new messages
+>to the archive.
+>
+>As far as I can see, the default behavior is supposed to be to append
+>messages to an existing archive.  I'm not using the -u or -x flags. 
+>Suggestions?
+
+With a slight modification (removal of the -x switch, since this is to
+append, not replace), here is one of my batch files. Change paths and
+parameters to match your environment.
+
+/home/gordon/bin/hypermail \
+-b "http://cusidnet.anadas.com/" \
+-a "http://cusidnet.anadas.com/" \
+-m "/home/gordon/mail/cusid" \
+-l "CUSIDnet Web Mirror" \
+-d "/home/gordon/www/cusidnet/fall1998/" \
+-c "/home/gordon/bin/.cusidnethyprc" > /dev/null
+
+Note 1: /home/gordon/mail/cusid is a standard UNIX mail folder.
+Note 2: /home/gordon/www/cusidnet/fall1998 contains an existing hypermail
+archive.
+
+----
+Gordon H. Buchan
+Technical Writer
+Matrox Networks / Matrox Electronic Systems
+email:  gbuchan@matrox.com          1055 St-Regis Blvd.
+voice:  +1 (514) 685-7230 x2523     Dorval, Quebec
+fax:    +1 (514) 822-6272           Canada H9P 2T4
+http://www.matrox.com/networks
+
+

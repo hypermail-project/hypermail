@@ -1,0 +1,87 @@
+#
+# Makefile for hypermail package.
+#
+
+@SET_MAKE@
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+
+# This is where you want hypermail to be installed
+bindir=@bindir@
+
+# This is where the man page goes
+mandir=@mandir@
+
+srcdir=@srcdir@
+
+# This is where the HTML documentation goes
+htmldir=@htmldir@
+
+# This is where your CGI programs live
+cgidir=@cgidir@
+
+INSTALL_PROG=@INSTALL@
+
+#WNOERROR=-Werror
+#WARNINGS=$(WNOERROR) -ansi -pedantic -Wall -Wtraditional -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Dlint
+ 
+# Compiler to use
+CC=@CC@ 
+CFLAGS=@CFLAGS@ $(WARNINGS)
+LIBS=@LIBS@
+LDFLAGS=@LDFLAGS@
+
+all:   hypermail support 
+
+hypermail:
+	@cd src; $(MAKE) all CC="$(CC)" CFLAGS="$(CFLAGS)" \
+		cgidir="$(cgidir)" bindir="$(bindir)" LIBS="$(LIBS)"
+
+support:   
+	@cd archive; $(MAKE) all CC="$(CC)" CFLAGS="$(CFLAGS)" 
+
+install: 
+	@cd src; $(MAKE) install CC="$(CC)" CFLAGS="$(CFLAGS)" \
+		cgidir="$(cgidir)" bindir="$(bindir)" LIBS="$(LIBS)"
+	@cd docs; $(MAKE) install CC="$(CC)" CFLAGS="$(CFLAGS)" \
+		$(MAKEFLAGS) mandir="$(mandir)" htmldir="$(htmldir)"
+	@cd archive; $(MAKE) install CC="$(CC)" CFLAGS="$(CFLAGS)" \
+		bindir="$(bindir)"
+
+uninstall: 
+	@cd src; $(MAKE) uninstall cgidir="$(cgidir)" bindir="$(bindir)" 
+	@cd docs; $(MAKE) uninstall mandir="$(mandir)" htmldir="$(htmldir)"
+	@cd archive; $(MAKE) uninstall bindir="$(bindir)"
+
+lint:	
+	@cd src; $(MAKE) lint 
+	@cd archive; $(MAKE) lint 
+
+clean:
+	@cd src; $(MAKE) clean 
+	@cd docs; $(MAKE) clean 
+	@cd archive; $(MAKE) clean 
+	rm -f lint.out
+
+clobber: clean
+	rm -f config.h
+	rm -f config.cache
+	rm -f config.log
+	rm -f config.status
+	rm -f archive/Makefile
+	rm -f docs/Makefile
+	rm -f libcgi/Makefile
+	rm -f src/Makefile
+	rm -f src/defaults.h
+	rm -f tests/testmail
+	rm -f tests/testhm
+	rm -rf tests/testdir
+	rm -rf tests/mail-archive
+	rm -f Makefile
+
+tgz:
+	@(dir=`pwd`;name=`basename $$dir`;echo Creates $$name.tar.gz; cd .. ; \
+	tar -cf $$name.tar `cat $$name/FILES | sed "s:^:$$name/:g"` ; \
+	gzip $$name.tar ; chmod a+r $$name.tar.gz ; mv $$name.tar.gz $$name/)
+

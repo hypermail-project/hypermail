@@ -1,0 +1,55 @@
+From owner-hypermail Fri Sep 25 20:59 CDT 1998
+Received: by landfield.com (8.9.0/8.9.0) id UAA06348
+	for hypermail-outgoing; Fri, 25 Sep 1998 20:59:15 -0500 (CDT)
+Received: from ns.totalsports.net (ns.totalsports.net [207.175.67.50])
+	by landfield.com (8.9.0/8.9.0) with ESMTP id UAA06340
+	for <hypermail@landfield.com>; Fri, 25 Sep 1998 20:58:30 -0500 (CDT)
+Received: from klaatu.totalsports.net
+          (chall3.totalsports.net [207.175.67.217]) by ns.totalsports.net
+          (Post.Office MTA v3.5 release 215 ID# 0-55440U300L200S0V35)
+          with SMTP id net; Fri, 25 Sep 1998 21:53:37 -0400
+Message-ID: <360C4737.6946@totalsports.net>
+Date: Fri, 25 Sep 1998 21:45:27 -0400
+From: chall@totalsports.net (Charles Hall)
+Organization: Total Sports
+X-Mailer: Mozilla 3.01Gold (Win95; I)
+MIME-Version: 1.0
+To: "Jeffrey K. MacKie-Mason" <jmm@umich.edu>
+CC: hypermail@landfield.com
+Subject: Re: adding new messages to prior hypermail archive
+References: <360C40A1.A8FAF28C@umich.edu>
+Content-Transfer-Encoding: 7bit
+Sender: owner-hypermail@landfield.com
+Precedence: bulk
+Reply-To: chall@totalsports.net (Charles Hall)
+X-Lines: 25
+Content-Type: text/plain; charset="us-ascii"
+Content-Length: 1005
+Status: OR
+
+Jeffrey K. MacKie-Mason wrote:
+> 
+> Then I tried what Charles suggested...  However, the original 467 message
+> entries in the index were overwritten with the 467 dummy messages.  So
+> my index files are now useless....
+
+Ouch! I hope you can recover from this. I didn't realize. Sorry.
+
+> Perhaps have a switch for "append to existing archive" when we have a new
+> mbox file
+
+Yes, Yes! I need this functionality too. I prefer not to add messages
+one at a time through the day as Hypermail would go re-indexing over and
+over again, so I let my mail collect till the end of the month, and run
+hypermail once nightly. Since there's no append function, Hypermail has
+to churn through all that month's mail each night. If I could append, I
+could erase the mailbox each night and only process that day's mail.
+
+MHonArc has this feature, but I believe it keeps a small database to
+remember what's been done before. Perhaps such info could be hidden in
+the indexes as HTML comments??
+
+--
+Charles Hall
+Raleigh, NC
+

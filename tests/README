@@ -1,0 +1,39 @@
+Testing Hypermail:
+==================
+
+This directory is here for you to use in testing hypermail locally.
+It is useful for testing new hypermail distributions and features
+without impacting your production facilities.
+ 
+You will find the following files in this directory:
+
+    test-footer.hyp - HTML footer template file 
+    test-index.hyp  - Index pages template file
+    test-msg.hyp    - Message pages template file
+    test.rc         - Test configuration file
+    testhm          - Script to run test command lines
+
+To test hypermail:
+
+    - Copy a mailbox you have to a local file named "testmail"
+
+    - Edit the test-footer.hyp, test-index.hyp and test-msg.hyp
+      template configuration files as appropritate for you needs.
+ 
+    - Edit the test.rc and assure it is configured as you wish.
+
+    - Verify that testhm is running the proper command line for
+      the testing you are doing.
+          
+    - Type "testhm"
+
+This will generate an archive under a newly created "testdir/"
+directory.  Check it out with your favorite browser.
+
+When you are done testing, 
+
+    - remove the testdir directory,
+
+    - remove the testmail file.
+
+

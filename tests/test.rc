@@ -1,0 +1,63 @@
+#
+# This is the hypermail test rc config file.
+#
+language = en
+htmlsuffix = html
+mbox = testmail
+archives = ../
+about = ../
+label = We Be TeStInG List Software List
+dir = testdir
+defaultindex = subject
+overwrite = 1
+inlinehtml = 1
+increment = 1
+readone = 0
+reverse = 1
+#progress = 0
+#progress = 1
+progress = 2
+showheaders = 0
+#show_headers = *
+#show_headers = Subject,Date,From
+show_headers = X-Mailer,Status
+showhtml = 1
+showbr = 1
+showhr = 1
+showreplies = 1
+show_msg_links = 1 
+#usetable = 1
+usetable = 0
+#indextable = 1
+indextable = 0
+iquotes = 1
+eurodate = 0
+discard_dup_msgids = 0
+require_msgids = 1
+usemeta = 0
+#dateformat = %Y/%m/%d - %H:%M %Z
+attachmentlink = 
+uselock = 1
+locktime = 3600
+thrdlevels = 9
+dirmode = 0755
+filemode = 0644
+#mailcommand = mailto:$TO?subject=$SUBJECT&replyto=$ID
+#mailcommand = /cgi-bin/mail?to=$TO&replyto=$ID&subject=$SUBJECT
+mailto = webmusket@landfield.com
+domainaddr = landfield.com
+#hmail = hypermail@landfield.com
+
+text_types = message/DELIVERY-STATUS
+inline_types = "image/gif image/jpeg"
+ignore_types = text/x-vcard
+ignore_types = application/x-msdownload
+prefered_types = text/plain text/html 
+
+#body=<BODY BGCOLOR="#F4D659" TEXT="#333333">
+#body=NONE
+#ihtmlheaderfile = test-index.hyp
+#ihtmlfooterfile = test-footer.hyp
+#mhtmlheaderfile = test-msg.hyp
+#mhtmlfooterfile = test-footer.hyp
+

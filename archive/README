@@ -1,0 +1,132 @@
+This directory contains the archive specific information for maintaining 
+mailing list archives.  It is expected that the msg2archive.c functionality 
+will be added to hypermail in a future release. Until then... This is what 
+is here and how it works....
+
+           README - This file.
+             1998 - script for recreation of the hypermail archives 
+                    from the mailbox version
+      Makefile.in - configure Makefile input
+    msg2archive.c - Individual message archiver.
+ mbox2hypermail.c - Read messages from a mailbox and calls hypermail.
+
+The contents of this directory support automatic generation of hypermail
+archives from inbound messages *as well as* the generation of a hypermail
+archive from a Unix mailbox of stored messages.
+
+This is how I do it so... Your mileage might vary...
+
+1. First you will need to decide where you want the archive stored at. 
+
+2. Then you will need to edit the file lists.h with the appropriate info.
+   Simply add a section such as is shown below. I have a section for each 
+   list.  If you are not familiar with 'C' might want to get someone else
+   to assist.  Notice that HYPERMAIL is different in the two entries. This
+   is because in the case of the wu-ftpd list, it is using a stock hypermail
+   executable to save the messages. The nfr-announce list is using a 
+   customized version (very useful for testing too.)
+
+    #ifdef WU_FTPD
+ 
+    #define HYPERMAIL    "/usr/local/bin/hypermail" 
+    #define ARCHIVE      "/ftp/wu-ftpd/mail-archive" 
+    #define MAILBOXDIR   "/ftp/wu-ftpd/mail-archive/mailbox" 
+    #define LABEL        "WU-FTPD Development Mailing List"
+    #define ABOUT_LINK   "/wu-ftpd" 
+    #define LISTNAME     "wu-ftpd"
+    #define CONFIGFILE   "NONE"
+ 
+    #else
+    #ifdef NFR_ANNOUNCE
+ 
+    #define HYPERMAIL    "/usr/local/bin/nfrhypermail"
+    #define ARCHIVE      "/ftp/nfr/mail-archive/nfr-announce"
+    #define MAILBOXDIR   "/ftp/nfr/mail-archive/nfr-announce/mailbox"
+    #define LABEL        "Network Flight Recorder Announcements"
+    #define ABOUT_LINK   "/nfr/mail-archive"
+    #define LISTNAME     "nfr-announce"
+    #define CONFIGFILE   "/usr/local/lib/hypermail/nfr-announce.rc"
+
+    ...
+
+    If you specify a CONFIGFILE path, it will be used to set hypermail
+    options and is call as 
+
+        "HYPERMAIL -u -i -c CONFIGFILE".
+
+    If you do not specify a CONFIGFILE path, hypermail is called using
+    the other information as 
+    
+        "HYPERMAIL -u -i -d ARCHIVE/year/month -l \"LABEL\" -b ABOUT_LINK"
+
+3.  Next make sure that you have a properly compiled version of hypermail
+    installed on the system.
+
+4.  Edit the Makefile and add the appropriate entries. For example:
+
+    wuftpdmail: msg2archive.c
+        $(CC) -DWU_FTPD -o $@ msg2archive.c
+
+    wu-rdmsg: mbox2hypermail.c
+        $(CC) -DWU_FTPD -o $@ mbox2hypermail.c
+
+5.  Compile and install the new programs.
+
+Now everything software-wise is in place.  Time to setup your mailer
+to process the inbound messages.  
+
+6.  You need to add an entry to your /etc/aliases file such as
+
+      wuftpd: "|/usr/local/bin/wuftpdmail"
+
+7.  Assure that your mailer is aware of the new alias, i.e. might need
+    to type 'newaliases'.
+
+Now you are ready to start receiving messages.  Time to subscribe your
+new alias to the list you want to archive.  If you are running the list 
+then this is easy.  In some cases you have to play games to get an alias 
+subscribed with other than you normal account. What ever the case get
+the new alias subscribed.
+
+======================
+So what happens now ?
+======================
+
+Messages sent to a list and are resent to the members of the list.  
+The alias you subscribed is now a member of the list.  Messages are 
+sent to the list archive alias.  The "msg2archive" process is started 
+for each message and the messages are stored into the location specified 
+in the MAILBOXDIR define.  Messages are stored in the directory in a 
+"month' file or as specified in the configuration file.  These are Unix 
+mailbox formatted files.  Once the message is archived in mailbox format, 
+it is also then archived in hypermail format.  The appropriate hypermail 
+is called with the inbound message sent to it to add to the hypermail 
+archive.
+
+In this manner each article is available to those who want to read 
+them online and to those who want to download an entire month's worth 
+of traffic to read with their favorite mail Unix reader.
+
+If there is ever a problem with the hypermail archives, be it a new
+look and feel wanted or a bug fix that requires regeneration of the 
+archive, the mailbox versions will be used as input to the process.  
+The script `1998' and the `mbox2hypermail.c' program in this directory 
+are being used for testing and archive re-creation.
+
+If you want to change the look and feel of the individual hypermail 
+archive pages, that can be done easily by creating the list specific 
+header and footer HTML template files as described in the hypermail.1 
+and hmrc.4 man pages.
+
+===========================
+Integrating with Majordomo:
+===========================
+
+If you are running a majordomo list and want to integrate this with 
+majordomo then make sure that the ftp mailbox directory is symlinked 
+to ~majordomo/Archives/listname directory so that this scheme does 
+not break majordomo.  DO NOT HAVE MAJORDOMO DO ANY ARCHIVING. The 
+symlink'ed directory is so people will be able to request archives 
+and index listing from majordomo as normal.  Now the list archives 
+are reachable via the web, ftp or email.
+

@@ -1,0 +1,907 @@
+From owner-hypermail Fri Sep 25 20:23 CDT 2000
+Received: by landfield.com (8.9.0/8.9.0) id UAA06103
+	for hypermail-outgoing; Fri, 25 Sep 2000 20:22:37 -0500 (CDT)
+Received: from runningman.rs.itd.umich.edu (runningman.rs.itd.umich.edu [141.211.144.15])
+	by landfield.com (8.9.0/8.9.0) with ESMTP id UAA06097
+	for <hypermail@landfield.com>; Fri, 25 Sep 2000 20:21:33 -0500 (CDT)
+Received: from umich.edu (dialin224193.isdn.umich.edu [198.111.224.193])
+	by runningman.rs.itd.umich.edu (8.8.5/2.3) with ESMTP id VAA19384; Fri, 25 Sep 2000 21:19:37 -0400 (EDT)
+Message-ID: <360C40A1.A8FAF28C@umich.edu>
+Date: Fri, 25 Sep 2000 21:17:21 -0400
+From: "Jeffrey K. MacKie-Mason" <jmm@umich.edu>
+Organization: University of Michigan
+X-Mailer: Mozilla 4.5b2 [en] (WinNT; I)
+X-Accept-Language: en
+MIME-Version: 1.0
+To: hypermail@landfield.com
+CC: Charles Hall <chall@totalsports.net>,
+        "Gordon H. Buchan" <gbuchan@matrox.com>
+Subject: Re: adding new messages to prior hypermail archive
+Content-Transfer-Encoding: 7bit
+Sender: owner-hypermail@landfield.com
+Precedence: bulk
+Reply-To: "Jeffrey K. MacKie-Mason" <jmm@umich.edu>
+X-Lines: 54
+Content-Type: text/plain; charset="us-ascii"
+Content-Length: 2276
+Status: OR
+
+
+Charles and Gordon offered helpful suggestions.  However, I think there
+is a problem.
+
+Here is what I'm trying to do: I have an existing Hypermail archive
+(from 1.02) with 467 messages already in it.  I do *NOT* have the
+original mailbox file for it.  
+
+I now have 65 new messages in a mailbox that I want to add.
+
+I've tried a standard run, as Gordon suggested (those are Gordon's
+paths):
+
+/home/gordon/bin/hypermail \
+-b "http://cusidnet.anadas.com/" \
+-a "http://cusidnet.anadas.com/" \
+-m "/home/gordon/mail/cusid" \
+-l "CUSIDnet Web Mirror" \
+-d "/home/gordon/www/cusidnet/fall2000/" \
+-c "/home/gordon/bin/.cusidnethyprc" > /dev/null
+
+That had the following result: The new index files overwrote the
+existing index files, and showed the information for the 65 *new*
+messages but no listings for the 467 original messages.  However, the
+archive in fact contained the 467 html files for the original messages,
+but did *not* contain files for any of the new messages.  (Click on New
+#1 in the index, and it goes to file 0000.html which is Old #1.)
+
+Then I tried what Charles suggested: I inserted 467 "dummy" messages in
+my mailbox file so that Hypermail could count down those and only add
+the "new" messages.  That *almost* worked.  The message files were
+correctly created: an addition 65 nnnn.html files were added to the
+archive.  However, the original 467 message entries in the index were
+overwritten with the header information from the 467 dummy messages.  So
+my index files are now useless....
+
+Obviously, the solution could be to chop the 65 new messages and deliver
+them one at a time to Hypermail for a single message append.  (Can
+someone suggest an easy way to script that?)  However, shouldn't
+Hypermail be able to do this?  Perhaps have a switch for "append to
+existing archive" when we have a new mbox file but have lost the mbox
+for the original archive?  (Likewise, a way to merge hypermail archives
+without having the original mboxes?)
+
+thanks,
+jmm
+
+
+-- 
+Prof. Jeffrey MacKie-Mason       http://www-personal.umich.edu/~jmm/
+Dept. of Economics                                     jmm@umich.edu
+   and School of Information               +1 (734) 647-4856 (voice)
+University of Michigan                     +1 (734) 764-2475   (fax)
+Ann Arbor, MI 48109
+
+From owner-hypermail Fri Sep 25 20:59 CDT 2000
+Received: by landfield.com (8.9.0/8.9.0) id UAA06348
+	for hypermail-outgoing; Fri, 25 Sep 2000 20:59:15 -0500 (CDT)
+Received: from ns.totalsports.net (ns.totalsports.net [207.175.67.50])
+	by landfield.com (8.9.0/8.9.0) with ESMTP id UAA06340
+	for <hypermail@landfield.com>; Fri, 25 Sep 2000 20:58:30 -0500 (CDT)
+Received: from klaatu.totalsports.net
+          (chall3.totalsports.net [207.175.67.217]) by ns.totalsports.net
+          (Post.Office MTA v3.5 release 215 ID# 0-55440U300L200S0V35)
+          with SMTP id net; Fri, 25 Sep 2000 21:53:37 -0400
+Message-ID: <360C4737.6946@totalsports.net>
+Date: Fri, 25 Sep 2000 21:45:27 -0400
+From: chall@totalsports.net (Charles Hall)
+Organization: Total Sports
+X-Mailer: Mozilla 3.01Gold (Win95; I)
+MIME-Version: 1.0
+To: "Jeffrey K. MacKie-Mason" <jmm@umich.edu>
+CC: hypermail@landfield.com
+Subject: Re: adding new messages to prior hypermail archive
+References: <360C40A1.A8FAF28C@umich.edu>
+Content-Transfer-Encoding: 7bit
+Sender: owner-hypermail@landfield.com
+Precedence: bulk
+Reply-To: chall@totalsports.net (Charles Hall)
+X-Lines: 25
+Content-Type: text/plain; charset="us-ascii"
+Content-Length: 1005
+Status: OR
+
+Jeffrey K. MacKie-Mason wrote:
+> 
+> Then I tried what Charles suggested...  However, the original 467 message
+> entries in the index were overwritten with the 467 dummy messages.  So
+> my index files are now useless....
+
+Ouch! I hope you can recover from this. I didn't realize. Sorry.
+
+> Perhaps have a switch for "append to existing archive" when we have a new
+> mbox file
+
+Yes, Yes! I need this functionality too. I prefer not to add messages
+one at a time through the day as Hypermail would go re-indexing over and
+over again, so I let my mail collect till the end of the month, and run
+hypermail once nightly. Since there's no append function, Hypermail has
+to churn through all that month's mail each night. If I could append, I
+could erase the mailbox each night and only process that day's mail.
+
+MHonArc has this feature, but I believe it keeps a small database to
+remember what's been done before. Perhaps such info could be hidden in
+the indexes as HTML comments??
+
+--
+Charles Hall
+Raleigh, NC
+
+From owner-hypermail Sat Sep 26 06:16 CDT 2000
+Received: by landfield.com (8.9.0/8.9.0) id GAA20916
+	for hypermail-outgoing; Sat, 26 Sep 2000 06:16:19 -0500 (CDT)
+Received: from relay7.UU.NET (relay7.UU.NET [192.48.96.17])
+	by landfield.com (8.9.0/8.9.0) with ESMTP id GAA20890
+	for <hypermail@landfield.com>; Sat, 26 Sep 2000 06:14:42 -0500 (CDT)
+Received: from relay7.UU.NET by relay7.UU.NET with ESMTP 
+	(peer crosschecked as: root@localhost)
+	id QQfijh19139; Fri, 25 Sep 2000 10:17:34 -0400 (EDT)
+Received: from morrison.matrox.com by relay7.UU.NET with ESMTP 
+	(peer crosschecked as: [204.50.136.19])
+	id QQfijh19076; Fri, 25 Sep 2000 10:17:28 -0400 (EDT)
+Received: (from mtxmail@localhost)
+	by morrison.matrox.com (8.8.8/8.8.8) id KAA23068;
+	Fri, 25 Sep 2000 10:14:08 -0400 (EDT)
+Received: from venus.matrox.com(138.11.0.5) by morrison-250 via smap (V2.0)
+	id xma022977; Fri, 25 Sep 98 10:13:18 -0400
+Received: from focus.matrox.com (focus.matrox.com [192.168.16.2])
+	by venus.matrox.com (8.8.7/8.8.7) with ESMTP id KAA09310;
+	Fri, 25 Sep 2000 10:13:17 -0400 (EDT)
+Received: from gbuchan.matrox.com ([192.168.17.51]) by focus.matrox.com (8.7.5/8.7.3) with SMTP id KAA15383; Fri, 25 Sep 2000 10:13:14 -0400 (EDT)
+Message-Id: <200009251413.KAA15383@focus.matrox.com>
+X-Sender: gbuchan@focus.matrox.com
+X-Mailer: QUALCOMM Windows Eudora Pro Version 4.0
+Date: Fri, 25 Sep 2000 10:13:10 -0400
+To: "Jeffrey K. MacKie-Mason" <jmm@umich.edu>, hypermail@landfield.com
+From: "Gordon H. Buchan" <gbuchan@matrox.com>
+Subject: Re: adding new messages to prior hypermail archive
+In-Reply-To: <360B2905.E41100C9@umich.edu>
+Mime-Version: 1.0
+Sender: owner-hypermail@landfield.com
+Precedence: bulk
+Reply-To: "Gordon H. Buchan" <gbuchan@matrox.com>
+X-Lines: 40
+Content-Type: text/plain; charset="us-ascii"
+Content-Length: 1590
+Status: OR
+
+At 01:24 AM 9/25/98 -0400, Jeffrey K. MacKie-Mason wrote:
+>
+>I archived some 460 messages from a mailbox with Hypermail 1.02 about 3
+>years ago.  Now I want to use hypermail 2.03b to process a new mailbox
+>and add the messages to the prior archive.  I've tested 2.03b on the new
+>mailbox, and it works fine when I give it an empty directory in which to
+>create a new hypermail archive.  However, when I point it at the
+>directory with the prior 460-message archive, it changes the date stamp
+>on the index files to today, but it doesn't append the 65 new messages
+>to the archive.
+>
+>As far as I can see, the default behavior is supposed to be to append
+>messages to an existing archive.  I'm not using the -u or -x flags. 
+>Suggestions?
+
+With a slight modification (removal of the -x switch, since this is to
+append, not replace), here is one of my batch files. Change paths and
+parameters to match your environment.
+
+/home/gordon/bin/hypermail \
+-b "http://cusidnet.anadas.com/" \
+-a "http://cusidnet.anadas.com/" \
+-m "/home/gordon/mail/cusid" \
+-l "CUSIDnet Web Mirror" \
+-d "/home/gordon/www/cusidnet/fall2000/" \
+-c "/home/gordon/bin/.cusidnethyprc" > /dev/null
+
+Note 1: /home/gordon/mail/cusid is a standard UNIX mail folder.
+Note 2: /home/gordon/www/cusidnet/fall2000 contains an existing hypermail
+archive.
+
+----
+Gordon H. Buchan
+Technical Writer
+Matrox Networks / Matrox Electronic Systems
+email:  gbuchan@matrox.com          1055 St-Regis Blvd.
+voice:  +1 (514) 685-7230 x2523     Dorval, Quebec
+fax:    +1 (514) 822-6272           Canada H9P 2T4
+http://www.matrox.com/networks
+
+
+From nobody Thu Oct  1 19:10 CDT 2000
+Received: by landfield.com (8.9.0/8.9.0) id TAA11412
+	for kent@landfield.com; Thu, 1 Oct 2000 19:10:49 -0500 (CDT)
+Date: Thu, 1 Oct 2000 19:10:49 -0500 (CDT)
+From: Nobody <nobody>
+Message-Id: <200010020010.TAA11412@landfield.com>
+Reply-to: minerva@phix.com (Darci Chapman)
+Subject: HYPERMAIL Development Center Suggestion
+Content-Type: text
+Content-Length: 492
+Status: OR
+
+minerva@phix.com (Darci Chapman) sent the following
+Hypermail Resource location information:
+
+------------------------------------------------------------
+Location:    http://www.wildheart.org/archives/networker/
+Description: A user-based list for Legato's Networker (back up) software.
+
+(I can't believe I'm archiving ANOTHER list ;-)
+
+------------------------------------------------------------
+Server protocol: HTTP/1.0
+Remote host: barrier241.nike.com
+Remote IP address: 198.107.239.205
+
+From kent Thu Oct  1 22:01 CDT 2000
+Received: (from kent@localhost)
+	by landfield.com (8.9.0/8.9.0) id WAA13318;
+	Thu, 1 Oct 2000 22:01:32 -0500 (CDT)
+From: Kent Landfield <kent>
+Message-Id: <200010020301.WAA13318@landfield.com>
+Subject: Re: Hypermail pages
+To: vanes002@umn.edu (John Van Essen)
+Date: Thu, 1 Oct 2000 22:01:31 -0500 (CDT)
+Cc: kent (Kent Landfield)
+In-Reply-To: <81725.vanes002@umn.edu> from "John Van Essen" at Oct 1, 98 07:51:07 pm
+X-Mailer: ELM [version 2.4 PL25]
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Length: 565
+Status: OR
+
+# 
+# How come the landfield.com home page doesn't mention or link to 
+# the hypermail home page (/hypermail)?
+# 
+# :)
+# 
+#         John Van Essen <vanes002@umn.edu>
+
+Well now that you mention it... I'm going to have to fix that. ;) Thanks.
+
+-- 
+Kent Landfield                        Phone: 1-817-545-2502             
+Email: kent@landfield.com             http://www.landfield.com/
+Email: kent@nfr.net                   http://www.nfr.net/
+Please send comp.sources.misc related mail to kent@landfield.com
+Search the Usenet FAQ Archive at http://www.faqs.org/faqs/
+
+
+From tva@pobox.com Sat Oct  3 22:54 CDT 2000
+Received: from pop1.cyberhighway.net (qmailr@pop1.cyberhighway.net [209.161.0.35])
+	by landfield.com (8.9.0/8.9.0) with SMTP id WAA01614
+	for <archive@landfield.com>; Sat, 3 Oct 2000 22:54:09 -0500 (CDT)
+Received: (qmail 22325 invoked from network); 3 Oct 2000 21:52:11 -0600
+Received: from ts19-31.boi.cyberhighway.net (HELO pobox.com) (209.161.10.170)
+  by pop1.cyberhighway.net with SMTP; 3 Oct 2000 21:52:11 -0600
+Message-ID: <3616F164.20EE5A03@pobox.com>
+Date: Sat, 03 Oct 2000 21:54:12 -0600
+From: Tom von Alten <tva@pobox.com>
+X-Mailer: Mozilla 4.04 [en] (Win95; U)
+MIME-Version: 1.0
+To: archive@landfield.com
+Subject: Another Mail Archive Mgmt Tool
+X-Corel-MessageType: EMail
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Length: 593
+Status: OR
+
+Hey:
+
+I'm back, I couldn't wait until Monday to see your code. :-)  And I found
+the "others.html" page.  Pretty classy.
+
+One that probably belongs on the list is something called "newsgate," at
+ftp://ftp.isc.org/isc/inn/contrib/ (mentioned in the majordomo FAQ,
+http://www.cis.ohio-state.edu/~barr/majordomo-faq.html) for piping email
+into News; the IT-run half of our division is actually working to install
+that to replace what we're doing with hypermail.
+
+It suits them because they're using majordomo; we've been doing our list
+maintenance more manually.
+
+(The race is on.)
+
+Tom von Alten
+
+From craig@cni.org Tue Oct  6 18:26 CDT 2000
+Received: from a.cni.org (a.cni.org [192.100.21.1])
+	by landfield.com (8.9.0/8.9.0) with SMTP id SAA18925;
+	Tue, 6 Oct 2000 18:26:01 -0500 (CDT)
+Received: by a.cni.org id <AA05549@a.cni.org>; Tue, 6 Oct 2000 19:20:00 -0400
+From: Craig A Summerhill <craig@cni.org>
+Message-Id: <9810062320.AA05549@a.cni.org>
+Subject: Re: another bug
+To: hypermail@landfield.com
+Date: Tue, 6 Oct 2000 19:20:00 -0400 (EDT)
+Cc: kent@landfield.com
+In-Reply-To: <200010061703.MAA13834@landfield.com> from "Kent Landfield" at Oct 6, 98 12:03:19 pm
+X-Mailer: ELM [version 2.4 PL23]
+Content-Type: text
+Content-Length: 2299
+Status: OR
+
+Kent Landfield <kent@landfield.com> wrote:
+> 
+> # This problem has been around since version 1.02, but I forgot about it 
+> # because it doesn't come up too often...
+> # 
+> # If you run Hypermail against an existing mailbox...
+> # 
+> # hypermail -c <path/config> -m <path/mbox> -l "whatever" -d <path/target_dir>
+> # 
+> # and the mbox file that you are processing only has one message in it...
+> # 
+> # hypermail goes out and creates the HTMLed message (0000.html), but 
+> # before the date, author, subject, and thread indexes are created it 
+> # dumps core with this error:
+> # 
+> #    Floating exception (core dumped)
+> 
+> I don't get this when I tried it on the latest version. It may be that
+> the problem isn't the single message in the mailbox but the message itself.
+> It may be triggering a memory corruption bug. If you have a copy of the
+> offending message you can send me I'll verify if it is a problem still.
+
+
+Kent,
+
+Hmm.  That's odd.  It happens consistently on my system; everytime there
+is a mailbox with only one message in it.  It must be some combination
+of the defaults that I set when I compiled the code (I changed some of 
+the suggested settings), and the settings in the .hmrc file I am calling.
+
+I'll send you my compile time settings and .hmrc file later, and see if 
+you can find something in there that is causing it to happen.  (I have 
+been up and working on a system problem for thirty-some hours, I need 
+to go home, shower, and get in bed -- so it may be tomorrow).
+
+It does dump core on me to, BTW.  Is there a core analysis tool I 
+could used that would give you some helpful information?
+
+
+P.S.  One other thought occured to me.  I was wondering if it might be 
+related to the parsing problem I wrote about earlier (which you have 
+fixed in the next release -- thank you).  Perhaps it is expecting a 
+trailing line with white space on it, or something?  The trouble with 
+this idea is that the single message problem was also present in 
+version 1.02, and came along to version 2.x.  However, the parsing 
+problem wasn't present in version 1.02...
+-- 
+
+   Craig A. Summerhill, Systems Coordinator and Program Officer
+   Coalition for Networked Information
+   21 Dupont Circle, N.W., Washington, D.C.   20036
+   Internet: craig@cni.org   AT&Tnet (202) 296-5098
+
+
+From owner-hypermail Wed Oct  7 01:44 CDT 2000
+Received: by landfield.com (8.9.0/8.9.0) id BAA00188
+	for hypermail-outgoing; Wed, 7 Oct 2000 01:44:22 -0500 (CDT)
+Received: from atlantis.csc.umd.edu (IDENT:root@atlantis.csc.umd.edu [129.2.8.129] (may be forged))
+	by landfield.com (8.9.0/8.9.0) with ESMTP id BAA00057
+	for <hypermail@landfield.com>; Wed, 7 Oct 2000 01:43:31 -0500 (CDT)
+Received: from atlantis.csc.umd.edu ((IDENT sendmail)@localhost [127.0.0.1])
+	by atlantis.csc.umd.edu (8.9.0.Beta6/8.9.0.Beta6) with SMTP id CAA09509
+	for <hypermail@landfield.com>; Wed, 7 Oct 2000 02:41:30 -0400 (EDT)
+Received: from localhost by atlantis.csc.umd.edu (8.9.0.Beta6/8.9.0.Beta6) with SMTP id CAA09504
+	for <hypermail@landfield.com>; Wed, 7 Oct 2000 02:41:28 -0400 (EDT)
+X-Authentication-Warning: atlantis.csc.umd.edu: rsw owned process doing -bs
+Date: Wed, 7 Oct 2000 02:41:24 -0400 (EDT)
+From: "Randall S. Winchester" <rsw@Glue.umd.edu>
+To: hypermail@landfield.com
+Subject: I would like to have avaliable a couple Hypermail variables.
+Message-ID: <Pine.GSO.4.02.9810070058440.8526-100000@atlantis.csc.umd.edu>
+MIME-Version: 1.0
+Sender: owner-hypermail@landfield.com
+Precedence: bulk
+Reply-To: "Randall S. Winchester" <rsw@Glue.umd.edu>
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Length: 2671
+Status: OR
+
+
+I am considering using Hypermail for a large number of automatically
+generated lists. To ease installation woes, it would be helpful to have
+some more generic capabilities for many of hypermails options.
+
+I would like something like:
+
+HM_LISTNAME listname
+
+hm_listname = [ listname | NONE ]
+
+-L <listname>
+     This options specifies the name of the list being archived. This is a 
+     convienent variable to have defined as it can be used as a cookie or
+     environemntal variable in documentation references.
+
+-H <hostname>
+     Set this to the hostname you want  added  to  a  mail  
+     address  appearing  in  the  RFC822  field which lack a
+     hostname. It is usefull on the command line when servicing
+     virtual hosts. 
+
+%L - name of current list
+
+%H - name of current host. Convienient for archiving with virtual hosting.
+
+For example for a default .hmrc file:
+
+hm_label = Hypermail discussion list for %L@%H
+hm_archives = http://%H
+hm_about = http://%H/%L
+hm_dir = /var/hypermail/%H/%L/%y/%M
+hm_ihtmlheaderfile = /var/hypermail/%H/%L/owner/idxheader.hyp
+hm_ihtmlfooterfile = /var/hypermail/%H/%L/owner/idxfooter.hyp
+hm_mhtmlheaderfile = /var/hypermail/%H/%L/owner/msgheader.hyp
+hm_mhtmlfooterfile = /var/hypermail/%H/%L/owner/msgfooter.hyp
+hm_hmail = %L@%H
+
+And for those default header and footer .hyp files:
+
+Welcome to the %L archive at %H.
+
+To subscibe to this list send email to <A HREF="mailto:%L-request@%H"> with
+the word "subscribe" on its on line in the message body.
+
+Once subscribed, you can send mail to the list at <A HREF="mailto:%L@%H">.
+
+If you have a content issue with something on the list, please mail to 
+<A HREF="mailto:%L-owner@%H">
+
+Does this seem reasonable enough? Mostly a more frequently used variable
+substitution routine.
+
+A more difficult endevor which could also be helpful would be to leverage
+off of the case where %L is used in the hm_dir variable along with other
+date formats (%y, %M, etc) being used. In this case, it would be nice to
+have Hypermail generate the "homepage(s)" for the directory traversals on
+the fly. The page would need to be created initially (-d option) and then
+updated anytime a new directory was automaticaly created.
+
+If this were done, then two addition .hyp files would be good:
+hm_lhtmlheaderfile = /var/hypermail/%H/%L/owner/lstheader.hyp
+hm_lhtmlfooterfile = /var/hypermail/%H/%L/owner/lstfooter.hyp
+
+Probably put a link to my search engine in "hm_lhtmlfooterfile"....
+
+
+Not sure how much of this has been discussed before, or how active
+development is, having recently joined your list. Seems like a nice tool
+though... I have alot of users who would appreciate Hypermail.
+
+Randall
+
+
+
+From ashley@pcraft.com Wed Oct  7 10:12 CDT 2000
+Received: from mail.pcraft.com (mail.pcraft.com [206.168.220.51])
+	by landfield.com (8.9.0/8.9.0) with ESMTP id KAA18195;
+	Wed, 7 Oct 2000 10:12:11 -0500 (CDT)
+Received: from mail.pcraft.com (mail.pcraft.com [206.168.220.51])
+	by mail.pcraft.com (8.9.1/8.9.1-NOSPAM) with SMTP id JAA02986;
+	Wed, 7 Oct 2000 09:24:26 -0600
+Date: Wed, 7 Oct 2000 09:24:26 -0600 (MDT)
+From: "Ashley M. Kirchner" <ashley@pcraft.com>
+To: Kent Landfield <kent@landfield.com>
+cc: hypermail@landfield.com
+Subject: Re: change extension
+In-Reply-To: <200010071414.JAA17429@landfield.com>
+Message-ID: <Pine.LNX.3.96.981007092323.2974A-100000@mail.pcraft.com>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Length: 958
+Status: OR
+
+On Wed, 7 Oct 2000, Kent Landfield wrote:
+
+> # I just created a mail archive in which I'd like all generated pages to be
+> # .shtml to better allow them to dynamically use current header and footer and
+> 
+> - Ability to save files with suffix ".htm" or ".html"
+
+
+	Why not make it an rc option, with the default set to .html?  If
+someone wants others, they change the variable to .htm, .shtml, .phtml, or
+whatever they want.
+
+	AMK4
+
+  |
+  |  Row, row, row your bits, gently down the pipe...
+  |____________________________________________________________________
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Ashley M. Kirchner <ashley@pcraft.com>          .   303.442.6410 x130
+  SysAdmin / Websmith                           .     800.441.3873 x130
+  Photo Craft Laboratories, Inc.             .        3550 Arapahoe Ave
+  http://www.pcraft.com                  .            Boulder, CO 80303
+  .................. .  .  .     .
+
+
+From owner-hypermail Wed Oct  7 10:33 CDT 2000
+Received: by landfield.com (8.9.0/8.9.0) id KAA18439
+	for hypermail-outgoing; Wed, 7 Oct 2000 10:33:06 -0500 (CDT)
+Received: (from kent@localhost)
+	by landfield.com (8.9.0/8.9.0) id KAA18421
+	for hypermail; Wed, 7 Oct 2000 10:32:07 -0500 (CDT)
+From: Kent Landfield <kent>
+Message-Id: <200010071532.KAA18421@landfield.com>
+Subject: Re: I would like to have avaliable a couple Hypermail variables.
+To: hypermail
+Date: Wed, 7 Oct 2000 10:32:06 -0500 (CDT)
+In-Reply-To: <Pine.GSO.4.02.9810070058440.8526-100000@atlantis.csc.umd.edu> from "Randall S. Winchester" at Oct 7, 98 02:41:24 am
+X-Mailer: ELM [version 2.4 PL25]
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: owner-hypermail@landfield.com
+Precedence: bulk
+Reply-To: Kent Landfield <kent>
+Content-Type: text/plain; charset=US-ASCII
+Content-Length: 7259
+Status: OR
+
+# I am considering using Hypermail for a large number of automatically
+# generated lists. To ease installation woes, it would be helpful to have
+# some more generic capabilities for many of hypermails options.
+# 
+# I would like something like:
+# 
+# HM_LISTNAME listname
+# 
+# hm_listname = [ listname | NONE ]
+# 
+# -L <listname>
+#      This options specifies the name of the list being archived. This is a 
+#      convienent variable to have defined as it can be used as a cookie or
+#      environemntal variable in documentation references.
+# 
+# -H <hostname>
+#      Set this to the hostname you want  added  to  a  mail  
+#      address  appearing  in  the  RFC822  field which lack a
+#      hostname. It is usefull on the command line when servicing
+#      virtual hosts. 
+
+These are easy enough and needed for other reasons as well. The first (-L)
+will need to be added completely while the (-H) is already there as DOMAINADDR,
+hm_domainaddr. This was done since usually it is not a hostname that you want
+there but instead is a domain name. It can be used either way.
+
+# %L - name of current list
+# %H - name of current host. Convienient for archiving with virtual hosting.
+
+These would be very useful in the list's header and footer .hyp files.
+
+I can see how this would be useful for virtual hosts. I could use it here
+as well ;)  I do have some questions about the .hmrc file usage though.
+
+# For example for a default .hmrc file:
+# 
+# hm_label = Hypermail discussion list for %L@%H
+# hm_archives = http://%H
+# hm_about = http://%H/%L
+# hm_dir = /var/hypermail/%H/%L/%y/%M
+# hm_ihtmlheaderfile = /var/hypermail/%H/%L/owner/idxheader.hyp
+# hm_ihtmlfooterfile = /var/hypermail/%H/%L/owner/idxfooter.hyp
+# hm_mhtmlheaderfile = /var/hypermail/%H/%L/owner/msgheader.hyp
+# hm_mhtmlfooterfile = /var/hypermail/%H/%L/owner/msgfooter.hyp
+# hm_hmail = %L@%H
+
+What is done if there are no values for %H and %L when first encountered ?
+It is possible to '#define LISTNAME "NONE"' in options.h, not set the
+HM_LISTNAME environment variable and then find no hm_listname or hm_hostname
+in the .hmrc file for the list. Then the above config file input would be
+ 
+hm_label = Hypermail discussion list for @
+hm_archives = http://
+hm_about = http:///
+hm_dir = /var/hypermail///%y/%M
+hm_ihtmlheaderfile = /var/hypermail///owner/idxheader.hyp
+hm_ihtmlfooterfile = /var/hypermail///owner/idxfooter.hyp
+hm_mhtmlheaderfile = /var/hypermail///owner/msgheader.hyp
+hm_mhtmlfooterfile = /var/hypermail///owner/msgfooter.hyp
+hm_hmail = @
+
+Should it bail if hypermail is called without a value in a substitution 
+cookie ? Today it doesn't.
+
+# Does this seem reasonable enough? Mostly a more frequently used variable
+# substitution routine.
+
+Yes it is quite reasonable.
+
+# A more difficult endevor which could also be helpful would be to leverage
+# off of the case where %L is used in the hm_dir variable along with other
+# date formats (%y, %M, etc) being used. In this case, it would be nice to
+# have Hypermail generate the "homepage(s)" for the directory traversals on
+# the fly. The page would need to be created initially (-d option) and then
+# updated anytime a new directory was automaticaly created.
+# 
+# If this were done, then two addition .hyp files would be good:
+# hm_lhtmlheaderfile = /var/hypermail/%H/%L/owner/lstheader.hyp
+# hm_lhtmlfooterfile = /var/hypermail/%H/%L/owner/lstfooter.hyp
+# 
+# Probably put a link to my search engine in "hm_lhtmlfooterfile"....
+
+So... In essence be able to create a top level index for all the 
+year/month directories ? For example, in the hypermail list archives
+here I have two types of directories at the Top level, 
+
+	1. hypermail generated archives separated by month/year,
+
+        2. a mailbox directory that keeps a copy of the inbond messages 
+           in unix mailboxes separated by month
+
+Here is what I mean.
+
+hypermail/mail-archive:
+drwxr-xr-x   9 lists    daemon       512 Oct  6 11:48 2000
+lrwxrwxrwx   1 kent     kent          13 Apr 23 23:45 index.html 
+drwxr-xr-x   2 lists    daemon       512 Oct  2 20:27 mailbox
+
+hypermail/mail-archive/2000:
+drwxr-xr-x   2 lists    daemon      1536 Oct  6 11:31 Apr
+drwxr-xr-x   2 lists    daemon      1024 Oct  6 11:33 Aug
+drwxr-xr-x   2 lists    daemon       512 Oct  6 11:33 Jul
+drwxr-xr-x   2 lists    daemon      1536 Oct  6 11:33 Jun
+drwxr-xr-x   2 lists    daemon      1024 Oct  6 11:32 May
+drwxrwxr-x   2 lists    daemon       512 Oct  7 10:12 Oct
+drwxr-xr-x   2 lists    daemon      1536 Oct  6 11:34 Sep
+
+hypermail/mail-archive/2000/Apr:
+-rw-r--r--   1 lists    daemon      4678 Oct  6 11:31 0000.html
+...
+-rw-r--r--   1 lists    daemon      8813 Oct  6 11:31 author.html
+-rw-r--r--   1 lists    daemon      7469 Oct  6 11:31 date.html
+-rw-r--r--   1 lists    daemon      7753 Oct  6 11:31 index.html
+
+/ftp/hypermail/mail-archive/2000/May:
+/ftp/hypermail/mail-archive/2000/Jun:
+/ftp/hypermail/mail-archive/2000/Jul:
+/ftp/hypermail/mail-archive/2000/Aug:
+/ftp/hypermail/mail-archive/2000/Sep:
+/ftp/hypermail/mail-archive/2000/Oct:
+
+/ftp/hypermail/mail-archive/mailbox:
+-rw-r--r--   1 lists    daemon    159819 May 25 23:09 hypermail.9804
+...
+-rw-r--r--   1 lists    daemon     33048 Oct  7 10:12 hypermail.9810
+
+So in this case I would need to create a Top level index in the 
+hypermail/mail-archive directory that links in the entire archive.
+I would then need to have a year index file in hypermail/mail-archive/2000
+that linked in the separate months. The individual months are already 
+handled. ;)  Then when I incorporate the ability for hypermail to
+save a copy of the inbound message in mailbox format prior to generating
+a html page for it, I'll need to have an index generated for that.
+Is this the type of thing that we are talking about ?
+
+Don't get me wrong... I'm trying to understand what we looking at
+so that I can see how to make it generic enough to implement and administer.
+
+# Not sure how much of this has been discussed before, or how active
+# development is, having recently joined your list. 
+
+The indexing has not been discussed as to how to do it right...
+As of this morning, the TODO list has the following items on it about 
+indexing.:
+
+-----------
+- Make it optional as to what, if any, indexes are generated.
+
+- Make the formating of index pages use magic cookies for all parts of the
+  page.
+
+- Make it optional that a site generate index files with the listings
+  sorted by date in one file and reverse sorted in the other index. 
+  This pertains to all index types as well. For example:
+     one thread-index with the newest mails topmost
+     one thread-index with the oldest mails topmost
+     one author-index in alphabetical order
+     one author-index in reversed alphabetical or
+     etc.
+
+- Generate an index listing of all stored attachments. Also have links to 
+  the mail that contained them. 
+-----------
+
+We need to discuss how it might be used so we can see what can be done
+about improving it...
+
+-- 
+Kent Landfield                        Phone: 1-817-545-2502             
+Email: kent@landfield.com             http://www.landfield.com/
+Email: kent@nfr.net                   http://www.nfr.net/
+Please send comp.sources.misc related mail to kent@landfield.com
+Search the Usenet FAQ Archive at http://www.faqs.org/faqs/
+
+From owner-hypermail Wed Oct  7 11:55 CDT 2000
+Received: by landfield.com (8.9.0/8.9.0) id LAA19556
+	for hypermail-outgoing; Wed, 7 Oct 2000 11:55:28 -0500 (CDT)
+Received: from fw-es06.hac.com (fw-es06.HAC.COM [128.152.1.6])
+	by landfield.com (8.9.0/8.9.0) with ESMTP id LAA19549
+	for <hypermail@landfield.com>; Wed, 7 Oct 2000 11:55:11 -0500 (CDT)
+Received: from pepperoni.pizza.hac.com (bdarr@[192.27.36.100])
+          by fw-es06.hac.com (8.8.4/8.8.4) with ESMTP
+	  id JAA25234 for <hypermail@landfield.com>; Wed, 7 Oct 2000 09:52:41 -0700 (PDT)
+Received: (from bdarr@localhost)
+	by pepperoni.pizza.hac.com (8.8.6/8.8.6) id JAA02634;
+	Wed, 7 Oct 2000 09:52:41 -0700 (PDT)
+Date: Wed, 7 Oct 2000 09:52:41 -0700 (PDT)
+Message-Id: <200010071652.JAA02634@pepperoni.pizza.hac.com>
+From: "Byron C. Darrah" <bdarr@sse.FU.HAC.COM>
+To: hypermail@landfield.com
+In-reply-to: <Pine.SO4.4.04.9810071608200.14664-100000@wcsw062> (message from
+	Daniel Stenberg on Wed, 7 Oct 2000 16:10:39 +0200 (MET DST))
+Subject: Re: indexes
+Sender: owner-hypermail@landfield.com
+Precedence: bulk
+Reply-To: "Byron C. Darrah" <bdarr@sse.FU.HAC.COM>
+Content-Type: text
+Content-Length: 1545
+Status: OR
+
+
+> On Wed, 7 Oct 2000, Mark Clear wrote:
+> 
+> > Ohmygoodness, optional, please!  With over 5K messages in some of my
+> > archives (the client is always right), it's already all my poor little
+> > CPU can do to crunch the index before the next message comes flying in.
+
+Humble suggestion: If you really have messages coming in that frequently,
+and they get piped to hypermail so that there's a chance two hypermail
+processes could be competing to write the index files then there's probably
+a better way to do what you want, so that you can eliminate the risk of
+corrupted indexes.
+
+For example, what I do at my site (and I would not be surprised to learn
+that a lot of other people do too) is direct incoming mail for an archive
+to an mbox file instead of piping it to hypermail.  Then, at periodic
+intervals a cron job runs a Makefile that runs hypermail if and only
+if there are any new messages to be added to the archive.
+
+Of course, you would set the cron job's period to something greater than
+the amount of time it takes for your computer to update the hypermail
+archive to gurantee that two hypermail processes wont compete.
+
+Make can check the status of an archive extremely efficiently with a rule
+something like this:
+
+     index.html: mbox
+          # Do stuff to add new messages to archive
+
+So even if you have ten archives set up this way and let the cron jobs run
+as often as once per minute, you probably won't even be able to notice any
+load on your system except when there are actually new messages being
+processed.
+
+Cheers.
+
+From owner-wu-ftpd@wugate.wustl.edu Wed Oct  7 12:09 CDT 2000
+Received: from wugate.wustl.edu (wugate.wustl.edu [128.252.120.1])
+	by landfield.com (8.9.0/8.9.0) with ESMTP id MAA19743
+	for <kent@landfield.com>; Wed, 7 Oct 2000 12:09:32 -0500 (CDT)
+Received: from host (wugate.wustl.edu [128.252.120.1])
+	by wugate.wustl.edu (8.8.8/8.8.5) with SMTP id MAA08274;
+	Wed, 7 Oct 2000 12:07:31 -0500 (CDT)
+Message-Id: <200010071703.MAA30380@wugate.wustl.edu>
+Date: Wed, 7 Oct 2000 12:03:55 -0500 (CDT)
+Reply-To: listproc@wugate.wustl.edu
+Sender: owner-wu-ftpd@wugate.wustl.edu
+From: listproc@wugate.wustl.edu
+To: nadeem@wugate.wustl.edu, kent@landfield.com
+Subject: Error Condition Re: Warning: could not send message for past 4 hours
+X-Listprocessor-Version: 8.0 -- ListProcessor(tm) by CREN
+Content-Type: text
+Content-Length: 3701
+Status: OR
+
+
+Rejected message: sent to wu-ftpd@wugate.wustl.edu by MAILER-DAEMON follows.
+Reason for rejection: message addressed to owners.
+Recorded new error message: <REX@GALA.WASHTENAW.CC.MI.US>... DEFERRED: CONNECTION TIMED OUT WITH GALA.WASHTENAW.CC.MI.US.
+-------------------------------------------------------------------------------
+>From MAILER-DAEMON Wed Oct  7 12:03:55 2000
+Received: from localhost (localhost)
+	by wugate.wustl.edu (8.8.8/8.8.5) with internal id MAA30380;
+	Wed, 7 Oct 2000 12:03:55 -0500 (CDT)
+Date: Wed, 7 Oct 2000 12:03:55 -0500 (CDT)
+From: Mail Delivery Subsystem <MAILER-DAEMON>
+Message-Id: <200010071703.MAA30380@wugate.wustl.edu>
+To: <owner-wu-ftpd@wugate.wustl.edu>
+MIME-Version: 1.0
+Content-Type: multipart/report; report-type=delivery-status;
+	boundary="MAA30380.907779835/wugate.wustl.edu"
+Subject: Warning: could not send message for past 4 hours
+
+This is a MIME-encapsulated message
+
+--MAA30380.907779835/wugate.wustl.edu
+
+    **********************************************
+    **      THIS IS A WARNING MESSAGE ONLY      **
+    **  YOU DO NOT NEED TO RESEND YOUR MESSAGE  **
+    **********************************************
+
+The original message was received at Wed, 7 Oct 2000 07:55:07 -0500 (CDT)
+from wugate.wustl.edu [128.252.120.1]
+
+   ----- The following addresses had transient non-fatal errors -----
+<rex@gala.washtenaw.cc.mi.us>
+
+   ----- Transcript of session follows -----
+<rex@gala.washtenaw.cc.mi.us>... Deferred: Connection timed out with gala.washtenaw.cc.mi.us.
+Warning: message still undelivered after 4 hours
+Will keep trying until message is 5 days old
+
+--MAA30380.907779835/wugate.wustl.edu
+Content-Type: message/delivery-status
+
+Reporting-MTA: dns; wugate.wustl.edu
+Arrival-Date: Wed, 7 Oct 2000 07:55:07 -0500 (CDT)
+
+Final-Recipient: RFC822; rex@gala.washtenaw.cc.mi.us
+Action: delayed
+Status: 4.4.1
+Remote-MTA: DNS; gala.washtenaw.cc.mi.us
+Last-Attempt-Date: Wed, 7 Oct 2000 12:03:55 -0500 (CDT)
+Will-Retry-Until: Mon, 12 Oct 2000 07:55:07 -0500 (CDT)
+
+--MAA30380.907779835/wugate.wustl.edu
+Content-Type: message/rfc822
+
+Return-Path: <owner-wu-ftpd@wugate.wustl.edu>
+Received: from host (wugate.wustl.edu [128.252.120.1])
+	by wugate.wustl.edu (8.8.8/8.8.5) with SMTP id HAA29962;
+	Wed, 7 Oct 2000 07:55:07 -0500 (CDT)
+Received: from mail.vr.net (lundberg@mail.vr.net [205.133.13.8])
+	by wugate.wustl.edu (8.8.8/8.8.5) with ESMTP id HAA30939
+	for <Wu-Ftpd@Wugate.Wustl.Edu>; Wed, 7 Oct 2000 07:47:54 -0500 (CDT)
+Received: from localhost (lundberg@localhost)
+	by mail.vr.net (8.9.1a/8.9.1) with ESMTP id IAA05683;
+	Wed, 7 Oct 2000 08:46:35 -0400
+Message-Id: <Pine.LNX.4.03.9810070845250.5546-100000@gaia.vr.net>
+Date: Wed, 7 Oct 2000 08:46:35 -0400 (EDT)
+Reply-To: lundberg+wuftpd@vr.net
+Sender: owner-wu-ftpd@wugate.wustl.edu
+From: Gregory A Lundberg <lundberg+wuftpd@vr.net>
+To: thianlengvictor.tan@bnpgroup.com
+Cc: Wu-Ftpd@wugate.wustl.edu
+Subject: Re: malloc error
+In-Reply-To: <48256696.0010619C.00@SMTP_PARIS1.bnpgroup.com>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+X-Listprocessor-Version: 8.0 -- ListProcessor(tm) by CREN
+
+On Wed, 7 Oct 2000 thianlengvictor.tan@bnpgroup.com wrote:
+
+> I've just tried to ftp download a file from my server (AIX 4.3.1 running
+> wuftpd ver 2.4.2 beta-18 vr8 aix.3.2.5) using EXCEED as my FTP client. This
+> is the error message I got :
+> 
+>      451 local resource failure : malloc : Invalid argument
+
+Can you get a log of the commands so I can see what's happening and track
+this down?
+
+-- 
+
+Gregory A Lundberg		Senior Partner, VRnet Company
+1441 Elmdale Drive              lundberg+wuftpd@vr.net
+Kettering, OH 45409-1615 USA    1-800-809-2195
+
+
+--MAA30380.907779835/wugate.wustl.edu--
+
+

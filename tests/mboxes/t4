@@ -1,0 +1,143 @@
+From owner-hypermail Fri Oct  9 16:11 CDT 1998
+Received: by landfield.com (8.9.0/8.9.0) id QAA21334
+	for hypermail-outgoing; Fri, 9 Oct 1998 16:11:02 -0500 (CDT)
+Received: from fw-es06.hac.com (fw-es06.HAC.COM [128.152.1.6])
+	by landfield.com (8.9.0/8.9.0) with ESMTP id QAA21322
+	for <hypermail@landfield.com>; Fri, 9 Oct 1998 16:10:20 -0500 (CDT)
+Received: from pepperoni.pizza.hac.com (bdarr@[192.27.36.100])
+          by fw-es06.hac.com (8.8.4/8.8.4) with ESMTP
+	  id OAA22596 for <hypermail@landfield.com>; Fri, 9 Oct 1998 14:07:50 -0700 (PDT)
+Received: (from bdarr@localhost)
+	by pepperoni.pizza.hac.com (8.8.6/8.8.6) id OAA03350;
+	Fri, 9 Oct 1998 14:07:50 -0700 (PDT)
+Date: Fri, 9 Oct 1998 14:07:50 -0700 (PDT)
+Message-Id: <199810092107.OAA03350@pepperoni.pizza.hac.com>
+From: "Byron C. Darrah" <bdarr@sse.FU.HAC.COM>
+To: hypermail@landfield.com
+In-reply-to: <199810091757.KAA03184@pepperoni.pizza.hac.com>
+	(bdarr@sed.hac.com)
+Subject: Re: replace() function
+Sender: owner-hypermail@landfield.com
+Precedence: bulk
+Reply-To: "Byron C. Darrah" <bdarr@sse.FU.HAC.COM>
+Content-Type: text
+Content-Length: 4325
+Status: OR
+
+
+Good morning,
+
+I did a little more checking on this, so here's the skinny if you're
+interested.
+
+I noticed that some attention to this bug was indeed paid in an early
+version of the new hypermail.  However, the "fix" was more of a work-around
+than a real fix...
+
+The problem tends to manifest itself most often for single-character
+substitutions.  (Eg: replacing single-character '%' with "%25").  So the
+work-around provided was to implement a whole seperate version of
+"replace()", called "replacechar()" that is used for certain
+single-character substitutions.
+
+However, "replace()" is still used for some other subsitutions.
+"replace()", as it is now, is still buggy and will blow up anytime it is
+used to replace an old string with a new one that happens to contain the
+old one.  For example, if trying to replace "$SUBJECT" with the string
+"Re: Hypermail crashes when $SUBJECT is used in the subject"  :-).
+
+--Byron Darrah
+
+PS: On the Y2K subject.  If anyone wants a fairly simple date class for C
+or C++ that can add, subtract, convert to text, and parse dates reliably,
+I've got one at http://www.cs.ucla.edu/~darrah/date_t.tgz that you can try.
+Not to be confused with the dates.c file in hypermail, which does other
+stuff.  My date class is "guranteed" to correctly account for century
+boundaries, leap years, quad leap years, leap centuries, quad leap
+centuries, and the Papal decree in 1752, or your money back :-).
+
+
+_______________________________________________________________________________
+Date: Fri, 9 Oct 1998 10:57:36 -0700 (PDT)
+From: "Byron C. Darrah" <bdarr@sed.hac.com>
+Sender: owner-hypermail@landfield.com
+Precedence: bulk
+Reply-To: "Byron C. Darrah" <bdarr@sed.hac.com>
+
+
+
+Hi, I noticed a bug in an old variant version of hypermail so I inspected
+the sources of the latest beta release and it seems to be there, too.  I'm
+a little surprised that it hasn't been caught by now.
+
+Anyway, there's a function called replace() in strings.c that is used to do
+things like variable substitution and url encoding. (eg: replace
+occurrences of "$TO" with an email address.)  Well, this function is
+written such that if the new text *contains* the pattern you are replacing,
+you get incorrect results.  In fact, you get infinite recursion.  For
+example, try to replace "%" with "%25" (for url-encoding), and you end up
+with an endless sequence of "%%%%%%%%%%%%%%%%%%%%%%%...".
+
+I noticed the new version is slightly better than my crummy old deviant
+version because it uses strcpymax() instead of strcpy() at one place, but I
+think the basic problem is still there.
+
+Here is a possible replacement for replace().
+
+Besides the main problem, replace() is tail-recursive which is unnecessary,
+and also tends to do some unnecessary recopying of a static buffer onto
+itself due to the recursion.  So I cleaned that up a bit, too.
+
+
+
+--Byron Darrah
+
+
+/* Given a string, replaces all instances of "oldpiece" with "newpiece".
+ *
+ * Modified this routine to eliminate recursion and to avoid infinite
+ * expansion of string when newpiece contains oldpiece.  --Byron
+*/
+
+char *replace(char *string, char *oldpiece, char *newpiece)
+{
+   int str_index, newstr_index, oldpiece_index, end,
+      new_len, old_len, cpy_len;
+   char *c;
+   static char newstring[MAXLINE];
+
+
+   if ((c = (char *) strstr(string, oldpiece)) == NULL)
+      return string;
+
+   new_len        = strlen(newpiece);
+   old_len        = strlen(oldpiece);
+   end            = strlen(string)   - old_len;
+   oldpiece_index = c - string;
+
+   newstr_index = 0;
+   str_index    = 0;
+   while(str_index <= end && c != NULL)
+   {
+      /* Copy characters from the left of matched pattern occurence */
+      cpy_len = oldpiece_index-str_index;
+      strncpy(newstring+newstr_index, string+str_index, cpy_len);
+      newstr_index += cpy_len;
+      str_index    += cpy_len;
+
+      /* Copy replacement characters instead of matched pattern */
+      strcpy(newstring+newstr_index, newpiece);
+      newstr_index += new_len;
+      str_index    += old_len;
+
+      /* Check for another pattern match */
+      if((c = (char *) strstr(string+str_index, oldpiece)) != NULL)
+         oldpiece_index = c - string;
+   }
+   /* Copy remaining characters from the right of last matched pattern */
+   strcpy(newstring+newstr_index, string+str_index);
+
+   return newstring;
+}
+
+

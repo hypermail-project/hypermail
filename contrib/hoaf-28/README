@@ -1,0 +1,88 @@
+Date: Tue, 30 Nov 1999 02:18:32 -0600
+From: Bernhard Reiter <bernhard@uwm.edu>
+Subject: XML indexer, experimental, patch+python script
+
+Hello hypermailers,
+
+I know I shouldn't have done this, 
+but I learned about python's XML handling in the process. 
+This is my first attempt in XML file mangeling, so bear with me.
+
+
+I was always talking and thinking about how to get montly archives done
+and not only done, but the index files created, too:
+
+		The problem:
+		------------
+
+Hypermail in combination with the archive scripts, creates
+a bunch of directories for each year and each month when mails come in.
+
+	a) How do you make a top page, 
+	linking all the scattered index files?
+
+	b) Subproblem: If one mail comes in, 
+	do you really want to rebuild the complete index overviewfiles?
+	Of course not.
+
+	c) What if I want my top index page to have the number of mails 
+	grouped by week or so. :) (Hi egroups.)
+
+
+Solution: A python script strangles the problem.
+
+Part 1: I patched hypermail so that it creates an archive overview file 
+	complying with the haof.dtd in each directory it operates in.
+
+Oh, back to Part 0:
+	Wrote a dtd for the Hypermail Archive Overview Format (hoaf).
+
+Part 2a: Wrote a little python module, which creates a HTML snipplet from this
+	overviewfile and leaves it in the directory above. But only,
+	if the overviewfile exists and is newer as the the snipplet.
+
+Part 2b: Wrote another python script, which runs through a directory,
+	and checks each year and month and runs the module from 2a a
+	couple of times.
+
+Results attached. 
+
+Left for the interested reader: Beautify the output.
+
+Interesting research topics: 
+* Only the mail references are missing in the 
+  hoaf, otherwise threading could be done on that level.
+* Well we could write this data into a little database. http://www.dbxml.org/ ?
+ Or Postgres or MySql-GPL?
+
+Enjoy,
+	Bernhard
+
+ps:This contribution to hypermail shall be free software under the GPL.
+I contribute it to hypermail as free software.  My hopes are that hypermail 
+stays under GPL, but I think I don't want to complicate things of you choose 
+another free software license, so you have permission to publish it under 
+this, too.
+
+========================
+Date: Tue, 7 Dec 1999 00:53:32 -0600
+From: Bernhard Reiter <bernhard@climate2.geog.uwm.edu>
+To: hypermail@hypermail.org
+Subject: python index overview generator and xml patch
+Message-ID: <19991207005332.A1465@climate2.geog.uwm.edu>
+
+New Version of my nasty python script to create new archive
+overview files.  Includes a hypermail to write a xml format file
+with the overview information.
+
+I run it from procmail, like:
+
+COLLECT_SNIPPLETS_SCRIPT=/usr/local/lib/site-python/collect_snipplets.py
+
+:0:.polis
+*X-Mailing-List: <polis@(genba\.a2e\.de|ffii\.org)>
+| polis-mail ; $COLLECT_SNIPPLETS_SCRIPT /var/www/mail-archive/polis
+
+polis-mail is the hypermail wrapper from archive/.
+
+	Bernhard

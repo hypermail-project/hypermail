@@ -1,0 +1,164 @@
+#!/bin/sh
+#
+# Stupid script for running strange command lines...
+# Uncomment the ones you want to play with. 
+# You need a mailbox named testmail in the current directory to
+# use this as is.  The t1 ... t12 files are individual messages.
+#
+
+set -x
+
+HYPERMAIL=../src/hypermail@suffix@
+LABEL="I B TeStInG List"
+ABOUT="../"
+TESTMAIL=testmail
+
+cleanup_testdir()
+{
+    if [ -d testdir ]; then
+        rm -rf testdir
+    fi
+}
+
+##################
+# Test with a mailbox that has had all the dates changes to 2000+
+# to test y2k capabilities
+##################
+#
+test_configuration_file_with_mailbox_usage_y2k()
+{
+   cleanup_testdir
+   $HYPERMAIL -c test.rc -m mboxes/y2k.mbox
+}
+
+##################
+# Test updating an existing archive with a single message from
+# a mailbox
+##################
+#
+test_single_msg_archive_update_from_mailbox()
+{
+   # Test the ability of hypermail to update an archive by only 
+   # one message when the message comes from a mailbox.
+  
+   cleanup_testdir
+   $HYPERMAIL -p -m $TESTMAIL -d testdir -l "${LABEL}" -a "${ABOUT}"
+   $HYPERMAIL -p -u -m mboxes/1msg.mbox -d testdir -l "${LABEL}" -a "${ABOUT}"
+}
+
+##################
+# Test generating an archive from a mailbox with no config file used
+##################
+#
+test_archive_gen_with_no_overwrite_from_mailbox_no_config_file()
+{
+   cleanup_testdir
+   $HYPERMAIL -p -m $TESTMAIL -d testdir -l "${LABEL}" -a "${ABOUT}"
+}
+
+##################
+# Test overwriting an archive from a mailbox with no 
+# config file used
+##################
+#
+test_overwrite_archives_from_mailbox_no_config_file()
+{
+   cleanup_testdir
+   cat $TESTMAIL > mboxes/overwrite.mbox
+   $HYPERMAIL -p -x -m mboxes/overwrite.mbox -d testdir -l "${LABEL}" -a "${ABOUT}" 
+   cat mboxes/1msg.mbox >> mboxes/overwrite.mbox
+   $HYPERMAIL -p -x -m mboxes/overwrite.mbox -d testdir -l "${LABEL}" -a "${ABOUT}" 
+   rm mboxes/overwrite.mbox
+}
+
+##################
+# Test using a configuration file 
+# and specifying a mailbox to read.
+##################
+#
+test_configuration_file_with_mailbox_usage()
+{
+   cleanup_testdir
+   $HYPERMAIL -c test.rc -m $TESTMAIL 
+}
+
+##################
+# Test messages coming in on stdin with no configuration file used
+##################
+#
+test_messages_coming_on_stdin()
+{
+   cleanup_testdir
+   for i in mboxes/t[0-9]*
+   do
+       cat $i | $HYPERMAIL -p -i -u -l "test" \
+            -d "testdir" \
+     	    -b "http://www.wildheart.org/archives/wire/about.html"  \
+     	    -a "http://www.wildheart.org/archives/"
+       sleep 1
+       if [ -r core ]; then
+          echo "It cooooored"
+          exit
+       fi
+   done
+}
+
+##################
+# Test messages coming in on stdin with a configuration file used
+# and overriding some command line options
+##################
+#
+test_messages_coming_on_stdin_with_config_file_used()
+{
+   cleanup_testdir
+   for i in mboxes/t[0-9]*
+   do
+	cat $i | $HYPERMAIL -p -i -u -l "test" \
+      		-c "test.rc" \
+      		-d "testdir" \
+      		-b "http://www.wildheart.org/archives/wire/about.html"  \
+      		-a "http://www.wildheart.org/archives/"
+	sleep 1
+   done
+}
+
+##################
+# Test messages from mailbox with a configuration file used
+# and overriding some command line options
+##################
+#
+test_msgs_from_mailbox_config_file_used_and_overriding_options()
+{
+   cleanup_testdir
+   $HYPERMAIL -p -m "$TESTMAIL" -x -l "test" \
+	-c "test.rc" \
+	-d "testdir"
+
+}
+
+##################
+# Test messages from mailbox with a configuration file used
+# and overriding some command line options
+##################
+#
+test_embedded_msg()
+{
+   cleanup_testdir
+   cat test.rc | 
+      sed "s/^discard_dup_msgids.*$/discard_dup_msgids = 0/" > dtest.rc
+   $HYPERMAIL -p -m "mboxes/embedded.msg" -x -c "dtest.rc" 
+   rm -f dtest.rc
+
+}
+
+# test_configuration_file_with_mailbox_usage_y2k
+# test_single_msg_archive_update_from_mailbox
+# test_archive_gen_with_no_overwrite_from_mailbox_no_config_file
+# test_overwrite_archives_from_mailbox_no_config_file
+# test_messages_coming_on_stdin
+# test_messages_coming_on_stdin_with_config_file_used
+# test_msgs_from_mailbox_config_file_used_and_overriding_options
+# test_embedded_msg
+test_configuration_file_with_mailbox_usage
+
+exit 1

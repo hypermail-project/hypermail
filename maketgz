@@ -1,0 +1,59 @@
+#! /bin/sh
+# Script to build release-archives with
+#
+
+echo "Version number ?"
+read version
+
+echo "Patchlevel ?"
+read patchlevel
+
+HEADER="patchlevel.h"
+
+# Replace version number in header file:
+sed -e 's/#define VERSION.*/#define VERSION "'$version'"/g' \
+    -e 's/#define PATCHLEVEL.*/#define PATCHLEVEL "'$patchlevel'"/g' $HEADER >$HEADER.new
+
+# Save old header file
+cp -p $HEADER $HEADER.old
+
+# Make new header:
+mv $HEADER.new $HEADER
+
+# get current dir
+dir=`pwd`
+
+# Get basename
+orig=`basename $dir`
+
+# Get the left part of the dash (-)
+new=`echo $orig | cut -d- -f1`
+
+# Build new directory name
+n=$new-$version;
+
+# Tell the world what we're doing
+echo "creates $n.tar.gz";
+
+if [ -r $n ]; then
+  echo "Directory already exists!"
+  exit
+fi
+
+# Create the new dir
+mkdir $n
+
+# Copy all relevant files, with path and permissions!
+tar -cf - `cat FILES | grep -v \#` | (cd $n; tar -xBpf -)
+
+# Make a tar archive of it all
+tar -cvf $n.tar $n
+
+# gzip the archive
+gzip $n.tar
+
+# Make it world readable
+chmod a+r $n.tar.gz ;
+
+# Delete the temp dir
+rm -rf $n
