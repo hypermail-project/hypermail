@@ -15,6 +15,7 @@
 */
 #include <stdio.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <ctype.h>
 #include <string.h>
@@ -45,95 +46,42 @@ FILE *mailbox;
 extern char *optarg;
 extern int optind;
 
-/* 
-** Prototypes 
-*/
-void process_messages(char *);
-char *readline(int, FILE *);
-FILE *efopen(char *, char *);
-int blankline(char *);
-
 #ifdef lint 
 extern int getopt(int, char * const *, const char *);
 extern int strcasecmp(const char *, const char *); 
 extern char *strdup(const char *);
 #endif 
 
-/*
-** Ye Olde Main
-*/
-int main(int argc, char **argv)
+static FILE *safe_tmpfile(void)
 {
-    int c;
+  int fd;
+  char *tfile;
 
-    progname = argv[0];
-    debug = verbose = 0;
-    logfp = stdout;
-    errfp = stderr;
+  tfile = strdup("hn-inXXXXXX");
 
-    configfile = CONFIGFILE;
+  if ((fd = mkstemp(tfile)) < 0)
+    return(NULL);
 
-    if (argc > 1) {
-	while ((c = getopt(argc, argv, "c:dtvY:M:")) != EOF) {
-	    switch (c) {
-	    case 'c':
-		configfile = strdup(optarg);
-		break;
-	    case 'M':
-		month = optarg;
-                if (strlen(month) > MAX_MONTH_LEN) {
-		    (void)fprintf(errfp, "%s: Invalid month format, %d character month maximum.\n", progname, MAX_MONTH_LEN);
-		    return (1);
-                }
-		break;
-	    case 'Y':
-		year = optarg;
-                /* check and make sure it is a year.*/
-                if (strlen(year) > 4) {
-		    (void)fprintf(errfp, "%s: Invalid year format, 4 digit year maximum.\n", progname);
-		    return (1);
-                }
-    
-		break;
-	    case 'd':
-		debug++;
-		break;
-	    case 'v':
-		verbose++;
-		break;
-	    case 't':
-		test++;
-		verbose++;
-		break;
-	    default:
-		(void)fprintf(errfp, USAGE, progname);
-		return (1);
-	    }
-	}
-    }
+  unlink(tfile);
 
-    if (year == NULL) {
-	(void)fprintf(errfp, "%s: must specify the 4 digit year\n", progname);
-	(void)fprintf(errfp, USAGE, progname);
-	return (1);
-    }
+  if (fchmod(fd, S_IRUSR | S_IWUSR) != 0)
+    return(NULL);
 
-    if (strcasecmp(configfile, "NONE") == 0)
-	configfile = NULL;
-
-    /* if no month just put it in the year directory */
-
-    if ((optind >= argc) || (argc == 1)) {	/* file from stdin */
-	process_messages(NULL);
-    }
-    else {
-	for (; optind < argc; optind++)	/* process files to print */
-	    process_messages(argv[optind]);
-    }
-    return (0);			/* terminate this process */
+  return(fdopen(fd, "w+b"));
 }
 
-char *readline(int size, FILE *file)
+static FILE *efopen(char *file, char *mode)
+{
+    FILE *fp;
+ 
+    if ((fp = fopen(file, mode)) == NULL) {
+        (void)fprintf(errfp, "Can't open file %s\n", file);
+        exit(10);
+    }
+    return (fp);
+}
+
+static char *readline(int size, FILE *file)
 {
     /*
        ** If not first time through, save the previous line read into lastline.
@@ -148,18 +96,7 @@ char *readline(int size, FILE *file)
     return (s);
 }
 
-FILE *efopen(char *file, char *mode)
-{
-    FILE *fp;
-
-    if ((fp = fopen(file, mode)) == NULL) {
-	(void)fprintf(errfp, "Can't open file %s\n", file);
-	exit(10);
-    }
-    return (fp);
-}
-
-int blankline(char *line)
+static int blankline(char *line)
 {
     register char *cp;
 
@@ -170,7 +107,7 @@ int blankline(char *line)
     return (1);
 }
 
-void process_messages(char *flname)
+static void process_messages(char *flname)
 {
     char msgfile[BUFSIZ];
     char cmdstr[BUFSIZ];
@@ -197,10 +134,12 @@ void process_messages(char *flname)
     lastline[0] = '\0';
 
     /*
-       ** Create message file
-     */
-    sprintf(msgfile, "/tmp/msgfile-%s.%ld", year, (long)getpid());
-    msgfp = efopen(msgfile, "w");
+    ** Create message file
+    */
+    if ((msgfp = safe_tmpfile()) == NULL) {
+         fprintf(stderr,"%s: Can't open tempfile\n",progname);
+         exit(10);
+    }
 
     if (month != NULL) {  /* AUDIT biege: external input -> cmd exec + bof */
 	if (configfile != NULL) {
@@ -291,3 +230,78 @@ void process_messages(char *flname)
     if (verbose)
 	fprintf(stderr, "%d messages processed\n", cntr);
 }
+
+/*
+** Ye Olde Main
+*/
+int main(int argc, char **argv)
+{
+    int c;
+
+    progname = argv[0];
+    debug = verbose = 0;
+    logfp = stdout;
+    errfp = stderr;
+
+    configfile = CONFIGFILE;
+
+    if (argc > 1) {
+	while ((c = getopt(argc, argv, "c:dtvY:M:")) != EOF) {
+	    switch (c) {
+	    case 'c':
+		configfile = strdup(optarg);
+		break;
+	    case 'M':
+		month = optarg;
+                if (strlen(month) > MAX_MONTH_LEN) {
+		    (void)fprintf(errfp, "%s: Invalid month format, %d character month maximum.\n", progname, MAX_MONTH_LEN);
+		    return (1);
+                }
+		break;
+	    case 'Y':
+		year = optarg;
+                /* check and make sure it is a year.*/
+                if (strlen(year) > 4) {
+		    (void)fprintf(errfp, "%s: Invalid year format, 4 digit year maximum.\n", progname);
+		    return (1);
+                }
+    
+		break;
+	    case 'd':
+		debug++;
+		break;
+	    case 'v':
+		verbose++;
+		break;
+	    case 't':
+		test++;
+		verbose++;
+		break;
+	    default:
+		(void)fprintf(errfp, USAGE, progname);
+		return (1);
+	    }
+	}
+    }
+
+    if (year == NULL) {
+	(void)fprintf(errfp, "%s: must specify the 4 digit year\n", progname);
+	(void)fprintf(errfp, USAGE, progname);
+	return (1);
+    }
+
+    if (strcasecmp(configfile, "NONE") == 0)
+	configfile = NULL;
+
+    /* if no month just put it in the year directory */
+
+    if ((optind >= argc) || (argc == 1)) {	/* file from stdin */
+	process_messages(NULL);
+    }
+    else {
+	for (; optind < argc; optind++)	/* process files to print */
+	    process_messages(argv[optind]);
+    }
+    return (0);			/* terminate this process */
+}
+

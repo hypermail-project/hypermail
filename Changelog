@@ -2,6 +2,9 @@ Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+ Kent Landfield (Feb 17, 2003)
+   Added safe_tmpfile() usage instead of internal usage.
+
  Peter McCluskey (Feb 14, 2003)
    Disabled conversion of file:// into href - it seemed to allow anyone
   who could access the web server via local host could read any file
