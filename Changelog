@@ -1,5 +1,8 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (Apr 26, 2002)
+   Changed to convert ampersands in urls to &amp;.
+
  Peter McCluskey (Apr 22, 2002)
    Add Greek language support from Akis Karnouskos.
    Surpress <p> within <pre>.

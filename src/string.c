@@ -618,6 +618,22 @@ static void translatechars(char *start, char *end, struct Push *buff)
     }
 }
 
+static char *translateurl(char *url)
+{
+    char *p;
+    struct Push buff;
+    int in_ascii = TRUE, esclen = 0;
+    INIT_PUSH(buff);
+
+    for (p = url; *p; p++) {
+	if (*p == '&')
+	    PushString(&buff, "&amp;");
+	else
+	    PushByte(&buff, *p);
+    }
+    RETURN_PUSH(buff);
+}
+
 /* Given a string, replaces all instances of "oldpiece" with "newpiece".
 **
 ** Modified this routine to eliminate recursion and to avoid infinite
@@ -1026,11 +1042,13 @@ char *parseurl(char *input)
 		}
 	    }
 	    if(accepted) {
-	        trio_snprintf(tempbuff, sizeof(tempbuff),
+	        char *urlbuff2 = translateurl(urlbuff);
+		trio_snprintf(tempbuff, sizeof(tempbuff),
 			      "<a href=\"%s%s\">%s%s</a>",
-			      thisprotocol, urlbuff, thisprotocol, urlbuff);
+			      thisprotocol, urlbuff2, thisprotocol, urlbuff2);
 		PushString(&buff, tempbuff); /* append the tag buffer */
-		inputp += strlen(urlbuff);
+		inputp += strlen(urlbuff2);
+		free(urlbuff2);
 	    } else {
 	        PushString(&buff, thisprotocol);
 	    }
