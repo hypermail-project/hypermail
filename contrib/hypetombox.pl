@@ -23,18 +23,21 @@
 #
 # Usage:
 #
-#   hypetombox.pl [-a] [-H <header(s) to add to each msg] [-d <directory>] [-m <output_filename>] [-n <to_address>]
+#   hypetombox.pl [-a] [-H <header(s) to add to each msg] [-d <directory>] [-m <output_filename>] [-n <to_address>] [-S <html suffix>]
 #   -a means append to mailbox instead of clobbering it
 #   -H adds the header(s) you specify.  If more than one, put the three
 #      characters %0A between them.
 #   -R removes carriage returns (\r) from the end of lines; they sometimes get
 #      added for reasons I haven't been able to explain.
+#   -S defaults to 'html'.
+#
 #
 # $Header$
 
 require 5.000;
 use Getopt::Std;
-getopts('ad:H:m:n:R');
+use MIME::Base64;
+getopts('ad:H:m:n:RS:');
 
 # This is a list of the fields in the comment header of each message.
 
@@ -42,7 +45,9 @@ getopts('ad:H:m:n:R');
 
 # Get a list of the message files.
 
-$fpat= '[0-9][0-9][0-9][0-9].html';
+$htmlsuffix = $opt_S || "html";
+
+$fpat= "[0-9][0-9][0-9][0-9].$htmlsuffix";
 $fpat = "$opt_d/$fpat" if(defined $opt_d);
 
 @msgs = sort glob($fpat);
@@ -58,6 +63,9 @@ if ($opt_H) {
         chomp($opt_H);
 	$opt_H .= "\n";
 }
+
+$DIR_PREFIXER = "att-";		# should be same as DIR_PREFIXER in parse.h
+$PATH_SEPARATOR = '/';
 
 if ($opt_a) {
 	$openflag = ">>";
@@ -78,9 +86,17 @@ foreach $msg (@msgs) {
 
     # reset the header count for each message.
     # added by Erik Peterson 1/3/00.
-    $header_count=0; 
+    $header_count=0;
 
     $cntr += 1;
+
+    $msgnum = int(substr($msg, length($opt_d) + ($opt_d ne ''), 99999));
+    $boundary = "=---------HYPETOMBOXCREATEDBOUNDARY$msgnum";
+    $attdir = sprintf("%s%s$DIR_PREFIXER%04d", $opt_d,
+		      $opt_d ne '' ? $PATH_SEPARATOR : '', $msgnum);
+    @attfiles = glob("$attdir$PATH_SEPARATOR*");
+    undef %att_type;
+    undef %att_desc;
 
     (open M, $msg) || die "can't open $msg";
 
@@ -93,6 +109,7 @@ foreach $msg (@msgs) {
     }
 
     my $line;
+    my $msg_text;
 
     while($line = <M>) {
 
@@ -140,11 +157,36 @@ foreach $msg (@msgs) {
                 if ($inreplyto) {
 		    print MBOX "In-Reply-To: <$inreplyto>\n";
 		}
+		if (@attfiles)
+		{
+		    print MBOX "Mime-Version: 1.0\n";
+		    print MBOX "Content-Type: multipart/mixed; boundary=\"$boundary\"\n";
+		}
 		print MBOX "\n";
+		if (@attfiles)
+		{
+		    print MBOX "This is a multi-part message in MIME format.\n";
+		    print MBOX "--$boundary\n";
+		    print MBOX "Content-Type: text/plain; charset=us-ascii\n";
+		    print MBOX "Content-Transfer-Encoding: 7bit\n";
+		}
             }
+	    if($line =~ m|^<!-- attachment=\"(\d+)\-([^\"]+)\" -->|)
+	    {
+		my $attfilename = $2;
+		my $part_no = $1;
+		if($msg_text =~ s|<ul>\n<li>(\S+) attachment: ([^\n]+)\n</ul>(\s*)$||s)
+		{
+		    $att_type{$attfilename} = $1;
+		    $att_desc{$attfilename} = $2 if($2 ne 'stored');
+		}
+		$msg_text =~ s|<hr noshade>\n$||s;
+		$msg_text .= &get_att($attdir, $part_no, $attfilename);
+		next;
+	    }
             $state = 'Body' if($line =~ /^<!-- body="start" -->/);
             $state = 'TrailingGoo' if(($line =~ /^<!-- body="end" -->/)
-				     || ($line =~ /^<P><!-- body="end" -->/));
+				     || ($line =~ /^<([pP])><!-- body="end" -->/));
             next if(($line =~ /^<!--/) || 
                     $state eq 'LeadingGoo' || $state eq 'TrailingGoo');
 
@@ -158,8 +200,8 @@ foreach $msg (@msgs) {
             $line =~ s/<PRE>$\s*//; # lose the <PRE>formatted tags
             $line =~ s/<\/pre>$\s*//; # lose the </pre>formatted tags
             $line =~ s/<\/PRE>$\s*//; # lose the </PRE>formatted tags
-            $line =~ s/<P>$\s*//;  # lose the paragraph tags
-	    $line =~ s/<p>$\s*//;  # lose the paragraph tags
+            $line =~ s/<P>$\s*/\n/;  # lose the paragraph tags
+	    $line =~ s/<p>$\s*/\n/;  # lose the paragraph tags
             $line =~ s%<a href=[^>]+>([^<]+)</a>%\1%g; # lose hyperlinks
             $line =~ s%<A HREF=[^>]+>([^<]+)</A>%\1%g; # lose hyperlinks
 	    $line =~ s/&lt;/</g; # reverse map special characters
@@ -170,15 +212,21 @@ foreach $msg (@msgs) {
             $line =~ s%^<i>(.+)</i>$%\1%;
             $line =~ s%^<EM>(.+)</EM>$%\1%;
             $line =~ s%<EM>%%;
+            $line =~ s%^<em>(.+)</em>$%\1%;
+            $line =~ s%<em>%%;
+	    $line =~ s/\<a name=\"(\d+)qlink(\d+)\"\>//g;
             $line =~ s/^From />From/; # Don't let bogus message start lines in!
             while($line =~ /^\s*<P>/)
             {
 	        $line =~ s/^\s*<P>/\n/;
 	    }
-            print MBOX $line;
+	    $msg_text .= $line;
         }
     } # end loop on message file lines
+    $msg_text =~ s|<a href=\"(\d+).$htmlsuffix\#(\d+)qlink(\d+)\">([^<]*)\</a\>|$4|sg;
+    print MBOX $msg_text;
     print MBOX "\n";
+    print MBOX "--$boundary--\n\n" if(@attfiles);
 
     (close M) || die "can't close $msg";
 
@@ -196,4 +244,27 @@ print "$cntr messages processed ($good good messages : $boguscntr bogus date mes
 
 if ($boguscntr) {
     print "Bogus Date encountered, hand edit and search for \"Bogus Date\"\n";
+}
+
+exit(0);
+
+sub get_att
+{
+    my ($attdir, $part_no, $file1) = @_;
+    my $attfile = "$attdir$PATH_SEPARATOR$part_no-$file1";
+    my $text;
+    open(FD_A, $attfile) || die "can't open $attfile";
+    my $type = $att_type{$file1} || 'application/octet-stream';
+    my $desc;
+    $desc = "Content-Description: $att_desc{$file1}\n" if($att_desc{$file1});
+
+    my $s = "--$boundary\nContent-Type: $type; name=\"$file1\"\n"
+	. "Content-Transfer-Encoding: base64\n$desc"
+	    . "Content-Disposition: attachment; filename=\"$file1\"\n\n";
+
+    while($line = <FD_A>)
+    {
+	$text .= $line;
+    }
+    return $s . encode_base64($text) . "\n\n";
 }
