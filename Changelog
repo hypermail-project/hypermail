@@ -1,7 +1,12 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Peter McCluskey (Mar 12 2001)
-  Added some files in contrib and tests/mboxes to FILES.
+Peter McCluskey (Mar 13 2001)
+  - Sped up by balancing the datelist tree a bit (it had been virtually
+    a linked list) and by removing redundant call to nextinthread.
+
+Peter McCluskey (Mar 12 2001)
+  - Added contrib/cron_hypermail
+  - Added some files in contrib and tests/mboxes to FILES.
 
  Peter McCluskey (Mar 2 2001)
   Added features originally implemented in critmail. New source files:

@@ -940,6 +940,7 @@ void writearticles(int startnum, int maxnum)
     struct emailinfo *old_reply_to = NULL;
     struct emailinfo *email;
     struct emailinfo *email2;
+    struct emailinfo *email_next_in_thread;
 
     char filename[MAXFILELEN];
     struct body *bp, *status;
@@ -1135,14 +1136,15 @@ void writearticles(int startnum, int maxnum)
 
 	    printcomment(fp, "nextthread", "start");
 
-	    email2 = nextinthread(email->msgnum);
-	    if (email2) {
+	    email_next_in_thread = nextinthread(email->msgnum);
+	    if (email_next_in_thread) {
 		fprintf(fp, "<li><strong>%s:</strong> ",
 			lang[MSG_NEXT_IN_THREAD]);
 		fprintf(fp, "<a href=\"%.4d.%s\">",
-			email2->msgnum, set_htmlsuffix);
+			email_next_in_thread->msgnum, set_htmlsuffix);
 		fprintf(fp, "%s: \"%s\"</a>\n",
-			email2->name, ptr = convchars(email2->subject));
+			email_next_in_thread->name,
+			ptr = convchars(email_next_in_thread->subject));
 		if (ptr)
 		    free(ptr);
 	    }
@@ -1290,14 +1292,15 @@ void writearticles(int startnum, int maxnum)
 
 	    printcomment(fp, "nextthread", "start");
 
-	    email2 = nextinthread(email->msgnum);
-	    if (email2) {
+	    /* email_next_in_thread = nextinthread(email->msgnum); redundant */
+	    if (email_next_in_thread) {
 		fprintf(fp, "<li><strong>%s:</strong> ",
 			lang[MSG_NEXT_IN_THREAD]);
 		fprintf(fp, "<a href=\"%.4d.%s\">",
-			email2->msgnum, set_htmlsuffix);
+			email_next_in_thread->msgnum, set_htmlsuffix);
 		fprintf(fp, "%s: \"%s\"</a>\n",
-			email2->name, ptr = convchars(email2->subject));
+			email_next_in_thread->name,
+			ptr = convchars(email_next_in_thread->subject));
 		if (ptr)
 		    free(ptr);
 	    }

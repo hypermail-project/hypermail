@@ -693,13 +693,15 @@ int wasprinted(struct printed *list, int num)
 */
 
 struct header *addheader(struct header *hp,
-			 struct emailinfo *email, int sorttype)
+			 struct emailinfo *email, int sorttype, int depth)
 {
     int isbigger;
     long yearsecs;
+    static int max_depth, count_d;
 
     isbigger = 0;
     if (hp == NULL) {
+	max_depth = depth;
 	hp = (struct header *)emalloc(sizeof(struct header));
 	if (!hp)
 	    return NULL;
@@ -741,9 +743,30 @@ struct header *addheader(struct header *hp,
     }
 
     if (isbigger)
-	hp->left = addheader(hp->left, email, sorttype);
+	hp->left = addheader(hp->left, email, sorttype, depth + 1);
     else
-	hp->right = addheader(hp->right, email, sorttype);
+	hp->right = addheader(hp->right, email, sorttype, depth + 1);
+
+    if(sorttype == 2 && depth < max_depth/2 && !(++count_d % 3)) {
+	/* semi-random rebalancing */
+	struct header **hpp = (set_reverse ? &hp->left : &hp->right);
+	struct header *hp1 = *hpp;
+	if(hp1 != NULL && (hp1->right != NULL || hp1->left != NULL)) {
+	    if(hp1->right != NULL
+	       && (hp1->left == NULL || (count_d & 1))) {
+		struct header *p = hp1->right;
+		hp1->right = p->left;
+		p->left = hp1;
+		*hpp = p;
+	    }
+	    else {
+		struct header *p = hp1->left;
+		hp1->left = p->right;
+		p->right = hp1;
+		*hpp = p;
+	    }
+	}
+    }
 
     return hp;
 }

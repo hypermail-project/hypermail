@@ -21,7 +21,7 @@ int rmlastlines(struct body *);
 struct printed *markasprinted(struct printed *, int);
 int wasprinted(struct printed *, int);
 
-struct header *addheader(struct header *, struct emailinfo *, int);
+struct header *addheader(struct header *, struct emailinfo *, int, int);
 struct boundary *bound(struct boundary *, char *);
 
 void print_list(char *, struct hmlist *);

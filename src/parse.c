@@ -1697,12 +1697,12 @@ int parsemail(char *mbox,	/* file name */
 
 		if (emp) {
 		    /* only add actual mails */
-		    authorlist = addheader(authorlist, emp, 1);
+		    authorlist = addheader(authorlist, emp, 1, 0);
 
 		    emp->unre_subject = unre(subject);
-		    subjectlist = addheader(subjectlist, emp, 0);
+		    subjectlist = addheader(subjectlist, emp, 0, 0);
 
-		    datelist = addheader(datelist, emp, 2);
+		    datelist = addheader(datelist, emp, 2, 0);
 
 		    num++;
 		}
@@ -2205,12 +2205,12 @@ int parsemail(char *mbox,	/* file name */
 	emp = addhash(num, date, namep, emailp, msgid, subject, inreply,
 		      fromdate, charset, NULL, NULL, bp);
 	if (emp) {
-	    authorlist = addheader(authorlist, emp, 1);
+	    authorlist = addheader(authorlist, emp, 1, 0);
 
 	    emp->unre_subject = unre(subject);
-	    subjectlist = addheader(subjectlist, emp, 0);
+	    subjectlist = addheader(subjectlist, emp, 0, 0);
 
-	    datelist = addheader(datelist, emp, 2);
+	    datelist = addheader(datelist, emp, 2, 0);
 	    num++;
 	}
 
@@ -2502,10 +2502,10 @@ int loadoldheaders(char *dir)
 			  name, email, msgid, subject, inreply,
 			  fromdate, charset, isodate, isofromdate, bp);
 	    if (emp != NULL) {
-		authorlist = addheader(authorlist, emp, 1);
+		authorlist = addheader(authorlist, emp, 1, 0);
 		emp->unre_subject = unre(subject);
-		subjectlist = addheader(subjectlist, emp, 0);
-		datelist = addheader(datelist, emp, 2);
+		subjectlist = addheader(subjectlist, emp, 0, 0);
+		datelist = addheader(datelist, emp, 2, 0);
 		if(set_linkquotes && reply_msgnum != -1) {
 		    replylist_tmp = addreply(replylist_tmp, reply_msgnum, emp,
 					     0);
