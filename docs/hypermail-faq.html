@@ -101,6 +101,8 @@ Once the BETA period has been completed it will be released as Version 2.0.
 The latest version of Hypermail is available from the Hypermail Development
 Center at 
 
+<a href="http://sourceforge.net/projects/hypermail/">SourceForge</a>
+and/or at
 <P ALIGN=CENTER><A HREF="software/index.html">http://www.hypermail.org/hypermail/software/</A></P>
 
 It and past versions are also available via FTP from
@@ -119,6 +121,13 @@ If you upgrade to 2.0bx you will find things much stabler than
 1.02 and has new features you might find useful. In it is a directory
 named <A HREF="source/archive/">archive/</A> that has tools to do just what 
 you want to do.
+<P>
+If you want index files split by month but don't need to split the archive
+into multiple directories, try adding &quot;monthly_index=1&quot; in your
+config file (usually ~/.hmrc) (available in version 2.1). A summary.html
+file will provide links to all the monthly indices.
+This is probably appropriate for archives with a few thousand messages,
+but for larger archives I recommend splitting into multiple directories.
 
 <P ALIGN=CENTER><IMG SRC="/images/common/yellowline.gif" WIDTH=300 HEIGHT=2 ALT="----"></P>
 <P>
@@ -347,6 +356,14 @@ run unnecessarily, consider using 'make' to check dependencies on the
 inbound mailbox and the archive itself. If the mailbox is newer, then
 run the hypermail command. If not, then no new message have been received
 so don't bother running it. 
+
+<P>
+If the you are using the linkquotes option and incremental update 
+(-u option), add a searchbackmsgnum line to your config file.
+It controls the tradeoff between speed and
+the reliability of finding the right source for quoted text.
+Try to set it to the largest number of messages between a
+message and the final direct reply to that message.
 
 <P ALIGN=CENTER><IMG SRC="/images/common/yellowline.gif" WIDTH=400 HEIGHT=2 ALT="----"></P>
 <BR>
