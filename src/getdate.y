@@ -587,6 +587,7 @@ static TABLE const TimezoneTable[] = {
 #if 0
     { "jt",	tZONE,     -HOUR (7.5) },/* Java (3pm in Cronusland!) */
 #endif
+    { "javt",	tZONE,     -HOUR (7) },/* Java */
     { "cct",	tZONE,     -HOUR (8) },	/* China Coast, USSR Zone 7 */
     { "jst",	tZONE,     -HOUR (9) },	/* Japan Standard, USSR Zone 8 */
 #if 0
