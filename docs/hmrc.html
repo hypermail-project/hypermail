@@ -164,6 +164,7 @@ on or off.
     <li><a href="#deleted">deleted</a> what headers indicate deletion
     <li><a href="#expires">expires</a> what headers indicate expire date
     <li><a href="#delete_older">delete_older</a> delete messages before a date
+    <li><a href="#delete_newer">delete_newer</a> delete messages after a date
     <li><a href="#delete_msgnum">delete_msgnum</a> delete these messages
     <li><a href="#delete_level">delete_level</a> what to do with deleted messages
     <li><a href="#progress">progress</a> verbosity
@@ -1114,6 +1115,15 @@ what happens to the message. Any date format that works in the Date:
 header line of an email message should work here.
 <br>
 <br><i>delete_older = "Wed, 14 Mar 2001 12:59:51 +0200"</i> (off by default)
+</dd>
+<a name="delete_newer"></a>
+<dt><strong>delete_newer = date/time string</strong></dt><dd>
+ Any message newer than this date should not be displayed. See the
+<a href="#delete_level">delete_level</a> option for more info about
+what happens to the message. Any date format that works in the Date:
+header line of an email message should work here.
+<br>
+<br><i>delete_newer = "Wed, 28 Mar 2001 12:59:51 +0200"</i> (off by default)
 </dd>
 <a name="delete_msgnum"></a>
 <dt><strong>delete_msgnum = list of message numbers</strong></dt><dd>

@@ -120,6 +120,7 @@ struct hmlist *set_deleted = NULL;
 struct hmlist *set_expires = NULL;
 struct hmlist *set_delete_msgnum = NULL;
 char *set_delete_older;
+char *set_delete_newer;
 int set_delete_level;
 
 struct Config cfg[] = {
@@ -570,6 +571,9 @@ struct Config cfg[] = {
 
     {"delete_older", &set_delete_older, NULL, CFG_STRING,
      "# Any message older than this date should not be displayed.\n"},
+
+    {"delete_newer", &set_delete_newer, NULL, CFG_STRING,
+     "# Any message newer than this date should not be displayed.\n"},
 
     {"delete_msgnum", &set_delete_msgnum, NULL, CFG_LIST,
      "# This is the list of message numbers that should be deleted from the\n"
@@ -1083,6 +1087,7 @@ void dump_config(void)
     printf("set_iso2022jp = %d\n",set_iso2022jp);
     printf("set_delete_level = %d\n",set_delete_level);
     printf("set_delete_older = %d\n",set_delete_older);
+    printf("set_delete_newer = %d\n",set_delete_newer);
 
     if (!set_ihtmlheader)
         printf("set_ihtmlheader = Not set\n");

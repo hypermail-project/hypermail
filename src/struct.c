@@ -341,6 +341,7 @@ int insert_in_lists(struct emailinfo *emp, const bool *require_filter, int rlen)
 	    case FILTERED_OUT:      option = "filter_out or filter_out_full_body"; break;
 	    case FILTERED_REQUIRED: option = "filter_require or filter_require_full_body"; break;
 	    case FILTERED_OLD: option = "delete_older"; break;
+	    case FILTERED_NEW: option = "delete_newer"; break;
 	    }
 	    printf("message %d deleted under option %s. msgid: %s\n",
 		   emp->msgnum+1, option, emp->msgid);

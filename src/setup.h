@@ -145,6 +145,7 @@ extern struct hmlist *set_deleted;
 extern struct hmlist *set_expires;
 extern struct hmlist *set_delete_msgnum;
 extern char *set_delete_older;
+extern char *set_delete_newer;
 extern int set_delete_level;
 /* values for delete_level: */
 enum { DELETE_REMOVES_FILES,

@@ -1030,8 +1030,8 @@ static void write_txt_file(struct emailinfo *emp, struct Push *raw_text_buf)
     sprintf(tmp_buf, "%.4d", emp->msgnum);
     txt_filename = htmlfilename(tmp_buf, emp, set_txtsuffix);
     if ((!emp->is_deleted
-	 || (emp->is_deleted == FILTERED_DELETE && set_delete_level > 2)
-	 || (emp->is_deleted == FILTERED_OLD && set_delete_level > 2)
+	 || ((emp->is_deleted & (FILTERED_DELETE | FILTERED_OLD | FILTERED_NEW))
+	     && set_delete_level > 2)
 	 || (emp->is_deleted == FILTERED_EXPIRE && set_delete_level == 2))
 	&& (set_overwrite || !isfile(txt_filename))) {
         FILE *fp = fopen(txt_filename, "w");
@@ -1075,6 +1075,7 @@ int parsemail(char *mbox,	/* file name */
     int num_added = 0;
     long exp_time = -1;
     long delete_older_than = (set_delete_older ? convtoyearsecs(set_delete_older) : 0);
+    long delete_newer_than = (set_delete_newer ? convtoyearsecs(set_delete_newer) : 0);
     int is_deleted = 0;
     int pos;
     bool *require_filter, *require_filter_full;
@@ -1386,6 +1387,13 @@ int parsemail(char *mbox,	/* file name */
 		        email_time = convtoyearsecs(fromdate);
 		    if (email_time != -1 && email_time < delete_older_than)
 		        is_deleted = FILTERED_OLD;
+		}
+		if (!is_deleted && set_delete_newer && (date || fromdate)) {
+		    long email_time = convtoyearsecs(date);
+		    if (email_time == -1)
+		        email_time = convtoyearsecs(fromdate);
+		    if (email_time != -1 && email_time > delete_newer_than)
+		        is_deleted = FILTERED_NEW;
 		}
 		if (!headp)
 		    headp = bp;
@@ -2590,6 +2598,11 @@ static void check_expiry(struct emailinfo *emp)
 	    && email_time < convtoyearsecs(set_delete_older)) {
 	    emp->is_deleted = FILTERED_OLD;
 	    option = "delete_older";
+	}
+	if (email_time != -1 && set_delete_newer
+	    && email_time < convtoyearsecs(set_delete_newer)) {
+	    emp->is_deleted = FILTERED_NEW;
+	    option = "delete_newer";
 	}
 	if (emp->is_deleted)
 	    printf("message %d deleted under option %s. msgid: %s\n",
