@@ -12,7 +12,7 @@ static int finish_thread_levels(FILE **, int, int, int *, FILE **,
 /* Define this to make it print a whole lot of debug output to stdout: */
 /* #define DEBUG_THREAD */
 
-#define MAXSTACK 20
+#define MAXSTACK 200
 
 /*
 ** If year and/or month are != -1, only messages within the specified time
