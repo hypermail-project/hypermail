@@ -1,6 +1,9 @@
 Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Kent Landfield (Mar 9, 2003)
+   - updated domains.h to accurately reflect the current set of root domains.
+
  Peter McCluskey (Mar 7, 2003)
    Fixed problem with reverse_folders option that caused the index file
   to leave out folders when there were some unusual mismatches between the
@@ -8,8 +11,8 @@ Version Changes for Hypermail
 
  Kent Landfield (Feb 28, 2003)
    - changed wait.h sys/wait.h for portability in msg2archive
-
    - removed unused variable in finelink.c
+
  Kent Landfield (Feb 20, 2003)
    - corrected docs/Makefile.in to create the images dir if it does not exist.
 

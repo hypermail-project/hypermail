@@ -1,5 +1,5 @@
 /* 
-** @(#)domains.h	1.16 08/16/02 - Kent Landfield
+** @(#)domains.h	1.17 03/09/03 - Kent Landfield
 */
 
 /*
@@ -34,7 +34,6 @@ struct co_code domain_codes[] = {
     {  "NET",    "Network Service Provider"        },
     {  "PRO",    "Accountants, lawyers and physicians" },
     {  "ORG",    "Organizations"                   },
-    {  "BITNET", "Educational BitNet"              },
     {  "AC",     "Ascension Island"                },
     {  "AD",     "Andorra"                         },
     {  "AE",     "United Arab Emirates"            },
@@ -108,7 +107,6 @@ struct co_code domain_codes[] = {
     {  "FM",     "Micronesia, Federal State of"    },
     {  "FO",     "Faroe Islands"                   },
     {  "FR",     "France"                          },
-    {  "FX",     "France (European Ter.)"          }, /* NOTLISTED */
     {  "GA",     "Gabon"                           },
     {  "GB",     "Great Britian"                   },
     {  "GD",     "Grenada"                         },
