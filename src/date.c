@@ -200,7 +200,7 @@ char *secs_to_iso_meta(time_t t)
      * YYYY-MM-DD
      * This buffer will be overwritten by next call to secs_to_iso_meta.
      */
-    static char s[10];
+    static char s[11];
     struct tm *tm;
 
     tm = localtime(&t);
