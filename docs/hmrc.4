@@ -225,6 +225,19 @@ to accept messages without a Message-ID header.  Set this to
 to discard messages without a Message-ID header.  By default such 
 messages are discarded.
 .TP
+.B spamprotect = boolean_number
+Set this to 
+.B 1
+to make hypermail not output real email addresses in the output
+HTML, but instead obfuscate them a little.  By default email
+addresses are not obfuscated.
+.TP
+.B attachmentsindex = boolean_number
+Set this to
+.B 0
+to make hypermail not output an index of articles with attachments.
+By default hypermail outputs this index.
+.TP
 .B dateformat = strftime date format
 Format used in 
 .B strftime(3) 

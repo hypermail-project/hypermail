@@ -146,6 +146,13 @@ struct language_entry {
 #define MSG_MA_NEW_MESSAGE                       95
 #define MSG_MA_REPLY                             96
 
+#ifdef CHANGE_12DEC2000_BC
+/* XXX Move these up with the others */
+#define MSG_ATTACHMENT_VIEW			 97
+#define MSG_BY_ATTACHMENT			 98
+#define MSG_WRITING_ATTACHMENT_INDEX  		 99
+#endif
+
 #ifdef MAIN_FILE
 
 /*
@@ -258,6 +265,11 @@ char *de[] = {       /* German */
   "Mail actions",                         /* Mail actions (MA) header -HTML*/
   "mail a new topic",                     /* MA New Message      -HTML*/
   "respond to this message",              /* MA Reply            -HTML*/
+#ifdef CHANGE_12DEC2000_BC
+  "Attachement-Sicht",                    /* Attachment view       -HTML*/
+  "Nach Nachtrichten mit Attachement",	  /* By messages with attachments -HTML*/
+  "Schreibe Attachements-Index in",	  /* Writing attachment index to -STDOUT*/
+#endif
   NULL,                                   /* End Of Message Table - NOWHERE*/
 };
 
@@ -364,6 +376,11 @@ char *en[] = {       /* English */
   "Mail actions",                /* Mail actions (MA) header -HTML*/
   "mail a new topic",            /* MA New Message      -HTML*/
   "respond to this message",     /* MA Reply            -HTML*/
+#ifdef CHANGE_12DEC2000_BC
+  "Attachment view",			  /* Attachment view       -HTML*/
+  "By messages with attachments",	  /* By messages with attachments -HTML*/
+  "Writing attachment index to",	  /* Writing attachment index to -STDOUT*/
+#endif
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 
@@ -464,7 +481,7 @@ char *es[] = {       /* Espanol/Spanish */
   "Lenguaje no incorporado",          /* Language not supported   -STDERR*/
   "No establecido",                   /* Not set                  -STDOUT*/
   "No utilizado",                     /* Not used                 -STDOUT*/
-  "Archivo Añadido ceado",         /* Created attachment file  -STDOUT*/
+  "Archivo Añadido creado",         /* Created attachment file  -STDOUT*/
   "A&ntilde;adido",                   /* attachment                 -HTML*/
   "modo",                             /* mode                     -STDOUT*/
   "Leyendo encabezados antiguos",     /* Reading old headers      -STDOUT*/
@@ -479,6 +496,11 @@ char *es[] = {       /* Espanol/Spanish */
   "Mail actions",                     /* Mail actions (MA) header -HTML*/
   "mail a new topic",                 /* MA New Message      -HTML*/
   "respond to this message",          /* MA Reply            -HTML*/
+#ifdef CHANGE_12DEC2000_BC
+  "Por Añadido",                      /* Attachment view  -HTML*/
+  "Por mensajes con añadidos",	  /* By messages with attachments -HTML*/
+  "Escribiendo Indice de Añadidos en",	  /* Writing attachment index to -STDOUT*/
+#endif
   NULL,                               /* End Of Message Table */
 };
 
@@ -584,6 +606,11 @@ char *fi[] = {       /* Finnish */
   "Mail actions",                    /* Mail actions (MA) header -HTML*/
   "mail a new topic",                /* MA New Message      -HTML*/
   "respond to this message",         /* MA Reply            -HTML*/
+#ifdef CHANGE_12DEC2000_BC
+  "Attachment view",                      /* Attachment view  -HTML*/
+  "By messages with attachments",	  /* By messages with attachments -HTML*/
+  "Writing attachment index to",	  /* Writing attachment index to -STDOUT*/
+#endif
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -691,6 +718,11 @@ char *fr[] = {       /* French */
   "Mail actions",                        /* Mail actions (MA) header -HTML*/
   "mail a new topic",                    /* MA New Message      -HTML*/
   "respond to this message",             /* MA Reply            -HTML*/
+#ifdef CHANGE_12DEC2000_BC
+  "Liste par attachements",                      /* Attachment view  -HTML*/
+  "Par messages avec attachments",	  /* By messages with attachments -HTML*/
+  "Ecriture de l'index 'attachement' vers",	  /* Writing attachment index to -STDOUT*/
+#endif
   NULL,                                  /* End Of Message Table  - NOWHERE*/
 };
 
@@ -798,6 +830,11 @@ char *is[] = {       /* Icelandic */
   "Mail actions",                     /* Mail actions (MA) header -HTML*/
   "mail a new topic",                 /* MA New Message      -HTML*/
   "respond to this message",          /* MA Reply            -HTML*/
+#ifdef CHANGE_12DEC2000_BC
+  "Attachment view",                      /* Attachment view  -HTML*/
+  "By messages with attachments",	  /* By messages with attachments -HTML*/
+  "Writing attachment index to",	  /* Writing attachment index to -STDOUT*/
+#endif
   NULL,                               /* End Of Message Table      - NOWHERE*/
 };
 
@@ -910,6 +947,11 @@ char *se[] = {
   "Mail actions",                   /* Mail actions (MA) header -HTML*/
   "mail a new topic",               /* MA New Message      -HTML*/
   "respond to this message",        /* MA Reply            -HTML*/
+#ifdef CHANGE_12DEC2000_BC
+  "Attachment view",                      /* Attachment view  -HTML*/
+  "By messages with attachments",	  /* By messages with attachments -HTML*/
+  "Writing attachment index to",	  /* Writing attachment index to -STDOUT*/
+#endif
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 

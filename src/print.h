@@ -10,11 +10,17 @@ void writedates(int);
 void writesubjects(int);
 void writethreads(int);
 void writeauthors(int);
+#ifdef CHANGE_12DEC2000_BC
+void writeattachments(int);
+#endif
 
 void printdates(FILE *, struct header *);
 void printthreads(FILE *, struct header *);
 void printsubjects(FILE *, struct header *, char **);
 void printauthors(FILE *, struct header *, char **);
+#ifdef CHANGE_12DEC2000_BC
+void printattachments(FILE *, struct header *);
+#endif
 
 void checkreplies(FILE *, int, int);
 void fprint_menu(FILE *, mindex_t, char *, char *, char *, int);

@@ -26,6 +26,11 @@
 #include "print.h"
 #include "threadprint.h"
 
+#ifdef CHANGE_12DEC2000_BC
+#include "mprintf.h"
+#include "proto.h"
+#endif
+
 /* Uses threadlist to find the next message after
  * msgnum in the thread containing msgnum.
  * Returns NULL if there are no more messages in 
@@ -123,6 +128,15 @@ void fprint_menu(FILE *fp, mindex_t idx, char *archives,
 	fprintf(fp, "<th><a href=\"%s\">%s</a></th>\n", authname,
 		lang[MSG_AUTHOR_VIEW]);
 
+#ifdef CHANGE_12DEC2000_BC
+    if (set_attachmentsindex) {
+	if (idx != ATTACHMENT_INDEX) {
+	    fprintf(fp, "<th><a href=\"%s\">%s</a></th>\n", attname,
+		lang[MSG_ATTACHMENT_VIEW]);
+	}
+    }
+#endif
+
     if (archives && *archives)
 	fprintf(fp, "<th><a href=\"%s\">%s</a></th>\n", archives,
 		lang[MSG_OTHER_MAIL_ARCHIVES]);
@@ -192,6 +206,15 @@ void print_index_header_links(FILE *fp, int called, int amountmsgs)
     if (called != FROM_SUBJECT)
 	fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", subjname,
 		lang[MSG_SUBJECT]);
+
+#ifdef CHANGE_12DEC2000_BC
+    if (set_attachmentsindex) {
+	if (called != FROM_ATTACHMENT) {
+	    fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", attname,
+		lang[MSG_ATTACHMENT]);
+	}
+    }
+#endif
 
     if (set_about && *set_about)
 	fprintf(fp, "<br><strong><a href=\"%s\">%s</a></strong>\n",
@@ -275,6 +298,15 @@ void print_index_footer_links(FILE *fp, int called, int amountmsgs)
     if (called != FROM_SUBJECT)
 	fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", subjname,
 		lang[MSG_SUBJECT]);
+
+#ifdef CHANGE_12DEC2000_BC
+    if (set_attachmentsindex) {
+	if (called != FROM_ATTACHMENT) {
+	    fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", attname,
+		lang[MSG_ATTACHMENT]);
+	}
+    }
+#endif
 
     if (set_about && *set_about)
 	fprintf(fp, "<br><strong><a href=\"%s\">%s</a></strong>\n",
@@ -380,6 +412,51 @@ void printdates(FILE *fp, struct header *hp)
 	printdates(fp, hp->right);
     }
 }
+
+/*
+** Pretty-prints the files with attachments in the index files.
+*/
+
+#ifdef CHANGE_12DEC2000_BC
+void printattachments(FILE *fp, struct header *hp)
+{
+/* XXX - Next 2 lines copied from parse.c - yuck! */
+#define DIR_PREFIXER "att-"
+#define PATH_SEPARATOR '/'
+    char *subj;
+    char* attdir;
+
+    if (hp != NULL) {
+	struct emailinfo *em = hp->data;
+	printattachments(fp, hp->left);
+	subj = convchars(em->subject);
+
+	/* See if there's a directory corresponding to this message */
+	attdir = maprintf("%s%c" DIR_PREFIXER "%04d",
+	    set_dir, PATH_SEPARATOR, em->msgnum);
+	if (isdir(attdir)) {
+
+	    if (set_indextable) {
+		fprintf(fp, "<tr><td><a href=\"%.4d.%s\">%s</a></td>"
+		    "<td><em>%s</em></a></td>"
+		    "<td>%s</td></tr>\n",
+		    em->msgnum, set_htmlsuffix, subj,
+		    em->name, getdatestr(em->date));
+	    }
+	    else {
+		fprintf(fp,
+		    "<li><a href=\"%.4d.%s\"><strong>%s</strong></a>&nbsp;"
+		    "<a name=\"%d\"><em>%s</em></a>&nbsp;<em>(%s)</em>\n",
+		    em->msgnum, set_htmlsuffix, subj, em->msgnum, em->name,
+		    getdatestr(em->date));
+	    }
+	}
+	free(attdir);
+	free(subj);
+	printattachments(fp, hp->right);
+    }
+}
+#endif
 
 int showheader(char *header)
 {
@@ -911,6 +988,13 @@ void writearticles(int startnum, int maxnum)
 		    subjname, num, lang[MSG_SUBJECT]);
 	    fprintf(fp, "<a href=\"%s#%d\">[ %s ]</a>\n",
 		    authname, num, lang[MSG_AUTHOR]);
+#ifdef CHANGE_12DEC2000_BC
+	    if (set_attachmentsindex) {
+		fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", attname,
+		    lang[MSG_ATTACHMENT]);
+	    }
+#endif
+
 	    if (set_custom_archives && *set_custom_archives)
 	        fprintf(fp,"<li><strong>%s:</strong> %s\n", 
 			lang[MSG_OTHER_MAIL_ARCHIVES],
@@ -1054,6 +1138,12 @@ void writearticles(int startnum, int maxnum)
 		      subjname, num, lang[MSG_SUBJECT]);
 	      fprintf(fp,"<a href=\"%s#%d\">[ %s ]</a>\n",
 		      authname, num, lang[MSG_AUTHOR]);
+#ifdef CHANGE_12DEC2000_BC
+	    if (set_attachmentsindex) {
+		fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", attname,
+		    lang[MSG_ATTACHMENT]);
+	    }
+#endif
 	      if (set_custom_archives && *set_custom_archives)
 		  fprintf(fp,"<li><strong>%s:</strong> %s\n", 
 			  lang[MSG_OTHER_MAIL_ARCHIVES],
@@ -1196,6 +1286,99 @@ void writedates(int amountmsgs)
     if (set_showprogress)
 	putchar('\n');
 }
+
+/*
+** Write the attachments index...
+*/
+#ifdef CHANGE_12DEC2000_BC
+void writeattachments(int amountmsgs)
+{
+    int newfile;
+    char filename[MAXFILELEN];
+    FILE *fp;
+
+    sprintf(filename, "%s%s%s", set_dir,
+	    (set_dir[strlen(set_dir) - 1] == '/') ? "" : "/", attname);
+
+    if (isfile(filename))
+	newfile = 0;
+    else
+	newfile = 1;
+
+    if ((fp = fopen(filename, "w")) == NULL) {
+	sprintf(errmsg, "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
+	progerr(errmsg);
+    }
+
+    if (set_showprogress)
+	printf("%s \"%s\"...", lang[MSG_WRITING_ATTACHMENT_INDEX], filename);
+
+    /*
+     * Print out the index file header 
+     */
+    print_index_header(fp, set_label, set_dir, lang[MSG_BY_ATTACHMENT], attname);
+
+    /* 
+     * Print out archive information links at the top of the index
+     */
+    if (!set_usetable) 
+	print_index_header_links(fp, FROM_ATTACHMENT, amountmsgs);
+    else {
+	fprint_menu(fp, ATTACHMENT_INDEX, set_archives, "", "", PAGE_TOP);
+	fprint_summary(fp, PAGE_TOP, firstdatenum, lastdatenum, amountmsgs);
+	/* JK: added an extra <p> here */
+	if (set_showhr)
+	    fprintf(fp, "<hr noshade><p>\n"); 
+    }
+
+    /*
+     * Print out the actual message index lists. Here's the beef.
+     */
+
+    if (set_indextable) {
+	fprintf(fp,
+		"<div align=\"center\">\n<table width=\"80%%\">\n<tr><td><u><strong>%s</strong></u></td><td><u><strong>%s</strong></u></td><td><u><strong>%s</strong></u></td></tr>\n",
+		lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
+	printattachments(fp, datelist);
+	fprintf(fp, "</table>\n</div>\n<p>\n");
+    }
+    else {
+	fprintf(fp, "<ul>\n");
+	printattachments(fp, datelist);
+	fprintf(fp, "</ul>\n<p>\n");
+    }
+
+    if (!set_usetable) {
+	/* 
+	 * Print out archive information links at the bottom of the index
+	 */
+	print_index_footer_links(fp, FROM_DATE, amountmsgs);
+    }
+    else {
+	if (set_showhr)
+	    fprintf(fp, "<hr noshade>\n");
+	fprint_summary(fp, PAGE_BOTTOM, firstdatenum, lastdatenum, amountmsgs);
+	fprint_menu(fp, DATE_INDEX, set_archives, "", "", PAGE_BOTTOM);
+    }
+
+    /* 
+     * Print the index page footer.
+     */
+    printfooter(fp, ihtmlfooterfile, set_label, set_dir, lang[MSG_BY_DATE],
+		attname);
+
+    fclose(fp);
+
+    if (newfile && chmod(filename, set_filemode) == -1) {
+	sprintf(errmsg, "%s \"%s\": %o.",
+		lang[MSG_CANNOT_CHMOD], filename, set_filemode);
+	progerr(errmsg);
+    }
+
+    if (set_showprogress)
+	putchar('\n');
+}
+#endif
 
 /*
 ** Write the thread index...

@@ -39,6 +39,9 @@ bool set_usemeta;
 bool set_uselock;
 bool set_ietf_mbox;
 bool set_spamprotect;
+#ifdef CHANGE_12DEC2000_BC
+bool set_attachmentsindex;
+#endif
 
 int set_thrdlevels;
 int set_dirmode;
@@ -311,6 +314,12 @@ struct Config cfg[] = {
     {"spamprotect", &set_spamprotect, BFALSE, CFG_SWITCH,
      "# Set this to On to make hypermail not output real email addresses\n"
      "# in the output HTML but instead it will obfuscate them a little.\n"}
+
+#ifdef CHANGE_12DEC2000_BC
+    , {"attachmentsindex", &set_attachmentsindex, BTRUE, CFG_SWITCH,
+     "# Set this to  Off to make hypermail not output an index of\n"
+     "# messages with attachments.\n"}
+#endif
 
 
 };
@@ -655,6 +664,10 @@ void dump_config(void)
     printf("set_thrdlevels = %d\n",set_thrdlevels);
     printf("set_dirmode = %04o\n",set_dirmode);
     printf("set_filemode = %04o\n",set_filemode);
+#ifdef CHANGE_12DEC2000_BC
+    printf("set_spamprotect = %04o\n",set_spamprotect);
+    printf("set_attachmentsindex = %04o\n",set_attachmentsindex);
+#endif
 
     if (!set_ihtmlheader)
         printf("set_ihtmlheader = Not set\n");

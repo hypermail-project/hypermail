@@ -64,6 +64,9 @@ extern bool set_usemeta;
 extern bool set_uselock;
 extern bool set_ietf_mbox;
 extern bool set_spamprotect;
+#ifdef CHANGE_12DEC2000_BC
+extern bool set_attachmentsindex;
+#endif
 
 extern int set_thrdlevels;
 extern int set_dirmode;

@@ -123,12 +123,22 @@
 #define FROM_THREAD  2
 #define FROM_SUBJECT 3
 
+#ifdef CHANGE_12DEC2000_BC
+#define FROM_ATTACHMENT 4
+#endif
+
 #define PAGE_TOP     1
 #define PAGE_BOTTOM  2
 
+#ifdef CHANGE_12DEC2000_BC
+typedef enum { DATE_INDEX, THREAD_INDEX, SUBJECT_INDEX, AUTHOR_INDEX,
+    ATTACHMENT_INDEX, NO_INDEX
+} mindex_t;
+#else
 typedef enum { DATE_INDEX, THREAD_INDEX, SUBJECT_INDEX, AUTHOR_INDEX,
     NO_INDEX
 } mindex_t;
+#endif
 
 /*
 ** Use this struct to build expandable buffers. Quick and easy.
@@ -252,6 +262,9 @@ VAR char *authname;		/* By author index file             */
 VAR char *datename;		/* By date index file               */
 VAR char *subjname;		/* By subject index file            */
 VAR char *thrdname;		/* By thread index file             */
+#ifdef CHANGE_12DEC2000_BC
+VAR char *attname;		/* By attachment index file         */
+#endif
 
 VAR int use_mailcommand;
 VAR int use_mailto;

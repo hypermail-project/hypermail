@@ -25,6 +25,9 @@ int valid_root_domain(char *);
 ** file.c functions
 */
 
+#ifdef CHANGE_12DEC2000_BC
+int isdir(char *);
+#endif
 int isfile(char *);
 void check1dir(char *);
 void checkdir(char *);
