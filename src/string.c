@@ -962,6 +962,7 @@ char *parseemail(char *input,	/* string to parse */
     struct Push buff;
     
     char *at;
+    int at_len;
 
     int in_ascii = TRUE, esclen = 0;
 
@@ -973,7 +974,11 @@ char *parseemail(char *input,	/* string to parse */
     INIT_PUSH(buff);
 
     while (*input) {
-	if ((ptr = strchr(input, '@'))) {
+      if ((ptr = strchr (input, '@')))
+	at_len = 1;
+      else if ((ptr = strstr (input, "&#64;")))
+	at_len = 5;
+      if (ptr) {
 	    /* found a @ */
 	    char *email = ptr - 1;
 	    char content[2];
@@ -1009,7 +1014,7 @@ char *parseemail(char *input,	/* string to parse */
 	    else if (email != ptr - 1) { /* bigger chance this is an address */
 		email++;
 		if (sscanf
-		    (ptr + 1, "%255[" VALID_IN_EMAIL_DOMAINNAME "]",
+		    (ptr + at_len, "%255[" VALID_IN_EMAIL_DOMAINNAME "]",
 		     mailbuff) == 1) {
 
 		    /* a valid mail right-end */
@@ -1032,13 +1037,13 @@ char *parseemail(char *input,	/* string to parse */
 
 			PushString(&buff, tempbuff);
 
-			input = ptr + strlen(mailbuff) + 1;
+			input = ptr + strlen(mailbuff) + at_len;
 			lastpos = input;
 			continue;
 		    }
 		    else {	/* bad address */
 			PushString(&buff, mailaddr);
-			input = ptr + strlen(mailbuff) + 1;
+			input = ptr + strlen(mailbuff) + at_len;
 			lastpos = input;
 			continue;
 		    }
@@ -1047,9 +1052,9 @@ char *parseemail(char *input,	/* string to parse */
 	    /* no address, continue from here */
 	    input = ptr + 1;
 	    continue;
-	}
-	else
-	    input = strchr(input, '\0');
+      }
+      else
+	input = strchr(input, '\0');
     }
     if (lastpos < input) {
 	PushNString(&buff, lastpos, input - lastpos);
