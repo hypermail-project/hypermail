@@ -24,6 +24,8 @@
 **              %m - Mailto address
 **              %p - PROGNAME
 **              %s - Subject of message or Index Title
+**              %t - path to top directory ("" if no folders; usually "../",
+**                                          sometimes "../../" with folders)
 **              %v - VERSION
 **              %u - Expanded version link (HMURL,PROGNAME,VERSION)
 **              %S - Subject META TAG - Not valid on index pages
@@ -149,6 +151,13 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 			cp = convchars(subject));
 		free(cp);
 		continue;
+	    case 't':
+	      {
+		struct emailinfo *ep;
+		if(hashnumlookup(0, &ep))
+		    fprintf(fp, ep->subdir ? ep->subdir->rel_path_to_top : "");
+		continue;
+	      }
 	    case 'v':		/* %v - VERSION */
 		for (cp = VERSION; *cp; cp++)
 		    putc(*cp, fp);
