@@ -2914,12 +2914,9 @@ static int loadoldheadersfromGDBMindex(char *dir)
 {
       char *indexname;
       GDBM_FILE gp;
-      struct body *bp = NULL;
-      struct body *lp = NULL;
       int num;
       int num_added = 0;
 
-      bp = addbody(bp, &lp, "\0", 0);
       authorlist = subjectlist = datelist = NULL;
 
       /* Use gdbm performance hack: instead of opening each and
@@ -2974,6 +2971,9 @@ static int loadoldheadersfromGDBMindex(char *dir)
 	  long exp_time = -1;
 	  int is_deleted = 0;
 	  struct emailinfo *emp;
+	  struct body *bp = NULL;
+	  struct body *lp = NULL;
+	  bp = addbody(bp, &lp, "\0", 0);
 
 	  content = gdbm_fetch(gp, key);
 	  if(!(dp = content.dptr)) {
@@ -3019,7 +3019,7 @@ static int loadoldheadersfromGDBMindex(char *dir)
 		  ++num_added;
 	      if (num == max_num) {
 		  char *filename = articlehtmlfilename(emp);
-		  if (!isfile(filename)) {
+		  if (!isfile(filename) && !is_deleted) {
 		      trio_snprintf(errmsg, sizeof(errmsg),
 			       "%s \"%s\". If you deleted files,"
 			       " you need to delete the gdbm file %s as well.",
@@ -3032,6 +3032,11 @@ static int loadoldheadersfromGDBMindex(char *dir)
 	  }
 	  free(subject);
 	  free(inreply);
+	  if(bp) {
+	      if (bp->line) 
+		  free(bp->line);
+	      free(bp);
+	  }
 
 	  if (!(num % 10) && set_showprogress) {
 	    printf("\r%4d", num);
@@ -3073,11 +3078,6 @@ static int loadoldheadersfromGDBMindex(char *dir)
       } /* end case of could not read gdbm index */
 
       free(indexname);
-      if(bp) {
-        if (bp->line) 
-	  free(bp->line);
-        free(bp);
-      }
 
       return num_added;
 

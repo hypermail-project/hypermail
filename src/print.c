@@ -899,9 +899,14 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply)
 
     int inquote;
     int quote_num;
-    int quoted_percent = (set_quote_hide_threshold <= 100
-			  ? compute_quoted_percent(bp) : 100);
-    bool replace_quoted = (quoted_percent > set_quote_hide_threshold);
+    int quoted_percent;
+    bool replace_quoted;
+    /* if (set_quote_hide_threshold < 100 && !email->is_deleted) */
+    if (set_quote_hide_threshold <= 100)
+	quoted_percent = compute_quoted_percent(bp);
+    else
+	quoted_percent = 100;
+    replace_quoted = (quoted_percent > set_quote_hide_threshold);
 
     if(set_showprogress && replace_quoted)
       printf("\nMessage %d quoted text (%d %%) replaced by links\n",
@@ -1163,8 +1168,12 @@ void update_deletions(int num_old)
 	    continue;		/* new message - already done */
 	if (hashnumlookup(num, &ep)) {
 	    char *filename = articlehtmlfilename(ep);
-	    if (set_delete_level != DELETE_REMOVES_FILES)
-	        writearticles(num, num + 1);
+	    if (set_delete_level != DELETE_REMOVES_FILES) {
+		struct body *bp = ep->bodylist;
+		if (bp == NULL)
+		    parse_old_html(num, ep, 1, 0, NULL);
+		writearticles(num, num + 1);
+	    }
 	    else if (isfile(filename)) {
 		unlink(filename);
 	    }
