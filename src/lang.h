@@ -616,7 +616,7 @@ char *fi[] = {       /* Finnish */
 
 /*
 ** French version of the language table
-** Translation by Nicolas NOBLE <pixels@chez.com>
+** Translation by Nicolas Noble <pixels@chez.com>
 */
 
 char *fr[] = {       /* French */
@@ -715,11 +715,11 @@ char *fr[] = {       /* French */
   "Auteur",                              /* author              -HTML*/
   "Date",                                /* date                -HTML*/
   "Sujet",                               /* subject             -HTML*/
-  "Mail actions",                        /* Mail actions (MA) header -HTML*/
-  "mail a new topic",                    /* MA New Message      -HTML*/
-  "respond to this message",             /* MA Reply            -HTML*/
+  "Actions sur les mails",               /* Mail actions (MA) header -HTML*/
+  "cr&eacute;er un nouveau th&egrave;me",     /* MA New Message      -HTML*/
+  "r&eacute;pondre &agrave; ce message",      /* MA Reply            -HTML*/
 #ifdef CHANGE_12DEC2000_BC
-  "Liste par attachements",                      /* Attachment view  -HTML*/
+  "Liste par attachements",               /* Attachment view  -HTML*/
   "Par messages avec attachments",	  /* By messages with attachments -HTML*/
   "Ecriture de l'index 'attachement' vers",	  /* Writing attachment index to -STDOUT*/
 #endif
