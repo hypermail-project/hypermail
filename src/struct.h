@@ -15,7 +15,10 @@ struct body *hashnumlookup(int, struct emailinfo **);
 
 struct body *addbody(struct body *, struct body **, char *, int);
 
-struct reply *addreply(struct reply *, int, struct emailinfo *, int);
+struct reply *addreply(struct reply *, int, struct emailinfo *, int,
+		       struct reply **);
+struct reply *addreply2(struct reply *, struct emailinfo *, struct emailinfo *,
+			int, struct reply **);
 int rmlastlines(struct body *);
 
 struct printed *markasprinted(struct printed *, int);

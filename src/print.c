@@ -116,10 +116,17 @@ struct emailinfo *nextinthread(int msgnum)
 {
     struct reply *rp = threadlist;
 
+#ifdef FASTREPLYCODE
+    for (rp = threadlist_by_msgnum[msgnum];
+	 (rp != NULL) && (rp->msgnum != msgnum); rp = rp->next) {
+	;
+    }
+#else
     for (rp = threadlist; (rp != NULL) && (rp->msgnum != msgnum);
 	 rp = rp->next) {
 	;
     }
+#endif
 
     if (rp == NULL) {		/* msgnum not found in threadlist */
 	return NULL;
@@ -298,7 +305,7 @@ void print_index_header_links(FILE *fp, mindex_t called_from,
 
 #ifdef CHANGE_12DEC2000_BC
     if (set_attachmentsindex) {
-	if (called != FROM_ATTACHMENT) {
+	if (called_from != ATTACHMENT_INDEX) {
 	    fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", attname,
 		lang[MSG_ATTACHMENT]);
 	}
@@ -391,7 +398,7 @@ void print_index_footer_links(FILE *fp, mindex_t called_from,
 
 #ifdef CHANGE_12DEC2000_BC
     if (set_attachmentsindex) {
-	if (called != FROM_ATTACHMENT) {
+	if (called_from != ATTACHMENT_INDEX) {
 	    fprintf(fp, "<a href=\"%s\">[ %s ]</a>\n", attname,
 		lang[MSG_ATTACHMENT]);
 	}
@@ -1257,9 +1264,14 @@ void writearticles(int startnum, int maxnum)
 	     */
 
 	    if (set_showreplies) {
+#ifdef FASTREPLYCODE
+	        for (rp = email->replylist; rp != NULL; rp = rp->next) {
+                    if (hashnumlookup(rp->msgnum, &email2)) {
+#else
 		for (rp = replylist; rp != NULL; rp = rp->next) {
                     if (rp->frommsgnum == num
                         && hashnumlookup(rp->msgnum, &email2)) {
+#endif
 			if (rp->maybereply)
 			    fprintf(fp, "<li><strong>%s:</strong>",
 				    lang[MSG_MAYBE_REPLY]);
@@ -1500,19 +1512,39 @@ void writearticles(int startnum, int maxnum)
 
 	if (get_new_reply_to() != -1) {
 	  	/* will only be true if set_linkquotes is */
+	    struct emailinfo *e3, *e4;
 	    replace_maybe_replies(filename, set_dir, get_new_reply_to());
 	    for (rp = replylist; rp != NULL; rp = rp->next) {
 	        /* get rid of old guesses for where this links */
 	        if (rp->msgnum == num) {
-	            rp->frommsgnum = get_new_reply_to();
+#ifdef FASTREPLYCODE
+		    struct reply *rp3;
+		    hashnumlookup(get_new_reply_to(), &e4);
+		    hashnumlookup(rp->frommsgnum, &e3);
+		    for (rp3 = e3->replylist; rp3 != NULL && rp3->next != NULL;
+			 rp3 = rp3->next) {
+		        if (rp3->next->msgnum == num) {
+			    rp3->next = rp3->next->next; /* remove */
+			}
+		    }
+		    e4->replylist = addreply(e4->replylist, e4->msgnum,
+					     email, 0, NULL);
+#endif
+		    rp->frommsgnum = get_new_reply_to();
 		    rp->maybereply = 0;
-		    break;
+		    break; /* revisit me */
 		}
 	    }
 	    if (!rp) {
-	        struct emailinfo *e3;
 		if(hashnumlookup(num, &e3)) {
-		    replylist = addreply(replylist, get_new_reply_to(), e3, 0);
+#ifdef FASTREPLYCODE
+		    hashnumlookup(get_new_reply_to(), &e4);
+		    replylist = addreply2(replylist, e4, e3, 0,
+					  &replylist_end);
+#else
+		    replylist = addreply(replylist, get_new_reply_to(), e3, 0,
+					 &replylist_end);
+#endif
 		}
 	    }
 	}
@@ -1670,7 +1702,8 @@ void writeattachments(int amountmsgs)
      * Print out archive information links at the top of the index
      */
     if (!set_usetable) 
-	print_index_header_links(fp, FROM_ATTACHMENT, amountmsgs);
+	print_index_header_links(fp, ATTACHMENT_INDEX, firstdatenum,
+				 lastdatenum, amountmsgs);
     else {
 	fprint_menu(fp, ATTACHMENT_INDEX, set_archives, "", "", PAGE_TOP);
 	fprint_summary(fp, PAGE_TOP, firstdatenum, lastdatenum, amountmsgs);
@@ -1700,7 +1733,7 @@ void writeattachments(int amountmsgs)
 	/* 
 	 * Print out archive information links at the bottom of the index
 	 */
-	print_index_footer_links(fp, FROM_DATE, amountmsgs);
+	print_index_footer_links(fp, DATE_INDEX, lastdatenum, amountmsgs);
     }
     else {
 	if (set_showhr)

@@ -83,6 +83,10 @@
 #define _MPRINTF_REPLACE
 #include "mprintf.h"
 
+#ifndef NO_FASTREPLYCODE
+#define FASTREPLYCODE
+#endif
+
 #undef FALSE
 #define FALSE 0
 #undef TRUE
@@ -131,9 +135,6 @@
 #define FROM_DATE    1
 #define FROM_THREAD  2
 #define FROM_SUBJECT 3
-#endif
-
-#ifdef CHANGE_12DEC2000_BC
 #define FROM_ATTACHMENT 4
 #endif
 
@@ -171,7 +172,8 @@ struct reply {
     int frommsgnum;
     int msgnum;
     struct emailinfo *data;
-    int maybereply;
+    int maybereply; /* 0 means pretty sure msgnum is reply to frommsgnum; */
+		    /* 1 means there is doubt. */
     struct reply *next;
 };
 
@@ -223,6 +225,10 @@ struct emailinfo {
 #define USED_THREAD  2		/* set if already stored in threadlist */
 
     struct body *bodylist;
+#ifdef FASTREPLYCODE
+    struct reply *replylist;    /* list all possible direct replies to this */
+    int isreply;
+#endif
 };
 
 struct header {
@@ -258,7 +264,10 @@ VAR struct header *subjectlist;
 VAR struct header *authorlist;
 VAR struct header *datelist;
 VAR struct reply *replylist;
+VAR struct reply *replylist_end; /* last node in replylist */
 VAR struct reply *threadlist;
+VAR struct reply *threadlist_end; /* last node in threadlist */
+VAR struct reply **threadlist_by_msgnum; /* array of ptrs into threadlist */
 VAR struct printed *printedlist;
 VAR struct printed *printedthreadlist;
 VAR struct hashemail *etable[HASHSIZE];

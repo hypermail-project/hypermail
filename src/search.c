@@ -552,7 +552,15 @@ static void add_old_replies()
 	    }
 	}
 	if (!rp) {
-	    replylist = addreply(replylist, rp2->frommsgnum, rp2->data, 0);
+#ifdef FASTREPLYCODE
+	    struct emailinfo *email2;
+	    hashnumlookup(rp2->frommsgnum, &email2);
+	    replylist = addreply2(replylist, email2, rp2->data, 0,
+				  &replylist_end);
+#else
+	    replylist = addreply(replylist, rp2->frommsgnum, rp2->data, 0,
+				 &replylist_end);
+#endif
 	    /*fprintf(stderr,"add_old_replies %3d from %3d/%3d\n",rp2->msgnum,rp2->frommsgnum,rp2->data->msgnum); */
 	}
     }
@@ -575,9 +583,17 @@ static void find_replyto_from_html(int num, const char *dir)
 		    int msgn = atoi(ptr2 + strlen(href_str));
 		    struct emailinfo *ep;
 		    struct body *status = hashnumlookup(num, &ep);
-		    if (status)
+		    if (status) {
+#ifdef FASTREPLYCODE
+		        struct emailinfo *email2;
+			if (hashnumlookup(msgn, &email2))
+			    replylist_tmp =
+			        addreply2(replylist_tmp, email2, ep, 0, NULL);
+#else
 			replylist_tmp =
-			    addreply(replylist_tmp, msgn, ep, 0);
+			    addreply(replylist_tmp, msgn, ep, 0, NULL);
+#endif
+		    }
 		}
 	    }
 	    if (!strcmp(line, "<!-- nextthread=\"start\" -->\n"))

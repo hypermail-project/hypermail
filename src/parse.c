@@ -19,10 +19,6 @@
 ** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA 
 */
 
-#ifdef GDBM
-#include "gdbm.h"
-#endif
-
 #include "hypermail.h"
 #include "setup.h"
 #include "struct.h"
@@ -31,6 +27,10 @@
 #include "search.h"
 #include "getname.h"
 #include "parse.h"
+
+#ifdef GDBM
+#include "gdbm.h"
+#endif
 
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
@@ -337,7 +337,11 @@ void crossindex(void)
 	status = hashreplynumlookup(email->msgnum,
 				    email->inreplyto, email->subject,
 				    &maybereply);
-	if (status != -1)
+	if (status != -1) {
+#ifdef FASTREPLYCODE
+	    struct emailinfo *email2;
+	    hashnumlookup(status, &email2);
+#endif
 	    if (set_linkquotes) {
 	        struct reply *rp;
 		int found_num = 0;
@@ -347,10 +351,24 @@ void crossindex(void)
 			break;
 		    }
 		if (!found_num && !(maybereply || num <= status))
-		  replylist = addreply(replylist, status, email, maybereply);
+#ifdef FASTREPLYCODE
+		    replylist = addreply2(replylist, email2, email, maybereply,
+					 &replylist_end);
+#else
+		    replylist = addreply(replylist, status, email, maybereply,
+					 &replylist_end);
+#endif		
 	    }
-	    else
-	        replylist = addreply(replylist, status, email, maybereply);
+	    else {
+#ifdef FASTREPLYCODE
+		replylist = addreply2(replylist, email2, email, maybereply,
+				      &replylist_end);
+#else
+		replylist = addreply(replylist, status, email, maybereply,
+				     &replylist_end);
+#endif		
+	    }
+	}
 	num++;
     }
 #if DEBUG_THREAD
@@ -375,6 +393,35 @@ void crossindex(void)
 ** Replies are added to the thread list.
 */
 
+#ifdef FASTREPLYCODE
+void crossindexthread2(int num)
+{
+    struct reply *rp;
+    struct emailinfo *ep;
+    int ignore_maybes = 0;
+    if(!hashnumlookup(num, &ep)) {
+	char errmsg[512];
+	sprintf(errmsg, "internal error crossindexthread2 %d", num);
+	progerr(errmsg);
+    }
+
+    for (rp = ep->replylist; rp != NULL; rp = rp->next)
+	if (!rp->maybereply) {
+	    ignore_maybes = 1;
+	    break;
+	}
+    for (rp = ep->replylist; rp != NULL; rp = rp->next) {
+	if (!(rp->data->flags & USED_THREAD) 
+	    && (!rp->maybereply || ignore_maybes)) {
+	    rp->data->flags |= USED_THREAD;
+	    threadlist = addreply(threadlist, num, rp->data, 0,
+				  &threadlist_end);
+	    printedlist = markasprinted(printedthreadlist, rp->msgnum);
+	    crossindexthread2(rp->msgnum);
+	}
+    }
+}
+#else
 void crossindexthread2(int num)
 {
     struct reply *rp;
@@ -382,12 +429,14 @@ void crossindexthread2(int num)
     for (rp = replylist; rp != NULL; rp = rp->next) {
 	if (!(rp->data->flags & USED_THREAD) && (rp->frommsgnum == num)) {
 	    rp->data->flags |= USED_THREAD;
-	    threadlist = addreply(threadlist, num, rp->data, 0);
+	    threadlist = addreply(threadlist, num, rp->data, 0,
+				  &threadlist_end);
 	    printedlist = markasprinted(printedthreadlist, rp->msgnum);
 	    crossindexthread2(rp->msgnum);
 	}
     }
 }
+#endif
 
 
 /*
@@ -404,12 +453,16 @@ void crossindexthread1(struct header *hp)
     if (hp) {
 	crossindexthread1(hp->left);
 
+#ifdef FASTREPLYCODE
+	isreply = hp->data->isreply;
+#else
 	for (isreply = 0, rp = replylist; rp != NULL; rp = rp->next) {
 	    if (rp->msgnum == hp->data->msgnum) {
 		isreply = 1;
 		break;
 	    }
 	}
+#endif
 
 	/* If this message is not a reply to any other messages then it
 	 * is the first message in a thread.  If it hasn't already
@@ -419,10 +472,10 @@ void crossindexthread1(struct header *hp)
 	if (!isreply && !wasprinted(printedthreadlist, hp->data->msgnum) &&
 	    !(hp->data->flags & USED_THREAD)) {
 	    hp->data->flags |= USED_THREAD;
-	    threadlist =
-		addreply(threadlist, hp->data->msgnum, hp->data, 0);
+	    threadlist = addreply(threadlist, hp->data->msgnum, hp->data, 0,
+				  &threadlist_end);
 	    crossindexthread2(hp->data->msgnum);
-	    threadlist = addreply(threadlist, -1, NULL, 0);
+	    threadlist = addreply(threadlist, -1, NULL, 0, &threadlist_end);
 	}
 
 	crossindexthread1(hp->right);
@@ -2315,6 +2368,14 @@ int parsemail(char *mbox,	/* file name */
     if (fp != stdin)
 	fclose(fp);
 
+#ifdef FASTREPLYCODE
+    threadlist_by_msgnum = (struct reply **)emalloc((num + 1)*sizeof(struct reply *));
+    {
+	int i;
+	for (i = 0; i <= num; ++i)
+	    threadlist_by_msgnum[i] = NULL;
+    }
+#endif
     crossindex();
     threadlist = NULL;
     printedthreadlist = NULL;
@@ -2545,8 +2606,15 @@ static int loadoldheadersfrommessages(char *dir)
 		subjectlist = addheader(subjectlist, emp, 0, 0);
 		datelist = addheader(datelist, emp, 2, 0);
 		if(set_linkquotes && reply_msgnum != -1) {
+#ifdef FASTREPLYCODE
+		    struct emailinfo *email2;
+		    if (hashnumlookup(reply_msgnum, &email2))
+		        replylist_tmp = addreply2(replylist_tmp, email2, emp,
+						  0, NULL);
+#else
 		    replylist_tmp = addreply(replylist_tmp, reply_msgnum, emp,
-					     0);
+					     0, NULL);
+#endif
 		}
 	    }
 	}

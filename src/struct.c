@@ -146,6 +146,10 @@ struct emailinfo *addhash(int num, char *date, char *name,
     }
 
     e = (struct emailinfo *)emalloc(sizeof(struct emailinfo));
+#ifdef FASTREPLYCODE
+    e->replylist = NULL;
+    e->isreply = 0;
+#endif
     e->msgnum = num;
     e->emailaddr = strsav(email);
     if ((name == NULL) || (*name == '\0'))
@@ -362,6 +366,7 @@ struct emailinfo *hashmsgidlookup(char *msgid, int *issubjmatch)
 
 /*
 ** Same as the above function, but only returns the article number.
+** [Hmmm. Seems to have diverged from hashreplylookup. Why? pcm 2001-03-20]
 */
 
 int hashreplynumlookup(int msgnum, char *inreply, char *subject,
@@ -626,7 +631,8 @@ int rmlastlines(struct body *bp)
 
 struct reply *addreply(struct reply *rp,
 		       int fromnum,
-		       struct emailinfo *email, int maybereply)
+		       struct emailinfo *email, int maybereply,
+		       struct reply **last_node)
 {
     struct reply *tempnode, *newnode;
 
@@ -634,21 +640,51 @@ struct reply *addreply(struct reply *rp,
     newnode->frommsgnum = fromnum;
     if (email == NULL)
 	newnode->msgnum = -1;
-    else
+    else {
 	newnode->msgnum = email->msgnum;
+#ifdef FASTREPLYCODE
+	email->isreply = 1;
+#endif
+    }
     newnode->data = email;
     newnode->maybereply = maybereply;
     newnode->next = NULL;
 
-    if (!rp)
+    if (!rp) {
 	rp = newnode;
+#ifdef FASTREPLYCODE
+	if (!threadlist && threadlist_by_msgnum && email)
+	    threadlist_by_msgnum[email->msgnum] = rp;
+#endif
+    }
     else {
+#ifdef FASTREPLYCODE
+	for (tempnode = (last_node ? *last_node : rp); tempnode->next != NULL;
+	     tempnode = tempnode->next);
+	tempnode->next = newnode;
+	if (rp == threadlist && threadlist_by_msgnum && email)
+	    threadlist_by_msgnum[email->msgnum] = tempnode;
+#else
 	for (tempnode = rp; tempnode->next != NULL; tempnode =
 	     tempnode->next);
 	tempnode->next = newnode;
+#endif
     }
+    if (last_node)
+	*last_node = newnode;
 
     return rp;
+}
+
+struct reply *addreply2(struct reply *rp, struct emailinfo *from_email,
+			struct emailinfo *email, int maybereply,
+			struct reply **last_node) {
+#ifdef FASTREPLYCODE
+    from_email->replylist = addreply(from_email->replylist,
+				     from_email->msgnum,
+				     email, maybereply, NULL);
+#endif
+    return addreply(rp, from_email->msgnum, email, maybereply, last_node);
 }
 
 /*
