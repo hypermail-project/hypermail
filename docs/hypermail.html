@@ -208,15 +208,17 @@ In the index files for the archive, the above setting will produce something lik
 <P>
 The <STRONG>-x</STRONG> option tells Hypermail to explicitly overwrite any previous HTML files that may exist. Use this option only when it is desirable to completely rewrite the entire archive.
 <P>
-The <STRONG>-u</STRONG> option tells Hypermail to update the archives by one message only. With this option, only one email message will be read in from a file or standard input. This message will be added to the end of the existing HTML file archive and will be integrated into it by links and cross-references. All archive index files will be regenerated to include the new message.
+The <STRONG>-u</STRONG> option tells Hypermail to add message(s) to the end of the existing HTML file archive and integrate them into it by links and cross-references. All archive index files will be regenerated to include the new message.
 <P>
-<STRONG>Important!</STRONG> - If the <STRONG>-u</STRONG> option is used and Hypermail is reading from a mailbox file, Hypermail will assume that the file contains only one article, no matter how many files the mailbox may actually contain. Make sure that Hypermail is given only one article when using this option.
+ Hypermail used to require that you only send it one message at a time when
+using the <STRONG>-u</STRONG> option, but it should now work reasonably when
+given mailboxes containing multiple messages.
 <P>
 If the mailbox that is being read from is an archive that new messages are always being added to, don't use either of these options. Hypermail will then read in all the messages given it but will only write new messages that have been appended to the mailbox.
 <P>
 <PRE>
    example 1: cat "one.letter" | hypermail -i -u -d "/wu-ftpd/mail-archives"
-   example 2: hypermail -i -u -m "one.letter" -d "/wu-ftpd/mail-archives"
+   example 2: hypermail -u -m "one.letter" -d "/wu-ftpd/mail-archives"
    example 3: hypermail -m "mailbox" -d "/wu-ftpd/mail-archives" -x
    example 4: hypermail -m "mailbox" -d "/wu-ftpd/mail-archives"
 </PRE>
