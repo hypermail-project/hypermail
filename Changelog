@@ -5,6 +5,12 @@ Version Changes for Hypermail
 HYPERMAIL VERSION PRE-2.1.8:
 ============================
 
+ Kent Landfield (Jun 28, 2003)
+  - Updated pcre library with pcre-4.3 sources. We were distributing a 
+    much older version. We were distributing version was 3.3 from 
+    August 1, 2000. 
+  - Updated FILES with the lcc files and the pcre changes 
+
  Jose Kahan (Jul 2, 2003)
   - parseurl didn't work well when an URL was quoted and enclosed inside 
     tags. Such as:
@@ -20,7 +26,7 @@ HYPERMAIL VERSION PRE-2.1.8:
   - Removed warnings detected thru gcc Wall.
 
  Peter McCluskey (June 30, 2003)
-  Increased max_tokens used to allocate space for linkquotes data struct.
+  - Increased max_tokens used to allocate space for linkquotes data struct.
 
  Jose Kahan (Jun 28, 2003)
   - Code cleaning. Removed the deprecated code for set_showhr and

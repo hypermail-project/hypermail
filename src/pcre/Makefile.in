@@ -267,7 +267,8 @@ clean:;         -rm -rf *.@OBJEXT@ *.lo *.a *.la .libs pcretest@EXEEXT@ pcregrep
 
 distclean:      clean
 		-rm -f chartables.c libtool pcre-config pcre.h \
-		Makefile config.h config.status config.log config.cache
+		Makefile config.h config.status config.log config.cache \
+		dftables RunTest
 
 check:          runtest
 
