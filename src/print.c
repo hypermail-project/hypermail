@@ -1069,7 +1069,7 @@ void printheaders (FILE *fp, struct emailinfo *email)
 	d_index = MSG_EXPIRED;
       if (email->is_deleted == 4 || email->is_deleted == 8)
 	d_index = MSG_FILTERED_OUT;
-      fprintf(fp, "<a name=\"start\" accesskey=\"j\" id=\"start\"></a>");
+      fprintf(fp, "<a name=\"start%d\" accesskey=\"j\" id=\"start\"></a>", email->msgnum);
       fprintf(fp, "<p>%s</p>\n", lang[d_index]);  /* AUDIT biege: No more warnings about format-bug */
       return;
     }
@@ -1164,14 +1164,14 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
 	d_index = MSG_EXPIRED;
       if (email->is_deleted == 4 || email->is_deleted == 8)
 	d_index = MSG_FILTERED_OUT;
-      fprintf(fp, "<a name=\"start\" accesskey=\"j\" id=\"start\"></a>");
+      fprintf(fp, "<a name=\"start%d\" accesskey=\"j\" id=\"start\"></a>", email->msgnum);
       fprintf(fp, "<p>%s</p>\n", lang[d_index]);	/* AUDIT biege: No more warnings about format-bug */
       return;
     }
     
     if (!set_showhtml) {
 	fprintf(fp, "<pre id=\"body\">\n");
-	fprintf(fp, "<a name=\"start\" accesskey=\"j\" id=\"start\"></a>");
+	fprintf(fp, "<a name=\"start%d\" accesskey=\"j\" id=\"start\"></a>", email->msgnum);
 	pre = TRUE;
     }
 
@@ -1496,8 +1496,8 @@ int print_links_up(FILE *fp, struct emailinfo *email, int pos, int in_thread_fil
 
 	    fprintf(fp, "<li>\n");
 	    fprintf(fp, "<dfn>%s</dfn>:\n", lang[MSG_THIS_MESSAGE]);
-	    fprintf(fp, "[ <a href=\"#start\" name=\"options1\" id=\"options1\" tabindex=\"1\">"
-		    "%s</a> ]\n", lang[MSG_MSG_BODY]);
+	    fprintf(fp, "[ <a href=\"#start%d\" name=\"options1\" id=\"options1\" tabindex=\"1\">"
+		    "%s</a> ]\n", email->msgnum, lang[MSG_MSG_BODY]);
 	    if (set_mailcommand && set_hmail) {
 	      if ((email->msgid && email->msgid[0]) || (email->subject && email->subject[0])) {
 		ptr = makemailcommand(set_replymsg_command, set_hmail, email->msgid, 
@@ -1638,8 +1638,8 @@ int print_links(FILE *fp, struct emailinfo *email, int pos, int in_thread_file)
 	  ** format for items: <li><dfn>Next</dfn>: <a href="0047.html" 
 	  title="wai thing">subject of message</a></li>\n */
 	     
-	  fprintf (fp, "<li><dfn>%s</dfn>: [ <a href=\"#start\">%s</a> ]</li>\n", 
-		   lang[MSG_THIS_MESSAGE], lang[MSG_MSG_BODY]);
+	  fprintf (fp, "<li><dfn>%s</dfn>: [ <a href=\"#start%d\">%s</a> ]</li>\n", 
+		   lang[MSG_THIS_MESSAGE], email->msgnum, lang[MSG_MSG_BODY]);
 	  
 	  printcomment(fp, "lnext", "start");
 	  /*

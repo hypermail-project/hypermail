@@ -251,20 +251,20 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
 
     if (set_files_by_thread) {
 	int maybe_reply = 0;
-	int is_reply;
+	int is_reply = 1;
 	fprintf(fp_body, "<a name =\"%.4d\"></a>", email->msgnum);
 	print_headers(fp_body, email, TRUE);
-	is_reply = print_links(fp_body, email, PAGE_TOP, TRUE);
 	if ((set_show_msg_links && set_show_msg_links != 4) || !set_usetable) {
 	    fprintf(fp_body, "</ul>\n");
 	}
 	/* maybe_reply only affects code in finelink.c which we don't want to run twice? */
 	printbody(fp_body, email, maybe_reply, is_reply);
 	if (level == 0) {
-	    sprintf(buffer, "<a href=\"thread_body%d.%s\">",
+	    sprintf(buffer, "thread_body%d.%s",
 		    threadnum, set_htmlsuffix);
 	    href = buffer;
 	}
+	is_reply = print_links(fp_body, email, PAGE_TOP, TRUE);
     }
     if (!href)
 	href = msg_href(email, subdir_email, FALSE);

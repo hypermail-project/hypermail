@@ -1,5 +1,13 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (Mar 19, 2005)
+  Fixes to files_by_thread option submitted by Oliver Meili.
+
+ Peter McCluskey (Dec 2, 2004)
+  Patch from Ulf Härnhammar to fix two format string bugs in Hypermail.
+  They could have caused crashes if using incremental mode on edited
+  pre-existing archives with data like "%n%n%n%n%n%n%n%n" in certain lines.
+
  Peter McCluskey (Nov 28, 2004)
   Add filename_base option.
 
