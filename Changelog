@@ -3,6 +3,11 @@ Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
  Jose Kahan (Jun 10, 2003)
+  - Adding new messages using the -u option to an existing file sometimes resulted
+    in warnings saying "Message-ID is missing, ignoring message with subject..."
+    Patch idea submitted by Peter.
+
+ Jose Kahan (Jun 10, 2003)
   - The incremental option (-u) always started new archives with 0001, rather
     than 0000. It will now start with 0000 as before
     For those people who had this problem and don't want to break any links to their
