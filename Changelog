@@ -1,176 +1,182 @@
 Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ Kent Landfield (Jun 28, 2003)
+  - Arkadiusz Miskiewicz <arekm@sse.pl> reported progerr() was being 
+    called with NULL instead of the previously constructed error message. 
+    His supplied patches were applied. 
+
  Peter McCluskey (June 27, 2003)
-  Made dates in subdirectory index files reflect subdirectory date range,
- rather than the date range for the whole archive.
+  - Made dates in subdirectory index files reflect subdirectory date range,
+    rather than the date range for the whole archive.
 
  Peter McCluskey (June 24, 2003)
-  Fix print_index_header_links to print MSG_ENDING date correctly (had
- been using 2 getdatestr() calls in one argument list).
+  - Fix print_index_header_links to print MSG_ENDING date correctly (had
+    been using 2 getdatestr() calls in one argument list).
 
  Peter McCluskey (June 20, 2003)
-  Fix a core dump with empty Date:.
+  - Fix a core dump with empty Date:.
 
  Jose Kahan (Jun 10, 2003)
   - Some extra WAI enhancements requested during the period of public comments:
     Order the date index by dates, like in subjects, add <dfn> to the start and
     end period in the indexes, change the title of "jump to first message" to
     "jump to list of messages".
-  - The top respond link didn't take into account the msgid or subject. It was just
-    a plain mailto. Made it work as the bottom one.
+  - The top respond link didn't take into account the msgid or subject. It was 
+    just a plain mailto. Made it work as the bottom one.
 
  Jose Kahan (Jun 10, 2003)
-  - Adding new messages using the -u option to an existing file sometimes resulted
-    in warnings saying "Message-ID is missing, ignoring message with subject..."
-    Patch idea submitted by Peter.
+  - Adding new messages using the -u option to an existing file sometimes 
+    resulted in warnings saying "Message-ID is missing, ignoring message 
+    with subject..." Patch idea submitted by Peter.
 
  Jose Kahan (Jun 10, 2003)
   - The incremental option (-u) always started new archives with 0001, rather
     than 0000. It will now start with 0000 as before
-    For those people who had this problem and don't want to break any links to their
-    archives when rebuilding them, there's a new configuration option allowing you
-    to tell from which number you want to start your archive: startmsgnum. You should
-    only set it up once and not modify it for an existing archive or your links may 
-    break.
-    A warning message appeared systematically because the showhr, which is now deprecated,
-    was turned on by default.
+    For those people who had this problem and don't want to break any links to 
+    their archives when rebuilding them, there's a new configuration option 
+    allowing you to tell from which number you want to start your archive: 
+    startmsgnum. You should only set it up once and not modify it for an 
+    existing archive or your links may break.
+    A warning message appeared systematically because the showhr, which is 
+    now deprecated, was turned on by default.
 
  Peter McCluskey (May 22, 2003)
   - add Italian support from Gabriele Bartolini and Marco Nenciarini.
 
  Peter McCluskey (May 16, 2003)
   - Fixed initialization of prior_subdir when dirs created out of
-   order. That fixes a case where a subdir wasn't in index files with
-   reverse_folders = 1.
+    order. That fixes a case where a subdir wasn't in index files with
+    reverse_folders = 1.
 
  Jose Kahan (May 13, 2003)
-   - Add the WAI enhancements proposed in 
-     http://www.w3.org/2002/03/archives-improvements/. 
-     As a consequence of this change, the sethr and usetable configuration
-     options are deprecated. The new markup takes into account the changes
-     that those options proposed and offers them in a WAI friendly way.
-     Some code cleaning needs yet to be done to remove all the cases
-     where those rules were used. Previous code version is tagged as
-     "before-wai".
-     Fixed some invalid XHTML markup too.
+  - Add the WAI enhancements proposed in 
+    http://www.w3.org/2002/03/archives-improvements/. 
+    As a consequence of this change, the sethr and usetable configuration
+    options are deprecated. The new markup takes into account the changes
+    that those options proposed and offers them in a WAI friendly way.
+    Some code cleaning needs yet to be done to remove all the cases
+    where those rules were used. Previous code version is tagged as
+    "before-wai".
+    Fixed some invalid XHTML markup too.
 
  Peter McCluskey (May 12, 2003)
-   - fix txtsuffix to not crash on null pointer.
-   - fix discard_dup_msgids to work when showprogress = 0.
+  - fix txtsuffix to not crash on null pointer.
+  - fix discard_dup_msgids to work when showprogress = 0.
 
  Peter McCluskey (April 24, 2003)
-   - spam encoding from Peter Karlsson. Currently enabled via the
-     spamprotect option.
+  - spam encoding from Peter Karlsson. Currently enabled via the
+    spamprotect option.
 
  Jose Kahan (Apr 23, 2003)
-   - As a consequence of the XHTML convertion, unconvchars() wasn't
-     storing information into the buffer when there were no entities.
+  - As a consequence of the XHTML convertion, unconvchars() wasn't
+    storing information into the buffer when there were no entities.
 
  Jose Kahan (Apr 10, 2003)
-   - Converted hypermail to XHTML. The only remaining issue concerns
-     charsets. Some mail clients don't specify a correct charset or
-     specify a charset and include characters belonging to other
-     charset spaces. The solution to detect and convert the
-     foreign charset into a Unicode entity or, for the adventurous
-     hacker, convert hypermail's output to UTF-8. For the moment, only
-     the former is implemented partially;  there is only one a winlatin1
-     (Windows CP 1252) to Unicode convertion/detection being done.
-     See string.c:convchars, unconvwinlatin1, and uconvert.h for more 
-     details.
-     The best solution will be to move to UTF-8, but this has to be planned.
-     If you have a charset issue, your XHTML document will be invalid.
-     As XHTML is backwards compatible with HTML, you can avoid this problem
-     by continuing to use the text/html MIME type.
+  - Converted hypermail to XHTML. The only remaining issue concerns
+    charsets. Some mail clients don't specify a correct charset or
+    specify a charset and include characters belonging to other
+    charset spaces. The solution to detect and convert the
+    foreign charset into a Unicode entity or, for the adventurous
+    hacker, convert hypermail's output to UTF-8. For the moment, only
+    the former is implemented partially;  there is only one a winlatin1
+    (Windows CP 1252) to Unicode convertion/detection being done.
+    See string.c:convchars, unconvwinlatin1, and uconvert.h for more 
+    details.
+    The best solution will be to move to UTF-8, but this has to be planned.
+    If you have a charset issue, your XHTML document will be invalid.
+    As XHTML is backwards compatible with HTML, you can avoid this problem
+    by continuing to use the text/html MIME type.
 
  Peter McCluskey (April 3, 2003)
-   Fixed so attachment.html doesn't list .meta directory.
+  - Fixed so attachment.html doesn't list .meta directory.
 
  Kent Landfield (Mar 20, 2003)
-   - Added Splint (www.splint.org) support to src/Makefile.in
-   - Corrected Initializer block for ltable[12]. Had 2 fields, but struct
-     language_entry has 3 fields.
-   - Removed unused gp variable in update_deletions().
-   - modified print_main_header() to assure title meets HTML recommendations 
-     of no longer than 64 characters. 
-   - Updated docs/hypermail.rc
+  - Added Splint (www.splint.org) support to src/Makefile.in
+  - Corrected Initializer block for ltable[12]. Had 2 fields, but struct
+    language_entry has 3 fields.
+  - Removed unused gp variable in update_deletions().
+  - modified print_main_header() to assure title meets HTML recommendations 
+    of no longer than 64 characters. 
+  - Updated docs/hypermail.rc
 
  Peter McCluskey (Mar 18, 2003)
-   Fixed overwrite = 0 to avoid rewrite of many files involved in replies
-  with folder_by_date option.
+  - Fixed overwrite = 0 to avoid rewrite of many files involved in replies
+    with folder_by_date option.
 
  Peter McCluskey (Mar 14, 2003)
-   Fixed two bugs with deleting messages with the incremental mode. One bug
-  meant that the message body was only rewritten or removed with the
-  delete_msgnum option, not delete_older / delete_newer. The other bug
-  involved only updating the is_deleted flag in the gdbm file if the
-  message body was redone to update a MSG_IN_REPLY_TO line.
+  - Fixed two bugs with deleting messages with the incremental mode. One bug
+    meant that the message body was only rewritten or removed with the
+    delete_msgnum option, not delete_older / delete_newer. The other bug
+    involved only updating the is_deleted flag in the gdbm file if the
+    message body was redone to update a MSG_IN_REPLY_TO line.
 
  Kent Landfield (Mar 9, 2003)
-   - updated domains.h to accurately reflect the current set of root domains.
+  - updated domains.h to accurately reflect the current set of root domains.
 
  Peter McCluskey (Mar 7, 2003)
-   Fixed problem with reverse_folders option that caused the index file
-  to leave out folders when there were some unusual mismatches between the
-  2 dates in one message.
+  - Fixed problem with reverse_folders option that caused the index file
+    to leave out folders when there were some unusual mismatches between the
+    2 dates in one message.
 
  Kent Landfield (Feb 28, 2003)
-   - changed wait.h sys/wait.h for portability in msg2archive
-   - removed unused variable in finelink.c
+  - changed wait.h sys/wait.h for portability in msg2archive
+  - removed unused variable in finelink.c
 
  Kent Landfield (Feb 20, 2003)
-   - corrected docs/Makefile.in to create the images dir if it does not exist.
+  - corrected docs/Makefile.in to create the images dir if it does not exist.
 
  Kent Landfield (Feb 20, 2003)
-   - added wait.h to msg2archive that was needed for s_popen()
-   - removed unused variable in finelink.c
+  - added wait.h to msg2archive that was needed for s_popen()
+  - removed unused variable in finelink.c
 
  Peter McCluskey (Feb 20, 2003)
-   Made version 2.1.7 tar file.
+  - Made version 2.1.7 tar file.
 
  Jose Kahan (jose@w3.org) (Feb 20, 2003)
-   - makemailcommand wasn't escaping non-ascii characters in the URLS
-     that it generated.
+  - makemailcommand wasn't escaping non-ascii characters in the URLS
+    that it generated.
 
  Peter McCluskey (Feb 19, 2003)
-   Fix to append option to handle some lines getting discarded in mdecodeQP.
+  - Fix to append option to handle some lines getting discarded in mdecodeQP.
 
  Kent Landfield (Feb 19, 2003)
-   - Updated TODO with configure issues and other corrections we want
-     to make to the code in the near future.
+  - Updated TODO with configure issues and other corrections we want
+    to make to the code in the near future.
 
  Jose Kahan (jose@w3.org) (Feb 19, 2003)
-   - Upgraded extract_rfc2047_content() as the previous extracting
-     algorithm was broken.
+  - Upgraded extract_rfc2047_content() as the previous extracting
+    algorithm was broken.
 
  Kent Landfield (Feb 18, 2003)
-   - Added missing contrib utilities, contrib/msg2hypermailarchive.py
-     and contrib/runtest to FILES
-   - Added checking in struct.c to limit the length of Subject: line to 
-     avoid theoretical Denial-of-Service
-   - Removed code that was ifdef'ed NOTUSED
+  - Added missing contrib utilities, contrib/msg2hypermailarchive.py
+    and contrib/runtest to FILES
+  - Added checking in struct.c to limit the length of Subject: line to 
+    avoid theoretical Denial-of-Service
+  - Removed code that was ifdef'ed NOTUSED
 
  Peter McCluskey (Feb 17, 2003)
-   Fix to attachment Content-Type parsing to strip all whitespace off
-  end of type rather than just newline.
+  - Fix to attachment Content-Type parsing to strip all whitespace off
+    end of type rather than just newline.
 
  Kent Landfield (Feb 17, 2003)
-   Added safe_tmpfile() usage instead of internal usage.
+  - Added safe_tmpfile() usage instead of internal usage.
 
  Peter McCluskey (Feb 14, 2003)
-   Disabled conversion of file:// into href - it seemed to allow anyone
-  who could access the web server via local host could read any file
-  that the web server had permission to read rather than just files
-  in the archive directory.
+  - Disabled conversion of file:// into href - it seemed to allow anyone
+    who could access the web server via local host could read any file
+    that the web server had permission to read rather than just files
+    in the archive directory.
 
  Peter McCluskey (Feb 13, 2003)
-   Add -DTRIO_MINIMAL. Solves a trio compile problem in SunOS and makes
-  binary a little smaller.
-   Strip mail.c down to minimal warning message so we don't have to worry
-  about analyzing it's security problems.
-   Changes to get strerror, memmove from pcre when missing (e.g. on SunOS).
-  How was this working on SunOS before?
-   Fix faulty sizeof in snprintf for MSG_ENCODING_IS_NOT_SUPPORTED.
+  - Add -DTRIO_MINIMAL. Solves a trio compile problem in SunOS and makes
+    binary a little smaller.
+  - Strip mail.c down to minimal warning message so we don't have to worry
+    about analyzing it's security problems.
+  - Changes to get strerror, memmove from pcre when missing (e.g. on SunOS).
+    How was this working on SunOS before?
+  - Fix faulty sizeof in snprintf for MSG_ENCODING_IS_NOT_SUPPORTED.
 
  Kent Landfield (kent@hypermail.org) (February 12, 2003)
   - Converted msg2archive.c to use Thomas Biege's <thomas@suse.de>
@@ -192,396 +198,397 @@ Version Changes for Hypermail
   - Added parameter checking to archive/*.c source
 
  Peter McCluskey (Feb 10, 2003)
-  Fixed the append option to handle lines between end of headers through
- mime boundary correctly.
+  - Fixed the append option to handle lines between end of headers through
+    mime boundary correctly.
 
  Jose Kahan (jose@w3.org) (February 06, 2003)
-  Added a protection against the use of the nonsequential messaging option
-  when hypermail wasn't compiled with the libfnv.
+  - Added a protection against the use of the nonsequential messaging option
+    when hypermail wasn't compiled with the libfnv.
 
  Kent Landfield (kent@hypermail.org) (February 06, 2003)
-  Hypermail 2.1.6 runs on a DEC Alpha running TRU64 when compiled
-  with GCC 2.95. It does however require the -mieee flag be set for the
-  trionan.c sources.  
-   - Modified configure.in script to support setting the the -mieee flag
-     for an Alpha TRU64 build.
-   - Modified various Makefile.in files to assure clean/clobber/distclean 
-     worked universally.  
+  - Hypermail 2.1.6 runs on a DEC Alpha running TRU64 when compiled
+    with GCC 2.95. It does however require the -mieee flag be set for the
+    trionan.c sources.  
+  - Modified configure.in script to support setting the the -mieee flag
+    for an Alpha TRU64 build.
+  - Modified various Makefile.in files to assure clean/clobber/distclean 
+    worked universally.  
 
  Peter McCluskey (Feb 1, 2003)
-  Changes to make stack overflow less common.
+  - Changes to make stack overflow less common.
 
  Peter McCluskey (January 29, 2003)
-  Fixed faulty freeing of memory that caused core dump with files_by_thread
- option.
-  Fixed missing function call argument with files_by_thread option. I suspect
- this was causing some random behavior, but I only found it due to valgrind.
-  Fix for placement of link to next msg with incremental update, usetable = 0.
+  - Fixed faulty freeing of memory that caused core dump with files_by_thread
+    option.
+  - Fixed missing function call argument with files_by_thread option. I suspect
+    this was causing some random behavior, but I only found it due to valgrind.
+  - Fix for placement of link to next msg with incremental update, usetable = 0.
 
  Peter McCluskey (January 28, 2003)
-  Fix from Zvi Har'El to leading zeroes in anchors in index pages with
- indextable=0.
-  Changes to Swedish from Peter Karlsson.
+  - Fix from Zvi Har'El to leading zeroes in anchors in index pages with
+    indextable=0.
+  - Changes to Swedish from Peter Karlsson.
 
  Peter McCluskey (January 26, 2003)
-  Fix for placement of link to next msg with incremental update.
+  - Fix for placement of link to next msg with incremental update.
 
  Peter McCluskey (January 24, 2003)
-  Release version 2.1.6 tar file.
-  Fix buffer overflow when progress = 2 (triggered by long attachment
- names). Was a security risk.
-  Fix buffer overflow in mail (cgi) program that probably created security
- risk if gethostbyaddr returned h_name of about 80 chars for an ip address.
- Disabled the functionality of the mail program and replaced it by default
- with warning about abuse by spammers. Added warnings about use of program.
-  Change size of boundbuffer (in parse.c) to 256, limit sscanf that fills it
- to 255 bytes. This prevents a buffer overflow with long mime boundaries. The
- buffer overflow didn't seemed to produce only minor problems, but it's hard
- to rule out security risks.
-  Add check for inline attachment name overflowing attachname buffer (like
- the check that Jose added today for non-inlined attachments).
-  Add check for append_filename and alts_text exceeding buffer size.
-  Delete attachment directory of messages that are discarded due to a missing
- or duplicate message-id.
+  - Release version 2.1.6 tar file.
+  - Fix buffer overflow when progress = 2 (triggered by long attachment
+    names). Was a security risk.
+  - Fix buffer overflow in mail (cgi) program that probably created security
+    risk if gethostbyaddr returned h_name of about 80 chars for an ip address.
+  - Disabled the functionality of the mail program and replaced it by default
+    with warning about abuse by spammers. Added warnings about use of program.
+  - Change size of boundbuffer (in parse.c) to 256, limit sscanf that fills it
+    to 255 bytes. This prevents a buffer overflow with long mime boundaries. The
+    buffer overflow didn't seemed to produce only minor problems, but it's hard
+    to rule out security risks.
+  - Add check for inline attachment name overflowing attachname buffer (like
+    the check that Jose added today for non-inlined attachments).
+  - Add check for append_filename and alts_text exceeding buffer size.
+  - Delete attachment directory of messages that are discarded due to a missing
+    or duplicate message-id.
 
  Jose Kahan (jose@w3.org) (January 24, 2003)
-  Fixed a buffer overflow reported by Ulf Harnhammar from VSU security.
+  - Fixed a buffer overflow reported by Ulf Harnhammar from VSU security.
 
  Peter McCluskey (January 22, 2003)
-  If mime message has an end boundary but no start boundary (as a buggy
- version of Microsoft Outlook seems to create), the body is now treated
- as a plain text message rather than discarded.
-  Update trio code to trio version 1.9.
+  - If mime message has an end boundary but no start boundary (as a buggy
+    version of Microsoft Outlook seems to create), the body is now treated
+    as a plain text message rather than discarded.
+  - Update trio code to trio version 1.9.
 
  Peter McCluskey (January 20, 2003)
-  Several fixes to avoid uninitialized memory reads reported by valgrind.
+  - Several fixes to avoid uninitialized memory reads reported by valgrind.
 
  Peter McCluskey (January 18, 2003)
-  Fix random behavior in parseurl which sometimes caused core dumps on lines
- ending in http://, ftp://, etc.
+  - Fix random behavior in parseurl which sometimes caused core dumps on lines
+    ending in http://, ftp://, etc.
 
  Peter McCluskey (December 19, 2002)
-  Apply patch from Wolfgang Spraul fixing link from subdir attachment.html to
- index.html when defaultindex = date
+  - Apply patch from Wolfgang Spraul fixing link from subdir attachment.html to
+    index.html when defaultindex = date
 
  Peter McCluskey (November 26, 2002)
-  Changed attachment naming back to what it was before Jose added
- set_nonsequential.
-  Changed attachment naming so that files are stored using the names
- provided without any %d- prepended whenever that doesn't cause conflicts.
+  - Changed attachment naming back to what it was before Jose added
+    set_nonsequential.
+  - Changed attachment naming so that files are stored using the names
+    provided without any %d- prepended whenever that doesn't cause conflicts.
 
  Kent Landfield (kent@hypermail.org) (November 24, 2002)
-  Made some updates to the docs.  Still need to update the
-  docs to include writehaof, nonsequential, msgsperfolder and
-  assure other config file directives are listed and current.
+  - Made some updates to the docs.  Still need to update the
+    docs to include writehaof, nonsequential, msgsperfolder and
+    assure other config file directives are listed and current.
 
  Kent Landfield (kent@hypermail.org) (November 24, 2002)
-  Added Russian language support.
-  Submitted by Igor Solovyoff" <siv@intear.com.ua>
+  - Added Russian language support.
+    Submitted by Igor Solovyoff" <siv@intear.com.ua>
 
  Kent Landfield (kent@hypermail.org) (November 24, 2002)
-  Made the  "_at_" antispam bit configurable by config file, using
+  - Made the  "_at_" antispam bit configurable by config file, using
       antispam_at = __somestring__  (does not have to have __ in it)
-  Anything hardcoded by default, can be figured out and used by 
-  spammers.  Particularly something like "_at_".
-  Submitted by Philip Brown <phil@bolthole.com>
+    Anything hardcoded by default, can be figured out and used by 
+    spammers.  Particularly something like "_at_".
+    Submitted by Philip Brown <phil@bolthole.com>
 
  Jose Kahan (jose@w3.org) (October 17, 2002)
-  URL generation was broken when a URL had a '@' char and hypermail
-  was using the mailcommand option. parseemail() didn't take this
-  case into account yet (there's just an empty statement). I added a
-  quick patch to convert the '@' into an HTML entity when doing the
-  convertion inside a URL. The change is in translateurl().
+  - URL generation was broken when a URL had a '@' char and hypermail
+    was using the mailcommand option. parseemail() didn't take this
+    case into account yet (there's just an empty statement). I added a
+    quick patch to convert the '@' into an HTML entity when doing the
+    convertion inside a URL. The change is in translateurl().
 
  Jose Kahan (jose@w3.org) (October 2, 2002)
-  In order to avoid hashed filename collisions, the filename
-  is now built with a hash of the msgid concatenated to the
-  Epoch seconds of the From date. This gives a total of
-  16 characters (all data is represented in hex). Only messages
-  that have the same msgid and that arrive in the same second
-  will have a collision.
-  I also compiled with the Warning flags and removed some
-  warnings.
+  - In order to avoid hashed filename collisions, the filename
+    is now built with a hash of the msgid concatenated to the
+    Epoch seconds of the From date. This gives a total of
+    16 characters (all data is represented in hex). Only messages
+    that have the same msgid and that arrive in the same second
+    will have a collision.
+    I also compiled with the Warning flags and removed some
+    warnings.
 
  Jose Kahan (jose@w3.org) (October 2, 2002)
-  The access righs of the msgindex file (for the hashed filenames)
-  were not being set at all.
+  - The access righs of the msgindex file (for the hashed filenames)
+    were not being set at all.
 
  Jose Kahan (jose@w3.org) (October 1, 2002)
-  The non-sequential msgid mode didn't work when updating the
-  archives by one message. Fixed a confusion in the generation of
-  the msgindex file.
+  - The non-sequential msgid mode didn't work when updating the
+    archives by one message. Fixed a confusion in the generation of
+    the msgindex file.
 
  Jose Kahan (jose@w3.org) (September 26, 2002)
-  Cleaned the autoconf files for passing the libnvf compile parameters
-  (what a difference does reading the manual make).
+  - Cleaned the autoconf files for passing the libnvf compile parameters
+    (what a difference does reading the manual make).
 
  Peter McCluskey (September 25, 2002)
-  Fix threading bug with incremental update and spamprotect_id = 1,
-  usegdbm = 0.
+  - Fix threading bug with incremental update and spamprotect_id = 1,
+    usegdbm = 0.
 
  Jose Kahan (jose@w3.org) (September 25, 2002)
-  Commited the ~/hypermail/ltmain.sh file and also put it in the
-  FILES section. Somehow, without this file, it was impossible to
-  compile the file generated thru a make tgz. The same kind of
-  file already existed in the pcre and fnv directories.
-  Added a rule to pass the FNV optional CFLAGS from the 
-  ~/hypermail/Makefile file, so that you can do a make from the top-level
-  (previously, you had to do it in the src directory... oops!).
+  - Commited the ~/hypermail/ltmain.sh file and also put it in the
+    FILES section. Somehow, without this file, it was impossible to
+    compile the file generated thru a make tgz. The same kind of
+    file already existed in the pcre and fnv directories.
+    Added a rule to pass the FNV optional CFLAGS from the 
+    ~/hypermail/Makefile file, so that you can do a make from the top-level
+    (previously, you had to do it in the src directory... oops!).
 
  Jose Kahan (jose@w3.org) (September 25, 2002)
-  Updated the FILES tgz file (added libfnv, removed two non-existent
-  tests).
-  Fixed the make tgz rule (how long was it since it was last used?)
+  - Updated the FILES tgz file (added libfnv, removed two non-existent
+    tests).
+  - Fixed the make tgz rule (how long was it since it was last used?)
 
  Jose Kahan (jose@w3.org) (September 25, 2002)
-  Added a new option to compute the archived filenames using an fnv hash
-  of the msgid + received From date. The resulting filename is 8 bytes long
-  (a space of 2^32 bits) + the extension. You can eventually change it to
-  16 bytes if this is too short. Just look at the code. 
-  The advantage of this is that you can add and remove items from the
-  archive and not worry anymore about broken links if the sequence
-  changes (e.g., if you are rebuilding an archive). To activate this
-  option, you need to do a ./ configure --enable-libfnv, then 
-  recompile hypermail. The name of the new  option is nonsequential
-  (lack of imagination!). 
+  - Added a new option to compute the archived filenames using an fnv hash
+    of the msgid + received From date. The resulting filename is 8 bytes long
+    (a space of 2^32 bits) + the extension. You can eventually change it to
+    16 bytes if this is too short. Just look at the code. 
+    The advantage of this is that you can add and remove items from the
+    archive and not worry anymore about broken links if the sequence
+    changes (e.g., if you are rebuilding an archive). To activate this
+    option, you need to do a ./ configure --enable-libfnv, then 
+    recompile hypermail. The name of the new  option is nonsequential
+    (lack of imagination!). 
 
  Peter McCluskey (September 17, 2002)
-  Added reverse_folders option.
+  - Added reverse_folders option.
 
  Peter McCluskey (August 30, 2002)
-  Fix segfaults in mdecodeRFC2047 (with headers encoded as quoted printable),
-  and in ConvURLsString.
-  Add files_by_thread option.
+  - Fix segfaults in mdecodeRFC2047 (with headers encoded as quoted printable),
+    and in ConvURLsString.
+  - Add files_by_thread option.
 
  Peter McCluskey (August 20, 2002)
-  Change preferedcontent to fall back on type "text/" or on encoding if
-  it can't find any prefered types.
-  Fix mdecodeRFC2047 to decode headers of any length (removing 128 byte limit).
-  Add classes to default stylesheet to set colors of headers, standard links,
-  and of quoted text according to quote nesting depth.
+  - Change preferedcontent to fall back on type "text/" or on encoding if
+    it can't find any prefered types.
+  - Fix mdecodeRFC2047 to decode headers of any length (removing 128 byte limit).
+  - Add classes to default stylesheet to set colors of headers, standard links,
+    and of quoted text according to quote nesting depth.
 
  Peter McCluskey (August 16, 2002)
-  Fix bug internal error in crossindexthread2 resulting from message with
-  unterminated mime.
+  - Fix bug internal error in crossindexthread2 resulting from message with
+    unterminated mime.
 
  Peter McCluskey (August 11, 2002)
-  Add Norwegian language support from Bosse Klykken.
+  - Add Norwegian language support from Bosse Klykken.
 
  Peter McCluskey (August 7, 2002)
-  Add contrib/msg2hypermailarchive.py from Bernhard Reiter.
-  Add antispamdomain option from Vincent McIntyre.
-  Add delete_newer option.
+  - Add contrib/msg2hypermailarchive.py from Bernhard Reiter.
+  - Add antispamdomain option from Vincent McIntyre.
+  - Add delete_newer option.
 
  Peter McCluskey (August 3, 2002)
-   Fix expires option to work in incremental mode.
-   Add delete_older option.
+   - Fix expires option to work in incremental mode.
+   - Add delete_older option.
 
  Peter McCluskey (July 31, 2002)
-   Release version 2.1.5 tar file.
+   - Release version 2.1.5 tar file.
  
  Peter McCluskey (July 22, 2002)
-   Apply gdbm patch from Bernhard Reiter, mainly altering messages.
-   Apply German language patch from Bernhard Reiter.
-   Apply haof patch from Bernhard Reiter.
+   - Apply gdbm patch from Bernhard Reiter, mainly altering messages.
+   - Apply German language patch from Bernhard Reiter.
+   - Apply haof patch from Bernhard Reiter.
 
  Peter McCluskey (July 15, 2002)
-   Fix some missing links to multipart attachments with save_alts option.
+   - Fix some missing links to multipart attachments with save_alts option.
 
  Peter McCluskey (July 11, 2002)
-   Add base_url option, and warning about it being needed when the
-  latest_folder option is used and the folder_by_date option contains a '/'.
+   - Add base_url option, and warning about it being needed when the
+    latest_folder option is used and the folder_by_date option contains a '/'.
 
  Peter McCluskey (July 8, 2002)
-   Fix endless loop that save_alts option often produced.
+   - Fix endless loop that save_alts option often produced.
 
  Peter McCluskey (June 18, 2002)
-   Applied changes from Carlos Martín Ugalde to Spanish text.
+   - Applied changes from Carlos Martín Ugalde to Spanish text.
 
  Peter McCluskey (June 13, 2002)
-   Fix call to compute_quoted_percent so that it doesn't crash on deleted msg
-   with incremental update.
+   - Fix call to compute_quoted_percent so that it doesn't crash on deleted msg
+     with incremental update.
 
  Peter McCluskey (May 14, 2002)
-   Add spamprotect_id option.
+   - Add spamprotect_id option.
 
  Peter McCluskey (Apr 26, 2002)
-   Changed to convert ampersands in urls to &amp;.
+   - Changed to convert ampersands in urls to &amp;.
 
  Peter McCluskey (Apr 22, 2002)
-   Add Greek language support from Akis Karnouskos.
-   Surpress <p> within <pre>.
+   - Add Greek language support from Akis Karnouskos.
+   - Surpress <p> within <pre>.
 
  Peter McCluskey (Mar 22, 2002)
-   Fixed to rewrite old messages that have new replies (some links to
-   replies/next in thread had been missing for overwrite=0, increment=0,
-   and also for linkquotes = 1).
-   Updated configure to reflect Daniel's changes to fix --without-gdbm in configure.in.
+   - Fixed to rewrite old messages that have new replies (some links to
+     replies/next in thread had been missing for overwrite=0, increment=0,
+     and also for linkquotes = 1).
+   - Updated configure to reflect Daniel's changes to fix --without-gdbm 
+     in configure.in.
 
  Peter McCluskey (Mar 19, 2002)
-   Increase MAXSTACK from 20 to 200.
+   - Increase MAXSTACK from 20 to 200.
 
  Peter McCluskey (Feb 4, 2002)
-   Fix to avoid converting strings like ftp://user@host.com to mailto's.
+   - Fix to avoid converting strings like ftp://user@host.com to mailto's.
 
  Peter McCluskey (Feb 4, 2002)
-   Patch from William R. Knox to add meta date tag.
+   - Patch from William R. Knox to add meta date tag.
 
  Jose Kahan (jose@w3.org) (Jan 25, 2002)
-   - When a message had a charset of type US-ASCII or ISO-8959-1, it wasn't being
-     stored in the HTML version of the message. This could result in a correct
-     decoding of the message, as browsers assume a user-given default charset in those
-     cases.
+   - When a message had a charset of type US-ASCII or ISO-8959-1, it wasn't 
+     being stored in the HTML version of the message. This could result in 
+     a correct decoding of the message, as browsers assume a user-given 
+     default charset in those cases.
 
 Peter McCluskey (Jan 11 2002)
-   Patch from William R. Knox to fix possible race condition in creating dirs.
+ - Patch from William R. Knox to fix possible race condition in creating dirs.
 
 Peter McCluskey (Jan 10 2002)
-   Add %t substitution cookies to provide path to top folder.
+ - Add %t substitution cookies to provide path to top folder.
 
 Peter McCluskey (Jan  5 2002)
-   Fix segfault in incremental mode with linkquotes.
+ - Fix segfault in incremental mode with linkquotes.
 
 Peter McCluskey (Dec 19 2001)
-   Create version 2.1.4 tarball.
+ - Create version 2.1.4 tarball.
 
 Peter McCluskey (Dec 14 2001)
-   Applied patch from William King adding </li>'s.
+ - Applied patch from William King adding </li>'s.
 
 Peter McCluskey (Dec 10 2001)
-   Fix bug in chronological ordering of folders.
+ - Fix bug in chronological ordering of folders.
 
 Peter McCluskey (Dec 6 2001)
-   Applied patch from William King to fix footer links on attachment index.
+ - Applied patch from William King to fix footer links on attachment index.
 
 Peter McCluskey (Dec 4 2001)
-   Change to detect start of new message when mime boundary missing,
+ - Change to detect start of new message when mime boundary missing,
    treat unbounded text as plain text body.
 
 Peter McCluskey (Dec 2 2001)
-   Applied patches from William King:
+ - Applied patches from William King:
     -  DTD changed to strict.
     -  </p> now emitted.
     - Some tags were not contained properly. Now wrapped in <p></p>.
 
 Peter McCluskey (Dec 1 2001)
-   Applied patches from William King to string function defines and gdbm
+ - Applied patches from William King to string function defines and gdbm
    configuration.
 
 Peter McCluskey (Nov 30 2001)
-   - Add Polish language support from Piotr Waskiewicz. Change some hardcoded
+ - Add Polish language support from Piotr Waskiewicz. Change some hardcoded
    From's to new macro MSG_FROM, change a Date to MSG_CDATE.
-   - update config.sub, config.guess from ftp.gnu.org/gnu/config/.
+ - update config.sub, config.guess from ftp.gnu.org/gnu/config/.
 
 Peter McCluskey (Nov 26 2001)
-   Applied patches from William King to update man pages for body, lang
+ - Applied patches from William King to update man pages for body, lang
    options changes, and add new domain codes.
 
 Peter McCluskey (Nov 24 2001)
-   Applied patch from William King to add lang= to <html> tag, get rid of
+ - Applied patch from William King to add lang= to <html> tag, get rid of
    duplicate <em>.
 
 Peter McCluskey (Nov 23 2001)
-   Added support for locales of form en_US. Changed language code "se" to
+ - Added support for locales of form en_US. Changed language code "se" to
    "sv", provide warning for old code.
 
 Peter McCluskey (Nov 22 2001)
-  - Applied patch from William King to create meta tag with hypermail version
-    number.
-  - better French support from Emmanuel Blot.
+ - Applied patch from William King to create meta tag with hypermail version
+   number.
+ - better French support from Emmanuel Blot.
 
 Daniel Stenberg (Nov 21 2001)
-   Updates to congfiure and trio.
+ - Updates to congfiure and trio.
 
 Peter McCluskey (Nov 21 2001)
-  - Applied patches from William King to conform better to HTML 4.01:
-    * remove body option, replace default <body> bgcolor=, text= with inline
-     style sheet (unless user-defined style sheet present).
-    * change <div align=...> to <div class=...>, same for <h1 align=...>
-  - add $BINARY, $NONPLAIN types to ignore_types option.
-  - add warn_surpressions option
-  - add unsafe_chars option
-  - Remove tmpname from parse.c (to get rid of warning about mktemp).
+ - Applied patches from William King to conform better to HTML 4.01:
+   * remove body option, replace default <body> bgcolor=, text= with inline
+    style sheet (unless user-defined style sheet present).
+   * change <div align=...> to <div class=...>, same for <h1 align=...>
+ - add $BINARY, $NONPLAIN types to ignore_types option.
+ - add warn_surpressions option
+ - add unsafe_chars option
+ - Remove tmpname from parse.c (to get rid of warning about mktemp).
 
 Peter McCluskey (Nov 19 2001)
-  - Applied patches from William King to conform better to HTML 4.01:
-    * remove noshade from <hr>
-    * change the default DTD
-    * escape &'s, add image/png in test.rc, hmrc.example
-  - Changed the fix*header() routines so that they handle incremental updates
-  sensibly when given a mailbox with multiple messages. In the process, I
-  fixed 2 problems with single-message incremental updates, one which left
-  out the "Next message" link, and one which created a "Reply" link that should
-  have been a "Maybe reply".
-  - Add warning for mbox that starts with different msg than gdbm file if
+ - Applied patches from William King to conform better to HTML 4.01:
+   * remove noshade from <hr>
+   * change the default DTD
+   * escape &'s, add image/png in test.rc, hmrc.example
+ - Changed the fix*header() routines so that they handle incremental updates
+   sensibly when given a mailbox with multiple messages. In the process, I
+   fixed 2 problems with single-message incremental updates, one which left
+   out the "Next message" link, and one which created a "Reply" link that should
+   have been a "Maybe reply".
+ - Add warning for mbox that starts with different msg than gdbm file if
    not using -u (overwrite) option.
-  - Change default for overwrite option to off.
-  - Fixed segfault that happened when %m parsed in header but mailto was NULL.
+ - Change default for overwrite option to off.
+ - Fixed segfault that happened when %m parsed in header but mailto was NULL.
 
 Peter McCluskey (Nov 18 2001)
-  Folder list now sorted chronologically.
+ - Folder list now sorted chronologically.
 
 Peter McCluskey (Nov 16 2001)
-  Added save_alts and alts_text options.
+ - Added save_alts and alts_text options.
 
 Peter McCluskey (Nov 15 2001)
   Updated some old documentation, added some security warnings.
 
 Peter McCluskey (Nov 14 2001)
-  Changes relevant to security:
-  - attachment filenames ending in .shtml get changed to .html.
-  - attachment descriptions are passed through convchars to prevent html tags
-   from being used there.
+ - Changes relevant to security:
+   1. attachment filenames ending in .shtml get changed to .html.
+   2. attachment descriptions are passed through convchars to prevent html tags
+      from being used there.
 
 Peter McCluskey (Nov 13 2001)
-  Fixed malloc bug that caused segfault with linkquotes=1.
+ - Fixed malloc bug that caused segfault with linkquotes=1.
 
 Peter McCluskey (Nov 12 2001)
-  Update to trio-1.4 (from 1.2) to fix Alpha compile problem.
+ - Update to trio-1.4 (from 1.2) to fix Alpha compile problem.
 
 Peter McCluskey (Nov 7 2001)
- Changes to hypetombox.pl:
-  - add some support for handling attachments.
-  - fixed some problems arising from some tags being changed to lowercase.
-  - add -S option to specify htmlsuffix.
-  - changed to convert <p> to blank line (instead of to nothing).
-  - additions to improve handling of archives produced linkquotes=1 option.
+ - Changes to hypetombox.pl:
+    1. add some support for handling attachments.
+    2. fixed some problems arising from some tags being changed to lowercase.
+    3. add -S option to specify htmlsuffix.
+    4. changed to convert <p> to blank line (instead of to nothing).
+    5. additions to improve handling of archives produced linkquotes=1 option.
 
 Peter McCluskey (Nov 5 2001)
-  - change parse.c to treat lines containing only a carriage return as
- blank lines for purpose of deciding whether they indicate the end of
- headers or a continued header line.
+ - change parse.c to treat lines containing only a carriage return as
+   blank lines for purpose of deciding whether they indicate the end of
+   headers or a continued header line.
 
 Peter McCluskey (Aug 22 2001)
-  - fix Makefile to clean pcre directory.
+ - fix Makefile to clean pcre directory.
 
 Peter McCluskey (Aug 7 2001)
-  - removed In-Reply-To from mailcommand default.
+ - removed In-Reply-To from mailcommand default.
 
 Peter McCluskey (Jul 25 2001)
-  - fix to abort before unlinking gdbm file if need it and cannot open it.
-  - fix latest_folder option (didn't work in incremental mode).
+ - fix to abort before unlinking gdbm file if need it and cannot open it.
+ - fix latest_folder option (didn't work in incremental mode).
 
 Peter McCluskey (Jul 17 2001)
-  - patch from Brian Kirkby to fix links between folders with usetable.
+ - patch from Brian Kirkby to fix links between folders with usetable.
 
 Peter McCluskey (Jun 26 2001)
-  - fixed parsing of integer/octal/switch environment variable values.
-  - fixed bugs in latest_folder option (includes fix from David Bau
+ - fixed parsing of integer/octal/switch environment variable values.
+ - fixed bugs in latest_folder option (includes fix from David Bau
      <davidbau@hotmail.com>).
 
 Peter McCluskey (Jun 23 2001)
-  - fixed FILES so that hypermail.html gets into tarballs.
+ - fixed FILES so that hypermail.html gets into tarballs.
 
 Peter McCluskey (May 31 2001)
-  - patches from Moritz Willers to surpress empty "messages sorted by:" line,
-   add | after "Previous Folder, Thread view", etc.
+ - patches from Moritz Willers to surpress empty "messages sorted by:" line,
+  add | after "Previous Folder, Thread view", etc.
 
 Peter McCluskey (May 30 2001)
-  - changes to Swedish from peter karlsson.
+ - changes to Swedish from peter karlsson.
 
 Peter McCluskey (May 22 2001)
-  - change default value for avoid_top_indices to none.
+ - change default value for avoid_top_indices to none.
   - fixed make to handle pcre properly.
 
 Peter McCluskey (May 16 2001)
@@ -609,21 +616,21 @@ Peter McCluskey (May 7 2001)
   - fixes to trio configuration.
 
 Peter McCluskey (May 4 2001)
-  - another fix to avoid_top_indices = folders.
-  - enhance show_msg_links to support links only at top or only at bottom.
-  - add show_index_links option to control links from message page to indices.
-  - add txtsuffix option
-  - On/Yes now converted to 1 for CFG_INTEGER options (for compatibility
-   with options that used to be CFG_SWITCH's)
-  - fix append option so that it handles uuencoded attachments and
-    mdecodeQP() calls correctly.
+ - another fix to avoid_top_indices = folders.
+ - enhance show_msg_links to support links only at top or only at bottom.
+ - add show_index_links option to control links from message page to indices.
+ - add txtsuffix option
+ - On/Yes now converted to 1 for CFG_INTEGER options (for compatibility
+  with options that used to be CFG_SWITCH's)
+ - fix append option so that it handles uuencoded attachments and
+   mdecodeQP() calls correctly.
 
 Kent Landfield (May 4 2001)
-  - corrected compilation issue for Sun CC in string.c
-  - corrected check for set_custom_archives in hypermail.c
+ - corrected compilation issue for Sun CC in string.c
+ - corrected check for set_custom_archives in hypermail.c
 
 Peter McCluskey (May 1 2001)
-  - convert mprintf calls to trio calls
+ - convert mprintf calls to trio calls
 
 Peter McCluskey (Apr 27 2001)
   - allow incremental update with folder_by_date on empty archive, improve
@@ -666,7 +673,6 @@ Peter McCluskey (Apr 12 2001)
   - fixed indexing error in getname reported by David Eisner <cradle@glue.umd.edu>
   - fixed set_usegdbm compile error reported by Daniel.
   - fixed parentheses in printattachments
- 
 
 Peter McCluskey (Apr 10 2001)
   - Add check for *html deleted, gdbm index still present.

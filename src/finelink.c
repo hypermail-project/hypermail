@@ -169,7 +169,7 @@ static int add_anchor(int msgnum, int quoting_msgnum, int quote_num, const char 
     tmpfilename = htmlfilename("tmp", ep, "tmp");	/* AUDIT biege: where is the tmp-file created? cwd? what about checking the return-value */
     if ((fp2 = fopen(tmpfilename, "w")) == NULL) {
 	snprintf(errmsg, sizeof(errmsg), "Couldn't write \"%s\".", tmpfilename);
-	progerr(NULL);
+	progerr(errmsg);
     }
     while (fgets(buffer, sizeof(buffer), fp1)) {
 	if ((find_substr && str_similar_str(buffer, line))
@@ -243,11 +243,11 @@ static int add_anchor(int msgnum, int quoting_msgnum, int quote_num, const char 
     else {
 	if (rename(tmpfilename, filename) == -1) {
 	    snprintf(errmsg, sizeof(errmsg), "Couldn't rename \"%s\" to %s.", tmpfilename, filename);
-	    progerr(NULL);
+	    progerr(errmsg);
 	}
 	if (chmod(filename, set_filemode) == -1) {
 	    snprintf(errmsg, sizeof(errmsg), "Couldn't chmod \"%s\" to %o.", filename, set_filemode);
-	    progerr(NULL);
+	    progerr(errmsg);
 	}
     }
     free(filename);
@@ -525,11 +525,11 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
     snprintf(tmpfilename, sizeof(tmpfilename), "%s/aaaa.tmp", set_dir);	/* AUDIT biege: poss. BOF. */
     if ((fp1 = fopen(filename, "r")) == NULL) {
         snprintf(errmsg, sizeof(errmsg), "Couldn't read \"%s\".", filename);
-	progerr(NULL);
+	progerr(errmsg);
     }
     if ((fp2 = fopen(tmpfilename, "w")) == NULL) {
         snprintf(errmsg, sizeof(errmsg), "Couldn't write \"%s\".", tmpfilename);
-	progerr(NULL);
+	progerr(errmsg);
     }
     while (fgets(buffer, sizeof(buffer), fp1)) {
 	if (strstr(buffer, "<!-- body=\"end\" -->\n"))
@@ -620,7 +620,7 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
 
     if (rename(tmpfilename, filename) == -1) {
 	snprintf(errmsg, sizeof(errmsg), "Couldn't rename \"%s\" to %s.", tmpfilename, filename);
-	progerr(NULL);
+	progerr(errmsg);
     }
 }
 

@@ -272,7 +272,7 @@ static void endlist(FILE *fp, int n)
 	else {
             snprintf(errmsg, sizeof(errmsg),
                 "Encountered list of unknown type %d\n", list[listnum - 1]);
-	    progerr(NULL);
+	    progerr(errmsg);
 	}
     }
     islist = (listnum != 0);

@@ -2807,7 +2807,7 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
 		fp1 = fopen(filename, "w");
 		if (!fp1) {
 	    	    snprintf(errmsg, sizeof(errmsg), "can't open %s", filename);
-		    progerr(NULL);
+		    progerr(errmsg);
 		}
 		snprintf(subject_title, sizeof(subject_title), "%s %s", month_str_pub, indextypename[j]);
 		print_index_header(fp1, set_label, set_dir, subject_title, filename);
@@ -2922,7 +2922,7 @@ void write_summary_indices(int amount_new)
 		fp = fopen(filename, "w");	/* AUDIT biege: where? */
 		if (!fp) {
 			snprintf(errmsg, sizeof(errmsg), "Couldn't write \"%s\".", filename);
-			progerr(NULL);
+			progerr(errmsg);
 		}
 		printmonths(fp, filename, amount_new);
 		fclose(fp);
