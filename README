@@ -1,21 +1,27 @@
 
-
-liuzj
-
-
                              Hypermail
 
-                          Version:  2.1
+                          Version:  2.1.x
 
-This is a release of the 2.1 version of hypermail.
+This is a release of the 2.1.x version of hypermail.
 
 Hypermail is a program that takes a file of mail messages in UNIX mailbox
 format and generates a set of cross-referenced HTML documents. 
 
-SECURITY WARNING: Do not put hypermail's output anyplace where a web server
-might have server side includes (SSI) enabled unless you are sure you know
-what you are doing. Avoid the crappy program called "mail" that comes with
-hypermail.
+SECURITY WARNING: 
+   Do not put hypermail's output anyplace where a web server might have 
+   server side includes (SSI) enabled unless you are sure you know what 
+   you are doing. 
+
+WARNING: 
+   There once existed a program call "mail" that came with hypermail.
+   'mail' utility has not installed by default for the last two years.  
+   This program has been disabled because it was probably easy for spammers 
+   to use as an open relay. It also had problems with enabling malicious 
+   use of JavaScript and CRLF Injection.  The 'mail' utility is a historic 
+   reclic and will not be supplied in future versions.  Its functionality 
+   has been replaced with a warning that anyone using it should remove it 
+   immediately.  
 
 See the INSTALL file to get started. For a description of how to use it,
 see the hypermail.html, hmrc.html, and hypermail-faq.html files that come
@@ -115,9 +121,6 @@ Thanks to Ashley M. Kirchner <ashley@pcraft.com>, we have a CVS
 server with the most recent sources at all times. Study the file
 README.CVS for details in how to use it.
 
-UPDATE: April 29th, the CVS server got switched to a different machine.
-        Please pay attention to the new path locations (from README.CVS)
-
 Getting Help:
 =============
 
@@ -156,6 +159,6 @@ Additionally:
     new icons and images to the hypermail effort, please feel free.
 
 
- Regular expression support is provided by the PCRE library package,
+Regular expression support is provided by the PCRE library package,
 which is open source software, written by Philip Hazel, and copyright
 by the University of Cambridge, England. See http://www.pcre.org/.

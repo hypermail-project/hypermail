@@ -1,80 +1,89 @@
+                        Hypermail CVS Server Access
 
-readme liuzj
+                                    ----
+   Hypermail  Development  has  a  CVS server, where we (try to) keep the
+   latest  changes (usually hot out of the oven) and anyone is welcome to
+   use  it.  Thanks  to  Elliot Lee <sopwith@redhat.com> for helping with
+   setting  it  up,  Daniel  Stenberg  <Daniel.Stenberg@haxx.nu> with his
+   contributions. And many thanks to Ashley M. Kirchner <ashley@pcraft.com> 
+   for hosting and managing the hypermail CVS server.
+  
+------------------------------------
+Setting up the CVS software locally:
+ 
+     If you system does not have cvs installed on it already then you 
+     need to do the following to install the client locally.
+  
+       - Obtain the cvs source at ftp://ftp.cvshome.org/pub/
+         For more information on CVS stop by http://www.cvshome.org/
 
-From: Ashley M. Kirchner <ashley@pcraft.com>
+       - Compile  and  install  the client (you can disable the server with
+         the  --disable-server  during  the  'configure'  command. Read the
+         INSTALL file once you're uncompressed the archive)
+  
+------------------------------------
+General information on accessing the Hypermail CVS repository:
+  
+     Hypermail CVS Archive Address:                        
+  
+          :pserver:cvs@cvs.hypermail.org:/CVS
+  
+     The  'cvs' user doesn't have a password, so just hit return when it
+     asks you for one.  The cvs user is setup for read access only.
+  
+------------------------------------
+Step by Step information on accessing the Hypermail CVS repository:
+  
+   Aftering installing the CVS software:
+     - Set your CVSROOT enviroment:
+       For sh, bash and ksh users, execute the following commands:
+  
+         CVSROOT=:pserver:cvs@cvs.hypermail.org:/CVS
+         export CVSROOT
+  
+       (or you can stick them in your .profile and/or .bash_profile file)
+       For C shell users (csh, tcsh), you can do the following:
+  
+         setenv CVSROOT :pserver:cvs@cvs.hypermail.org:/CVS 
+  
+       (or stick it in your .cshrc and/or .login file)
 
-  (edited by Daniel Stenberg)
+     - From here you can login to the server with:
+  
+         $ cvs login
+         (Logging in to cvs@cvs.hypermail.org)
+         CVS password: <-- hit RETURN (cvs user password is blank) 
 
-  CVS Server is up and running folks.  Thanks to Elliot Lee
-  <sopwith@redhat.com> for helping with setting it up, Daniel Stenberg
-  <Daniel.Stenberg@haxx.nu> with his contributions and everyone else for being
-  so patient while we make the transition from one place to another.  There is
-  still alot of work to be done with 'The Hyper Project' as I lovingly call it
-  now. :) But together we'll all get there, helping one another.
+     - Now you're ready to grab the source
+  
+         $ cvs checkout hypermail 
 
-  Now on to the info for the CVS server:
+       This  will  create a mirror of the sources in your account/on your
+       machine  called  'hypermail'  that  you  can then compile and play
+       with.
 
-	Address: :pserver:cvs@cvs.hypermail.org:/CVS
+     - Once done, don't forget to log out:
 
-  The 'cvs' user doesn't have a password, so just hit return when it asks you
-  for one.  Also, the cvs user only has read access, so don't try to do
-  anything funny. :)
+         $ cvs logout 
+   
+   All  of  the  above  commands can be performed without having to set a
+   CVSROOT  enviroment if you want, it's just a lot more to type in since
+   you'll have to specify the directory every time with:
+   
+     -d :pserver:cvs@cvs.hypermail.org:/CVS
 
-  For those of you who have never used a cvs server to grab sources, here's a
-  short rundown of the thing:
+   For  example, you would need to use the following to execute the login
+   command
+       
+     cvs -d :pserver:cvs@cvs.hypermail.org:/CVS login
+     cvs -d :pserver:cvs@cvs.hypermail.org:/CVS checkout hypermail
+     cvs -d :pserver:cvs@cvs.hypermail.org:/CVS logout   
+  
+------------------------------------
+Browsing the Hypermail CVS Archive:
 
-   - Obtain the cvs source at http://download.cyclic.com/pub/
+    You can also browse the repository at: 
 
-   - Compile and install the client (you can disable the server with the
-     --disable-server during the 'configure' command.  Read the INSTALL
-     file once you're uncompressed the archive)
+	http://cvsweb.hypermail.org/
 
-   - Once installed, set your CVSROOT enviroment to:
-
-     :pserver:cvs@cvs.hypermail.org:/CVS
-
-     For sh, bash and ksh users, execute the following commands:
-     CVSROOT=:pserver:cvs@cvs.hypermail.org:/CVS
-     export CVSROOT
-     (or you can stick them in your .profile and/or .bash_profile file)
-
-     For C shell users (csh, tcsh), you can do the following:
-     setenv CVSROOT :pserver:cvs@cvs.hypermail.org:/CVS
-     (or stick it in your .cshrc and/or .login file)
-
-   - From here you can login to the server with:
-     # cvs login
-     (Logging in to cvs@cvs.hypermail.org)
-     CVS password:  <-- hit RETURN (cvs user password is blank)
-
-   - Now you're ready to grab the source
-     # cvs checkout hypermail
-
-     This will create a mirror of the sources in your account/on your machine
-     called 'hypermail' that you can then compile and play with (just play
-     safe and clean, ok?)
-
-   - Once done, don't forget to log out:
-     # cvs logout
-
-  All of the above commands can be performed without having to set a CVSROOT
-  enviroment if you want, it's just a lot more to type in since you'll have to
-  specify the directory every time with:
-
-   -d :pserver:cvs@cvs.hypermail.org:/CVS
-
-  eg: cvs -d :pserver:cvs@cvs.hypermail.org:/CVS login
-
-
-Cheers.
-
-  Addendum #1: You can also browse the repository at:
-    http://cvsweb.hypermail.org/
-
-  Addendum #2: Pathnames have changed from /cvs/hypermail to /CVS
-
-  Addendum #3: [2000.05.28] The hypermail sources got retagged with new date
-    and times due to the server rebuild.  Sorry.
-
-  Addendum #4: [2000.05.30] (how many will we add?) server name changed from
-    cvs.hypermail.yeehaw.net to simply cvs.hypermail.org.
+                                    ----
