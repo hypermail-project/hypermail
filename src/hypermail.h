@@ -147,7 +147,8 @@ typedef enum {
   FILTERED_DELETE = 1,
   FILTERED_EXPIRE = 2,
   FILTERED_OUT = 4,
-  FILTERED_REQUIRED = 8
+  FILTERED_REQUIRED = 8,
+  FILTERED_OLD = 16
 } filtered_reason_t;
 /* 
  * Path separator for attachment file path generation

@@ -1031,6 +1031,7 @@ static void write_txt_file(struct emailinfo *emp, struct Push *raw_text_buf)
     txt_filename = htmlfilename(tmp_buf, emp, set_txtsuffix);
     if ((!emp->is_deleted
 	 || (emp->is_deleted == FILTERED_DELETE && set_delete_level > 2)
+	 || (emp->is_deleted == FILTERED_OLD && set_delete_level > 2)
 	 || (emp->is_deleted == FILTERED_EXPIRE && set_delete_level == 2))
 	&& (set_overwrite || !isfile(txt_filename))) {
         FILE *fp = fopen(txt_filename, "w");
@@ -1073,6 +1074,7 @@ int parsemail(char *mbox,	/* file name */
     int num, isinheader, hassubject, hasdate;
     int num_added = 0;
     long exp_time = -1;
+    long delete_older_than = (set_delete_older ? convtoyearsecs(set_delete_older) : 0);
     int is_deleted = 0;
     int pos;
     bool *require_filter, *require_filter_full;
@@ -1371,6 +1373,13 @@ int parsemail(char *mbox,	/* file name */
 		    }
 		}
 
+		if (!is_deleted && set_delete_older && (date || fromdate)) {
+		    long email_time = convtoyearsecs(date);
+		    if (email_time == -1)
+		        email_time = convtoyearsecs(fromdate);
+		    if (email_time != -1 && email_time < delete_older_than)
+		        is_deleted = FILTERED_OLD;
+		}
 		if (!headp)
 		    headp = bp;
 
@@ -2560,6 +2569,27 @@ int parsemail(char *mbox,	/* file name */
     return num_added;			/* amount of mails read */
 }
 
+static void check_expiry(struct emailinfo *emp)
+{
+    long email_time;
+    const char *option = "expires";
+    if (!emp->is_deleted) {
+        if (emp->exp_time != -1 && emp->exp_time < time(NULL))
+	    emp->is_deleted = FILTERED_EXPIRE;
+	email_time = emp->fromdate;
+	if (email_time == -1)
+	    email_time = emp->date;
+	if (email_time != -1 && set_delete_older
+	    && email_time < convtoyearsecs(set_delete_older)) {
+	    emp->is_deleted = FILTERED_OLD;
+	    option = "delete_older";
+	}
+	if (emp->is_deleted)
+	    printf("message %d deleted under option %s. msgid: %s\n",
+		   emp->msgnum+1, option, emp->msgid);
+    }
+}
+
 int parse_old_html(int num, struct emailinfo *ep, int parse_body,
 		   int do_insert, struct reply **replylist_tmp)
 {
@@ -2651,7 +2681,7 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
 		else if (!strcasecmp(command, "expires")) {
 		    valp = getvalue(line);
 		    if (valp) {
-			exp_time = convtoyearsecs(valp);
+			exp_time = strcmp(valp, "-1") ? iso_to_secs(valp) : -1;
 			free(valp);
 		    }
 		}
@@ -2736,6 +2766,7 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
 	    if (do_insert) {
 	        emp->exp_time = exp_time;
 		emp->is_deleted = is_deleted;
+		check_expiry(emp);
 		if (insert_in_lists(emp, NULL, 0))
 		    ++num_added;
 	    }
@@ -3018,6 +3049,7 @@ static int loadoldheadersfromGDBMindex(char *dir)
 	  dp += strlen(dp) + 1;
 	  if (dp < dp_end) {
 	      exp_time = iso_to_secs(dp);
+	      if (!*dp) exp_time = -1;
 	      dp += strlen(dp) + 1;
 	  }
 	  if (dp < dp_end) {
@@ -3029,6 +3061,7 @@ static int loadoldheadersfromGDBMindex(char *dir)
 			   fromdate, charset, isodate, isofromdate, bp)) {
 	      emp->exp_time = exp_time;
 	      emp->is_deleted = is_deleted;
+	      check_expiry(emp);
 	      if (insert_in_lists(emp, NULL, 0))
 		  ++num_added;
 	      if (num == max_num) {

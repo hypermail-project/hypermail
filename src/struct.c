@@ -69,6 +69,7 @@ void fill_email_dates(struct emailinfo *e, char *date, char *fromdate,
 	e->datestr = strsav(date);
     }
     else {
+	e->date = e->fromdate = -1;
 	if (!strcmp(date, NODATE)) {
 	    date_valid = 0;
 	}
@@ -339,6 +340,7 @@ int insert_in_lists(struct emailinfo *emp, const bool *require_filter, int rlen)
 	    case FILTERED_EXPIRE:   option = "expires"; break;
 	    case FILTERED_OUT:      option = "filter_out or filter_out_full_body"; break;
 	    case FILTERED_REQUIRED: option = "filter_require or filter_require_full_body"; break;
+	    case FILTERED_OLD: option = "delete_older"; break;
 	    }
 	    printf("message %d deleted under option %s. msgid: %s\n",
 		   emp->msgnum+1, option, emp->msgid);

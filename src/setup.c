@@ -118,6 +118,7 @@ bool set_iso2022jp;
 struct hmlist *set_deleted = NULL;
 struct hmlist *set_expires = NULL;
 struct hmlist *set_delete_msgnum = NULL;
+char *set_delete_older;
 int set_delete_level;
 
 struct Config cfg[] = {
@@ -557,6 +558,10 @@ struct Config cfg[] = {
     {"expires", &set_expires, "Expires", CFG_LIST,
      "# This is the list of headers that indicate the message should\n"
      "# not be displayed if the value of this header is a date in the past.\n"},
+
+    {"delete_older", &set_delete_older, NULL, CFG_STRING,
+     "# Any message older than this date should not be displayed.\n"},
+
     {"delete_msgnum", &set_delete_msgnum, NULL, CFG_LIST,
      "# This is the list of message numbers that should be deleted from the\n"
      "# html archive. The mbox is not changed.\n"},
@@ -1067,6 +1072,7 @@ void dump_config(void)
     printf("set_msgsperfolder = %d\n",set_msgsperfolder);
     printf("set_iso2022jp = %d\n",set_iso2022jp);
     printf("set_delete_level = %d\n",set_delete_level);
+    printf("set_delete_older = %d\n",set_delete_older);
 
     if (!set_ihtmlheader)
         printf("set_ihtmlheader = Not set\n");
