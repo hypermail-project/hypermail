@@ -1,6 +1,28 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Peter McCluskey (Dec 19 2001)
+   Create version 2.1.4 tarball.
+
+Peter McCluskey (Dec 14 2001)
+   Applied patch from William King adding </li>'s.
+
+Peter McCluskey (Dec 10 2001)
+   Fix bug in chronological ordering of folders.
+
+Peter McCluskey (Dec 6 2001)
+   Applied patch from William King to fix footer links on attachment index.
+
+Peter McCluskey (Dec 4 2001)
+   Change to detect start of new message when mime boundary missing,
+   treat unbounded text as plain text body.
+
+Peter McCluskey (Dec 2 2001)
+   Applied patches from William King:
+    -  DTD changed to strict.
+    -  </p> now emitted.
+    - Some tags were not contained properly. Now wrapped in <p></p>.
+
 Peter McCluskey (Dec 1 2001)
    Applied patches from William King to string function defines and gdbm
    configuration.
