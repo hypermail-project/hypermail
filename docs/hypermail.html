@@ -398,6 +398,14 @@ the <a href="hmrc.html#searchbackmsgnum">searchbackmsgnum</a> option to alter th
     format. Set to 0 if you want the standard Hypermail index 
     page look and feel.
 <P>
+<DT><STRONG>HM_FILTER_OUT expression</STRONG>
+Delete messages with headers matching regular expressions
+(<a href="http://www.pcre.org/">PCRE</a> syntax).
+See also <a href="hmrc.html#filter_require">filter_require</a>,
+<a href="hmrc.html#filter_out_full_body">filter_out_full_body</a>, and
+<a href="hmrc.html#filter_require_full_body">filter_require_full_body</a>.
+
+<P>
 <DT> <STRONG>HM_DOMAINADDR "domainname"</STRONG>
 <DD>Set this to the domainname you want added to a mail address appearing
 in the RFC822 field which lack a hostname. When the list resides on the 

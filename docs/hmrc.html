@@ -137,6 +137,13 @@ on or off.
     <li><a href="#discard_dup_msgids">discard_dup_msgids</a>
     <li><a href="#require_msgids">require_msgids</a> discard messages without ids
     </ul>
+  <li><a href="#filters">Message Filtering</a>
+    <ul>
+    <li><a href="#filter_out">filter_out</a> delete files with header line(s)
+    <li><a href="#filter_require">filter_require</a> delete files without header line(s)
+    <li><a href="#filter_out_full_body">filter_out_full_body</a> delete files with line(s)
+    <li><a href="#filter_require_full_body">filter_require_full_body</a> delete files without line(s)
+    </ul>
   <li><a href="#files">Filesystem Output</a>
     <ul>
     <li><a href="#dir">dir</a> where the archive goes
@@ -866,6 +873,57 @@ Set this to 0 to accept messages without a Message-ID header.
 <br> 
 <br><i>require_msgids = 1</i>
 </dd>
+
+<h3><a name="filters">Message Filtering</a></h3>
+ Regular expression support is provided by the
+<a href="http://www.pcre.org/">PCRE</a> library package,
+which is open source software, written by Philip Hazel, and copyright
+by the University of Cambridge, England.
+<p>
+ The full body searches can be slow, and do not match multi-line strings
+in message bodies. A string that spans multiple lines of a header can be
+matched.
+<p>
+
+<a name="filter_out"></a>
+<dt><strong>filter_out = expression</strong></dt><dd>
+ Delete from the html archives any message having a header line
+which matches any of these expressions. Uses the same rules for
+deletion as the expires option. The expressions use the same
+syntax as Perl regular expressions.
+<p> The following examples should reject messages Cc'd to more than
+3 addresses or from any address at spammers.com. This option is disabled
+by default.
+<br>
+<br><i>filter_out=Cc:([^,]*,){3}</i>
+<br><i>filter_out=From:.+@spammers.com
+</dd>
+<a name="filter_require"></a>
+<dt><strong>filter_require = expression</strong></dt><dd>
+ Delete from the html archives any message not having header lines
+which match each of these expressions. Uses the same rules for
+deletion as the expires option. The expressions use the same
+syntax as Perl regular expressions.
+<br>
+<br><i>filter_require =</i>
+</dd>
+<a name="filter_out_full_body"></a>
+<dt><strong>filter_out_full_body = expression</strong></dt><dd>
+ Delete from the html archives any message having a line
+which matches any of these expressions. Uses the same rules for
+deletion as the expires option. The expressions use the same
+syntax as Perl regular expressions.
+<br>
+<br><i>filter_out_full_body =</i>
+</dd>
+<a name="filter_require_full_body"></a>
+<dt><strong>filter_require_full_body = expression</strong></dt><dd>
+ Delete from the html archives any message not having lines
+which match each of these expressions. Uses the same rules for
+deletion as the expires option. The expressions use the same
+syntax as Perl regular expressions.
+<br>
+<br><i>filter_require_full_body = </i>
 
 <h3><a name="files">Filesystem output</a></h3>
 <a name="dir"></a>

@@ -30,6 +30,11 @@ int rbs_bigtime = 0;
 #include "struct.h"
 #include "parse.h"
 
+#define HAVE_PCRE
+#ifdef HAVE_PCRE
+#include <pcre.h>
+#endif
+
 struct body *hashnumlookup(int, struct emailinfo **);
 
 /* 
@@ -299,8 +304,9 @@ struct emailinfo *addhash(int num, char *date, char *name,
     return e;			/* the actual mail struct pointer */
 }
 
-int insert_in_lists(struct emailinfo *emp)
+int insert_in_lists(struct emailinfo *emp, const bool *require_filter, int rlen)
 {
+    int i;
     if (set_delete_msgnum) {
 	char num_str[32];
 	sprintf(num_str, "%d", emp->msgnum);
@@ -312,6 +318,12 @@ int insert_in_lists(struct emailinfo *emp)
 	    emp->is_deleted = 1;
 	}
     }
+    for(i = 0; i < rlen; ++i) {
+	if (!require_filter[i]) {
+	    emp->is_deleted = 8;
+	}
+    }
+
     if (emp->is_deleted) {
 	struct hashemail *h;
 	h = (struct hashemail *)malloc(sizeof(struct hashemail));
@@ -1017,6 +1029,93 @@ int inlist_pos(struct hmlist *listname, char *wildcard)
 	/* wildcard checks enabled! */
 	if (Match(wildcard, tlist->val))
 	    return i;
+    }
+    return -1;
+}
+
+static int regex_index(struct hmlist *listname, int index)
+{
+    static int start[5] = { -1, -1, -1, -1, -1};
+    if (start[0] == -1) {
+	struct hmlist *tlist;
+	start[1] = start[0] = 0;
+	for (tlist = set_filter_out; tlist != NULL; tlist = tlist->next)
+	    ++start[1];
+	start[2] = start[1];
+	for (tlist = set_filter_require; tlist != NULL; tlist = tlist->next)
+	    ++start[2];
+	start[3] = start[2];
+	for (tlist = set_filter_out_full_body; tlist != NULL; tlist = tlist->next)
+	    ++start[3];
+	start[4] = start[3];
+	for (tlist = set_filter_require_full_body; tlist != NULL; tlist = tlist->next)
+	    ++start[4];
+    }
+    if (index == -1) return start[4];
+    if (listname == set_filter_out) return start[0] + index;
+    if (listname == set_filter_require) return start[1] + index;
+    if (listname == set_filter_out_full_body) return start[2] + index;
+    if (listname == set_filter_require_full_body) return start[3] + index;
+    return -1;
+}
+
+/*
+** like inlist_pos, but does regex search
+*/
+
+int inlist_regex_pos(struct hmlist *listname, char *str)
+{
+    struct hmlist *tlist;
+    int i;
+
+    for (i = 0, tlist = listname; tlist != NULL; i++, tlist = tlist->next) {
+#ifdef HAVE_PCRE
+	int r;
+	const char *errptr;
+	int epos;
+	int index = regex_index(listname, i);
+	static pcre *p, **pcre_list;
+	static pcre_extra *extra, **extra_list;
+	if (!pcre_list) {
+	    int n = regex_index(NULL, -1);
+	    int i;
+	    pcre_list = (pcre **)emalloc(n * sizeof(pcre *));
+	    extra_list = (pcre_extra **)emalloc(n * sizeof(pcre_extra *));
+	    for (i = 0; i < n; ++i) {
+	        pcre_list[i] = NULL;
+	        extra_list[i] = NULL;
+	    }
+	}
+	if ((p = pcre_list[index]) == NULL) {
+	    p = pcre_compile(tlist->val, 0, &errptr, &epos, NULL);
+	    if (!p) {
+	        sprintf(errmsg, "Error at position %d of regular expression '%s': %s",
+			epos, tlist->val, errptr);
+		progerr(errmsg);
+	    }
+	    extra = pcre_study(p, 0, &errptr);
+	    if (errptr) {
+	        sprintf(errmsg, "Error studying regular expression '%s': %s",
+			tlist->val, errptr);
+		progerr(errmsg);
+	    }
+	    pcre_list[index] = p;
+	    extra_list[index] = extra;
+	}
+	extra = extra_list[index];
+	r = pcre_exec(p, extra, str, strlen(str), 0, 0, NULL, 0);
+	
+	if (r >= 0)
+	    return i;
+#else
+	static int warned = 0;
+	if (set_showprogress && !warned) {
+	    warned = 1;
+	    printf("warning - regex not available\n");
+	}
+	if (strstr(tlist->val, str))
+	    return i;
+#endif
     }
     return -1;
 }

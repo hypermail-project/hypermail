@@ -725,3 +725,39 @@ delete_level = 1
 # message.
 
 show_index_links = 1
+
+# filter_out
+#
+# Delete from the html archives any message having a header line
+# which matches any of these expressions. Uses the same rules for
+# deletion as the expires option. The expressions use the same
+# syntax as Perl regular expressions.
+
+#filter_out =
+
+# filter_require
+#
+# Delete from the html archives any message not having header lines
+# which match each of these expressions. Uses the same rules for
+# deletion as the expires option. The expressions use the same
+# syntax as Perl regular expressions.
+
+#filter_require =
+
+# filter_out_full_body = string
+#
+# Delete from the html archives any message having a line
+# which matches any of these expressions. Uses the same rules for
+# deletion as the expires option. The expressions use the same
+# syntax as Perl regular expressions.
+
+#filter_out_full_body =
+
+# filter_require_full_body = string
+#
+# Delete from the html archives any message not having lines
+# which match each of these expressions. Uses the same rules for
+# deletion as the expires option. The expressions use the same
+# syntax as Perl regular expressions.
+
+#filter_require_full_body = 

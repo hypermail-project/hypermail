@@ -27,11 +27,11 @@ INSTALL_PROG=@INSTALL@
 #WNOERROR=-Werror
 #WARNINGS=$(WNOERROR) -ansi -pedantic -Wall -Wtraditional -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Dlint
 
-CFLAGS=@CFLAGS@ @INCLUDES@  $(WARNINGS)
+CFLAGS=@CFLAGS@ @INCLUDES@ -Ipcre $(WARNINGS)
 YACC=@YACC@
 NETLIBS=@LIBS@
-LDFLAGS=@LDFLAGS@
-MISC_LIBS= -lm
+LDFLAGS=@LDFLAGS@ -Lpcre
+MISC_LIBS= -lm -lpcre
 OPT_LIBS=@EXTRA_LIBS@
 
 INCS=		domains.h hypermail.h lang.h proto.h \
@@ -54,7 +54,10 @@ MAILOBJS=	mail.o ../libcgi/libcgi.a
 .c.o:
 	$(CC) -c $(CFLAGS) $<
 
-all:   hypermail$(SUFFIX) mail$(SUFFIX)
+all:   hypermail$(SUFFIX) mail$(SUFFIX) pcre
+
+pcre:
+	@cd pcre; $(MAKE) libpcre.a CC="$(CC)" CFLAGS="$(CFLAGS)"
 
 hypermail$(SUFFIX): $(OBJS) 
 	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(OBJS) $(OPT_LIBS) $(MISC_LIBS)

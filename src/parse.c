@@ -1078,6 +1078,10 @@ int parsemail(char *mbox,	/* file name */
     int num_added = 0;
     long exp_time = -1;
     int is_deleted = 0;
+    int pos;
+    bool *require_filter, *require_filter_full;
+    int require_filter_len, require_filter_full_len;
+    struct hmlist *tlist;
     char filename[MAXFILELEN];
     struct emailinfo *emp;
     char *att_dir = NULL;	/* directory name to store attachments in */
@@ -1186,6 +1190,20 @@ int parsemail(char *mbox,	/* file name */
     bp = NULL;
     subject = NOSUBJECT;
 
+    require_filter_len = require_filter_full_len = 0;
+    for (tlist = set_filter_require; tlist != NULL; require_filter_len++, tlist = tlist->next)
+	;
+    for (tlist = set_filter_require_full_body; tlist != NULL;
+	 require_filter_full_len++, tlist = tlist->next)
+	;
+    pos = require_filter_len + require_filter_full_len;
+    require_filter = (bool *)emalloc(pos * sizeof(*require_filter));
+    require_filter_full = require_filter + require_filter_len;
+    for (pos = 0; pos < require_filter_len; ++pos)
+	require_filter[pos] = FALSE;
+    for (pos = 0; pos < require_filter_full_len; ++pos)
+	require_filter_full[pos] = FALSE;
+
     if (!increment) {
 	replylist = NULL;
 	subjectlist = NULL;
@@ -1216,6 +1234,14 @@ int parsemail(char *mbox,	/* file name */
 	    }
 	}
 	line = line_buf + set_ietf_mbox; 
+	if (!is_deleted &&
+	    inlist_regex_pos(set_filter_out_full_body, line) != -1) {
+	    is_deleted = 4;
+	}
+	pos = inlist_regex_pos(set_filter_require_full_body, line);
+	if (pos != -1 && pos < require_filter_full_len) {
+	    require_filter_full[pos] = TRUE;
+	}
 	if (isinheader) {
 	    if (!strncasecmp(line_buf, "From ", 5))
 		strcpymax(fromdate, dp = getfromdate(line), DATESTRLEN);
@@ -1289,6 +1315,16 @@ int parsemail(char *mbox,	/* file name */
 			if (exp_time != -1 && exp_time < time(NULL))
 			    is_deleted = 2;
 			free(val);
+		    }
+
+		    if (!is_deleted &&
+			inlist_regex_pos(set_filter_out, head->line) != -1) {
+		        is_deleted = 4;
+		    }
+
+		    pos = inlist_regex_pos(set_filter_require, head->line);
+		    if (pos != -1 && pos < require_filter_len) {
+		        require_filter[pos] = TRUE;
 		    }
 
 		    if (!strncasecmp(head->line, "Date:", 5)) {
@@ -1819,10 +1855,15 @@ int parsemail(char *mbox,	/* file name */
 		if (emp) {
 		    emp->exp_time = exp_time;
 		    emp->is_deleted = is_deleted;
-		    if (insert_in_lists(emp))
+		    if (insert_in_lists(emp, require_filter,
+					require_filter_len + require_filter_full_len))
 		        ++num_added;
 		    num++;
 		}
+		for (pos = 0; pos < require_filter_len; ++pos)
+		    require_filter[pos] = FALSE;
+		for (pos = 0; pos < require_filter_full_len; ++pos)
+		    require_filter_full[pos] = FALSE;
 		if (set_txtsuffix)
 		    write_txt_file(emp, &raw_text_buf);
 
@@ -2348,7 +2389,8 @@ int parsemail(char *mbox,	/* file name */
 	if (emp) {
 	    emp->exp_time = exp_time;
 	    emp->is_deleted = is_deleted;
-	    if (insert_in_lists(emp))
+	    if (insert_in_lists(emp, require_filter,
+				require_filter_len + require_filter_full_len))
 	        ++num_added;
 	    if (set_txtsuffix)
 	        write_txt_file(emp, &raw_text_buf);
@@ -2408,6 +2450,7 @@ int parsemail(char *mbox,	/* file name */
 	hassubject = 0;
 	hasdate = 0;
     }
+    free(require_filter);
 
     if (set_showprogress && !readone)
 	print_progress(num, lang[MSG_ARTICLES], NULL);
@@ -2644,7 +2687,7 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
 	    if (do_insert) {
 	        emp->exp_time = exp_time;
 		emp->is_deleted = is_deleted;
-		if (insert_in_lists(emp))
+		if (insert_in_lists(emp, NULL, 0))
 		    ++num_added;
 	    }
 
@@ -2935,7 +2978,7 @@ static int loadoldheadersfromGDBMindex(char *dir)
 			   fromdate, charset, isodate, isofromdate, bp)) {
 	      emp->exp_time = exp_time;
 	      emp->is_deleted = is_deleted;
-	      if (insert_in_lists(emp))
+	      if (insert_in_lists(emp, NULL, 0))
 		  ++num_added;
 	      if (num == max_num) {
 		  char *filename = articlehtmlfilename(emp);

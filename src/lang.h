@@ -170,6 +170,7 @@ struct language_entry {
 #define MSG_EXPIRED                              114
 #define MSG_DEL_SHORT                            115
 #define MSG_TXT_VERSION                          116
+#define MSG_FILTERED_OUT                         117
 
 #ifdef MAIN_FILE
 
@@ -303,6 +304,7 @@ char *de[] = {       /* German */
   "This message has expired",                       /* MSG_EXPIRED -HTML */
   "(deleted message)", /* MSG_DEL_SHORT                            -HTML */
   "Original text of this message", /* MSG_TXT_VERSION                          -HTML */
+  "This message has been filtered out",        /* MSG_FILTERED_OUT -HTML */
   NULL,                                   /* End Of Message Table - NOWHERE*/
 };
 
@@ -429,6 +431,7 @@ char *en[] = {       /* English */
   "This message has expired",                       /* MSG_EXPIRED -HTML */
   "(deleted message)", /* MSG_DEL_SHORT                            -HTML */
   "Original text of this message", /* MSG_TXT_VERSION                          -HTML */
+  "This message has been filtered out",        /* MSG_FILTERED_OUT -HTML */
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 
@@ -564,6 +567,7 @@ char *es[] = {       /* Espanol/Spanish */
   "This message has expired",                       /* MSG_EXPIRED -HTML */
   "(deleted message)", /* MSG_DEL_SHORT                            -HTML */
   "Original text of this message", /* MSG_TXT_VERSION                          -HTML */
+  "This message has been filtered out",        /* MSG_FILTERED_OUT -HTML */
   NULL,                               /* End Of Message Table */
 };
 
@@ -689,6 +693,7 @@ char *fi[] = {       /* Finnish */
   "This message has expired",                       /* MSG_EXPIRED -HTML */
   "(deleted message)", /* MSG_DEL_SHORT                            -HTML */
   "Original text of this message", /* MSG_TXT_VERSION                          -HTML */
+  "This message has been filtered out",        /* MSG_FILTERED_OUT -HTML */
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -816,6 +821,7 @@ char *fr[] = {       /* French */
   "This message has expired",                       /* MSG_EXPIRED -HTML */
   "(deleted message)", /* MSG_DEL_SHORT                            -HTML */
   "Original text of this message", /* MSG_TXT_VERSION                          -HTML */
+  "This message has been filtered out",        /* MSG_FILTERED_OUT -HTML */
   NULL,                                  /* End Of Message Table  - NOWHERE*/
 };
 
@@ -943,6 +949,7 @@ char *is[] = {       /* Icelandic */
   "This message has expired",                       /* MSG_EXPIRED -HTML */
   "(deleted message)", /* MSG_DEL_SHORT                            -HTML */
   "Original text of this message", /* MSG_TXT_VERSION                          -HTML */
+  "This message has been filtered out",        /* MSG_FILTERED_OUT -HTML */
   NULL,                               /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1075,6 +1082,7 @@ char *se[] = {
   "This message has expired",                       /* MSG_EXPIRED -HTML */
   "(deleted message)", /* MSG_DEL_SHORT                            -HTML */
   "Original text of this message", /* MSG_TXT_VERSION                          -HTML */
+  "This message has been filtered out",        /* MSG_FILTERED_OUT -HTML */
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 

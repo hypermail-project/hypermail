@@ -830,7 +830,6 @@ char *ConvURLsString(char *line, char *mailid, char *mailsubject)
     return parsed;
 }
 
-
 /*
 ** The heuristics for displaying an otherwise ordinary line (a non-quote,
 ** non-sig, non-inhtml, non-blank line) if 'showhtml' is 1 (which really means
@@ -873,7 +872,11 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply)
     if (email->is_deleted && set_delete_level != DELETE_LEAVES_TEXT
 	&& !(email->is_deleted == 2
 	     && set_delete_level == DELETE_LEAVES_EXPIRED_TEXT)) {
-        fprintf(fp, lang[email->is_deleted == 2 ? MSG_EXPIRED : MSG_DELETED]);
+        int d_index = MSG_DELETED;
+	if (email->is_deleted == 2) d_index = MSG_EXPIRED;
+	if (email->is_deleted == 4 || email->is_deleted == 8)
+	    d_index = MSG_FILTERED_OUT;
+        fprintf(fp, lang[d_index]);
 	printcomment(fp, "body", "end");
 	if (set_showhr)
 	    fprintf(fp, "<hr noshade>\n");

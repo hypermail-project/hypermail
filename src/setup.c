@@ -91,6 +91,10 @@ struct hmlist *set_ignore_types = NULL;
 struct hmlist *set_show_headers = NULL;
 struct hmlist *set_avoid_indices = NULL;
 struct hmlist *set_avoid_top_indices = NULL;
+struct hmlist *set_filter_out = NULL;
+struct hmlist *set_filter_require = NULL;
+struct hmlist *set_filter_out_full_body = NULL;
+struct hmlist *set_filter_require_full_body = NULL;
 
 char *set_ihtmlheader;
 char *set_ihtmlfooter;
@@ -542,6 +546,29 @@ struct Config cfg[] = {
      "# set this to the extension that you want these messages to have\n"
      "# (recommended value: txt).\n"},
 
+    {"filter_out", &set_filter_out, NULL, CFG_STRINGLIST,
+     "# Delete from the html archives any message having a header line\n"
+     "# which matches any of these expressions. Uses the same rules for\n"
+     "# deletion as the expires option. The expressions use the same\n"
+     "# syntax as Perl regular expressions.\n"},
+
+    {"filter_require", &set_filter_require, NULL, CFG_STRINGLIST,
+     "# Delete from the html archives any message not having header lines\n"
+     "# which match each of these expressions. Uses the same rules for\n"
+     "# deletion as the expires option. The expressions use the same\n"
+     "# syntax as Perl regular expressions.\n"},
+
+    {"filter_out_full_body", &set_filter_out_full_body, NULL, CFG_STRINGLIST,
+     "# Delete from the html archives any message having a line\n"
+     "# which matches any of these expressions. Uses the same rules for\n"
+     "# deletion as the expires option. The expressions use the same\n"
+     "# syntax as Perl regular expressions.\n"},
+
+    {"filter_require_full_body", &set_filter_require_full_body, NULL, CFG_STRINGLIST,
+     "# Delete from the html archives any message not having lines\n"
+     "# which match each of these expressions. Uses the same rules for\n"
+     "# deletion as the expires option. The expressions use the same\n"
+     "# syntax as Perl regular expressions.\n"},
 };
 
 /* ---------------------------------------------------------------- */
@@ -575,6 +602,7 @@ void MakeConfig(bool comments)
 			    cfg[i].def ? (char *)cfg[i].def : "");
 		break;
 	    case CFG_LIST:
+	    case CFG_STRINGLIST:
 		if (cfg[i].changed) {
 		    print_list(cfg[i].label,
 			       *(struct hmlist **)cfg[i].value);
@@ -666,6 +694,18 @@ void PreConfig(void)
 		*(struct hmlist **)cfg[i].value = NULL;
 		*(struct hmlist **)cfg[i].value =
 		    (void *)add_list(*(struct hmlist **)cfg[i].value, tpstr);
+                free(tpstr);
+            }
+	    else
+		*(struct hmlist **)cfg[i].value = NULL;
+	    break;
+	case CFG_STRINGLIST:
+	    if (defval) {
+                char *tpstr;
+                tpstr = strsav(defval);
+		*(struct hmlist **)cfg[i].value = NULL;
+		*(struct hmlist **)cfg[i].value =
+		    (void *)add_2_list(*(struct hmlist **)cfg[i].value, tpstr);
                 free(tpstr);
             }
 	    else
@@ -798,6 +838,25 @@ int ConfigAddItem(char *cfg_line)
 		    *(struct hmlist **)cfg[i].value =
 		       (void *)add_list(*(struct hmlist **)cfg[i].value,towhat);
 		    break;
+
+		case CFG_STRINGLIST:
+
+                    /* Is this the first time that it's been called
+                     * for this list ? If so then there is a value
+                     * being set for the list via a config file.
+                     * In the case of lists we need to replace the
+                     * current value with the new material completely.
+                     */
+                    if (cfg[i].changed == FALSE) { /* first time through ? */
+                        if (cfg[i].value) {
+                            if (*(struct hmlist **)cfg[i].value)
+                                 free(*(struct hmlist **)cfg[i].value);
+		            *(struct hmlist **)cfg[i].value = NULL;
+                        }
+                    }
+		    *(struct hmlist **)cfg[i].value =
+		       (void *)add_2_list(*(struct hmlist **)cfg[i].value,towhat);
+		    break;
 		default:
 		    break;
 		}
@@ -843,6 +902,7 @@ void ConfigCleanup(void)
     for (i = 0; i < sizeof(cfg) / sizeof(cfg[0]); i++) {
 	switch (cfg[i].flags) {
 	case CFG_LIST:
+	case CFG_STRINGLIST:
 	    if (cfg[i].value) {
 		if (*(struct hmlist **)cfg[i].value)
 		    free(*(struct hmlist **)cfg[i].value);

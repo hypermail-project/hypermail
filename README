@@ -238,3 +238,7 @@ Additionally:
     to them. If you are talented with graphics and would like to donate
     new icons and images to the hypermail effort, please feel free.
 
+
+ Regular expression support is provided by the PCRE library package,
+which is open source software, written by Philip Hazel, and copyright
+by the University of Cambridge, England. See http://www.pcre.org/.

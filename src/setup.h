@@ -20,6 +20,7 @@ struct Config {
 #define CFG_LIST    3		/* comma seperated list, uses itemlist */
 #define CFG_FUNCTION 4		/* function */
 #define CFG_OCTAL   5		/* numerical, octal based */
+#define CFG_STRINGLIST    6	/* uses itemlist, whole lines used as items */
 
 #define BTRUE (void *)1
 #define BFALSE (void *)0
@@ -113,6 +114,10 @@ extern struct hmlist *set_ignore_types;
 extern struct hmlist *set_show_headers;
 extern struct hmlist *set_avoid_indices;
 extern struct hmlist *set_avoid_top_indices;
+extern struct hmlist *set_filter_out;
+extern struct hmlist *set_filter_require;
+extern struct hmlist *set_filter_out_full_body;
+extern struct hmlist *set_filter_require_full_body;
 
 extern char *set_ihtmlheader;
 extern char *set_ihtmlfooter;

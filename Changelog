@@ -1,5 +1,20 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Peter McCluskey (May 11 2001)
+  - add filter options (using pcre regular expressions):
+     filter_out
+     filter_require
+     filter_out_full_body
+     filter_require_full_body
+
+Peter McCluskey (May 9 2001)
+  - fix links to attachments in subdir index files.
+
+Peter McCluskey (May 8 2001)
+  - fixed bug with incremental update that caused the index files to
+   ignore messages beyond set_searchbackmsgnum.
+
 Daniel Stenberg (May 8 2001)
   - Removed the last traces of mprintf.[ch] and made the trio stuff work
     completely as a replacement.

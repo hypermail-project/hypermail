@@ -28,9 +28,9 @@ INSTALL_PROG=@INSTALL@
  
 # Compiler to use
 CC=@CC@ 
-CFLAGS=@CFLAGS@ @INCLUDES@ $(WARNINGS)
+CFLAGS=@CFLAGS@ @INCLUDES@ -Ipcre $(WARNINGS)
 LIBS=@LIBS@
-LDFLAGS=@LDFLAGS@
+LDFLAGS=@LDFLAGS@ -Lpcre
 
 all:   hypermail support 
 

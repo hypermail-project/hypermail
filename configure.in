@@ -11,6 +11,8 @@ INCLUDES=""
 GDBM_INCLUDE=""
 GDBM_LIB=""
 
+AC_CONFIG_SUBDIRS(src/pcre)
+
 dnl ===========================================================================
 dnl Get host, target and build variables filled with appropriate info.
 dnl ===========================================================================

@@ -8,7 +8,7 @@ void fill_email_dates(struct emailinfo *, char *, char *, char *, char *);
 struct emailinfo *addhash(int, char *, char *, char *, char *, char *, char *,
 			  char *, char *, char *, char *, struct body *);
 
-int insert_in_lists(struct emailinfo *);
+int insert_in_lists(struct emailinfo *, const bool *, int);
 
 struct emailinfo *hashreplylookup(int, char *, char *, int *);
 
@@ -37,5 +37,6 @@ struct boundary *bound(struct boundary *, char *);
 void print_list(char *, struct hmlist *);
 int inlist(struct hmlist *, char *);
 int inlist_pos(struct hmlist *, char *);
+int inlist_regex_pos(struct hmlist *, char *);
 struct hmlist *add_2_list(struct hmlist *, char *);
 struct hmlist *add_list(struct hmlist *, char *);
