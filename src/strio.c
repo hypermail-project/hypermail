@@ -436,7 +436,7 @@ char *StrSubstringMax(const char *string, size_t max, const char *find)
 double StrToDouble(const char *source, const char **endp)
 {
 #if defined(TRIO_C99)
-  return strtod(source, endp);
+  return strtod(source, (char **)endp);
 #else
   /* Preliminary code */
   int isNegative = FALSE;
@@ -556,7 +556,7 @@ double StrToDouble(const char *source, const char **endp)
 float StrToFloat(const char *source, const char **endp)
 {
 #if defined(TRIO_C99)
-  return strtof(source, endp);
+  return strtof(source, (char **)endp);
 #else
   return (float)StrToDouble(source, endp);
 #endif
