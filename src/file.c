@@ -461,7 +461,7 @@ struct emailsubdir *msg_subdir(int msgnum, time_t date)
     else
 	return NULL;
     if (!last_subdir || strcmp(s, last_subdir->subdir)) {
-	last_subdir = new_subdir(s, last_subdir, desc);
+	last_subdir = new_subdir(s, last_subdir, desc, date);
     }
     return last_subdir;
 }

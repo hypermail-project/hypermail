@@ -214,6 +214,7 @@ struct emailsubdir {	/* used by set_folder_by_date, set_msgsperfolder */
     char *rel_path_to_top;	/* usually "../", sometimes "../../" */
     int count;
     char *description;		/* label to go in folders.html */
+    time_t a_date; /* date of msg which first generated this subdir. not guaranteed to be earliest date in subdir */
 };
 
 struct emailinfo {

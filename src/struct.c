@@ -918,10 +918,11 @@ struct header *addheader(struct header *hp,
 }
 
 struct emailsubdir *new_subdir(char *subdir, struct emailsubdir *last_subdir,
-			       char *description)
+			       char *description, time_t date)
 {
     struct emailsubdir *sd = folders;
     struct emailsubdir *new_sd;
+    struct emailsubdir *insert_point = NULL;
     int count;
     char *p;
 
@@ -930,20 +931,33 @@ struct emailsubdir *new_subdir(char *subdir, struct emailsubdir *last_subdir,
 	    return sd;
 	if (sd->next_subdir == NULL)
 	    break;
+	if (sd->a_date < date
+	    && (!insert_point || sd->a_date > insert_point->a_date))
+	    insert_point = sd;
 	sd = sd->next_subdir;
     }
     new_sd = (struct emailsubdir *)emalloc(sizeof(struct emailsubdir));
-    if (sd == NULL)
-	folders = new_sd;
-    else
-	sd->next_subdir = new_sd;
-    new_sd->prior_subdir = sd;
     new_sd->next_subdir = NULL;
+    new_sd->prior_subdir = NULL;
+    if (insert_point == NULL)
+	insert_point = sd;
+    if (insert_point == NULL)
+	folders = new_sd;
+    else if (date < folders->a_date) {
+	new_sd->next_subdir = folders;
+	folders = new_sd;
+    }
+    else {
+	new_sd->next_subdir = insert_point->next_subdir;
+	insert_point->next_subdir = new_sd;
+	new_sd->prior_subdir = insert_point;
+    }
     new_sd->first_email = NULL;
     new_sd->last_email = NULL;
     new_sd->count = 0;
     new_sd->subdir = strsav(subdir);
     new_sd->description = description;
+    new_sd->a_date = date;
     new_sd->rel_path_to_top = strsav("../");
     count = 0;
     for (p = subdir; *p; ++p)

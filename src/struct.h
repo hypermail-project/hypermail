@@ -26,7 +26,7 @@ struct reply *addreply2(struct reply *, struct emailinfo *, struct emailinfo *,
 			int, struct reply **);
 int rmlastlines(struct body *);
 
-struct emailsubdir *new_subdir(char *, struct emailsubdir *, char *);
+struct emailsubdir *new_subdir(char *, struct emailsubdir *, char *, time_t);
 
 struct printed *markasprinted(struct printed *, int);
 int wasprinted(struct printed *, int);
