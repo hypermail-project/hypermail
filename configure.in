@@ -245,15 +245,16 @@ ifelse($3,,[
   if test -n "$2"; then
     AC_ADD_LIBPATH($2)
   fi
-  $EXTRA_LIBS = "$EXTRA_LIBS $1"
-],[
-  AC_ADD_LIBRARY_WITH_PATH($1,$2)
-])
+  EXTRA_LIBS="$EXTRA_LIBS $1" ],[
+    AC_ADD_LIBRARY_WITH_PATH($1,$2)
+  ])
 ])
 
 AC_ARG_WITH(gdbm,
-[  --with-gdbm[=DIR]       Include GDBM support],[
-  if test "$withval" != "no"; then
+[  --with-gdbm[=DIR]       Include GDBM support],
+[ given_gdbm=$withval])
+
+if test "$given_gdbm" != "no"; then
     for i in /usr/local /usr $withval; do
       if test -f "$i/include/gdbm.h"; then
         GDBM_INCLUDE="$i/include"
@@ -263,19 +264,14 @@ AC_ARG_WITH(gdbm,
 
     unset ac_cv_lib_gdbm_gdbm_open
     AC_TEMP_LDFLAGS(-L$THIS_PREFIX/lib,[
-    AC_CHECK_LIB(gdbm, gdbm_open, [GDBM_LIB="gdbm"])
+       AC_CHECK_LIB(gdbm, gdbm_open, [GDBM_LIB="-lgdbm"])
     ])
 
-    if test "$THIS_PREFIX" != "" -a "$THIS_PREFIX" != "/usr"; then
+    if test "$THIS_PREFIX" != "" && test "$THIS_PREFIX" != "/usr"; then
       THIS_LFLAGS="$THIS_PREFIX/lib"
     fi
-    AC_ADD_LIBRARY_WITH_PATH($GDBM_LIB, $THIS_LFLAGS, EXTRA_LIBS)
-    THIS_INCLUDE=""
-    GDBM_LIB=""
-    THIS_LFLAGS=""
-    THIS_PREFIX=""
-  fi
-])
+fi
+
 AC_MSG_CHECKING(for GDBM support)
 
 if test "$GDBM_LIB" = ""; then
@@ -292,14 +288,14 @@ fi
 
 if test "$GDBM_LIB" = "-lgdbm" && test "$GDBM_INCLUDE" = ""; then
   AC_CHECK_HEADER(gdbm.h, [ GDBM_INCLUDE="" ], [ 
-      AC_MSG_RESULT("Try /usr/local/include/gdbm.h"); 
+      AC_MSG_RESULT(Try /usr/local/include/gdbm.h)
       AC_CHECK_HEADER(/usr/local/include/gdbm.h, [ GDBM_INCLUDE="-I/usr/local/include" ],[
-        AC_MSG_RESULT("Try /opt/local/include/gdbm.h");
+        AC_MSG_RESULT(Try /opt/local/include/gdbm.h)
         AC_CHECK_HEADER(/opt/local/include/gdbm.h, [ GDBM_INCLUDE="-I/opt/local/include" ],[
           dnl if in /usr/pkg/include, do not add anything.  See above.
-          AC_MSG_RESULT("Try /usr/pkg/include/gdbm.h");
+          AC_MSG_RESULT(Try /usr/pkg/include/gdbm.h)
           AC_CHECK_HEADER(/usr/pkg/include/gdbm.h, [ GDBM_INCLUDE="" ],[
-            AC_MSG_RESULT("Giving up - You need to install gdbm.h somewhere");
+            AC_MSG_RESULT([Giving up - You need to install gdbm.h somewhere])
             exit
           ])
         ])
