@@ -664,7 +664,7 @@ void printattachments(FILE *fp, struct header *hp, struct emailinfo *subdir_emai
 			stripped_filename = strchr(entry->d_name, '-');
 			if (stripped_filename)
 				fprintf(fp, fmt2, rel_path_to_top, filename, stripped_filename + 1, file_size, lang[MSG_BYTES]);
-			else
+			else if(strcmp(entry->d_name, ".meta"))
 				fprintf(fp, fmt2, rel_path_to_top, filename, entry->d_name, file_size, lang[MSG_BYTES]);
 			free(filename);
 		    }
