@@ -1,5 +1,8 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (September 17, 2002)
+  Added reverse_folders option.
+
  Peter McCluskey (August 30, 2002)
   Fix segfaults in mdecodeRFC2047 (with headers encoded as quoted printable),
   and in ConvURLsString.

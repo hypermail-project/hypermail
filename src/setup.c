@@ -26,6 +26,7 @@ bool set_inlinehtml;
 bool set_increment;
 bool set_readone;
 bool set_reverse;
+bool set_reverse_folders;
 bool set_showprogress;
 bool set_showheaders;
 bool set_showbr;
@@ -211,6 +212,11 @@ struct Config cfg[] = {
      "# date they were received. That is, the most recent messages\n"
      "# will appear at the top of the index rather than the other\n"
      "# way around.\n"},
+
+    {"reverse_folders", &set_reverse_folders, BFALSE, CFG_SWITCH,
+     "# Setting this variable to On will reverse-sort the list of\n"
+     "# folders. That is, the most recent folders will appear at\n"
+     "# the top of the index rather than the other way around.\n"},
 
     {"progress", &set_showprogress, INT(PROGRESS), CFG_INTEGER,
      "# Set this to 1 or 2 to always show a progress report  as\n"

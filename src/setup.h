@@ -50,6 +50,7 @@ extern bool set_inlinehtml;
 extern bool set_increment;
 extern bool set_readone;
 extern bool set_reverse;
+extern bool set_reverse_folders;
 extern bool set_showprogress;
 extern bool set_showheaders;
 extern bool set_showbr;

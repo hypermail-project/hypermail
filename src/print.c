@@ -2716,7 +2716,12 @@ void write_toplevel_indices(int amountmsgs)
 	}
 	fprintf(fp, "<table>\n");
     }
-    for (sd = folders; sd != NULL; sd = sd->next_subdir) {
+    sd = folders;
+    if (set_reverse_folders)
+	while (sd->next_subdir)
+	    sd = sd->next_subdir;
+    for ( ; sd != NULL;
+	  sd = set_reverse_folders ? sd->prior_subdir : sd->next_subdir) {
 	int started_line = 0;
 	int empties = 0;
 	if (!datelist->data)
