@@ -617,11 +617,11 @@ char *convcharsreal(char *line, char *charset, int spamprotect)
 
 char *convcharsnospamprotect(char *line, char *charset)
 {
-    convcharsreal(line, charset, FALSE);
+    return convcharsreal(line, charset, FALSE);
 }
 char *convchars(char *line, char *charset)
 {
-    convcharsreal(line, charset, set_spamprotect);
+    return convcharsreal(line, charset, set_spamprotect);
 }
 
 /*
