@@ -32,6 +32,7 @@
 **              %S - Subject META TAG - Not valid on index pages
 **              %A - Author META TAG - Not valid on index pages
 **              %D - Date META TAG - Not valid on index pages
+**              %G - Two character language
 **              \n - newline character
 **              \t - tab character
 **
@@ -125,6 +126,12 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 	    case 'g':		/* %g - date and time archive generated */
 		for (cp = getlocaltime(); *cp; cp++)
 		    putc(*cp, fp);
+		continue;
+	    case 'G':		/* %G - Language code */
+		if (set_language) {
+		    for (cp = set_language; *cp; cp++)
+			putc(*cp, fp);
+		}
 		continue;
 	    case 'h':		/* %h - Hypermail Resource Center */
 		for (cp = HMURL; *cp; cp++)

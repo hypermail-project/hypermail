@@ -1,5 +1,7 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (Jun 2, 2004)
+  Add language code substitution cookie patch from Shane Wegner.
 
 ============================
 HYPERMAIL VERSION 2.2.0:
