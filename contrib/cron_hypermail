@@ -1,0 +1,156 @@
+#!/usr/bin/perl
+
+=h1
+This perl script is used for calling hypermail via cron.
+
+This script checks to see if an email has arrived in the mailbox. If so, hypermail is called on that mailbox. If not, that mailbox is not processed.
+
+It sends errors and reports to an email address.
+
+In my system, I have about 25 email broadcast lists, implemented with sendmail's aliases files. For every list, I created a user account named "ax" (for archive) prepended to the list name, e.g., axmylist. The account is in group "mail" so that sendmail can operate on it. In the file pointed to by the aliases file, there is an email address of axmylist@domain.com. In virtusertable, axmylist@domain.com is directed to axmylist, which ends up in /var/spool/mail/axmylist.
+
+hypermail is used with a configuration file.
+
+Anyone is welcome to use this script and modify it. It is not in a polished form, and it needs configuration and customizing. However, if it useful to anyone, they are welcome to use it. It is not copyrighted, and the original author is in no way responsible for whatever results you obtain from it. And the author remains anonymous.
+
+version 1.0
+Feb 27, 2001
+usage: cron will be told to call this script every hour
+owner: domainmail in group mail
+=cut
+
+use strict;
+
+# <>--------- CONFIGURE ---------<>
+my $do_it = 1; # 0 will not actually call hypermail -- for testing. 1 will call hypermail.
+
+my $webmaster = "me\@somewhere.net";
+my $production_site = 'cron_hypermail domain';
+my $cf_mail_directive	= '/usr/lib/sendmail -oi -t';
+
+my %list_info = (
+'list1'=>{'label'=>'My List','bdcast_list_page'=>'index'},
+'list2'=>{'label'=>'My Second List','bdcast_list_page'=>'list2'},
+'list3'=>{'label'=>'My Third List','bdcast_list_page'=>'list3'},
+'list4'=>{'label'=>'My Fourth List','bdcast_list_page'=>'list4'},
+'list5'=>{'label'=>'My Fifth List','bdcast_list_page'=>'list5'},
+);
+
+my $path_to_mailbox = '/var/spool/mail';
+my $full_path_to_config_file = '/home/www/domain/members_only/email_archives/call_hypermail/hmrc.domain';
+my $complete_text = '';
+
+# will add the specific directory below, i.e., the mailbox name
+my $path_to_html_archive = '/home/www/domain/members_only/email_archives';
+
+# <>--------- END CONFIGURE ---------<>
+BEGIN {
+	$SIG{__DIE__} = \&Error_Message_die;
+	$SIG{__WARN__} = \&Error_Message_warn;
+}
+
+if ($do_it) {
+	$complete_text .= "EXECUTING THE HYPERMAIL COMMANDS, NOT IN TEST MODE\n";
+}
+else {
+	$complete_text .= "TEST MODE, NOT EXECUTING THE HYPERMAIL COMMANDS\n";
+}
+
+# <>--------- GET MAILBOX NAME AND MODIFY VARIABLES ---------<>
+my $count = 0;
+foreach my $mboxname (keys %list_info) {
+	# Has the mailbox received a message that needs to be archived?
+	# Is the mailbox younger than the archive index page?
+	# If so, run hypermail on that mailbox and archive
+	
+	$count++;
+	$complete_text .= "______________________________\n********** $count. $mboxname **********\n";
+	
+	$complete_text .= "\$path_to_mailbox/ax\$mboxname = $path_to_mailbox/ax$mboxname\n";
+	
+	$complete_text .= "\$path_to_html_archive/\$mboxname/index.html = $path_to_html_archive/$mboxname/index.html\n";
+	
+	$complete_text .= "M of mbox = ";
+	$complete_text .= (-M "$path_to_mailbox/ax$mboxname");
+	$complete_text .= "\n";
+	
+	$complete_text .= "M of htmlindex = ";
+	$complete_text .= (-M "$path_to_html_archive/$mboxname/index.html");
+	$complete_text .= "\n";
+	
+	# What if the mailbox does not exist?
+	unless (-e "$path_to_mailbox/ax$mboxname") {
+		$complete_text .= "mailbox does not exist, process next mbox name: $path_to_mailbox/ax$mboxname\n";
+		next;
+	}
+	
+	# the mailbox exists
+	# is the mailbox younger than its html index page? or an index.html does not yet exist
+	if ( 
+		( (-M "$path_to_mailbox/ax$mboxname") < (-M "$path_to_html_archive/$mboxname/index.html") )
+		or
+		(!(-e "$path_to_html_archive/$mboxname/index.html"))
+		) {
+		
+		my $list_address = "$mboxname\@domain.com";
+		my $axmboxname = 'ax' . $mboxname;
+		
+		# check for debug mode
+		if ($do_it) {
+			# errors are normally sent to STDERR, and hence not captured by $x
+			# so do the redirection, 2>&1
+
+			my $x = `/usr/local/bin/hypermail -m $path_to_mailbox/$axmboxname -c $full_path_to_config_file -d $path_to_html_archive/$mboxname -l "$list_info{$mboxname}{label}" -b "../../email_lists/$list_info{$mboxname}{bdcast_list_page}\.html" -n $list_address 2>&1`;
+			
+			# will be blank for successful operation
+			$complete_text .= "\$x = $x\n";
+		}
+		else {
+			my $y = <<EOP
+/usr/local/bin/hypermail -m $path_to_mailbox/$axmboxname -c $full_path_to_config_file -d $path_to_html_archive/$mboxname -l "$list_info{$mboxname}{label}" -b "../../email_lists/$list_info{$mboxname}{bdcast_list_page}\.html" -n $list_address 2>&1
+EOP
+;	
+			$complete_text .= "\$y = $y\n";
+		}
+	} # end of if -M < -M
+	
+} # end of foreach mailbox
+
+# while running under cron, comment this out
+#print $complete_text;
+
+# send a report every time it runs (until you are confident it runs well)
+open(MAIL, "| $cf_mail_directive");
+print MAIL "Subject: domain cron_hypermail ran\n";
+print MAIL "From: domain cron_hypermail\n";
+print MAIL "To: $webmaster\n\n";
+print MAIL "The script to call hypermail ran \n\n";
+print MAIL "$complete_text\n";
+close(MAIL);
+
+exit;
+
+#############################################################
+#                        Error_Message
+#############################################################
+sub Error_Message_die {
+	my $message = "@_";
+	open(MAIL, "| $cf_mail_directive");
+    print MAIL "Subject: RED ALERT! Runtime error at $production_site\n";
+    print MAIL "From: $production_site\n";
+    print MAIL "To: $webmaster\n\n";
+    print MAIL "Error at $production_site. This message was automatically produced by the program because the following error occured.\n\n$message\n\nComplete Debug Text:\n$complete_text";
+	close(MAIL);
+	
+	exit;
+}
+sub Error_Message_warn {
+	my $message = "@_";
+	open(MAIL, "| $cf_mail_directive");
+    print MAIL "Subject: WARNING! Non-fatal error at $production_site\n";
+    print MAIL "From: $production_site\n";
+    print MAIL "To: $webmaster\n\n";
+    print MAIL "Error at $production_site. This message was automatically produced by the program because the following non-fatal error occured.\n\n$message\n\nComplete Debug Text:\n$complete_text";
+	close(MAIL);
+}
+

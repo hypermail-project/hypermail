@@ -42,6 +42,7 @@ configs/hypermail.rc
 contrib/canonicalize.pl
 contrib/hyperfeed.pl
 contrib/hypetombox.pl
+contrib/cron_hypermail
 # 
 # Documentation
 #
