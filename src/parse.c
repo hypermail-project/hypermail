@@ -3339,7 +3339,7 @@ void fixnextheader(char *dir, int num, int direction)
 		if (email != NULL) {
 		    if (set_usetable) {
 			dp = bp->next;
-			if (!strncmp(dp->line, "<ul>", 4)) {
+			if (!strncmp(dp->line, "<ul", 3)) {
 			    fprintf(fp, "%s", dp->line);
 			    ul = 1;
 			}
