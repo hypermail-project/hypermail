@@ -384,11 +384,11 @@ void crossindexthread2(int num)
 	    ignore_maybes = 1;
 	    break;
 	}
+
     for (rp = ep->replylist; rp != NULL; rp = rp->next) {
-	if (!(rp->data->flags & USED_THREAD) 
-	    && (!rp->maybereply || !ignore_maybes)) {
+	if (!(rp->data->flags & USED_THREAD)) {
 	    rp->data->flags |= USED_THREAD;
-	    if (0) printf("add thread %d %d\n", num, rp->data->msgnum);
+	    if (0) printf("add thread.b %d %d\n", num, rp->data->msgnum);
 	    threadlist = addreply(threadlist, num, rp->data, 0,
 				  &threadlist_end);
 	    printedlist = markasprinted(printedthreadlist, rp->msgnum);
