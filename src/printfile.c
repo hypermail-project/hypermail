@@ -185,9 +185,9 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
     char *rp;
 
     fprintf(fp,
-	    "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n"
-	    "                      "
-	    "\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n");
+	    "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n"
+            "                      "
+	    "\"http://www.w3.org/TR/html4/loose.dtd\">\n");
     fprintf(fp, "<html>\n");
     fprintf(fp, "<head>\n");
 
