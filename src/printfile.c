@@ -80,6 +80,10 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 			putc(*cp, fp);
 		}
 		continue;
+	    case 'B':
+	      printf("Warning: the %%B option has been disabled. Use a\n"
+		     "style sheet instead. See the INSTALL file for more info.\n");
+	      continue;
 	    case 'b':		/* %b - About this archive URL */
 		if (set_about) {
 		    for (cp = set_about; *cp; cp++)
