@@ -55,6 +55,8 @@ contrib/hoaf-28/footer_html.hdr
 contrib/hoaf-28/haof-0.1.dtd
 contrib/hoaf-28/hypermail-2b28-2b28+.patch
 contrib/hoaf-28/top_html.hdr
+contrib/msg2hypermailarchive.py
+contrib/runtest
 # 
 # Documentation
 #
@@ -143,6 +145,9 @@ src/txt2html.c
 src/txt2html.h
 src/uudecode.c
 src/uudecode.h
+#
+# Source to pcre supporting library 
+#
 src/pcre/AUTHORS
 src/pcre/INSTALL
 src/pcre/LICENCE
@@ -203,11 +208,13 @@ src/pcre/testdata/testoutput3
 src/pcre/testdata/testoutput4
 src/pcre/testdata/testoutput5
 src/pcre/testdata/testoutput6
+#
+# Source to fnv supporting library 
+#
 src/fnv/README
 src/fnv/fnv.h
 src/fnv/configure.in
 src/fnv/Makefile.in
-src/fnv/autoscan.log
 src/fnv/ltconfig
 src/fnv/fnv32.c
 src/fnv/fnv64.c

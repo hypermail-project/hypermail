@@ -2,6 +2,10 @@ Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+ Kent Landfield (Feb 17, 2003)
+   Added missing contrib utilities, contrib/msg2hypermailarchive.py
+   and contrib/runtest to FILES
+
  Peter McCluskey (Feb 17, 2003)
    Fix to attachment Content-Type parsing to strip all whitespace off
   end of type rather than just newline.
