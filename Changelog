@@ -1,5 +1,9 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (Apr 22, 2002)
+   Add Greek language support from Akis Karnouskos.
+   Surpress <p> within <pre>.
+
  Peter McCluskey (Mar 22, 2002)
    Fixed to rewrite old messages that have new replies (some links to
    replies/next in thread had been missing for overwrite=0, increment=0,
