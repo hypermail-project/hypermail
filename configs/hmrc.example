@@ -298,9 +298,9 @@ mailcommand = mailto:$TO?subject=$SUBJECT&replyto=$ID
 # mailto = [ email-address | NONE ]
 #
 # The address of the contact point that is put in the HTML header line
-# <LINK REV=made HREF=mailto:mailto>
+# <link rev="made" href="mailto:mailto">
 #
-# The <LINK...> header can be disabled by default by setting
+# The <link...> header can be disabled by default by setting
 # mailto to NONE.
 
 mailto = webmaster@landfield.com
@@ -315,12 +315,12 @@ mailto = webmaster@landfield.com
 
 domainaddr = landfield.com
 
-# body = [ HTML <BODY> statement | NONE ]
+# body = [ HTML <bodo> statement | NONE ]
 #
-# Set this to the <BODY> line to use when generating the HTML pages.
+# Set this to the <body> line to use when generating the HTML pages.
 # Set to "NONE" to use the builtin <BODY> line by default.
 
-body = <BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+body = <body bgcolor="#FFFFFF" text="#000000">
 
 # hmail = [ Mailing List Submission Address | NONE ]
 #

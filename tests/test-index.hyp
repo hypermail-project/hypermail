@@ -1,11 +1,11 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
-<HTML>
-<HEAD>
-<TITLE>%l %s</TITLE>
+<html>
+<head>
+<title>%l %s</title>
 %A
 %S
-<LINK REV="made" HREF="mailto:%m">
-</HEAD>
-<BODY BGCOLOR="#ffffff" TEXT="#000000">
-<H1 ALIGN=CENTER>%l<BR>%s</H1>
-<P ALIGN=CENTER><IMG SRC="/images/bar.gif" WIDTH="400" HEIGHT="4" ALT="---------"></P>
+<link rev="made" href="mailto:%m">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+<h1 align="center">%l<br>%s</h1>
+<p align="center"><img src="/images/bar.gif" width="400" height="4" alt="---------"></p>

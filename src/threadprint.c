@@ -30,7 +30,7 @@ void print_all_threads(FILE *fp)
 	    if (!set_indextable) {
 		while (level > 0) {
 		    if (level < set_thrdlevels) {
-			fprintf(fp, "</UL>\n");
+			fprintf(fp, "</ul>\n");
 		    }
 		    level--;
 		}
@@ -51,7 +51,7 @@ void print_all_threads(FILE *fp)
 	    if (!set_indextable) {
 		while (level > 0) {
 		    if (level < set_thrdlevels) {
-			fprintf(fp, "</UL>\n");
+			fprintf(fp, "</ul>\n");
 		    }
 		    level--;
 		}
@@ -69,7 +69,7 @@ void print_all_threads(FILE *fp)
 			MAXSTACK);
 	    stack[level] = rp->msgnum;
 	    if ((level < set_thrdlevels) && !set_indextable)
-		fprintf(fp, "<UL>\n");
+		fprintf(fp, "<ul>\n");
 	}
 	else {
 	    /* There are (I think) some optimisations possible here.
@@ -104,7 +104,7 @@ void print_all_threads(FILE *fp)
 		if (!set_indextable) {
 		    while (level < newlevel) {
 			if (level < set_thrdlevels) {
-			    fprintf(fp, "<UL>\n");
+			    fprintf(fp, "<ul>\n");
 			}
 			level++;
 		    }
@@ -114,7 +114,7 @@ void print_all_threads(FILE *fp)
 		if (!set_indextable) {
 		    while (level > newlevel) {
 			if (level < set_thrdlevels) {
-			    fprintf(fp, "</UL>\n");
+			    fprintf(fp, "</ul>\n");
 			}
 			level--;
 		    }
@@ -145,15 +145,15 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
     /* Print the thread info */
     if (set_indextable) {
 	fprintf(fp,
-		"<tr><td>%s<A HREF=\"%.4d.%s\"><STRONG>%s</STRONG></A></td>"
-		"<td><A NAME=\"%d\">%s</a></td>" "<td>%s</td></tr>\n",
+		"<tr><td>%s<a href=\"%.4d.%s\"><strong>%s</strong></A></td>"
+		"<td><a name=\"%d\">%s</a></td>" "<td>%s</td></tr>\n",
 		level > 1 ? "--&gt; " : "", email->msgnum, set_htmlsuffix,
 		subj, email->msgnum, email->name, getdatestr(email->date));
     }
     else {
-	fprintf(fp, "<li><A HREF=\"%.4d.%s\">"
-		"<STRONG>%s</STRONG></A> "
-		"<A NAME=\"%d\"><EM>%s <small>(%s)</small></EM></A>\n",
+	fprintf(fp, "<li><a href=\"%.4d.%s\">"
+		"<strong>%s</strong></A> "
+		"<a name=\"%d\"><em>%s <small>(%s)</small></em></a>\n",
 		email->msgnum, set_htmlsuffix,
 		subj, email->msgnum, email->name, getdatestr(email->date));
     }
@@ -202,7 +202,7 @@ static void print_replies(FILE *fp, struct emailinfo *email,
 
 	/* Don't "indent" more than wanted */
 	if ((*level < set_thrdlevels) && !set_indextable)
-	    fprintf(fp, "<UL>\n");
+	    fprintf(fp, "<ul>\n");
 
 	(*level)++;
 
@@ -220,7 +220,7 @@ static void print_replies(FILE *fp, struct emailinfo *email,
 
 	/* re-indent back if we indented up there */
 	if ((*level < set_thrdlevels) && !set_indextable)
-	    fprintf(fp, "</UL>\n");
+	    fprintf(fp, "</ul>\n");
     }
 
     /* Now, find later replies */

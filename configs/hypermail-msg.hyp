@@ -1,15 +1,15 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<HTML>
-<HEAD>
-<META NAME="description" content="Hypermail Development List Archives">
-<META NAME="keywords" content="hypermail Archives, hypermail, email, mail2html, Email Archives">
+<html>
+<head>
+<meta name="description" content="Hypermail Development List Archives">
+<meta name="keywords" content="hypermail Archives, hypermail, email, mail2html, Email Archives">
 %A
 %S
-<TITLE>%l: %s</TITLE>
-<LINK REV="made" HREF="mailto:%m">
-</HEAD>
-<BODY BACKGROUND="/images/stars.gif" BGCOLOR="#000000" TEXT="#FFFFFF" LINK="#c7a317" ALINK="#FFFFFF" VLINK="#998800">
+<title>%l: %s</title>
+<link rev="made" href="mailto:%m">
+</head>
+<body background="http://www.landfield.com/images/stars.gif" bgcolor="#000000" text="#FFFFFF" link="#c7a317" alink="#FFFFFF" vlink="#998800">
 
-<H1 ALIGN=CENTER>%s</H1>
-<P ALIGN=CENTER><IMG SRC="http://www.landfield.com/images/common/yellowline.gif" WIDTH="400" HEIGHT="4" ALT="---------"></P>
+<h1 align="center">%s</h1>
+<p align="center"><img src="http://www.landfield.com/images/common/yellowline.gif" width="400" height="4" alt="---------"></p>
 

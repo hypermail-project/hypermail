@@ -1,5 +1,11 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Ashley M. Kirchner (May 31, 2000)
+ - I converted all uppercase HTML tags to lowercase in the main hypermail
+   base source.  Stuff that got contributed (under the contrib directory)
+   were not touched.  I'm going to leave those for their respective
+   contributors to change.
+
  Daniel Stenberg (Apr 10, 2000)
  - I made %<unknown letter> in printfile display exactly as used the other
    day. Today I changed my email address all over!

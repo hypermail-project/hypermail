@@ -225,8 +225,8 @@ struct Config cfg[] = {
 
     {"mailto", &set_mailto, NULL, CFG_STRING,
      "# The address of the contact point that is put in the HTML header\n"
-     "# line <LINK REV=made HREF=mailto:MAILTO>. Setting this to NONE\n"
-     "# disables <LINK...> header generation.\n"},
+     "# line <link rev=made href=\"mailto:MAILTO\">. Setting this to NONE\n"
+     "# disables <link...> header generation.\n"},
 
     {"hmail", &set_hmail, NULL, CFG_STRING,
      "# Set this to the list's submission address.\n"},
@@ -236,7 +236,7 @@ struct Config cfg[] = {
      "# appearing in the RFC822 field which lack a hostname.\n"},
 
     {"body", &set_htmlbody, BODY, CFG_STRING,
-     "# This is the <BODY> line to use when generating the HTML pages.\n"},
+     "# This is the <body> line to use when generating the HTML pages.\n"},
 
     {"icss_url", &set_icss_url, NULL, CFG_STRING,
      "# Specifies a URL to an external CSS stylesheet for the index pages.\n"

@@ -1422,7 +1422,7 @@ int parsemail(char *mbox,	/* file name */
 			     * be used.
 			     */
 			    bp = addbody(bp, &lp,
-					 "<P><STRONG>attached mail follows:</STRONG><HR NOSHADE>",
+					 "<p><strong>attached mail follows:</strong><hr noshade>",
 					 BODY_HTMLIZED | bodyflags);
 			    bodyflags |= BODY_ATTACHED;
 			    /* @@ should it be 1 or 2 ?? should we use another method? */
@@ -2087,11 +2087,11 @@ int parsemail(char *mbox,	/* file name */
 				    if (inline_force ||
 					inlinecontent(type)) {
 					/* if we know our browsers can show this type of context
-					   as-is, we make a <IMG> tag instead of <A HREF>! */
+					   as-is, we make a <img> tag instead of <a href>! */
 
 					snprintf(buffer, sizeof(buffer),
-						 "%s<IMG SRC=\"%s%c%s\" ALT=\"%s\">\n",
-						 (set_showhr ? "<HR NOSHADE>\n" :
+						 "%s<img src=\"%s%c%s\" alt=\"%s\">\n",
+						 (set_showhr ? "<hr noshade>\n" :
 						  ""),
 						 &att_dir[strlen(dir) + 1],
 						 PATH_SEPARATOR, file,
@@ -2108,8 +2108,8 @@ int parsemail(char *mbox,	/* file name */
 					    NULL) *sp = '\0';
 
 					snprintf(buffer, sizeof(buffer),
-						 "%s<UL>\n<LI>%s %s: <A HREF=\"%s\">%s</A>\n</UL>\n",
-						 (set_showhr ? "<HR NOSHADE>\n" :
+						 "%s<ul>\n<li>%s %s: <a href=\"%s\">%s</a>\n</ul>\n",
+						 (set_showhr ? "<hr noshade>\n" :
 						  ""), type,
 						 lang[MSG_ATTACHMENT],
 						 created_link, desc);
@@ -2518,14 +2518,14 @@ void fixnextheader(char *dir, int num)
 		if (status != NULL) {
 		    if (set_usetable) {
 			dp = bp->next;
-			if (!strncmp(dp->line, "<UL>", 4)) {
+			if (!strncmp(dp->line, "<ul>", 4)) {
 			    fprintf(fp, "%s", dp->line);
 			    ul = 1;
 			}
 		    }
-		    fprintf(fp, "<LI><STRONG>%s:</STRONG> ",
+		    fprintf(fp, "<li><strong>%s:</strong> ",
 			    lang[MSG_NEXT_MESSAGE]);
-		    fprintf(fp, "<A HREF=\"%.4d.%s\">%s: \"%s\"</A>\n",
+		    fprintf(fp, "<a href=\"%.4d.%s\">%s: \"%s\"</a>\n",
 			    num + 1, set_htmlsuffix,
 			    email->name, ptr = convchars(email->subject));
 		    free(ptr);
@@ -2607,9 +2607,9 @@ void fixreplyheader(char *dir, int num)
     if (fp) {
 	while (bp) {
 	    if (!strncmp(bp->line, "<!-- reply", 10)) {
-		fprintf(fp, "<LI><STRONG>%s:</STRONG> ", lang[MSG_REPLY]);
-		fprintf(fp, "<A HREF=\"%.4d.%s\">", num, set_htmlsuffix);
-		fprintf(fp, "%s: \"%s\"</A>\n", email->name,
+		fprintf(fp, "<li><strong>%s:</strong> ", lang[MSG_REPLY]);
+		fprintf(fp, "<a href=\"%.4d.%s\">", num, set_htmlsuffix);
+		fprintf(fp, "%s: \"%s\"</a>\n", email->name,
 			ptr = convchars(email->subject));
 		free(ptr);
 	    }
@@ -2683,10 +2683,10 @@ void fixthreadheader(char *dir, int num)
 	while (bp != NULL) {
 	    fprintf(fp, "%s", bp->line);
 	    if (!strncmp(bp->line, "<!-- nextthr", 12)) {
-		fprintf(fp, "<LI><STRONG>%s:</STRONG> ",
+		fprintf(fp, "<li><strong>%s:</strong> ",
 			lang[MSG_NEXT_IN_THREAD]);
-		fprintf(fp, "<A HREF=\"%.4d.%s\">", num, set_htmlsuffix);
-		fprintf(fp, "%s: \"%s\"</A>\n",
+		fprintf(fp, "<a href=\"%.4d.%s\">", num, set_htmlsuffix);
+		fprintf(fp, "%s: \"%s\"</a>\n",
 			name, ptr = convchars(subject));
 		free(ptr);
 	    }

@@ -35,7 +35,7 @@ hm_ihtmlheaderfile = /usr/local/lib/hypermail/hypermail-index.hyp
 hm_mhtmlheaderfile = /usr/local/lib/hypermail/hypermail-msg.hyp
 hm_ihtmlfooterfile = /usr/local/lib/hypermail/hypermail-footer.hyp
 hm_mhtmlfooterfile = /usr/local/lib/hypermail/hypermail-footer.hyp
-#hm_body=<BODY BGCOLOR="#F4D659" TEXT="#333333">
+#hm_body=<body bgcolor="#F4D659" text="#333333">
 
 hm_inline_types = image/gif image/jpeg
 hm_ignore_types = text/x-vcard

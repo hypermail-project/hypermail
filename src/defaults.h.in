@@ -11,7 +11,7 @@
 
 #define CONFIGFILE "~/.hmrc"
 
-#define BODY "<BODY BGCOLOR=\"#FFFFFF\" TEXT=\"#000000\">"
+#define BODY "<body bgcolor=\"#FFFFFF\" text=\"#000000\">"
 
 #define INLINE_TYPES "image/gif image/jpeg"
 

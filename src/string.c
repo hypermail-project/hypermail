@@ -675,7 +675,7 @@ char *parseemail(char *input,	/* string to parse */
 							mailaddr, mid,
 							msubject);
 			msnprintf(tempbuff, sizeof(tempbuff),
-				  "<A HREF=\"%s\">%.*s@%s</A>", mailcmd,
+				  "<a href=\"%s\">%.*s@%s</a>", mailcmd,
 				  ptr - email, email, mailbuff);
 
 			free(mailcmd);
@@ -855,7 +855,7 @@ char *parseurl(char *input)
 	    }
 	    if(accepted) {
 	        msnprintf(tempbuff, sizeof(tempbuff),
-			  "<A HREF=\"%s%s\">%s%s</A>",
+			  "<a href=\"%s%s\">%s%s</a>",
 			  thisprotocol, urlbuff, thisprotocol, urlbuff);
 		PushString(&buff, tempbuff); /* append the tag buffer */
 		inputp += strlen(urlbuff);

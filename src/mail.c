@@ -50,15 +50,15 @@ char *strsav(char *s)
 
 static void progerr(const char *s)
 {
-    printf("<HTML>\n");
-    printf("<HEAD>\n");
-    printf("<TITLE>Email Gateway Error</TITLE>\n");
-    printf("</HEAD>\n");
-    printf("<BODY BGCOLOR=\"#ffffff\" TEXT=\"#000000\">\n");
-    printf("<H1 ALIGN=CENTER>Email Gateway Error</H1>\n");
-    printf("This gateway program encountered an error:\n<P>\n");
-    printf("<CODE>%s</CODE>\n", s);
-    printf("</BODY>\n</HTML>\n");
+    printf("<html>\n");
+    printf("<head>\n");
+    printf("<title>Email Gateway Error</title>\n");
+    printf("</head>\n");
+    printf("<body bgcolor=\"#ffffff\" text=\"#000000\">\n");
+    printf("<h1 align=\"center\">Email Gateway Error</h1>\n");
+    printf("This gateway program encountered an error:\n<p>\n");
+    printf("<code>%s</code>\n", s);
+    printf("</body>\n</html>\n");
 
     exit(0);
 }
@@ -78,49 +78,49 @@ char *lookupnumaddr(char *numaddress)
 void printform(char *to, char *from, char *subject,
 	       char *body, char *replyto, cgi_info *ci)
 {
-    printf("<HTML>\n");
-    printf("<HEAD>\n");
-    printf("<TITLE>Email Gateway</TITLE>\n");
-    printf("</HEAD>\n");
-    printf("<BODY BGCOLOR=\"#ffffff\" TEXT=\"#000000\">\n");
+    printf("<html>\n");
+    printf("<head>\n");
+    printf("<title>Email Gateway</title>\n");
+    printf("</head>\n");
+    printf("<body bgcolor=\"#ffffff\" text=\"#000000\">\n");
 
 #if DEBUGGING
     dump_cgi_info(ci);
-    printf("<BR>inet_addr %s\n",
+    printf("<br>inet_addr %s\n",
 	   addr_failure == 0 ? "Succeeded" : "Failed");
-    printf("<BR>gethostbyaddr %s\n",
+    printf("<br>gethostbyaddr %s\n",
 	   gethostbyaddr_failure == 0 ? "Succeeded" : "Failed");
-    printf("<BR>hostname %s\n", hostn);
+    printf("<br>hostname %s\n", hostn);
 #endif
 
-    printf("<H1 ALIGN=CENTER>Email Gateway</H1>\n");
+    printf("<h1 align=\"center\">Email Gateway</h1>\n");
     printf
-	("<P ALIGN=CENTER><EM>Send an email message by filling in the form below.<BR>Make sure your user name is specified correctly on the From: line.</EM></P>\n");
+	("<p align=\"center\"><em>Send an email message by filling in the form below.<br>Make sure your user name is specified correctly on the From: line.</em></P>\n");
 
-    printf("<DIV ALIGN=CENTER>\n");
-    printf("<FORM METHOD=POST ACTION=\"%s\">\n", CGINAME);
-    printf("<PRE>\n");
-    printf("<STRONG>     To:</STRONG> ");
-    printf("<INPUT SIZE=45 NAME=\"to\" VALUE=\"%s\">\n", to);
-    printf("<STRONG>   From:</STRONG> ");
-    printf("<INPUT SIZE=45 NAME=\"from\" VALUE=\"%s\">\n", from);
-    printf("<STRONG>Subject:</STRONG> ");
-    printf("<INPUT SIZE=45 NAME=\"subject\" VALUE=\"%s\">\n", subject);
+    printf("<div align=\"center\">\n");
+    printf("<form method=\"post\" action=\"%s\">\n", CGINAME);
+    printf("<pre>\n");
+    printf("<strong>     To:</strong> ");
+    printf("<input size=\"45\" name=\"to\" value=\"%s\">\n", to);
+    printf("<strong>   From:</strong> ");
+    printf("<input size=\"45\" name=\"from\" value=\"%s\">\n", from);
+    printf("<strong>Subject:</strong> ");
+    printf("<input size=\"45\" name=\"subject\" value=\"%s\">\n", subject);
     if (replyto != NULL && replyto[0] != '\0') {
-	printf("<STRONG>In reply to:</STRONG> ");
-	printf("<INPUT SIZE=45 NAME=\"replyto\" VALUE=\"%s\">\n", replyto);
+	printf("<strong>In reply to:</strong> ");
+	printf("<input size=\"45\" name=\"replyto\" value=\"%s\">\n", replyto);
     }
     printf("\n");
 
-    printf("<TEXTAREA NAME=\"body\"");
-    printf("rows=%d cols=%d>%s</TEXTAREA>\n", ROWS, COLS, body);
-    printf("</PRE>\n");
+    printf("<textarea name=\"body\"");
+    printf("rows=\"%d\" cols=\"%d\">%s</textarea>\n", ROWS, COLS, body);
+    printf("</pre>\n");
 
-    printf("<INPUT TYPE=submit VALUE=\"    Send Email    \">     ");
-    printf("<INPUT TYPE=reset value=\"    Reset Form    \">");
-    printf("</DIV>\n");
-    printf("</FORM>\n");
-    printf("</BODY>\n</HTML>\n");
+    printf("<input type=\"submit\" value=\"    Send Email    \">     ");
+    printf("<input type=\"reset\" value=\"    Reset Form    \">");
+    printf("</div>\n");
+    printf("</form>\n");
+    printf("</body>\n</html>\n");
 }
 
 void cgi_main(cgi_info *ci)
@@ -186,11 +186,11 @@ void cgi_main(cgi_info *ci)
     case MCODE_POST:
 	if (from == NULL || from[0] == '\0' || from[0] == '@' ||
 	    from[strlen(from) - 1] == '@' || !strchr(from, '@'))
-	    progerr("Invalid <STRONG>From:</STRONG> address.");
+	    progerr("Invalid <strong>From:</strong> address.");
 
 	if (to == NULL || to[0] == '\0' || to[0] == '@' ||
 	    to[strlen(to) - 1] == '@' || !strchr(to, '@'))
-	    progerr("Invalid <STRONG>To:</STRONG> address.");
+	    progerr("Invalid <strong>To:</strong> address.");
 
 	if (subject == NULL || subject[0] == '\0')
 	    progerr("The subject field is blank.");
@@ -210,30 +210,30 @@ void cgi_main(cgi_info *ci)
 		    body);
 	    pclose(f);
 
-	    printf("<HTML>\n");
-	    printf("<HEAD>\n");
-	    printf("<TITLE>Email Gateway Response</TITLE>\n");
-	    printf("</HEAD>\n");
-	    printf("<BODY BGCOLOR=\"#ffffff\" TEXT=\"#000000\">\n");
-	    printf("<H1 ALIGN=CENTER>Your message has been sent.</H1>\n");
+	    printf("<html>\n");
+	    printf("<head>\n");
+	    printf("<title>Email Gateway Response</title>\n");
+	    printf("</head>\n");
+	    printf("<body bgcolor=\"#ffffff\" text=\"#000000\">\n");
+	    printf("<h1 align=\"center\">Your message has been sent.</h1>\n");
 
 	    printf("The following message has been sent to ");
-	    printf("<STRONG>%s</STRONG>:\n<P>\n<HR NOSHADE>\n\n", to);
+	    printf("<strong>%s</strong>:\n<p>\n<hr noshade>\n\n", to);
 
-	    printf("<BLOCKQUOTE>\n");
-	    printf("<BR>From: %s\n", from);
-	    printf("<BR>To: %s\n", to);
+	    printf("<blockquote>\n");
+	    printf("<br>From: %s\n", from);
+	    printf("<br>To: %s\n", to);
 
 	    if (replyto != NULL && replyto[0] != '\0')
-		printf("<BR>In-Reply-To: &lt;%s&gt;\n", replyto);
+		printf("<br>In-Reply-To: &lt;%s&gt;\n", replyto);
 
-	    printf("<BR>Subject: %s\n", subject);
-	    printf("<BR>X-Sender: %s\n", host);
-	    printf("<P>\n%s\n", body);
+	    printf("<br>Subject: %s\n", subject);
+	    printf("<br>X-Sender: %s\n", host);
+	    printf("<p>\n%s\n", body);
 
-	    printf("</BLOCKQUOTE>\n");
-	    printf("<P>\n<HR NOSHADE>\n");
-	    printf("</BODY>\n</HTML>\n");
+	    printf("</blockquote>\n");
+	    printf("<p>\n<hr noshade>\n");
+	    printf("</body>\n</html>\n");
 	}
 	else
 	    progerr("The message was not sent - sendmail error.");

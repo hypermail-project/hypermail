@@ -71,7 +71,7 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 	    case 'A':		/* %e - email address of message author */
 		if (email && name) {
 		    fprintf(fp,
-			    "<META NAME=\"Author\" CONTENT=\"%s (%s)\">",
+			    "<meta name=\"Author\" content=\"%s (%s)\">",
 			    name, email);
 		}
 		continue;
@@ -96,8 +96,8 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 	    case 'c':
 		if (charset && *charset) {
 		    /* only output this if we have a charset */
-		    fprintf(fp, "<META HTTP-EQUIV=\"Content-Type\""
-			    " CONTENT=\"text/html; charset=%s\">\n",
+		    fprintf(fp, "<meta http-equiv=\"Content-Type\""
+			    " content=\"text/html; charset=%s\">\n",
 			    charset);
 		}
 		continue;
@@ -146,7 +146,7 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 		free(ptr);
 		continue;
 	    case 'S':		/* %s - Subject of message or Index Title */
-		fprintf(fp, "<META NAME=\"Subject\" CONTENT=\"%s\">",
+		fprintf(fp, "<meta name=\"Subject\" content=\"%s\">",
 			cp = convchars(subject));
 		free(cp);
 		continue;
@@ -155,7 +155,7 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 		    putc(*cp, fp);
 		continue;
 	    case 'u':		/* %u - Expanded Version link */
-		fprintf(fp, "<A HREF=\"%s\">%s %s</A>",
+		fprintf(fp, "<a href=\"%s\">%s %s</a>",
 			HMURL, PROGNAME, VERSION);
 		continue;
 	    default:
@@ -183,17 +183,17 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
     char *rp;
 
     fprintf(fp,
-	    "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n"
+	    "<DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n"
 	    "                      "
 	    "\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n");
-    fprintf(fp, "<HTML>\n");
-    fprintf(fp, "<HEAD>\n");
+    fprintf(fp, "<html>\n");
+    fprintf(fp, "<head>\n");
 
     if (charset && *charset) {
 	/* charset info "as early as possible within the HEAD of the document"
 	 */
-	fprintf(fp, "<META HTTP-EQUIV=\"Content-Type\""
-		" CONTENT=\"text/html; charset=%s\">\n", charset);
+	fprintf(fp, "<meta http-equiv=\"Content-Type\""
+		" content=\"text/html; charset=%s\">\n", charset);
     }
 
     /* 
@@ -215,28 +215,28 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
     while (isspace(*rp))
 	*rp-- = '\0';
 
-    fprintf(fp, "<TITLE>%s</TITLE>\n", title);
+    fprintf(fp, "<title>%s</title>\n", title);
     free(title);
 
     if (name && email)
-	fprintf(fp, "<META NAME=\"Author\" CONTENT=\"%s (%s)\">\n",name,email);
-    fprintf(fp, "<META NAME=\"Subject\" CONTENT=\"%s\">\n", rp =
+	fprintf(fp, "<meta name=\"Author\" content=\"%s (%s)\">\n",name,email);
+    fprintf(fp, "<meta name=\"Subject\" content=\"%s\">\n", rp =
 	    convchars(subject));
     free(rp);
     if (use_mailto)
-	fprintf(fp, "<LINK REV=\"made\" HREF=\"mailto:%s\">\n", set_mailto);
+	fprintf(fp, "<link rev=\"made\" href=\"mailto:%s\">\n", set_mailto);
     /* print the css url according to the type of header */
     if (index_header && set_icss_url && *set_icss_url)
-        fprintf(fp, "<LINK REL=\"Stylesheet\" HREF=\"%s\">\n", set_icss_url);
+        fprintf(fp, "<link rel=\"Stylesheet\" href=\"%s\">\n", set_icss_url);
     else if (!index_header && set_mcss_url && *set_mcss_url)
-      fprintf(fp, "<LINK REL=\"Stylesheet\" HREF=\"%s\">\n", set_mcss_url);
+      fprintf(fp, "<link rel=\"Stylesheet\" href=\"%s\">\n", set_mcss_url);
 
-    fprintf(fp, "</HEAD>\n");
+    fprintf(fp, "</head>\n");
 
     if (set_htmlbody)
 	fprintf(fp, "%s\n", set_htmlbody);
     else
-	fprintf(fp, "<BODY BGCOLOR=\"#FFFFFF\" TEXT=\"#000000\">\n");
+	fprintf(fp, "<body bgcolor=\"#FFFFFF\" text=\"#000000\">\n");
 }
 
 /*
@@ -255,16 +255,16 @@ void print_msg_header(FILE *fp, char *label, char *subject,
 	print_main_header(fp, FALSE, set_label, name, email, subject,
 			  charset, filename);
 #if 0 /* JK modified this */       
-	fprintf(fp, "<H1 ALIGN=CENTER>%s</H1>\n",
+	fprintf(fp, "<h1 align=\"center\">%s</h1>\n",
 		ptr = convchars(subject));
 	free(ptr);
 #endif
-	fprintf(fp, "<H1>%s</H1>\n",
+	fprintf(fp, "<h1>%s</h1>\n",
 		ptr = convchars(subject));
 	free(ptr);
 #if 0 /* JK: and removed this as it looked a bit strange */
 	if (!set_usetable)
-	    fprintf(fp, "<HR NOSHADE>\n<P>\n");
+	    fprintf(fp, "<hr noshade>\n<p>\n");
 #endif
     }
 }
@@ -281,10 +281,10 @@ void print_index_header(FILE *fp, char *label, char *dir, char *subject,
 		  NULL, NULL, filename);
     else {
 	print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL);
-	fprintf(fp, "<H1 ALIGN=CENTER>%s<BR>%s</H1>\n", label, subject);
+	fprintf(fp, "<h1 align=\"center\">%s<br>%s</h1>\n", label, subject);
 #if 0 /*@@ JK: removed it */	
 	if (!set_usetable)
-	    fprintf(fp, "<HR NOSHADE>\n");
+	    fprintf(fp, "<hr nohade>\n");
 #endif
     }
 }
@@ -303,12 +303,12 @@ void printfooter(FILE *fp, char *htmlfooter, char *label, char *dir,
 		  dir, NULL, NULL, NULL, NULL, filename);
     else {
 	if (set_showhr && !set_usetable)
-	    fprintf(fp, "<HR NOSHADE>\n");
-	fprintf(fp, "<P>\n<SMALL>\n<EM>\n");
+	    fprintf(fp, "<hr noshade>\n");
+	fprintf(fp, "<p>\n<small>\n<em>\n");
 	fprintf(fp, "%s ", lang[MSG_ARCHIVE_GENERATED_BY]);
-	fprintf(fp, "<A HREF=\"%s\">%s %s</A> \n", HMURL, PROGNAME, VERSION);
-	fprintf(fp, ": <EM>%s</EM>\n", getlocaltime());
-	fprintf(fp, "</EM>\n</SMALL>\n");
-	fprintf(fp, "</BODY>\n</HTML>\n");
+	fprintf(fp, "<a href=\"%s\">%s %s</a> \n", HMURL, PROGNAME, VERSION);
+	fprintf(fp, ": <em>%s</em>\n", getlocaltime());
+	fprintf(fp, "</em>\n</small>\n");
+	fprintf(fp, "</body>\n</html>\n");
     }
 }
