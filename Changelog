@@ -1,6 +1,12 @@
 Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (November 26, 2002)
+  Changed attachment naming back to what it was before Jose added
+ set_nonsequential.
+  Changed attachment naming so that files are stored using the names
+ provided without any %d- prepended whenever that doesn't cause conflicts.
+
  Kent Landfield (kent@hypermail.org) (November 24, 2002)
   Made some updates to the docs.  Still need to update the
   docs to include writehaof, nonsequential, msgsperfolder and
@@ -46,6 +52,10 @@ Version Changes for Hypermail
  Jose Kahan (jose@w3.org) (September 26, 2002)
   Cleaned the autoconf files for passing the libnvf compile parameters
   (what a difference does reading the manual make).
+
+ Peter McCluskey (September 25, 2002)
+  Fix threading bug with incremental update and spamprotect_id = 1,
+  usegdbm = 0.
 
  Jose Kahan (jose@w3.org) (September 25, 2002)
   Commited the ~/hypermail/ltmain.sh file and also put it in the

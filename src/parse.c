@@ -1131,6 +1131,7 @@ int parsemail(char *mbox,	/* file name */
     char alternative_file[129];	/* file name where we store the non-inline alternatives */
     char alternative_lastfile[129];	/* last file name where we store the non-inline alternatives */
     int att_counter = 0;	/* used to generate a unique name for attachments */
+    struct hmlist *att_name_list, *att_name_last; /* keeps track of attachment file name used so far for this message */
 
     /* -- end of alternative parser variables -- */
 
@@ -2006,6 +2007,7 @@ int parsemail(char *mbox,	/* file name */
 		    meta_dir = NULL;
 		}
 		att_counter = 0;
+		att_name_list = NULL;
 		inline_force = FALSE;
 		attachname[0] = '\0';
 
@@ -2249,9 +2251,8 @@ int parsemail(char *mbox,	/* file name */
 			    if (att_dir == NULL) {
 
 				/* first check the DIR_PREFIXER */
-				trio_asprintf(&att_dir,"%s%c" DIR_PREFIXER "%s",
-					      dir, PATH_SEPARATOR, 
-					      message_name (emp));
+				trio_asprintf(&att_dir,"%s%c" DIR_PREFIXER "%04d",
+					      dir, PATH_SEPARATOR, num);
 				check1dir(att_dir);
 				/* If this is a repeated run on the same archive we already
 				 * have HTML'ized, we risk extracting the same attachments
@@ -2286,10 +2287,22 @@ int parsemail(char *mbox,	/* file name */
 				    fname = attachname;
 				else
 				    fname = FILE_SUFFIXER;
-
-				trio_asprintf(&binname, "%s%c%02d-%s",
-					      att_dir, PATH_SEPARATOR,
-					      att_counter, fname);
+				if (!attachname[0] || inlist(att_name_list, fname))
+				  trio_asprintf(&binname, "%s%c%02d-%s",
+						att_dir, PATH_SEPARATOR,
+						att_counter, fname);
+				else
+				  trio_asprintf(&binname, "%s%c%s",
+						att_dir, PATH_SEPARATOR,
+						fname);
+				if (att_name_list == NULL)
+				    att_name_list = att_name_last = (struct hmlist *)malloc(sizeof(struct hmlist));
+				else {
+				  att_name_last->next = (struct hmlist *)malloc(sizeof(struct hmlist));
+				  att_name_last = att_name_last->next;
+				}
+				att_name_last->next = NULL;
+				att_name_last->val = strsav(fname);
 				/* @@ move this one up */
 				/* att_counter++; */
 			    }
@@ -2548,6 +2561,13 @@ int parsemail(char *mbox,	/* file name */
 	    meta_dir = NULL;
 	}
 	att_counter = 0;
+	while (att_name_list != NULL) {
+	    struct hmlist *ptr_next_att = att_name_list->next;
+	    free(att_name_list->val);
+	    free(att_name_list);
+	    att_name_list = ptr_next_att;
+	}
+	att_name_list = NULL;
 	description = NULL;
 
 	/* by default we have none! */

@@ -794,6 +794,10 @@ void printattachments(FILE *fp, struct header *hp,
 			    fprintf(fp, fmt2, rel_path_to_top,
 				    filename, stripped_filename+1,
 				    file_size, lang[MSG_BYTES]);
+			else
+			    fprintf(fp, fmt2, rel_path_to_top,
+				    filename, entry->d_name,
+				    file_size, lang[MSG_BYTES]);
 			free(filename);
 		    }
 		    if (!first_time && !set_indextable) {
