@@ -45,7 +45,6 @@ thrdlevels = 9
 dirmode = 0755
 filemode = 0644
 #mailcommand = mailto:$TO?subject=$SUBJECT&amp;replyto=$ID
-#mailcommand = /cgi-bin/mail?to=$TO&amp;replyto=$ID&amp;subject=$SUBJECT
 #newmsg_command=mailto:$TO
 #replymsg_command=mailto:$TO?Subject=$SUBJECT
 mailto = webmusket@hypermail.org

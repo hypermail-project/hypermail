@@ -35,6 +35,9 @@
 #include "fnv.h"
 #endif /* HAVE_LIBFNV */
 
+extern int snprintf(char *str, size_t size, const  char  *format, ...);
+
+
 /*
 ** Does a file exist?
 */
@@ -72,7 +75,7 @@ void check1dir(char *dir)
     if (stat(dir, &sbuf)) {
 	if (errno != ENOENT || mkdir(dir, set_dirmode) < 0) {
             if (errno != EEXIST) {
-				snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_CANNOT_CREATE_DIRECTORY], dir);
+		snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_CANNOT_CREATE_DIRECTORY], dir);
 		progerr(errmsg);
 	    }
 	}
@@ -301,9 +304,10 @@ int find_max_msgnum()
     int max_num = -1;
     int num;
     char *s_dir = strsav(set_dir);
-    int len = strlen(s_dir);
-	if (len > 0 && s_dir[len - 1] == PATH_SEPARATOR)
-		s_dir[len - 1] = 0;
+    int len = (int)strlen(s_dir);
+
+    if (len > 0 && s_dir[len - 1] == PATH_SEPARATOR)
+       s_dir[len - 1] = 0;
     dir = opendir(s_dir);
     if (dir == NULL)
 	return -1;
@@ -387,16 +391,15 @@ int find_max_msgnum_id()
     char *buf;
     
     /* open the index file */
-	buf = messageindex_name();
-	fp = fopen(buf, "r");
-	free(buf);
-	if (fp) {
-		fgets(line, sizeof(line), fp);
-		if (2 == sscanf(line, "%04d %04d", &startnum, &maxnum))
-	  max_num = maxnum;
-		fclose(fp);
-      }
-
+    buf = messageindex_name();
+    fp = fopen(buf, "r");
+    free(buf);
+    if (fp) {
+        fgets(line, sizeof(line), fp);
+        if (2 == sscanf(line, "%04d %04d", &startnum, &maxnum))
+        max_num = maxnum;
+        fclose(fp);
+    }
     return max_num;
 }
 
@@ -471,9 +474,9 @@ int is_empty_archive()
 #endif
     int num_files = 0;
     char *s_dir = strsav(set_dir);
-    int len = strlen(s_dir);
-	if (len > 0 && s_dir[len - 1] == PATH_SEPARATOR)
-		s_dir[len - 1] = 0;
+    int len = (int)strlen(s_dir);
+    if (len > 0 && s_dir[len - 1] == PATH_SEPARATOR)
+        s_dir[len - 1] = 0;
     dir = opendir(s_dir);
     if (dir == NULL)
 	return 1;
@@ -694,7 +697,7 @@ int matches_existing(int msgnum)
 	int max_num;
 
 	key.dptr = (char *)&num;
-	key.dsize = sizeof(num);
+	key.dsize = (int)sizeof(num);
 
 	num = -1;
 	content = gdbm_fetch(gp, key);
@@ -713,7 +716,7 @@ int matches_existing(int msgnum)
 
 	  num = eptr->msgnum;
 	  key.dptr = (char *)&num;
-	  key.dsize = sizeof(num);
+	  key.dsize = (int)sizeof(num);
 	  content = gdbm_fetch(gp, key);
 	  if (!(dp = content.dptr)) {
 	      return 1;

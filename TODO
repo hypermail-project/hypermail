@@ -5,6 +5,8 @@ them to hypermail-dev@hypermail.org.
 General Things:
 ===============
 
+- Need to use splint to clean up the code.
+
 - Need to clean up the code and remove old code that is commented/ifdefed out.
 
 - Update the doc files to assure all configuration file directives

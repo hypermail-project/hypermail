@@ -23,6 +23,8 @@ CC=@CC@
 
 # Installation program to use
 INSTALL_PROG=@INSTALL@ 
+
+SPLINTFLAGS=-Ipcre 
  
 #WNOERROR=-Werror
 #WARNINGS=$(WNOERROR) -ansi -pedantic -Wall -Wtraditional -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Dlint
@@ -106,6 +108,10 @@ quant:
 	$(MAKE) CFLAGS="-g" $(OBJS)
 	quantify $(CC) -o hypermail -g $(CFLAGS) $(OBJS)
 
+
+splint: 
+	splint $(SPLINTFLAGS) $(SRCS) 2>&1 | tee splint.out
+
 lint:	
 	lint $(SRCS) 2>&1 | tee lint.out
 
@@ -116,7 +122,7 @@ lint_mail:
 clean:
 	rm -f hypermail$(SUFFIX) mail$(SUFFIX) lang$(SUFFIX)
 	rm -f *.o .pure *qx *qv *.ln core
-	rm -f .inslog tca.map lint.out
+	rm -f .inslog tca.map lint.out splint.out
 	rm -f getdate.c
 	@cd pcre; $(MAKE) clean
 	@(if test "$(FNV_DEP)" != "" ; then cd fnv; $(MAKE) clean; fi)

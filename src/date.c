@@ -37,9 +37,9 @@ extern time_t get_date(const char *, const time_t *);
 static time_t ydhms_tm_diff(int, int, int, int, int, const struct tm *);
 static time_t my_mktime(struct tm *);
 
-long convtoyearsecs(char *date)
+time_t convtoyearsecs(char *date)
 {
-    long yearsecs;
+    time_t yearsecs;
     char *p, *s = date;
 
     /* the (non-standard) timezone specs GMT0 and BST-1
@@ -76,12 +76,14 @@ long convtoyearsecs(char *date)
 
 char *getlocaltime(void)
 {
-    static char s[DATESTRLEN + 5] = { 0 };
+    static char s[DATESTRLEN + 5];
     time_t tp;
     struct tm *tmptr;
 
     time(&tp);
     tmptr = (set_gmtime ? gmtime(&tp) : localtime(&tp));
+
+    s[0] = '\0';
 
     if (set_dateformat != NULL) {
 	strftime(s, DATESTRLEN, set_dateformat, tmptr);

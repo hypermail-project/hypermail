@@ -17,12 +17,10 @@
 #include <ctype.h>
 #endif
 
-#ifndef FALSE
+#undef FALSE
 #define FALSE 0
-#endif
-#ifndef TRUE
+#undef TRUE
 #define TRUE 1
-#endif
 
 char Match(char *string, char *pattern)
 {
@@ -30,7 +28,7 @@ char Match(char *string, char *pattern)
 	if (!*string)
 	    return (!*pattern);
 	if (toupper(*string) ^ toupper(*pattern) && '?'^*pattern)
-	     return FALSE;
+	     return (FALSE);
     }
 
     /* two-line patch to prevent *too* much recursiveness: */
@@ -40,8 +38,8 @@ char Match(char *string, char *pattern)
 
     do {
 	if (Match(string, pattern +1))
-	     return TRUE;
+	     return (TRUE);
     } while (*string++);
 
-    return FALSE;
+    return (FALSE);
 }

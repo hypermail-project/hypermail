@@ -26,7 +26,6 @@
 #include <string.h>
 #include <ctype.h>
 
-
 static int str_similar_str(const char *str1, const char *str2);
 static char *stripwhitespace(const char *line);
 static int new_reply_to = -1;
@@ -37,11 +36,13 @@ static char *get_path(struct emailinfo *ep, struct emailinfo *ep2)
 {
     char *path = "";
     if (ep2->subdir && ep2->subdir != ep->subdir)
-		trio_asprintf(&path, "%s%s", ep2->subdir->rel_path_to_top, ep2->subdir->subdir);
+       trio_asprintf(&path, "%s%s", ep2->subdir->rel_path_to_top, ep2->subdir->subdir);
     return path;
 }
 
-static struct body *place_anchor(const String_Match * match_info, struct body *bp, char *buffer, FILE *fp2, char **ptr, const char *anchor)
+static struct body *place_anchor(const String_Match * match_info, 
+                                 struct body *bp, char *buffer, FILE *fp2, 
+                                 char **ptr, const char *anchor)
 {
     if (match_info) {
 	int index;
@@ -191,7 +192,7 @@ static int add_anchor(int msgnum, int quoting_msgnum, int quote_num, const char 
 		    count_quoted_lines = -1;
 		    break;	/* reply quoted more lines than exist? */
 		}
-				if (match_info && place_a_end(match_info, &bp, buffer, fp2, &ptr)) {
+		if (match_info && place_a_end(match_info, &bp, buffer, fp2, &ptr)) {
 		    wrote_a_end = TRUE;
 		    count_quoted_lines = 0;
 		    if (bp)
@@ -211,12 +212,12 @@ static int add_anchor(int msgnum, int quoting_msgnum, int quote_num, const char 
 		    else
 			++count_quoted_lines;
 		}
-			} while (--count_quoted_lines > 0 && fgets(buffer, sizeof(buffer), fp1));
+	    } while (--count_quoted_lines > 0 && fgets(buffer, sizeof(buffer), fp1));
 	    if (!wrote_a_end)
 		fputs("</a>", fp2);
 	    if (count_quoted_lines > 0)	/* got eof? */
 		break;		/* avoid last fputs */
-			else if (count_quoted_lines == 0 && !fgets(buffer, sizeof(buffer), fp1))
+            else if (count_quoted_lines == 0 && !fgets(buffer, sizeof(buffer), fp1))
 		break;
 	}
 	else if (in_body && bp && (tmpptr = remove_hypermail_tags(buffer))) {
@@ -274,7 +275,6 @@ static char *unquote_and_strip(char *line)
 /*
 ** Find URL of the message this line of quoted text was taken from
 */
-/* #define MAX_ANCHOR_LEN 128 */
 
 static char *url_replying_to(struct emailinfo *email, char *line1,	/* first line of quoted text, with html */
 			     const char *line2,	/* first line of quoted text, w/o html */

@@ -1117,8 +1117,8 @@ int parsemail(char *mbox,	/* file name */
     int num, isinheader, hassubject, hasdate;
     int num_added = 0;
     long exp_time = -1;
-    long delete_older_than = (set_delete_older ? convtoyearsecs(set_delete_older) : 0);
-    long delete_newer_than = (set_delete_newer ? convtoyearsecs(set_delete_newer) : 0);
+    time_t delete_older_than = (set_delete_older ? convtoyearsecs(set_delete_older) : 0);
+    time_t delete_newer_than = (set_delete_newer ? convtoyearsecs(set_delete_newer) : 0);
     int is_deleted = 0;
     int pos;
     bool *require_filter, *require_filter_full;
@@ -1432,14 +1432,14 @@ int parsemail(char *mbox,	/* file name */
 		}
 
 		if (!is_deleted && set_delete_older && (date || fromdate)) {
-		    long email_time = convtoyearsecs(date);
+		    time_t email_time = convtoyearsecs(date);
 		    if (email_time == -1)
 		        email_time = convtoyearsecs(fromdate);
 		    if (email_time != -1 && email_time < delete_older_than)
 		        is_deleted = FILTERED_OLD;
 		}
 		if (!is_deleted && set_delete_newer && (date || fromdate)) {
-		    long email_time = convtoyearsecs(date);
+		    time_t email_time = convtoyearsecs(date);
 		    if (email_time == -1)
 		        email_time = convtoyearsecs(fromdate);
 		    if (email_time != -1 && email_time > delete_newer_than)
@@ -1450,9 +1450,7 @@ int parsemail(char *mbox,	/* file name */
 
 
 		savealternative = FALSE;
-		/*@@ */
 		attach_force = FALSE;
-		/*@@ */
 
 		description = NULL;
 		for (head = headp; head; head = head->next) {
@@ -2697,7 +2695,7 @@ int parsemail(char *mbox,	/* file name */
 
 static void check_expiry(struct emailinfo *emp)
 {
-    long email_time;
+    time_t email_time;
     const char *option = "expires";
     if (!emp->is_deleted) {
         if (emp->exp_time != -1 && emp->exp_time < time(NULL))

@@ -226,6 +226,14 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
     while (isspace(*rp))
 	*rp-- = '\0';
 
+    /* 
+     * Assure the title meets HTML recommendations of no longer 
+     * than 64 characters. Truncate it if needed.
+     */
+
+    if (strlen(title) > 64)
+        *(title+64) = '\0';
+
     fprintf(fp, "<title>%s</title>\n", title);
     free(title);
 

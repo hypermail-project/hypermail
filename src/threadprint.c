@@ -85,8 +85,9 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 	    filenameb = NULL;
 	    stack[level] = rp->msgnum;
 	}
-	else if (hide_level)
+	else if (hide_level) {
 	    ;			/* don't change level */ 
+        }
 	else if (rp->frommsgnum == prev) {
 	    if (level < MAXSTACK)
 		level++;

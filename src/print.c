@@ -650,22 +650,22 @@ void printattachments(FILE *fp, struct header *hp, struct emailinfo *subdir_emai
 		    int first_time = 1;
 		    while ((entry = readdir(dir))) {
 		        int file_size = -1;
-						if (!strcmp(".", entry->d_name) || !strcmp("..", entry->d_name))
-							continue;
+			if (!strcmp(".", entry->d_name) || !strcmp("..", entry->d_name))
+				continue;
 			if (first_time && !set_indextable) {
 			    first_time = 0;
 			    fprintf(fp, "<ol>\n");
 			}
-						trio_asprintf(&filename, "%s%c%s", attdir, PATH_SEPARATOR, entry->d_name);
+			trio_asprintf(&filename, "%s%c%s", attdir, PATH_SEPARATOR, entry->d_name);
 			if (!stat(filename, &fileinfo))
-			    file_size = fileinfo.st_size;
+			    file_size = (int)fileinfo.st_size;
 			free(filename);
-						trio_asprintf(&filename, DIR_PREFIXER "%s%c%s", message_name(em), PATH_SEPARATOR, entry->d_name);
+			trio_asprintf(&filename, DIR_PREFIXER "%s%c%s", message_name(em), PATH_SEPARATOR, entry->d_name);
 			stripped_filename = strchr(entry->d_name, '-');
 			if (stripped_filename)
-							fprintf(fp, fmt2, rel_path_to_top, filename, stripped_filename + 1, file_size, lang[MSG_BYTES]);
-						else
-							fprintf(fp, fmt2, rel_path_to_top, filename, entry->d_name, file_size, lang[MSG_BYTES]);
+				fprintf(fp, fmt2, rel_path_to_top, filename, stripped_filename + 1, file_size, lang[MSG_BYTES]);
+			else
+				fprintf(fp, fmt2, rel_path_to_top, filename, entry->d_name, file_size, lang[MSG_BYTES]);
 			free(filename);
 		    }
 		    if (!first_time && !set_indextable) {
@@ -1294,9 +1294,6 @@ void update_deletions(int num_old)
 {
     struct hashemail *hlist;
     struct reply *rp;
-#ifdef GDBM
-    static GDBM_FILE gp;
-#endif
     int save_ov = set_overwrite;
     set_overwrite = TRUE;
     for (hlist = deletedlist; hlist != NULL; hlist = hlist->next) {

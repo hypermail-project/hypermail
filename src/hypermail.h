@@ -265,9 +265,9 @@ struct emailinfo {
     struct reply *replylist;    /* list all possible direct replies to this */
     int isreply;
 #endif
-    struct emailsubdir *subdir;		/* NULL unless set_msgsperfolder or set_folder_by_date */
+    struct emailsubdir *subdir;	/* NULL unless set_msgsperfolder or set_folder_by_date */
     long exp_time;
-  int is_deleted;	/* 1=deleted, 2=expired, 4=filtered out, */
+    int is_deleted;	/* 1=deleted, 2=expired, 4=filtered out, */
 			/* 8=filtered (required line missing) */
 };
 

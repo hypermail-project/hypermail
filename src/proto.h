@@ -7,7 +7,7 @@
 ** Date functions - date.c
 */
 
-long convtoyearsecs(char *);
+time_t convtoyearsecs(char *);
 char *getlocaltime(void);
 void gettimezone(void);
 void getthisyear(void);

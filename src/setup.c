@@ -129,99 +129,99 @@ int set_delete_level;
 
 struct Config cfg[] = {
     {"antispam_at", &set_antispam_at, ANTISPAM_AT, CFG_STRING,
-     "# replace any @ sign with this string, if spam flags enabled\n"},
+     "# replace any @ sign with this string, if spam flags enabled\n", FALSE},
      
     {"language", &set_language, LANGUAGE, CFG_STRING,
      "# A two-letter string specifying the language to use!\n"
-     "# For example 'en' for English\n"},
+     "# For example 'en' for English\n", FALSE},
 
     {"htmlsuffix", &set_htmlsuffix, HTMLSUFFIX, CFG_STRING,
      "# Use this to specify the html file suffix to be used\n"
      "# when Hypermail generates the html files. This is depen-\n"
      "# dent on local needs. Do not put a '.' in the value. It\n"
-     "# would result in \"file..html\", probably not what you want.\n"},
+     "# would result in \"file..html\", probably not what you want.\n", FALSE},
 
     {"mbox", &set_mbox, NULL, CFG_STRING,
      "# This is the mailbox to read messages in from. Set this with \n"
-     "# a value of NONE to read from standard input.\n"},
+     "# a value of NONE to read from standard input.\n", FALSE},
 
      {"ietf_mbox",  &set_ietf_mbox, BFALSE, CFG_SWITCH,
-     "# Set this to On to read mboxes using the IETF convention.\n"},
+     "# Set this to On to read mboxes using the IETF convention.\n", FALSE},
 
     {"archives", &set_archives, NULL, CFG_STRING,
      "# This will create a link in the archived index pages\n"
      "# labeled 'Other mail archives' to the specified URL. Set\n"
-     "# this to NONE to omit such a link.\n"},
+     "# this to NONE to omit such a link.\n", FALSE},
 
     {"custom_archives", &set_custom_archives, NULL, CFG_STRING,
      "# If this variable is defined, a navigation entry will be\n"
      "# created below the sorted_by_x list entry, with the text\n"
      "# Other mail archives: followed by the value of this variable.\n"
-     "# Set it to NONE to ommit such an entry.\n"},
+     "# Set it to NONE to ommit such an entry.\n", FALSE},
 
     {"about", &set_about, NULL, CFG_STRING,
      "# This will create a link in the archived index pages\n"
      "# labeled 'About this archive' to the specified URL. Set\n"
-     "# this to NONE to omit such a link.\n"},
+     "# this to NONE to omit such a link.\n", FALSE},
 
     {"label", &set_label, NULL, CFG_STRING,
-     "# Define this as the label to put in archives.\n"},
+     "# Define this as the label to put in archives.\n", FALSE},
 
     {"dir", &set_dir, NULL, CFG_STRING,
      "# This is the directory that Hypermail will look for when\n"
      "# creating  and updating archives. If defined as NONE the\n"
-     "# directory will have the same name as the input mailbox.\n"},
+     "# directory will have the same name as the input mailbox.\n", FALSE},
 
     {"defaultindex", &set_defaultindex, DEFAULTINDEX, CFG_STRING,
      "# This specifies the default index that  users can view when\n"
      "# entering the archive. Valid types are date, thread, author,\n"
      "# subject, and attachment. When using the folder_by_date or\n"
-     "# msgsperfolder options, this option applies to subdirectories.\n"},
+     "# msgsperfolder options, this option applies to subdirectories.\n", FALSE},
 
     {"default_top_index", &set_default_top_index, "folders", CFG_STRING,
      "# This specifies the default index that  users can view when\n"
      "# entering the top level of an archive that uses the folder_by_date\n"
      "# or msgsperfolder option. Valid types are date, thread, author,\n"
-     "# subject, attachment, and folders.\n"},
+     "# subject, attachment, and folders.\n", FALSE},
 
     {"avoid_indices", &set_avoid_indices, NULL, CFG_LIST,
      "# This is a list of index files to not generate. Valid types are\n"
      "# date, thread, author, and subject. When using the folder_by_date or\n"
-     "# msgsperfolder options, this option applies to subdirectories.\n"},
+     "# msgsperfolder options, this option applies to subdirectories.\n", FALSE},
 
     {"avoid_top_indices", &set_avoid_top_indices, NULL, CFG_LIST,
      "# This is a list of index files to not generate for the top\n"
      "# directory of an archive using the folder_by_date or\n"
      "# msgsperfolder option. Valid types are date, thread, author, \n"
-     "# subject, folders, and attachment.\n"},
+     "# subject, folders, and attachment.\n", FALSE},
 
     {"overwrite", &set_overwrite, BFALSE, CFG_SWITCH,
-     "# Set this to On to make Hypermail overwrite existing archives.\n"},
+     "# Set this to On to make Hypermail overwrite existing archives.\n", FALSE},
 
     {"inlinehtml", &set_inlinehtml, BTRUE, CFG_SWITCH,
      "# Define to On to make text/html parts to get inlined with the mails.\n"
      "# If set to Off, HTML-parts will be stored as separate files.\n"
      "# A \"Content-Disposition: attachment;\" line in the mail will\n"
      "# cause an HTML-part to be stored as a separate file even if this\n"
-     "# option is On.\n"},
+     "# option is On.\n", FALSE},
 
     {"increment", &set_increment, BFALSE, CFG_SWITCH,
-     "# Set this to On to append the input to existing archive.\n"},
+     "# Set this to On to append the input to existing archive.\n", FALSE},
 
     {"readone", &set_readone, BFALSE, CFG_SWITCH,
-     "# Set this to On to specify there is only one message in the input.\n"},
+     "# Set this to On to specify there is only one message in the input.\n", FALSE},
 
     {"reverse", &set_reverse, BFALSE, CFG_SWITCH,
      "# Setting this variable to On will reverse-sort the article\n"
      "# entries in the date and thread index files by the\n"
      "# date they were received. That is, the most recent messages\n"
      "# will appear at the top of the index rather than the other\n"
-     "# way around.\n"},
+     "# way around.\n", FALSE},
 
     {"reverse_folders", &set_reverse_folders, BFALSE, CFG_SWITCH,
      "# Setting this variable to On will reverse-sort the list of\n"
      "# folders. That is, the most recent folders will appear at\n"
-     "# the top of the index rather than the other way around.\n"},
+     "# the top of the index rather than the other way around.\n", FALSE},
 
     {"progress", &set_showprogress, INT(PROGRESS), CFG_INTEGER,
      "# Set this to 1 or 2 to always show a progress report  as\n"
@@ -229,12 +229,12 @@ struct Config cfg[] = {
      "# overwrites the progress information relating to attachment\n"
      "# creation. With a setting of 2, attachment creation information\n"
      "# is listed individually with the number of the message the\n"
-     "# attachments relate to. This is written to stdout.\n"},
+     "# attachments relate to. This is written to stdout.\n", FALSE},
 
     {"showheaders", &set_showheaders, BFALSE, CFG_SWITCH,
      "# Set this to On to show the article header lines in the archived HTML\n"
      "# files.  These lines typically include the To:, From:, and Subject:\n"
-     "# information found in most email messages.\n"},
+     "# information found in most email messages.\n", FALSE},
 
     {"showhtml", &set_showhtml, INT(1), CFG_INTEGER,
      "# Set this to 1 to show the articles in a proportionally-spaced\n"
@@ -243,19 +243,19 @@ struct Config cfg[] = {
      "# similar to that in <a href=\"http://www.cs.wustl.edu/~seth/txt2html/\">txt2html.pl</a>.\n"
      "# Showhtml = 2 will normally produce nicer looking results than\n"
      "# showhtml = 1, and showhtml = 0 will look pretty dull, but\n"
-     "# 1 and 2 run risks of altering the appearance in undesired ways.\n"},
+     "# 1 and 2 run risks of altering the appearance in undesired ways.\n", FALSE},
 
     {"showbr", &set_showbr, BTRUE, CFG_SWITCH,
      "# Set this to On to place <br> tags at the end of article lines.\n"
      "# Otherwise, all non-quoted article lines will word wrap. This\n"
-     "# only takes effect if hm_showhtml is 1.\n"},
+     "# only takes effect if hm_showhtml is 1.\n", FALSE},
 
     {"showhr", &set_showhr, BTRUE, CFG_SWITCH,
-     "# Set this to On to place horizontal rules before and after articles.\n"},
+     "# Set this to On to place horizontal rules before and after articles.\n", FALSE},
 
     {"showreplies", &set_showreplies, BTRUE, CFG_SWITCH,
      "# Set this to On to show all replies to a message as links\n"
-     "# in article files.\n"},
+     "# in article files.\n", FALSE},
 
     {"show_msg_links", &set_show_msg_links, INT(1), CFG_INTEGER,
      "# Set this to 1 to put the individual message links at the top\n"
@@ -263,79 +263,79 @@ struct Config cfg[] = {
      "# without the Next, Previous, Reply, In-Reply-To, etc. links. Set\n"
      "# it to 3 to produce those links only at the top of the message\n"
      "# pages, or 4 to produce those links only at the bottom of the\n"
-     "# message.\n"},
+     "# message.\n", FALSE},
 
     {"show_index_links", &set_show_index_links, INT(1), CFG_INTEGER,
      "# Set this to 1 to show links to index pages from the top and\n"
      "# bottom of each message file. Set it to 0 to avoid those links.\n"
      "# Set it to 3 to show the links only at the top of the message\n"
      "# pages, or 4 to produce those links only at the bottom of the\n"
-     "# message.\n"},
+     "# message.\n", FALSE},
 
     {"usetable", &set_usetable, BFALSE, CFG_SWITCH,
      "# Setting this variable to On will tell Hypermail to generate\n"
      "# an index menu at the top and bottom of each page in a table\n"
      "# format. Set to Off if you want the standard Hypermail page look\n"
-     "# and feel\n"},
+     "# and feel\n", FALSE},
 
     {"indextable", &set_indextable, BFALSE, CFG_SWITCH,
      "# Setting this variable to On will tell Hypermail to generate\n"
      "# message index Subject/Author/Date listings using a nice table\n"
-     "# format. Set to Off if you want the original Hypermail index look.\n"},
+     "# format. Set to Off if you want the original Hypermail index look.\n", FALSE},
 
     {"iquotes", &set_iquotes, BTRUE, CFG_SWITCH,
-     "# Set this to On to italicize quoted lines.\n"},
+     "# Set this to On to italicize quoted lines.\n", FALSE},
 
     {"eurodate", &set_eurodate, BFALSE, CFG_SWITCH,
      "# Set this to On to display article received dates with\n"
-     "# days before months instead of months before days.\n"},
+     "# days before months instead of months before days.\n", FALSE},
 
     {"isodate", &set_isodate, BFALSE, CFG_SWITCH,
      "# Set this to On to display article received dates in\n"
      "# YYYY-MM-DD HH:MM:SS format. If used with the gmtime option, a\n"
-     "# Z will be inserted between the DD and HH.\n"},
+     "# Z will be inserted between the DD and HH.\n", FALSE},
 
     {"gmtime", &set_gmtime, BFALSE, CFG_SWITCH,
      "# Set this to On to display article received dates using\n"
-     "# Greenwich Mean Time (UTC) rather than local time.\n"},
+     "# Greenwich Mean Time (UTC) rather than local time.\n", FALSE},
 
     {"discard_dup_msgids", &set_discard_dup_msgids, BTRUE, CFG_SWITCH,
      "# Set this to Off to accept messages with a Message-ID matching\n"
      "# that of a message already  in this archive.\n"
-     "# By default such messages are discarded.\n"},
+     "# By default such messages are discarded.\n", FALSE},
 
     {"require_msgids", &set_require_msgids, BTRUE, CFG_SWITCH,
      "# Set this to Off to accept messages without a Message-ID header.\n"
-     "# By default such messages are discarded.\n"},
+     "# By default such messages are discarded.\n", FALSE},
 
     {"usemeta", &set_usemeta, BFALSE, CFG_SWITCH,
-     "# Set this to On to store the content type of a MIME attachment in\n "
-     "# a metadata file.\n"},
+     "# Set this to On to store the content type of a MIME attachment in\n"
+     "# a metadata file.\n", FALSE},
 
     {"uselock", &set_uselock, BTRUE, CFG_SWITCH,
-     "# Set this to On to use hypermail's internal locking mechanism.\n"},
+     "# Set this to On to use hypermail's internal locking mechanism.\n", FALSE},
 
     {"usegdbm",  &set_usegdbm,  BFALSE,    CFG_SWITCH,
      "# Set this to On to use gdbm to implement a header cache.\n"
-     "#This will speed up hypermail, especially if your filesystem is slow.\n"
-     "#It will not provide any speedup with the linkquotes option.\n"
+     "# This will speed up hypermail, especially if your filesystem is slow.\n"
+     "# It will not provide any speedup with the linkquotes option.\n"
 #ifndef GDBM
-     "#(This particular binary has been build with GDBM disabled.)\n"
+     "# (This particular binary has been build with GDBM disabled.)\n"
 #endif
-    },
+    , FALSE},
 
     {"writehaof", &set_writehaof, BFALSE, CFG_SWITCH,
      "# Set this to On to let hypermail write an XML archive overview file\n"
-     "# in each directory. The filename is " HAOF_NAME ".\n"},
+     "# in each directory. The filename is " HAOF_NAME ".\n", FALSE},
 
     {"append",  &set_append,  BFALSE,    CFG_SWITCH,
      "# Set this to On to maintain a parallel mbox archive. The file\n"
-     "#name defaults to mbox in the directory specified by -d or dir.\n"},
+     "# name defaults to mbox in the directory specified by -d or dir.\n", FALSE},
 
     {"append_filename", &set_append_filename, NULL, CFG_STRING,
      "# Specifies the filename to be used by the append option.\n"
-     "#$DIR may be used to specify a name relative to the directory\n"
-     "#specified in the -d or dir option.\n"},
+     "# $DIR may be used to specify a name relative to the directory\n"
+     "# specified in the -d or dir option.\n", FALSE},
 
     {"nonsequential",  &set_nonsequential,  BFALSE,    CFG_SWITCH,
      "# Set this to On to generate filenames that are not sequential, but\n"
@@ -344,188 +344,188 @@ struct Config cfg[] = {
      "# (This particular binary has been build with LIBFNV disabled.\n"
      "# This option won't work)\n"
 #endif
-     },
+     , FALSE},
 
     {"thrdlevels", &set_thrdlevels, INT(4), CFG_INTEGER,
      "# This specifies the number of thread levels to outline\n"
-     "# in the thread index.\n"},
+     "# in the thread index.\n", FALSE},
 
     {"dirmode", &set_dirmode, INT(0755), CFG_OCTAL,
      "# This is an octal number  representing  the  permissions\n"
-     "# that new directories are set to when they are created.\n"},
+     "# that new directories are set to when they are created.\n", FALSE},
 
     {"filemode", &set_filemode, INT(0644), CFG_OCTAL,
      "# This is an octal number representing the file permissions\n"
-     "# that new files are set to when they are created.\n"},
+     "# that new files are set to when they are created.\n", FALSE},
 
     {"mailcommand", &set_mailcommand, MAILCOMMAND, CFG_STRING,
      "# This specifies the mail command to use when converting\n"
      "# email addresses to links. The variables $TO, $SUBJECT,\n"
-     "# and $ID can be used in constructing the command string.\n"},
+     "# and $ID can be used in constructing the command string.\n", FALSE},
 
     {"mailto", &set_mailto, NULL, CFG_STRING,
      "# The address of the contact point that is put in the HTML header\n"
      "# line <link rev=made href=\"mailto:MAILTO\">. Setting this to NONE\n"
-     "# disables <link...> header generation.\n"},
+     "# disables <link...> header generation.\n", FALSE},
 
     {"hmail", &set_hmail, NULL, CFG_STRING,
-     "# Set this to the list's submission address.\n"},
+     "# Set this to the list's submission address.\n", FALSE},
 
     {"newmsg_command", &set_newmsg_command, "mailto:$TO", CFG_STRING,
      "# This specifies the mail command to use when converting the\n"
      "# set_hmail address to links in replies. The variables $TO, $SUBJECT,\n"
-     "# and $ID can be used in constructing the command string.\n"},
+     "# and $ID can be used in constructing the command string.\n", FALSE},
 
     {"replymsg_command", &set_replymsg_command, "not set", CFG_STRING,
      "# This specifies the mail command to use when converting the\n"
      "# set_hmail address to links in replies. The variables $TO, $SUBJECT,\n"
      "# and $ID can be used in constructing the command string. The value\n"
-     "# from mailcommand will be used if this option is not specified.\n"},
+     "# from mailcommand will be used if this option is not specified.\n", FALSE},
 
     {"domainaddr", &set_domainaddr, DOMAINADDR, CFG_STRING,
      "# Set this to the domainname you want added to a mail address\n"
-     "# appearing in the RFC822 field which lack a hostname.\n"},
+     "# appearing in the RFC822 field which lack a hostname.\n", FALSE},
 
     {"body", &set_htmlbody, NULL, CFG_STRING,
-     "# This obsolete entry kept around to help warn users with old config files.\n"},
+     "# This obsolete entry kept around to help warn users with old config files.\n", FALSE},
 
     {"icss_url", &set_icss_url, NULL, CFG_STRING,
      "# Specifies a URL to an external CSS stylesheet for the index pages.\n"
-     "The CSS will be associated to the indexes thru an HTML LINK element.\n"
-    },
+     "# The CSS will be associated to the indexes thru an HTML LINK element.\n"
+    , FALSE},
 
     {"mcss_url", &set_mcss_url, NULL, CFG_STRING,
      "# Specifies a URL to an external CSS stylesheet for the message pages.\n"
-     "The CSS will be associated to the indexes thru an HTML LINK element.\n"
-    },
+     "# The CSS will be associated to the indexes thru an HTML LINK element.\n"
+    , FALSE},
 
     {"text_types", &set_text_types, NULL, CFG_LIST,
      "# This is a list of MIME types that you want hypermail to treat\n"
-     "# exactly as if they were text/plain.\n"},
+     "# exactly as if they were text/plain.\n", FALSE},
 
     {"inline_types", &set_inline_types, INLINE_TYPES, CFG_LIST,
      "# This is the list of MIME types that you want <img> tags to as\n"
-     "# opposed to simply <a href> to from the message.\n"},
+     "# opposed to simply <a href> to from the message.\n", FALSE},
 
     {"prefered_types", &set_prefered_types, NULL, CFG_LIST,
      "# When mails using multipart/mixed types are scanned, this list of\n"
      "# MIME types defines which part you want presented in the result.\n"
-     "# See the save_alts option for how non prefered types are treated.\n"},
+     "# See the save_alts option for how non prefered types are treated.\n", FALSE},
 
     {"ignore_types", &set_ignore_types, NULL, CFG_LIST,
      "# This is the list of MIME attachment types that you do not want\n"
      "# to do anything with. Two special types may be used here:\n"
      "# $BINARY - ignore all types that would be stored as separate files.\n"
      "# $NONPLAIN - ignore all types not treated as text/plain, and all $BINARY types.\n"
-     "# Note: the behavior of these may be affected by the inlinehtml option.\n"},
+     "# Note: the behavior of these may be affected by the inlinehtml option.\n", FALSE},
 
     {"show_headers", &set_show_headers, NULL, CFG_LIST,
      "# This is the list of headers to be displayed if 'showheaders'\n"
      "# is set to On). They can be listed comma or space separated\n"
-     "# all on a single line.\n"},
+     "# all on a single line.\n", FALSE},
 
     {"ihtmlheaderfile", &set_ihtmlheader, NULL, CFG_STRING,
      "# Define path as the path to a template  file  containing\n"
      "# valid  HTML  formatting  statements  that  you  wish to\n"
-     "# included at the top of every index page.\n"},
+     "# included at the top of every index page.\n", FALSE},
 
     {"ihtmlfooterfile", &set_ihtmlfooter, NULL, CFG_STRING,
      "# Define path as the path to a template  file  containing\n"
      "# valid  HTML  formatting  statements  that  you  wish to\n"
-     "# included at the bottom of every index  page.\n"},
+     "# included at the bottom of every index  page.\n", FALSE},
 
     {"mhtmlheaderfile", &set_mhtmlheader, NULL, CFG_STRING,
      "# Define path as the path to a template  file  containing\n"
      "# valid  HTML  formatting statements that you wish to use\n"
-     "# at the top of every message page.\n"},
+     "# at the top of every message page.\n", FALSE},
 
     {"mhtmlfooterfile", &set_mhtmlfooter, NULL, CFG_STRING,
      "# Define path as the path to a template  file  containing\n"
      "# valid HTML formatting statements you wish to use at the\n"
-     "# bottom of every message page.\n"},
+     "# bottom of every message page.\n", FALSE},
 
     {"locktime", &set_locktime, INT(3600), CFG_INTEGER,
      "# Specify number of seconds to wait for a lock before we\n"
-     "# override it! .\n"},
+     "# override it! .\n", FALSE},
 
     {"dateformat", &set_dateformat, NULL, CFG_STRING,
-     "# Format (see strftime(3)) for displaying dates.\n"},
+     "# Format (see strftime(3)) for displaying dates.\n", FALSE},
 
     {"stripsubject", &set_stripsubject, NULL, CFG_STRING,
      "# A word to be stripped from all subject lines.  Helps unclutter\n"
-     "# mailing lists which add tags to subject lines.\n"},
+     "# mailing lists which add tags to subject lines.\n", FALSE},
 
     {"attachmentlink", &set_attachmentlink, NULL, CFG_STRING,
      "# Format of the attachment links.\n"
      "# %p for the full path to the attachment\n"
      "# %f for the file name part only\n"
      "# %d for the directory name only\n"
-     "# %n for the message number\n" "# %c for the content type string\n"},
+     "# %n for the message number\n" "# %c for the content type string\n", FALSE},
 
     {"spamprotect", &set_spamprotect, BFALSE, CFG_SWITCH,
      "# Set this to On to make hypermail not output real email addresses\n"
      "# in the output HTML but instead it will obfuscate them a little.\n"
-     "# You can control the obfuscation with set_antispamdomain.\n"},
+     "# You can control the obfuscation with set_antispamdomain.\n", FALSE},
   
     {"antispamdomain", &set_antispamdomain, NULL, CFG_STRING,
      "# By default hypermail only does a small amount of massaging\n"
      "# of email addresses. Use this to completely replace the domain\n"
      "# from which a message originates (everything after the @)\n"
      "# with some string to confuse screen-scraping programs.\n"
-     "# It is probably wise to make this an invalid mail domain.\n"}, 
+     "# It is probably wise to make this an invalid mail domain.\n", FALSE}, 
 
     {"spamprotect_id", &set_spamprotect_id, BFALSE, CFG_SWITCH,
      "# Set this to On to make hypermail not output real email message\n"
      "# ids in HTML comments (sometimes used internally by hypermail) but\n"
      "# instead it will obfuscate them a little so they don't look like\n"
-     "# email addresses to spammers.\n"},
+     "# email addresses to spammers.\n", FALSE},
 
     {"attachmentsindex", &set_attachmentsindex, BTRUE, CFG_SWITCH,
      "# Set this to  Off to make hypermail not output an index of\n"
-     "# messages with attachments.\n"},
+     "# messages with attachments.\n", FALSE},
 
     {"linkquotes", &set_linkquotes, BFALSE, CFG_SWITCH, 
      "# Set this to On to create fine-grained links from quoted\n"
      "# text to the text where the quote originated. It also improves\n"
      "# the threads index file by more accurately matching messages\n"
      "# with replies. Note that this may be rather cpu intensive (see\n"
-     "# the searchbackmsgnum option to alter the performance).\n" },
+     "# the searchbackmsgnum option to alter the performance).\n" , FALSE},
 
     {"searchbackmsgnum", &set_searchbackmsgnum, INT(500), CFG_INTEGER,
      "# If the linkquotes option is on and an incremental update is being"
      "# done (-u option), this controls the tradeoff between speed and\n"
      "# the reliability of finding the right source for quoted text.\n"
      "# Try to set it to the largest number of messages between a\n"
-     "# message and the final direct reply to that message.\n"},
+     "# message and the final direct reply to that message.\n", FALSE},
 
     {"link_to_replies", &set_link_to_replies, NULL, CFG_STRING,
      "# If the linkquotes option is on, specifying a string here\n"
      "# causes it to generate links from original quoted text to the\n"
      "# location(s) in replies which quote them. The string\n"
-     "# is used to display the link.\n"},
+     "# is used to display the link.\n", FALSE},
 
     {"quote_hide_threshold", &set_quote_hide_threshold, INT(100), CFG_INTEGER,
      "# If the linkquotes option is on, setting this to an\n"
      "# integer less than 100 will cause it to replace quoted\n"
      "# text with one-line links if the percent of lines in the\n"
      "# message body (exluding the signature) consisting of\n"
-     "# quoted text exceeds the number indicated by this option.\n"},
+     "# quoted text exceeds the number indicated by this option.\n", FALSE},
 
     {"quote_link_string", &set_quote_link_string, NULL, CFG_STRING,
      "# If the quote_hide_threshold option is being used, the\n"
      "# quote_link_string will be used if available to display the\n"
      "# link that replaces the quoted text. If no string is specified\n"
-     "# here, the first line of each section of quoted text will used.\n"},
+     "# here, the first line of each section of quoted text will used.\n", FALSE},
 
     {"monthly_index", &set_monthly_index, BFALSE, CFG_SWITCH,
      "# Set this to On to create additional index files broken up\n"
      "# by month. A summary.html file will provide links to all the\n"
-     "# monthly indices.\n"},
+     "# monthly indices.\n", FALSE},
 
     {"yearly_index", &set_yearly_index, BFALSE, CFG_SWITCH,
      "# Set this to On to create additional index files broken up\n"
      "# by year. A summary.html file will provide links to all the\n"
-     "# yearly indices.\n"},
+     "# yearly indices.\n", FALSE},
 
     {"thread_file_depth", &set_thread_file_depth, INT(0), CFG_INTEGER,
      "# If nonzero, break the threads index file into multiple files,\n"
@@ -537,7 +537,7 @@ struct Config cfg[] = {
      "# for each thread whose replies are nested by more than 1 level,\n"
      "# but that is rarely useful. This option is currently disabled\n"
      "# if the indextable option is turned on, and probably needs to\n"
-     "# be less than thrdlevels.\n"},
+     "# be less than thrdlevels.\n", FALSE},
 
     {"folder_by_date", &set_folder_by_date, NULL, CFG_STRING,
      "# This string causes the messages to be put in subdirectories\n"
@@ -547,14 +547,14 @@ struct Config cfg[] = {
      "# yearly, \"%G/%V\" for weekly. Do not alter this for an existing\n"
      "# archive without removing the old html files. If you use this\n"
      "# and update the archive incrementally (e.g. with -u), you must\n"
-     "# use the usegdbm option.\n"},
+     "# use the usegdbm option.\n", FALSE},
 
     {"msgsperfolder", &set_msgsperfolder, INT(0), CFG_INTEGER,
      "# Put messages in subdirectories with this many messages per\n"
      "# directory. Do not use this and folder_by_date on the same archive.\n"
      "# Do not alter this for an existing archive without removing the old\n"
      "# html files. Deleted/expired messages ARE COUNTED for the purpose\n"
-     "# of deciding how many messages to put in a subdirectory.\n"},
+     "# of deciding how many messages to put in a subdirectory.\n", FALSE},
 
     {"describe_folder", &set_describe_folder, NULL, CFG_STRING,
      "# Controls the labels used in folders.html to describe the\n"
@@ -566,97 +566,97 @@ struct Config cfg[] = {
      "# %D for the directory number (starts with 1)\n"
      "# %m for the number of the first message in the directory\n"
      "# %M for the number of the last message that can be put in the\n"
-     "# directory.\n"},
+     "# directory.\n", FALSE},
 
     {"latest_folder", &set_latest_folder, NULL, CFG_STRING,
      "# If folder_by_date or msgsperfolder are in use, create\n"
      "# a symbolic link by this name to the most recently created\n"
      "# subdirectory. Note that many web servers are configured to\n"
-     "# not follow symbolic links for security reasons.\n"},
+     "# not follow symbolic links for security reasons.\n", FALSE},
 
     {"base_url", &set_base_url, NULL, CFG_STRING,
      "# The url of the archive's main directory. This is needed when\n"
      "# the latest_folder option is used and the folder_by_date makes\n"
-     "# directories more than one level deep (e.g. with '%y/%m').\n"},
+     "# directories more than one level deep (e.g. with '%y/%m').\n", FALSE},
 
     {"iso2022jp", &set_iso2022jp, BFALSE, CFG_SWITCH,
-     "# Set this to On to support ISO-2022-JP messages.\n"},
+     "# Set this to On to support ISO-2022-JP messages.\n", FALSE},
 
     {"deleted", &set_deleted, "X-Hypermail-Deleted X-No-Archive", CFG_LIST,
      "# This is the list of headers that indicate the message should\n"
-     "# not be displayed if the value of this header is 'yes'.\n"},
+     "# not be displayed if the value of this header is 'yes'.\n", FALSE},
 
     {"expires", &set_expires, "Expires", CFG_LIST,
      "# This is the list of headers that indicate the message should\n"
-     "# not be displayed if the value of this header is a date in the past.\n"},
+     "# not be displayed if the value of this header is a date in the past.\n", FALSE},
 
     {"delete_older", &set_delete_older, NULL, CFG_STRING,
-     "# Any message older than this date should not be displayed.\n"},
+     "# Any message older than this date should not be displayed.\n", FALSE},
 
     {"delete_newer", &set_delete_newer, NULL, CFG_STRING,
-     "# Any message newer than this date should not be displayed.\n"},
+     "# Any message newer than this date should not be displayed.\n", FALSE},
 
     {"delete_msgnum", &set_delete_msgnum, NULL, CFG_LIST,
      "# This is the list of message numbers that should be deleted from the\n"
-     "# html archive. The mbox is not changed.\n"},
+     "# html archive. The mbox is not changed.\n", FALSE},
 
     {"delete_level", &set_delete_level, INT(DELETE_LEAVES_STUBS), CFG_INTEGER,
      "# 0 - remove deleted and expired files. Note that with this choice\n"
-     "      threading may be screwed up if there are replies to deleted or\n"
-     "      expired options and the archive is updated incrementally\n"
+     "#     threading may be screwed up if there are replies to deleted or\n"
+     "#     expired options and the archive is updated incrementally\n"
      "# 1 - remove message body\n"
      "# 2 - remove message body for deleted messages, leave expired messages\n"
      "# 3 - leave all messages\n"
      "# Deleted and expired messages are removed from the index files\n"
-     "# regardless of the delete_level selection.\n"},
+     "# regardless of the delete_level selection.\n", FALSE},
 
     {"txtsuffix", &set_txtsuffix, NULL, CFG_STRING,
      "# If you want the original mail messages archived in individual files,\n"
      "# set this to the extension that you want these messages to have\n"
-     "# (recommended value: txt).\n"},
+     "# (recommended value: txt).\n", FALSE},
 
     {"filter_out", &set_filter_out, NULL, CFG_STRINGLIST,
      "# Delete from the html archives any message having a header line\n"
      "# which matches any of these expressions. Uses the same rules for\n"
      "# deletion as the expires option. The expressions use the same\n"
-     "# syntax as Perl regular expressions.\n"},
+     "# syntax as Perl regular expressions.\n", FALSE},
 
     {"filter_require", &set_filter_require, NULL, CFG_STRINGLIST,
      "# Delete from the html archives any message not having header lines\n"
      "# which match each of these expressions. Uses the same rules for\n"
      "# deletion as the expires option. The expressions use the same\n"
-     "# syntax as Perl regular expressions.\n"},
+     "# syntax as Perl regular expressions.\n", FALSE},
 
     {"filter_out_full_body", &set_filter_out_full_body, NULL, CFG_STRINGLIST,
      "# Delete from the html archives any message having a line\n"
      "# which matches any of these expressions. Uses the same rules for\n"
      "# deletion as the expires option. The expressions use the same\n"
-     "# syntax as Perl regular expressions.\n"},
+     "# syntax as Perl regular expressions.\n", FALSE},
 
     {"filter_require_full_body", &set_filter_require_full_body, NULL, CFG_STRINGLIST,
      "# Delete from the html archives any message not having lines\n"
      "# which match each of these expressions. Uses the same rules for\n"
      "# deletion as the expires option. The expressions use the same\n"
-     "# syntax as Perl regular expressions.\n"},
+     "# syntax as Perl regular expressions.\n", FALSE},
 
     {"save_alts", &set_save_alts, INT(0), CFG_INTEGER,
      "# This controls what happens to alternatives (other than the prefered\n"
      "# alternative) for multipart/alternative messages.\n"
      "# 0 - discard non-prefered alternatives\n"
      "# 1 - show all alternatives inline\n"
-     "# 2 - put non-prefered alternatives in a separate file.\n"},
+     "# 2 - put non-prefered alternatives in a separate file.\n", FALSE},
 
     {"alts_text", &set_alts_text, NULL, CFG_STRING,
      "# If save_alts is 1, this text is put between the alternatives.\n"
      "# If save_alts is 2, this text is used to describe the link to each\n"
-     "# alternative file.\n"},
+     "# alternative file.\n", FALSE},
 
     {"warn_surpressions", &set_warn_surpressions, BTRUE, CFG_SWITCH,
      "# Set this to On to get warnings (on stdout) about messages that\n"
      "# are not converted because of they are missing a msgid (if\n"
      "# require_msgids is On) or because one of the following options\n"
      "# surpressed it: deleted expires delete_msgnum filter_out\n"
-     "# filter_require filter_out_full_body filter_require_full_body.\n"},
+     "# filter_require filter_out_full_body filter_require_full_body.\n", FALSE},
 
     {"unsafe_chars", &set_unsafe_chars, NULL, CFG_STRING,
      "# Any characters listed in this string are removed from user-specified\n"
@@ -667,12 +667,12 @@ struct Config cfg[] = {
      "# might be some security problems that can be prevented if you specify\n"
      "# \".\" here (e.g. if a web server is configured to enable server side\n"
      "# includes on filenames ending in something other than .shtml), but\n"
-     "# that will prevent browsers from recognizing many file types.\n"},
+     "# that will prevent browsers from recognizing many file types.\n", FALSE},
 
     {"files_by_thread", &set_files_by_thread, BFALSE, CFG_SWITCH,
      "# Set this to On to generate (in addition to the usual files),\n"
      "# a file for each thread that contains all the messages in that\n"
-     "# thread.\n"},
+     "# thread.\n", FALSE},
 };
 
 /* ---------------------------------------------------------------- */
@@ -702,7 +702,10 @@ void MakeConfig(bool comments)
 			    *(char **)cfg[i].value);
 		else if (comments)
 		    /* show the default value, but commented */
+/*
 		    fprintf(stdout, "#%s = %s\n", cfg[i].label,
+*/
+		    fprintf(stdout, "%s = %s\n", cfg[i].label,
 			    cfg[i].def ? (char *)cfg[i].def : "");
 		break;
 	    case CFG_LIST:
@@ -713,7 +716,10 @@ void MakeConfig(bool comments)
 		}
 		else if (comments) {
 		    /* show the default value, but commented */
+/*
 		    fprintf(stdout, "#%s = %s\n", cfg[i].label,
+*/
+		    fprintf(stdout, "%s = %s\n", cfg[i].label,
 			    cfg[i].def ? (char *)cfg[i].def : "");
 		}
 		break;
@@ -724,7 +730,10 @@ void MakeConfig(bool comments)
 			    *(long *)(cfg[i].value));
 		else if (comments)
 		    /* show the default value, but commented */
+/*
 		    fprintf(stdout, "#%s = %lo\n", cfg[i].label,
+*/
+		    fprintf(stdout, "%s = %lo\n", cfg[i].label,
 			    (long)cfg[i].def);
 		break;
 	    case CFG_INTEGER:
@@ -734,7 +743,10 @@ void MakeConfig(bool comments)
 			    *(long *)(cfg[i].value));
 		else if (comments)
 		    /* show the default value, but commented */
+/*
 		    fprintf(stdout, "#%s = %ld\n", cfg[i].label,
+*/
+		    fprintf(stdout, "%s = %ld\n", cfg[i].label,
 			    (long)cfg[i].def);
 		break;
 	    case CFG_SWITCH:
@@ -744,7 +756,10 @@ void MakeConfig(bool comments)
 			    cfg[i].label,
 			    *(long *)(cfg[i].value) ? "On" : "Off");
 		else if (comments)
+/*
 		    fprintf(stdout, "#%s = %s\n", cfg[i].label,
+*/
+		    fprintf(stdout, "%s = %s\n", cfg[i].label,
 			    cfg[i].def ? "On" : "Off");
 		break;
 	    default:
@@ -924,11 +939,11 @@ int ConfigAddItem(char *cfg_line)
 		    if (!strcasecmp("ON", towhat) || !strcasecmp("YES", towhat))
 			*(int *)cfg[i].value = 1;
 		    else
-		        *(int *)cfg[i].value = strtol(towhat, NULL, 0);
+		        *(int *)cfg[i].value = (int)strtol(towhat, NULL, 0);
 		    break;
 		case CFG_OCTAL:
 		    /* get an octal number */
-		    *(int *)cfg[i].value = strtol(towhat, NULL, 8);
+		    *(int *)cfg[i].value = (int)strtol(towhat, NULL, 8);
 		    break;
 		case CFG_LIST:
 

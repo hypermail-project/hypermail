@@ -524,7 +524,7 @@ int main(int argc, char **argv)
     if (cmd_show_variables) {
 	if (!set_mbox)
 	    set_mbox = "NONE";
-	MakeConfig(TRUE);
+	MakeConfig(TRUE); 
 	free(configfile);
 	return (0);
     }

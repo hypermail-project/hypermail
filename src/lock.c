@@ -16,13 +16,13 @@ void lock_archive(char *dir)
     snprintf(lockfile, sizeof(lockfile), "%s/%s", dir, LOCKBASE);
 
     while ((fp = fopen(lockfile, "r")) != NULL) {
-	fgets(buffer, sizeof(buffer), fp);
+	fgets(buffer, MAXLINE-1, fp);
 	fclose(fp);
 	/*  
          * "set_locktime" is the config file item named 'locktime', 
          * default is 3600 seconds 
          */
-	if (time(NULL) > (atol(buffer) + set_locktime))
+	if (time(NULL) > (time_t)(atol(buffer) + set_locktime))
 	    break;		/* lock over hour old - break it */
 
 	++count;
@@ -32,7 +32,7 @@ void lock_archive(char *dir)
     }
     if ((fp = fopen(lockfile, "w")) != NULL) {
 	i_locked_it = 1;
-	fprintf(fp, "%ld\n", time(NULL));
+	fprintf(fp, "%ld\n", (long)time(NULL));
 	fclose(fp);
     }
     else if (dir[0]) {

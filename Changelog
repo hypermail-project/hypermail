@@ -1,6 +1,16 @@
 Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ Kent Landfield (Mar 20, 2003)
+   - Added Splint (www.splint.org) support to src/Makefile.in
+   - Corrected Initializer block for ltable[12]. Had 2 fields, but struct
+     language_entry has 3 fields.
+   - Removed unused gp variable in update_deletions().
+   - modified print_main_header() to assure title meets HTML recommendations 
+     of no longer than 64 characters. 
+   - Updated docs/hypermail.rc
+
  Peter McCluskey (Mar 18, 2003)
    Fixed overwrite = 0 to avoid rewrite of many files involved in replies
   with folder_by_date option.

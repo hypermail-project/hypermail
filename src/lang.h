@@ -1697,7 +1697,7 @@ struct language_entry ltable[] = {
 {    "el",      gr,    "el"   	 },     /* Greek */
 {    "gr",      gr,    "el_GR"   },     /* Greek */
 {    "ru",      ru,    "ru_RU"   },     /* Russian */
-{     NULL,     NULL 		 },     /* EOL    */
+{     NULL,     NULL,  NULL	 },     /* EOL    */
 };
 
 /*
