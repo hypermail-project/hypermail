@@ -1,5 +1,7 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Peter McCluskey (May 16 2001)
+  - fix pathnames in inline attachments with msgsperfolder/folder_by_date
 
 Peter McCluskey (May 11 2001)
   - add filter options (using pcre regular expressions):

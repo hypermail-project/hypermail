@@ -2271,6 +2271,7 @@ int parsemail(char *mbox,	/* file name */
 				if (strlen(file) <= 500) {
 				    char *desc;
 				    char *sp;
+				    struct emailsubdir *subdir;
 
 				    if (description && description[0] != '\0'
                                         && hasblack(description))
@@ -2287,15 +2288,24 @@ int parsemail(char *mbox,	/* file name */
 				    if (description)
 					description = NULL;
 
+				    subdir = NULL;
+				    if (set_msgsperfolder || set_folder_by_date) {
+					struct emailinfo e;
+					fill_email_dates(&e, date, fromdate,
+							 NULL, NULL);
+					subdir = msg_subdir(num, e.date);
+				    }
+
 				    if (inline_force ||
 					inlinecontent(type)) {
 					/* if we know our browsers can show this type of context
 					   as-is, we make a <img> tag instead of <a href>! */
 
 					trio_snprintf(buffer, sizeof(buffer),
-						 "%s<img src=\"%s%c%s\" alt=\"%s\">\n",
+						 "%s<img src=\"%s%s%c%s\" alt=\"%s\">\n",
 						 (set_showhr ? "<hr noshade>\n" :
 						  ""),
+						 subdir ? subdir->rel_path_to_top : "",
 						 &att_dir[strlen(dir) + 1],
 						 PATH_SEPARATOR, file,
 						 desc);
@@ -2307,13 +2317,6 @@ int parsemail(char *mbox,	/* file name */
 								+ 1],
 						       file, num, type);
 
-					struct emailsubdir *subdir = NULL;
-					if (set_msgsperfolder || set_folder_by_date) {
-					    struct emailinfo e;
-					    fill_email_dates(&e, date, fromdate,
-							     NULL, NULL);
-					    subdir = msg_subdir(num, e.date);
-					}
 					if ((sp = strchr(desc, '\n')) !=
 					    NULL) *sp = '\0';
 
