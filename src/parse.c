@@ -1096,6 +1096,8 @@ int parsemail(char *mbox,	/* file name */
     int alternative_weight = -1;	/* the current weight of the prefered alternative content */
     struct body *alternative_lp = NULL;	/* the previous alternative lp */
     struct body *alternative_bp = NULL;	/* the previous alternative bp */
+    struct body *append_bp = NULL; /* text to append to body after parse done*/
+    struct body *append_lp = NULL;
     FileStatus alternative_lastfile_created = NO_FILE;	/* previous alternative attachments, for non-inline MIME types */
     char alternative_file[129];	/* file name where we store the non-inline alternatives */
     char alternative_lastfile[129];	/* last file name where we store the non-inline alternatives */
@@ -1873,6 +1875,11 @@ int parsemail(char *mbox,	/* file name */
 		if (!inreply)
 		    inreply = oneunre(subject);
 
+		if (append_bp && append_bp != bp) {
+		    bp = append_body(bp, &lp, append_bp);
+		    append_bp = append_lp = NULL;
+		}
+
 		while (rmlastlines(bp));
 
 		emp =
@@ -2366,14 +2373,14 @@ int parsemail(char *mbox,	/* file name */
 				    }
 
 				    /* Print attachment comment before attachment */
-				    bp =
-					addbody(bp, &lp, buffer,
+				    append_bp =
+					addbody(append_bp, &append_lp, buffer,
 						BODY_HTMLIZED | bodyflags);
 				    trio_snprintf(buffer, sizeof(buffer),
 					     "<!-- attachment=\"%.80s\" -->\n",
 					     file);
-				    bp =
-					addbody(bp, &lp, buffer,
+				    append_bp =
+					addbody(append_bp, &append_lp, buffer,
 						BODY_HTMLIZED | bodyflags);
 				}
 			    }
@@ -2417,6 +2424,11 @@ int parsemail(char *mbox,	/* file name */
 
 	if (!inreply)
 	    inreply = oneunre(subject);
+
+	if (append_bp && append_bp != bp) {
+	    bp = append_body(bp, &lp, append_bp);
+	    append_bp = append_lp = NULL;
+	}
 
 	while (rmlastlines(bp));
 

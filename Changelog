@@ -1,5 +1,22 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (July 15, 2002)
+   Fix some missing links to multipart attachments with save_alts option.
+
+ Peter McCluskey (July 11, 2002)
+   Add base_url option, and warning about it being needed when the
+  latest_folder option is used and the folder_by_date option contains a '/'.
+
+ Peter McCluskey (July 8, 2002)
+   Fix endless loop that save_alts option often produced.
+
+ Peter McCluskey (June 18, 2002)
+   Applied changes from Carlos Martín Ugalde to Spanish text.
+
+ Peter McCluskey (June 13, 2002)
+   Fix call to compute_quoted_percent so that it doesn't crash on deleted msg
+   with incremental update.
+
  Peter McCluskey (May 14, 2002)
    Add spamprotect_id option.
 
