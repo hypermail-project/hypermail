@@ -379,7 +379,7 @@ static char *url_replying_to(struct emailinfo *email,
 	    if (add_anchor(match_info.msgnum, *quoting_msgnum, quote_num,
 		 anchor, parsed2, 1, count_quoted_lines, &match_info)) {
 	        struct emailinfo *ep2;
-		struct body *bp = hashnumlookup(match_info.msgnum, &ep2);
+		struct body *bp0 = hashnumlookup(match_info.msgnum, &ep2);
 		char *path = get_path(ep, ep2);
 		char *buf = maprintf("%s%.4d.%s#%s", path,
 				     match_info.msgnum, set_htmlsuffix,
@@ -587,7 +587,7 @@ replace_maybe_replies(const char *filename, struct emailinfo *ep,
 		    "<li> <strong>%s:</strong> <a href=\"",
 		    NULL
 		};
-		static const indices[] = { MSG_MAYBE_IN_REPLY_TO,
+		static const int indices[] = { MSG_MAYBE_IN_REPLY_TO,
 		    MSG_IN_REPLY_TO,
 		    MSG_PREVIOUS_MESSAGE
 		};

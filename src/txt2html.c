@@ -496,10 +496,13 @@ static char *unhyphenate_2nd_line(char *line)
     RETURN_PUSH(buffer);
 }
 
+/*
+char *id, char *subject,
+	 int msgnum, char *inreply, const char *dir, 
+*/
 void
-txt2html(FILE *fp, const struct body *bp, char *id, char *subject,
-	 int msgnum, char *inreply, const char *dir, bool replace_quoted,
-	 int maybe_reply)
+txt2html(FILE *fp, struct emailinfo *email, const struct body *bp,
+	 bool replace_quoted, int maybe_reply)
 {
     int is_caps_line = 0;
     int is_blank_line = 1;
@@ -603,13 +606,11 @@ txt2html(FILE *fp, const struct body *bp, char *id, char *subject,
 	}
 	if (!set_linkquotes) {
 	    fprintf(fp, "<i>");
-	    ConvURLs(fp, chomp(line), id, subject);
+	    ConvURLs(fp, chomp(line), email->msgid, email->subject);
 	    fprintf(fp, "</i><br>\n");
 	}
-	else if (handle_quoted_text(fp, msgnum, bp, line, inquote,
-				    quote_num, inreply, dir,
-				    replace_quoted, maybe_reply, id,
-				    subject)) {
+	else if (handle_quoted_text(fp, email, bp, line, inquote, quote_num,
+				    replace_quoted, maybe_reply)) {
 	    ++quote_num;
 	    inquote = 1;
 	}
@@ -623,7 +624,7 @@ txt2html(FILE *fp, const struct body *bp, char *id, char *subject,
 	    sp = line;
 	else
 	    sp = print_leading_whitespace(fp, line);
-	ConvURLs(fp, chomp(sp), id, subject);
+	ConvURLs(fp, chomp(sp), email->msgid, email->subject);
 	fprintf(fp, "\n");
     }
     if (is_caps_line)

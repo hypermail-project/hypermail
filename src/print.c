@@ -930,8 +930,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply)
 	}
 
 	if (set_showhtml == 2 && !inheader) {
-	    txt2html(fp, bp, id, subject, msgnum, inreply, dir,
-		     replace_quoted, maybe_reply);
+	    txt2html(fp, email, bp, replace_quoted, maybe_reply);
 	    bp = bp->next;
 	    continue;
 	}
@@ -2443,7 +2442,6 @@ void write_toplevel_indices(int amountmsgs)
     char *subject = lang[MSG_FOLDERS_INDEX];
     char filename[MAXFILELEN];
     FILE *fp;
-    int count;
 
     htmlfilename(filename, index_name[0][FOLDERS_INDEX] , NULL, "");
 
