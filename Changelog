@@ -1,6 +1,10 @@
 Version Changes for Hypermail
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (June 27, 2003)
+  Made dates in subdirectory index files reflect subdirectory date range,
+ rather than the date range for the whole archive.
+
  Peter McCluskey (June 24, 2003)
   Fix print_index_header_links to print MSG_ENDING date correctly (had
  been using 2 getdatestr() calls in one argument list).
