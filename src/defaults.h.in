@@ -11,8 +11,6 @@
 
 #define CONFIGFILE "~/.hmrc"
 
-#define BODY "<body bgcolor=\"#FFFFFF\" text=\"#000000\">"
-
 #define INLINE_TYPES "image/gif image/jpeg image/png"
 
 #define SHOW_HEADERS "From Subject Date Message-ID"
