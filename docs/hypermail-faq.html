@@ -36,6 +36,7 @@ little here.  That will change shortly.
 <LI><A HREF="#16">How can I make my archive searchable ?</A>
 <LI><A HREF="#17">How does hypermail decide whether messages are in the same thread?</A>
 <LI><A HREF="#18">How can I have multiple mailboxes produce one archive?</A>
+<LI><A HREF="#19">I have received an email with attachment that needs octet-stream. What should I do?</A>
 </OL>
 
 <P ALIGN=CENTER><IMG SRC="/images/common/yellowline.gif" WIDTH=400 HEIGHT=2 ALT="----"></P>
@@ -428,6 +429,21 @@ any mailboxes that you want added after the html archive has been started:
 <p>
  Do not try to send hypermail more than one mailbox at a time, or send
 it a second mailbox without using the -u flag or the increment=1 option.
+
+<H3><A NAME="19">I have received an email with attachment that needs octet-stream. What should I do?</A></H3>
+<p>
+No attachment "needs" octet-stream. octet-stream is a label that describes
+the attachment as being "a stream of octets". What is that you say? Well, the
+application didn't know any more specifics and thus it identified it as good
+as possible. It knows it is a stream of octets, nothing else.
+<p>
+So, an attachment coming as "octet-stream" can be pretty much ANYTHING. You
+have no idea, and neither does anyone else. The only way to figure out is to
+download the file and see for yourself, ask the person who mailed it or to
+hope that the mail it came with describes what the attachment was about.
+<p>
+"octet-stream" could just as well be named "I haven't got the slightest idea
+what this is, but I know it is built up with a series of bytes".
 
 <P ALIGN=CENTER><IMG SRC="/images/common/yellowline.gif" WIDTH=400 HEIGHT=2 ALT="----"></P>
 <BR>
