@@ -89,6 +89,13 @@ Building Hypermail:
 
        ./configure --disable-shared
 
+   If the make fails with a message such as:
+
+proto.h:99: conflicting types for `strcasestr'
+/usr/include/string.h:86: previous declaration of `strcasestr'
+ 
+   then you should try removing the line in proto.h that refers to strcasestr.
+
 Testing Hypermail:
 ==================
 

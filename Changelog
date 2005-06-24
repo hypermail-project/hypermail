@@ -1,5 +1,11 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (Jun 23, 2005)
+  Some small changes from Vincent McIntyre to make date-range in index of
+  folders link to default index page, to use CSS instead of <th> to
+  distinguish that column, and some whitespace changes.
+  Added explanation of how to handle strcasestr prototype error to INSTALL.
+
  Peter McCluskey (Mar 19, 2005)
   Fixes to files_by_thread option submitted by Oliver Meili.
 
