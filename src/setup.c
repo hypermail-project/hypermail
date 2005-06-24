@@ -149,11 +149,11 @@ int set_delete_level;
 
 struct Config cfg[] = {
     {"antispam_at", &set_antispam_at, ANTISPAM_AT, CFG_STRING,
-     "# replace any @ sign with this string, if spam flags enabled\n", FALSE},
+     "# replace any @ sign with this string, if spam flags enabled.\n", FALSE},
      
     {"language", &set_language, LANGUAGE, CFG_STRING,
      "# A two-letter string specifying the language to use!\n"
-     "# For example 'en' for English\n", FALSE},
+     "# For example 'en' for English.\n", FALSE},
 
     {"htmlsuffix", &set_htmlsuffix, HTMLSUFFIX, CFG_STRING,
      "# Use this to specify the html file suffix to be used\n"
@@ -638,7 +638,7 @@ struct Config cfg[] = {
      "# a symbolic link by this name to the most recently created\n"
      "# subdirectory. Note that many web servers are configured to\n"
      "# not follow symbolic links for security reasons. The link will\n"
-     "# be created in the directory specified by the 'dir' or '-d' option.",
+     "# be created in the directory specified by the 'dir' or '-d' option.\n",
      FALSE},
 
     {"base_url", &set_base_url, NULL, CFG_STRING,
@@ -744,7 +744,7 @@ struct Config cfg[] = {
     {"href_detection", &set_href_detection, BTRUE, CFG_SWITCH,
      "# Set this to On to assume that any string on the body of the message\n"
      "# that says <A HREF=\" ... </A> is a URL, together with its markup\n"
-     "# and treat it as such.", TRUE},
+     "# and treat it as such.\n", TRUE},
 
     {"mbox_shortened", &set_mbox_shortened, BFALSE, CFG_SWITCH,
      "# Set this to On to enable use of mbox that has had some of its\n"

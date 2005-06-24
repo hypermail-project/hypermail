@@ -65,6 +65,7 @@ void version(void);
 void progerr(char *);
 void cmderr(char *);
 void usage(void);
+char *setindex(char *dfltindex, char *indextype, char *suffix);
 
 /*
 ** lang.c function

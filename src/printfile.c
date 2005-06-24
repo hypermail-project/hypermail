@@ -333,6 +333,7 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
       fprintf(fp, ".quotelev2 {color : #ff7700}\n");
       fprintf(fp, ".quotelev3 {color : #007799}\n");
       fprintf(fp, ".quotelev4 {color : #95c500}\n");
+      fprintf (fp, ".period {font-weight: bold}\n");
       fprintf (fp, "</style>\n");
     }
 

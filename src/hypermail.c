@@ -98,7 +98,7 @@ static char *expand_contents(char *variable)
     return return_value;
 }
 
-static char *setindex(char *dfltindex, char *indextype, char *suffix)
+char *setindex(char *dfltindex, char *indextype, char *suffix)
 {
     char *p, *rp;
 
@@ -469,10 +469,10 @@ int main(int argc, char **argv)
      * Which index file will be called "index.html"?
      */
 
-	index_name[1][DATE_INDEX] = setindex(set_defaultindex, "date", set_htmlsuffix);
-	index_name[1][THREAD_INDEX] = setindex(set_defaultindex, "thread", set_htmlsuffix);
-	index_name[1][SUBJECT_INDEX] = setindex(set_defaultindex, "subject", set_htmlsuffix);
-	index_name[1][AUTHOR_INDEX] = setindex(set_defaultindex, "author", set_htmlsuffix);
+    index_name[1][DATE_INDEX] = setindex(set_defaultindex, "date", set_htmlsuffix);
+    index_name[1][THREAD_INDEX] = setindex(set_defaultindex, "thread", set_htmlsuffix);
+    index_name[1][SUBJECT_INDEX] = setindex(set_defaultindex, "subject", set_htmlsuffix);
+    index_name[1][AUTHOR_INDEX] = setindex(set_defaultindex, "author", set_htmlsuffix);
     if (set_attachmentsindex) {
 	index_name[1][ATTACHMENT_INDEX]
 	    = setindex(set_defaultindex, "attachment", set_htmlsuffix);
@@ -494,7 +494,9 @@ int main(int argc, char **argv)
 	index_name[0][SUBJECT_INDEX] = index_name[1][SUBJECT_INDEX];
 	index_name[0][ATTACHMENT_INDEX] = index_name[1][ATTACHMENT_INDEX];
     }
+
     init_index_names();
+
     if (set_msgsperfolder && set_folder_by_date) {
 	progerr("msgsperfolder and folder_by_date may not be used at the same time!");
     }

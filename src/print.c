@@ -2917,7 +2917,7 @@ void write_summary_indices(int amount_new)
 
 void write_toplevel_indices(int amountmsgs)
 {
-    int i, j, newfile;
+    int i, j, newfile, offset, k;
     bool first = TRUE;
     struct emailsubdir *sd;
     char *subject = lang[MSG_FOLDERS_INDEX];
@@ -2929,6 +2929,8 @@ void write_toplevel_indices(int amountmsgs)
     char *saved_set_dateformat;
     char *abbr_dateformat = "%e %b %Y";
     char *verbose_dateformat = "%A, %e %B %Y";
+
+    char *tmpstr;
 
     FILE *fp;
 
@@ -2949,6 +2951,19 @@ void write_toplevel_indices(int amountmsgs)
       print_index_header_links(fp, FOLDERS_INDEX, firstdatenum, lastdatenum, amountmsgs, NULL);
       fprintf (fp, "</div>\n");
       fprintf(fp, "<table>\n");
+
+      /* find which element of index_name is the default index */
+      offset = 0;
+      if (set_defaultindex) {
+	tmpstr = setindex(INDEXNAME, INDEXNAME, set_htmlsuffix);
+	for (j = 0; j <= ATTACHMENT_INDEX; ++j) {
+	  if (0 == strcmp(tmpstr, index_name[1][j])) {
+	    offset = j;
+	    break;
+	  }
+	}
+      }
+
       for (i = 0, j = 0; j <= ATTACHMENT_INDEX; ++j) {
 	if (show_index[1][j])
 	  i++;
@@ -2957,10 +2972,10 @@ void write_toplevel_indices(int amountmsgs)
 	 with all configurations. */
       if (i > 0)
 	i--;
-      fprintf(fp, "<thead><tr>\n"
-	      "<th>%s</th><th colspan=\"%d\">%s</th>\n"
-	      "<th align=\"right\">%s</th>\n"
-	      "</tr></thead>\n"
+      fprintf(fp, "<thead>\n  <tr>\n"
+	      "    <th>%s</th>\n    <th colspan=\"%d\">%s</th>\n"
+	      "    <th align=\"right\" class=\"count\">%s</th>\n"
+	      "  </tr>\n</thead>\n"
 	      "<tbody>\n", lang[MSG_PERIOD], i, lang[MSG_RESORTED], 
 	      lang[MSG_ARTICLES]);
     }
@@ -2974,10 +2989,12 @@ void write_toplevel_indices(int amountmsgs)
 	if (!datelist->data)
 	    continue;
 	for (j = 0; j <= ATTACHMENT_INDEX; ++j) {
-	    if (!show_index[1][j])
+            /* apply offset so the period column's href points to index.html */
+	    k = (j + offset) % (ATTACHMENT_INDEX + 1);
+	    if (!show_index[1][k])
 		continue;
 	    set_dateformat = saved_set_dateformat;
-	    switch (j) {
+	    switch (k) {
 		case DATE_INDEX:
 		    writedates(sd->count, sd->first_email);
 		    index_title = lang[MSG_LTITLE_LISTED_BY_DATE];
@@ -3029,37 +3046,37 @@ void write_toplevel_indices(int amountmsgs)
 		strcat (verbose_period_name, lang[MSG_TO]);
 		strcat (verbose_period_name, end_date);
 	      }
-	      fprintf(fp, "<tr%s><th scope=\"row\" align=\"left\">%s",
+	      fprintf(fp, "  <tr%s>\n    <td scope=\"row\" class=\"period\" align=\"left\">%s",
 		      (first) ? " class=\"first\"" : "",
 		      (first) ? "<a name=\"first\" id=\"first\"></a>" : "");
 	      /* only add a link to the index if it is not empty */
 	      if (sd->count > 0)
 		fprintf (fp, "<a title=\"%s %s\" href=\"%s%s\">",
 			 verbose_period_name, index_title, 
-			 sd->subdir, index_name[1][j]);
+			 sd->subdir, index_name[1][k]);
 	      fprintf (fp, "%s", abbr_period_name);
 	      if (sd->count > 0)
 		fprintf (fp, "</a>");
-	      fprintf (fp, "</th>");
+	      fprintf (fp, "</td>\n");
 	      if (first)
 		first = FALSE;
 	      started_line = 1;
 	    } 
 	    else {
-	      fprintf(fp, "<td>");
+	      fprintf(fp, "    <td>");
 	      /* only add a link to the index if it is not empty */
 	      if (sd->count > 0)
 		fprintf (fp, "<a title=\"%s %s\" href=\"%s%s\">",
 			 verbose_period_name, index_title, 
-			 sd->subdir, index_name[1][j]);
-	      fprintf (fp, "%s", indextypename[j]);
+			 sd->subdir, index_name[1][k]);
+	      fprintf (fp, "%s", indextypename[k]);
 	      if (sd->count > 0)
 		fprintf (fp, "</a>");
-	      fprintf (fp, "</td>");
+	      fprintf (fp, "</td>\n");
 	    }
 	}
 	if (started_line && fp)
-	    fprintf(fp, "<td align=\"center\">%d</td></tr>\n", sd->count);
+	    fprintf(fp, "    <td align=\"center\" class=\"count\">%d</td>\n  </tr>\n", sd->count);
     }
     set_dateformat = saved_set_dateformat;
 
