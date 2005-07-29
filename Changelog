@@ -1,5 +1,10 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ Peter McCluskey (Jul 29, 2005)
+  Changed to sort on sender date rather than from date when displaying
+  sender date as a result of use_sender_date = 1.
+
  Peter McCluskey (Jun 23, 2005)
   Some small changes from Vincent McIntyre to make date-range in index of
   folders link to default index page, to use CSS instead of <th> to

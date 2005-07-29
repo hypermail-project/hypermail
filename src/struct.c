@@ -962,6 +962,8 @@ struct header *addheader(struct header *hp, struct emailinfo *email, int sorttyp
 	break;
     case 2:
 	yearsecs = email->fromdate;
+	if (set_use_sender_date)
+	    yearsecs = email->date;
 	if (set_reverse)
 	    isbigger = (yearsecs < hp->data->datenum) ? 0 : 1;
 	else
@@ -978,12 +980,12 @@ struct header *addheader(struct header *hp, struct emailinfo *email, int sorttyp
     else
 	hp->right = addheader(hp->right, email, sorttype, depth + 1);
 
-	if (sorttype == 2 && depth < max_depth / 2 && !(++count_d % 3)) {
+    if (sorttype == 2 && depth < max_depth / 2 && !(++count_d % 3)) {
 	/* semi-random rebalancing */
 	struct header **hpp = (set_reverse ? &hp->left : &hp->right);
 	struct header *hp1 = *hpp;
-		if (hp1 != NULL && (hp1->right != NULL || hp1->left != NULL)) {
-			if (hp1->right != NULL && (hp1->left == NULL || (count_d & 1))) {
+	if (hp1 != NULL && (hp1->right != NULL || hp1->left != NULL)) {
+	    if (hp1->right != NULL && (hp1->left == NULL || (count_d & 1))) {
 		struct header *p = hp1->right;
 		hp1->right = p->left;
 		p->left = hp1;
