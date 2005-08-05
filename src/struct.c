@@ -317,10 +317,12 @@ int insert_in_lists(struct emailinfo *emp, const bool * require_filter, int rlen
 	char num_str[32];
 	sprintf(num_str, "%d", emp->msgnum);
 	if (inlist(set_delete_msgnum, num_str)) {
+#if 0
 	    if (!emp->is_deleted) {
 				if (emp->subdir)
 		    --emp->subdir->count;
 	    }
+#endif
 	    emp->is_deleted = FILTERED_DELETE;
 	}
     }

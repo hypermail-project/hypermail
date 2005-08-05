@@ -1,6 +1,11 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+ Peter McCluskey (Aug 4, 2005)
+  Fixed double counting of messages deleted with the delete_msgnum option,
+  which sometimes caused top level index page to show wrong number of
+  messages and not link to a folder.
+
  Peter McCluskey (Jul 29, 2005)
   Changed to sort on sender date rather than from date when displaying
   sender date as a result of use_sender_date = 1.
