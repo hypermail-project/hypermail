@@ -1995,6 +1995,8 @@ void writearticles(int startnum, int maxnum)
 
 	is_reply = print_links_up(fp, email, PAGE_TOP, FALSE);
 
+	if ((set_show_index_links == 1 || set_show_index_links == 3) && !set_usetable)
+	    fprint_menu0(fp, email, PAGE_TOP);
 	if ((set_show_msg_links && set_show_msg_links != 4) || !set_usetable)
 	  {
 	    fprintf(fp, "</div>\n");
