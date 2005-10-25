@@ -813,17 +813,20 @@ extract_rfc2047_content(char *iptr)
 ** Returns the newly allcated string, or the previous if nothing changed 
 */
 
-static char *mdecodeRFC2047(char *string, int length)
+static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 {
     char *iptr = string;
     char *oldptr;
-    char *storage = (char *)emalloc(length + 1);
+    char *storage = (char *)emalloc(length*4 + 1);
 
     char *output = storage;
 
     char charset[129];
     char encoding[33];
     char dummy[129];
+    char *ptr;
+    char *old_output;
+
 #ifdef NOTUSED
     char equal;
 #endif
@@ -857,6 +860,35 @@ static char *mdecodeRFC2047(char *string, int length)
 	    if (!strcasecmp("q", encoding)) {
 		/* quoted printable decoding */
 
+#ifdef HAVE_ICONV
+	      char *orig2,*output2,*output3;
+	      int len;
+	      orig2=output2=malloc(strlen(string)+1);
+	      memset(output2,0,strlen(string)+1);
+	      old_output=output;
+
+		for (; *ptr; ptr++) {
+		    switch (*ptr) {
+		    case '=':
+			sscanf(ptr + 1, "%02X", &value);
+			*output2++ = value;
+			ptr += 2;
+			break;
+		    case '_':
+			*output2++ = ' ';
+			break;
+		    default:
+			*output2++ = *ptr;
+			break;
+		    }
+		}
+		output3=i18n_convstring(orig2,charset,"UTF-8",&len);
+		free(orig2);
+		memcpy(output,output3,len);
+		output += len;
+		free(output3);
+		memcpy(charsetsave,charset,strlen(charset)<255 ? strlen(charset) : 255);
+#else
 		for (; *ptr; ptr++) {
 		    switch (*ptr) {
 		    case '=':
@@ -872,12 +904,23 @@ static char *mdecodeRFC2047(char *string, int length)
 			break;
 		    }
 		}
+#endif
 	    }
 	    else if (!strcasecmp("b", encoding)) {
 		/* base64 decoding */
 		int len;
+#ifdef HAVE_ICONV
+		char *output2;
+		base64Decode(ptr, output, &len);
+		output2=i18n_convstring(output,charset,"UTF-8",&len);
+		memcpy(output,output2,len);
+		output += len;
+		free(output2);
+		memcpy(charsetsave,charset,strlen(charset)<255 ? strlen(charset) : 255 );
+#else
 		base64Decode(ptr, output, &len);
 		output += len;
+#endif
 	    }
 	    else {
 		/* unsupported encoding type */
@@ -1249,6 +1292,7 @@ int parsemail(char *mbox,	/* file name */
     int binfile = -1;
 
     char *charset = NULL;	/* this is the LOCAL charset used in the mail */
+    char *charsetsave;      /* charset in MIME encoded text */
 
     char *boundary_id = NULL;
     char type[129];		/* for Content-Type type */
@@ -1265,6 +1309,9 @@ int parsemail(char *mbox,	/* file name */
 
     EncodeType decode = ENCODE_NORMAL;
     ContentType content = CONTENT_TEXT;
+
+    charsetsave=malloc(256);
+    memset(charsetsave,0,255);
 
 
     if (use_stdin || !mbox || !strcasecmp(mbox, "NONE"))
@@ -1409,9 +1456,8 @@ int parsemail(char *mbox,	/* file name */
 		for (head = bp; head; head = head->next) {
 		    char head_name[128];
 		    if (head->header && !head->demimed) {
-			head->line =
-			    mdecodeRFC2047(head->line, strlen(head->line));
-			head->demimed = TRUE;	/* don't do this again */
+		      head->line =
+			mdecodeRFC2047(head->line, strlen(head->line),charsetsave);
 		    }
 
 		    if (head->parsedheader || head->attached ||
@@ -2003,6 +2049,37 @@ int parsemail(char *mbox,	/* file name */
 		    binfile = -1;
 		}
 
+#ifdef HAVE_ICONV
+		if (!charset){
+		  if (*charsetsave!=0){
+		    /**
+		    if(set_showprogress){
+		      printf("\nput charset from subject header..\n");
+		    }
+		    **/
+		    charset=strsav(charsetsave);
+		  }else{
+		    /* default charset is US-ASCII */
+		    /* ISO-8859-1 is modern, however (DM) */
+		    charset=strsav("US-ASCII");
+		    /**
+		    if(set_showprogress){
+		      printf("\nfound no charset for body, set ISO-8859-1.\n");
+		    }
+		    **/
+		  }
+		}else{
+		  /* if body is us-ascii but subject is not,
+		     try to use subject's charset. */
+		  if (strncasecmp(charset,"us-ascii",8)==0){
+		    if (*charsetsave!=0 && strcasecmp(charsetsave,"us-ascii")!=0){
+		      free(charset);
+		      charset=strsav(charsetsave);
+		    }
+		  }
+		}
+#endif
+
 		isinheader = 1;
 		if (!hassubject)
 		    subject = NOSUBJECT;
@@ -2098,6 +2175,9 @@ msgid);
 		if (charset) {
 		    free(charset);
 		    charset = NULL;
+		}
+		if (charsetsave){
+		  *charsetsave = 0;
 		}
 		if (msgid) {
 		    free(msgid);
@@ -2626,6 +2706,36 @@ msgid);
     }
 
     if (!isinheader || readone) {
+
+#ifdef HAVE_ICONV
+      if (!charset){
+	if (*charsetsave!=0){
+	  /**
+	  if(set_showprogress){
+	    printf("\nput charset from subject header..\n");
+	  }
+	  **/
+	  charset=strsav(charsetsave);
+	}else{
+	  /* default charset is US-ASCII */
+	  charset=strsav("US-ASCII");
+	  /**
+	  if(set_showprogress){
+	    printf("\nfound no charset for body, set ISO-8859-1.\n");
+	  }
+	  **/
+	}
+      }else{
+	/* if body is us-ascii but subject is not,
+	   try to use subject's charset. */
+	if (strncasecmp(charset,"us-ascii",8)==0){
+	  if (*charsetsave!=0 && strcasecmp(charsetsave,"us-ascii")!=0){
+	    free(charset);
+	    charset=strsav(charsetsave);
+	  }
+	}
+      }
+#endif
 	if (!hassubject)
 	    subject = NOSUBJECT;
 
@@ -2675,6 +2785,10 @@ msgid);
 	    free(charset);
 	    charset = NULL;
 	}
+	if (charsetsave){
+	  *charsetsave = 0;
+	}
+
 	if (msgid) {
 	    free(msgid);
 	    msgid = NULL;
@@ -2778,6 +2892,9 @@ msgid);
 	free(boundp);
     }
 
+    if(charsetsave){
+      free(charsetsave);
+    }
     return num_added;			/* amount of mails read */
 }
 
@@ -2989,6 +3106,21 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
 
     if (legal) {	    /* only do this if the input was reliable */
 	struct emailinfo *emp;
+
+#if HAVE_ICONV
+	if (charset){
+	  char *tmpptr;
+	  int tmplen=0;
+	  tmpptr=subject;
+	  subject=i18n_convstring(tmpptr,charset,"UTF-8",&tmplen);
+	  if(tmpptr)
+	    free(tmpptr);
+	  tmpptr=name;
+	  name=i18n_convstring(tmpptr,charset,"UTF-8",&tmplen);
+	  if(tmpptr)
+	    free(tmpptr);
+	}
+#endif
 	if (replylist_tmp == NULL || !do_insert)
 	    emp = ep;
 	else
@@ -3478,6 +3610,12 @@ void fixnextheader(char *dir, int num, int direction)
 
     cp = bp;			/* save start of list to free later */
 
+#ifdef HAVE_ICONV
+    char *numsubject,*numname;
+    numsubject=i18n_utf2numref(email->subject,1);
+    numname=i18n_utf2numref(email->name,1);
+#endif
+
     fp = fopen(filename, "w+");
     if (fp) {
 	while (bp) {
@@ -3491,20 +3629,36 @@ void fixnextheader(char *dir, int num, int direction)
 	    fprintf(fp, "%s", bp->line);
 
 	    if (!strncmp(bp->line, "<!-- unext=", 11)) {
+#ifdef HAVE_ICONV
+	      ptr = strsav(numsubject);
+#else
 	      ptr = convchars(email->subject, email->charset);
+#endif
 	      fprintf(fp, "[ <a href=\"%s\" title=\"%s: &quot;%s&quot;\">%s</a> ]\n", 
 		       msg_href (email, e3, FALSE), 
+#ifdef HAVE_ICONV
+		      numname, ptr ? ptr : "", 
+#else
 		      email->name, ptr ? ptr : "", 
+#endif
 		      lang[MSG_NEXT_MESSAGE]);
 	      if (ptr)
 		free(ptr);
 	    }
 	    else if (!strncmp(bp->line, "<!-- lnext=", 11)) {
+#ifdef HAVE_ICONV
+	      ptr = strsav(numsubject);
+#else
 	      ptr = convchars(email->subject, email->charset);
+#endif
 	      fprintf(fp, "<li><dfn>%s</dfn>: ", lang[MSG_NEXT_MESSAGE]);
 	      fprintf(fp, "<a href=\"%s\" title=\"%s\">%s: \"%s\"</a></li>\n", 
 		      msg_href(email, e3, FALSE), lang[MSG_LTITLE_NEXT],
+#ifdef HAVE_ICONV
+		      numname, ptr ? ptr : "");
+#else
 		      email->name, ptr ? ptr : "");
+#endif
 	      if (ptr)
 		free(ptr);
 	    }
@@ -3517,9 +3671,12 @@ void fixnextheader(char *dir, int num, int direction)
 	      fprintf(fp, "<li><strong>%s:</strong> ",
 		      lang[MSG_NEXT_MESSAGE]);
 	      fprintf(fp, "%s%s: \"%s\"</a></li>\n", msg_href(email, e3, TRUE),
+#ifdef HAVE_ICONV
+		      numname, numsubject);
+#else
 		      email->name, ptr = convchars(email->subject, email->charset));
 	      free(ptr);
-	      
+#endif	      
 	      if (ul) {
 		bp = dp;
 		ul = 0;
@@ -3686,6 +3843,12 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 
     cp = bp;			/* save start of list to free later */
 
+#ifdef HAVE_ICONV
+    char *numsubject,*numname;
+    numsubject=i18n_utf2numref(email->subject,1);
+    numname=i18n_utf2numref(email->name,1);
+#endif
+
     fp = fopen(filename, "w+");
     if (fp) {
         bool list_started = FALSE; /* tells when we're starting a reply list for the
@@ -3715,7 +3878,11 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 	    if (!strncmp(bp->line, "<!-- lreply", 11)) {
 	        char *del_msg = (email2->is_deleted ? lang[MSG_DEL_SHORT] : "");
 		char *ptr1;
+#ifdef HAVE_ICONV
+		ptr=strsav(numsubject);
+#else
 		ptr = convchars(email->subject, email->charset);
+#endif
 		if (list_started == FALSE) {
 		  list_started = TRUE;
 		  trio_asprintf(&ptr1,
@@ -3725,7 +3892,11 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 				lang[subjmatch ? MSG_MAYBE_REPLY : MSG_REPLY],
 				del_msg, msg_href(email, email2, FALSE), 
 				lang[MSG_LTITLE_REPLIES],
+#ifdef HAVE_ICONV
+				numname, ptr);
+#else
 				email->name, ptr);
+#endif
 		}
 		else
 		  trio_asprintf(&ptr1,
@@ -3734,7 +3905,11 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 				lang[subjmatch ? MSG_MAYBE_REPLY : MSG_REPLY],
 				del_msg, msg_href(email, email2, FALSE), 
 				lang[MSG_LTITLE_REPLIES],
+#ifdef HAVE_ICONV
+				numname, ptr);
+#else
 				email->name, ptr);
+#endif
 		free(ptr);
 
 		if (!last_reply || strcmp(ptr1, last_reply))
@@ -3745,12 +3920,20 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 	      /* backwards compatiblity with the pre-WAI code */
 	        char *del_msg = (email2->is_deleted ? lang[MSG_DEL_SHORT] : "");
 		char *ptr1;
+#ifdef HAVE_ICONV
+		ptr=strsav(email->subject);
+#else
 		ptr = convchars(email->subject, email->charset);
+#endif
 		trio_asprintf(&ptr1,
 			      "<li><strong>%s:</strong>%s %s%s: \"%s\"</a></li>\n",
 			      lang[subjmatch ? MSG_MAYBE_REPLY : MSG_REPLY],
 			      del_msg, msg_href(email, email2, TRUE),
+#ifdef HAVE_ICONV
+			      numname, ptr);
+#else
 			      email->name, ptr);
+#endif
 		free(ptr);
 
 		if (!last_reply || strcmp(ptr1, last_reply))
@@ -3839,6 +4022,13 @@ void fixthreadheader(char *dir, int num, int max_update)
 
     cp = bp;			/* save start of list to free later */
 
+#ifdef HAVE_ICONV
+    char *numsubject,*numname;
+    ptr=NULL;
+    numsubject=i18n_utf2numref(subject,1);
+    numname=i18n_utf2numref(name,1);
+#endif
+
     if ((fp = fopen(filename, "w+")) != NULL) {
 	while (bp != NULL) {
 	   if (!strncmp(bp->line, "<!-- emptylink=", 15)) {
@@ -3855,7 +4045,11 @@ void fixthreadheader(char *dir, int num, int max_update)
 	      if (hashnumlookup(num, &e3)) {
 		fprintf (fp, " [ <a href=\"%s\" title=\"%s: &quot;%s&quot;\">%s</a> ]\n",
 			 msg_href (e3, rp->data, FALSE), 
+#ifdef HAVE_ICONV
+			 numname, numsubject,
+#else
 			 name, ptr = convchars(subject, NULL),
+#endif
 			 lang[MSG_NEXT_IN_THREAD]);
 		if (ptr)
 		  free (ptr);
@@ -3870,7 +4064,12 @@ void fixthreadheader(char *dir, int num, int max_update)
 			lang[MSG_NEXT_IN_THREAD]);
 		fprintf(fp, "<a href=\"%s\" title=\"\%s\">%s: \"%s\"</a></li>\n", 
 			msg_href(e3, rp->data, FALSE), lang[MSG_LTITLE_NEXT_IN_THREAD],
-			name, ptr = convchars(subject, NULL));			
+#ifdef HAVE_ICONV
+		  numname, numsubject);
+                ptr=NULL;
+#else
+			name, ptr = convchars(subject, NULL));
+#endif
 		if (ptr)
 		  free(ptr);
 		if (bp->next && strstr(bp->next->line, lang[MSG_NEXT_IN_THREAD]))
@@ -3884,7 +4083,12 @@ void fixthreadheader(char *dir, int num, int max_update)
 			    lang[MSG_NEXT_IN_THREAD]);
 		    fprintf(fp, "%s", msg_href(e3, rp->data, TRUE));
 		    fprintf(fp, "%s: \"%s\"</a></li>\n",
+#ifdef HAVE_ICONV
+			    numname, numsubject);
+                    ptr=NULL;
+#else
 			    name, ptr = convchars(subject, NULL));
+#endif
 		    free(ptr);
 		    if (bp->next && strstr(bp->next->line, lang[MSG_NEXT_IN_THREAD]))
 		        bp = bp->next; /* skip old copy of this line */

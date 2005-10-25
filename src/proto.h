@@ -93,6 +93,10 @@ void dump_config(void);
 /*
 ** string.c functions
 */
+char *i18n_convstring(char *, char *, char *, int *);
+char *i18n_utf2numref(char *, int);
+char *i18n_numref2utf(char *);
+
 char *PushByte(struct Push *, char);
 char *PushString(struct Push *, const char *);
 char *PushNString(struct Push *, const char *, int);

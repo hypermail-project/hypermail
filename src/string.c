@@ -28,6 +28,261 @@
 #include "parse.h"
 #include "uconvert.h"
 
+/* I18N hack */
+#ifdef HAVE_ICONV_H
+#include <iconv.h>
+#endif
+
+#ifdef HAVE_ICONV
+struct i18n_alt_charset_table {
+  char *alt;
+  char *formal;
+};
+
+struct i18n_alt_charset_table i18n_charsettable[] = {
+  /* UTF-8 (RFC2279) */
+  {"UNICODE-1-1-UTF-8","UTF-8"},
+  {"UNICODE-2-0-UTF-8","UTF-8"},
+  {"x-unicode-2-0-utf-8","UTF-8"},
+  {"ANSI_X3.4-1968","US-ASCII"},
+
+  /* US-ASCII (RFC1345) */
+  {"iso-ir-6","US-ASCII"},
+  {"ANSI_X3.4-1986","US-ASCII"},
+  {"ISO_646.irv:1991","US-ASCII"},
+  {"ASCII","US-ASCII"},
+  {"ISO646-US","US-ASCII"},
+  {"us","US-ASCII"},
+  {"IBM367","US-ASCII"},
+  {"cp367","US-ASCII"},
+  {"csASCII","US-ASCII"},
+  {"iso-ir-6us","US-ASCII"},
+
+  /* Arabic (RFC1324) */
+  {"ISO_8859-6:1987","ISO-8859-6"},
+  {"iso-ir-127","ISO-8859-6"},
+  {"ECMA-114","ISO-8859-6"},
+  {"arabic","ISO-8859-6"},
+  {"csISOLatinArabic","ISO-8859-6"},
+  {"8859_6","ISO-8859-6"},
+  {"ISO8859_6","ISO-8859-6"},
+  {"iso8859-6","ISO-8859-6"},
+  {"windows-1256","CP1256"},
+
+  /* Korean (RFC1557) */
+  {"KS_C_5601-1987","CP949"},
+  {"KS_C_5601-1989","CP949"},
+
+  /* Cyrillic */
+  {"x-mac-cyrillic","MacCyrillic"},
+  {"ibm866","CP866"}
+};
+#define I18N_CHARSET_TABLE_SIZE (sizeof(i18n_charsettable)/sizeof(struct i18n_alt_charset_table))
+
+char *i18n_canonicalize_charset(char *cs){
+
+  int x=0;
+
+  while(x<I18N_CHARSET_TABLE_SIZE){
+    if(strcasecmp(cs,i18n_charsettable[x].alt)==0){
+      return i18n_charsettable[x].formal;
+    }
+    x++;
+  }
+  return cs;
+}
+
+
+char *i18n_convstring(char *string, char *fromcharset, char *tocharset, int *len){
+
+  int origlen,strleft,bufleft;
+  char *convbuf,*origconvbuf;
+  iconv_t iconvfd;
+  size_t ret;
+
+  if (string){
+    strleft=origlen=strlen(string);
+  }else{
+    strleft=origlen=0;
+  }
+  origconvbuf=convbuf=malloc(origlen*7+1);
+  memset(origconvbuf,0,origlen*7);
+  bufleft=origlen*7;
+
+  if (!set_i18n || strcasecmp(fromcharset,tocharset)==0){
+    /* we don't need to convert string here */
+    *len=origlen;
+    memcpy(origconvbuf,string,origlen);
+    origconvbuf[origlen]=0x0;
+    return origconvbuf;
+  }
+
+  iconvfd=iconv_open(i18n_canonicalize_charset(tocharset),i18n_canonicalize_charset(fromcharset));
+  if(iconvfd==(iconv_t)(-1)){
+    if(set_showprogress){
+      if(errno==EINVAL){
+        printf("I18N: unsupported encoding: charset=(from=%s, to=%s).\n",fromcharset,tocharset);
+      }else{
+        printf("I18N: libiconv open error.\n");
+      }
+    }
+    origlen=sprintf(origconvbuf,"(unknown charset) %s",string);
+    origconvbuf[origlen]=0x0;
+    *len=origlen;
+    return origconvbuf;
+  }
+  errno=0;
+  ret=iconv(iconvfd, &string, &strleft, &convbuf, &bufleft);
+  iconv_close(iconvfd);
+
+  if (ret==(size_t)-1){
+    switch (errno){
+    case E2BIG:
+      if(set_showprogress){
+	printf("I18N: buffer overflow.\n");
+      }
+      break;
+    case EILSEQ:
+      if(set_showprogress){
+	printf("I18N: invalid multibyte sequence, from %s to %s: %s.\n",fromcharset,tocharset,string);
+      }
+      origlen=sprintf(origconvbuf,"(wrong string) %s",string);
+      break;
+    case EINVAL:
+      if(set_showprogress){
+	printf("I18N: incomplete multibyte sqeuence, from %s to %s: %s.\n",fromcharset,tocharset,string);
+      }
+      origlen=sprintf(origconvbuf,"(wrong string) %s",string);
+      break;
+    }
+  }
+
+  /* hmm... do we really need to do this? (daigo) */
+  if (strncasecmp(tocharset,"ISO-2022-JP",11)==0){
+    *len=origlen*7-bufleft;
+    *(origconvbuf+*len)=0x1b;
+    *(origconvbuf+*len+1)=0x28;
+    *(origconvbuf+*len+2)=0x42;
+    *len+=3;
+  }else{
+    *len=origlen*7-bufleft;
+  }
+  *(origconvbuf+*len)=0x0;
+
+  return origconvbuf;
+}
+
+
+/* convert text from UTF-8 to numeric reference */
+/*  escape: 1==on 0==off */
+char *i18n_utf2numref(char *instr,int escape){
+
+  char *ucs,*headofucs;
+  int len;
+  struct Push buff;
+  char strbuf[10];
+
+  INIT_PUSH(buff);
+
+  if (!set_i18n){
+    PushString(&buff,instr);
+    RETURN_PUSH(buff);
+  }
+
+  headofucs=ucs=i18n_convstring(instr, "UTF-8", "UCS-2BE", &len);
+
+  unsigned int p;
+  for(;len>0; len-=2){
+    p=(unsigned char)*ucs*256+(unsigned char)*(ucs+1);
+    if (p<128){
+      /* keep ASCII characters human readable */
+      if (escape){
+        switch (p){
+        case '<':
+          PushString(&buff, "&#0060;");
+          break;
+        case '>':
+          PushString(&buff, "&#0062;");
+          break;
+        case '&':
+          PushString(&buff, "&#0038;");
+          break;
+        case '\"':
+          PushString(&buff, "&#0034;");
+          break;
+        case '\'':
+          PushString(&buff, "&#0039;");
+          break;
+        default:
+          PushByte(&buff,p);
+        }
+      }else{
+        PushByte(&buff,p);
+      }
+    }else{
+      snprintf(strbuf,10,"&#%04d;",p);
+      PushString(&buff,strbuf);
+    }
+    ucs+=2;
+  }
+  free(headofucs);
+  RETURN_PUSH(buff);
+}
+
+
+char *i18n_numref2utf(char *string){
+
+  int status,len;
+  unsigned short int utf;
+  unsigned char convbuf[5],*utfstr,*headofutfstr;
+
+  len=strlen(string);
+  utfstr=headofutfstr=malloc(len);
+  memset(headofutfstr,0,len);
+
+  status=0;
+
+  while (*string!=0x0){
+    switch (*string){
+    case '&':
+      string++;
+      status++;
+      break;
+    case '#':
+      string++;
+      status++;
+      break;
+    case ';':
+      string++;
+      status=0;
+      break;
+    default:
+      if(status==2){
+        convbuf[0]=*string++;
+        convbuf[1]=*string++;
+        convbuf[2]=*string++;
+        convbuf[3]=*string++;
+        convbuf[4]=0x0;
+        utf=strtol(&convbuf[0], NULL,10);
+        if(utf<256){
+          *utfstr=(unsigned char)utf;
+          utfstr++;
+        }else{
+          /* BE */
+          *utfstr=(unsigned char)(utf>>8);
+          *(utfstr+1)=(unsigned char)(utf%256);
+          utfstr+=2;
+        }
+      }
+    }
+  }
+  *utfstr=0x0;
+  return headofutfstr;
+}
+
+#endif
+/* end of I18N hack */
+
 /*
 ** Push byte onto a buffer realloc the buffer if needed.
 **
