@@ -327,6 +327,19 @@ if test -n "$GDBM_LIB"; then
     EXTRA_LIBS="$EXTRA_LIBS $GDBM_LIB"
 fi
 
+
+dnl
+dnl iconv check
+dnl
+
+AC_ARG_ENABLE(i18n, [  --disable-i18n           Disable I18N support], [given_iconv=$enableval])
+if test "$given_iconv" = "no"; then
+  echo "disabled I18N support."
+else
+  AC_CHECK_FUNCS(iconv)
+  AC_CHECK_HEADERS(iconv.h)
+fi
+
 dnl
 dnl The FNV hash library used for the nonsequential filenames
 dnl
