@@ -46,6 +46,8 @@ extern char *set_defaultindex;
 extern char *set_default_top_index;
 extern char *set_txtsuffix;
 
+extern bool set_i18n;
+extern bool set_i18n_body;
 extern bool set_overwrite;
 extern bool set_inlinehtml;
 extern bool set_increment;

@@ -28,6 +28,8 @@ char *set_default_top_index;
 char *set_txtsuffix;
 char *set_antispamdomain;
 
+bool set_i18n;
+bool set_i18n_body;
 bool set_overwrite;
 bool set_inlinehtml;
 bool set_increment;
@@ -148,6 +150,12 @@ char *set_delete_newer;
 int set_delete_level;
 
 struct Config cfg[] = {
+    {"i18n", &set_i18n, BTRUE, CFG_SWITCH,
+     "# Enable I18N features, must linked with iconv().\n",FALSE},
+
+    {"i18n_body", &set_i18n_body, BFALSE, CFG_SWITCH,
+     "# Translate message body into UTF-8. \"i18n\" must be enabled.\n",FALSE},
+
     {"antispam_at", &set_antispam_at, ANTISPAM_AT, CFG_STRING,
      "# replace any @ sign with this string, if spam flags enabled.\n", FALSE},
      

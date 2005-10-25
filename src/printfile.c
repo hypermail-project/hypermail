@@ -45,7 +45,8 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
     register char *cp;
     register char *aptr;
     char c;
-    char *ptr;
+    char *ptr,*tmpptr=NULL;
+    int tmplen;
 
     aptr = format;
 
@@ -74,9 +75,21 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 		continue;
 	    case 'A':		/* %e - email address of message author */
 		if (email && name) {
-		    fprintf(fp,
-			    "<meta name=\"Author\" content=\"%s (%s)\" />",
-			    name, email);
+#ifdef HAVE_ICONV
+		  tmpptr=i18n_convstring(name,"UTF-8",charset,&tmplen);
+		  cp = convchars(tmpptr,charset);
+		  if(tmpptr)
+		    free(tmpptr);
+		  fprintf(fp,
+			"<meta name=\"Author\" content=\"%s (%s)\" />",
+			cp, email);
+		  if (cp)
+		    free(cp);
+#else
+		fprintf(fp,
+			"<meta name=\"Author\" content=\"%s (%s)\" />",
+			name, email);
+#endif
 		}
 		continue;
 	    case 'a':		/* %a - Other Archives URL */
@@ -163,8 +176,14 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 		free(ptr);
 		continue;
 	    case 'S':		/* %s - Subject of message or Index Title */
+#ifdef HAVE_ICONV
+	        tmpptr=i18n_convstring(subject,"UTF-8",charset, &tmplen);
+		fprintf(fp, "<meta name=\"Subject\" content=\"%s\" />",
+			cp = convchars(tmpptr,charset));
+#else
 		fprintf(fp, "<meta name=\"Subject\" content=\"%s\" />",
 			cp = convchars(subject, charset));
+#endif
 		free(cp);
 		continue;
 	    case 't':
@@ -272,8 +291,9 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
     fprintf(fp, "<title>%s</title>\n", title);
     free(title);
 
-    if (name && email)
-	fprintf(fp, "<meta name=\"Author\" content=\"%s (%s)\" />\n",name,email);
+    if (name && email){
+      fprintf(fp, "<meta name=\"Author\" content=\"%s (%s)\" />\n",convchars(name,charset),email);
+    }
     fprintf(fp, "<meta name=\"Subject\" content=\"%s\" />\n", rp =
 	    convchars(subject, charset));
     free(rp);
@@ -369,12 +389,29 @@ void print_index_header(FILE *fp, char *label, char *dir, char *subject,
 			char *filename)
 {
     if (ihtmlheaderfile)
+#ifdef HAVE_ICONV
+      if (set_i18n){
+	printfile(fp, ihtmlheaderfile, label, subject, dir, NULL, NULL,
+		  "UTF-8", NULL, NULL, filename);
+      }else{
 	printfile(fp, ihtmlheaderfile, label, subject, dir, NULL, NULL,
 		  NULL, NULL, NULL, filename);
+      }
+#else
+	printfile(fp, ihtmlheaderfile, label, subject, dir, NULL, NULL,
+		  NULL, NULL, NULL, filename);
+#endif
     else {
 	/* print the navigation bar to upper levels */
+#ifdef HAVE_ICONV
+      if (set_i18n){
+	print_main_header(fp, TRUE, label, NULL, NULL, subject, "UTF-8", NULL, NULL);
+      }else{
+		print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL, NULL);
+      }
+#else
 	print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL, NULL);
-	
+#endif
 	fprintf (fp, "<div class=\"head\">\n");
 	if (ihtmlnavbar2upfile)
 	  fprintf(fp, "<map title=\"%s\" id=\"upper\">\n%s</map>\n", 
