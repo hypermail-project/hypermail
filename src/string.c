@@ -1239,7 +1239,7 @@ char *parseemail(char *input,	/* string to parse */
 	    char content[2];
 	    int backoff = ptr - input;	/* max */
 
-#define VALID_IN_EMAIL_USERNAME   "a-zA-Z0-9_.%-"
+#define VALID_IN_EMAIL_USERNAME   "a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~"
 #define VALID_IN_EMAIL_DOMAINNAME "a-zA-Z0-9.-"
 
 	    if (set_iso2022jp) {
