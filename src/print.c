@@ -257,6 +257,7 @@ void fprint_menu0(FILE *fp, struct emailinfo *email, int pos)
   int num = email->msgnum;
   int loc_cmp = (pos == PAGE_BOTTOM ? 3 : 4);
   char *ptr;
+  char *id= (pos == PAGE_TOP) ? "option2" : "option3";
 
 #ifdef HAVE_ICONV
   int tmplen;
@@ -271,8 +272,8 @@ void fprint_menu0(FILE *fp, struct emailinfo *email, int pos)
   
 
   if (set_mailcommand && set_hmail) {
-    fprintf(fp, "<li><a name=\"options2\" id=\"options2\"></a><dfn>%s</dfn>:", 
-	    lang[MSG_MAIL_ACTIONS]);
+    fprintf(fp, "<li><a name=\"%s\" id=\"%s\"></a><dfn>%s</dfn>:", 
+	    id,id,lang[MSG_MAIL_ACTIONS]);
     if ((email->msgid && email->msgid[0]) || (email->subject && email->subject[0])) {
 #ifdef HAVE_ICONV
       ptr = makemailcommand(set_replymsg_command, set_hmail, email->msgid, tmpptr);
@@ -298,7 +299,7 @@ void fprint_menu0(FILE *fp, struct emailinfo *email, int pos)
     fprintf (fp, "<li>");
     /* add the anchor if we didn't do so in the above block */
     if (!(set_mailcommand && set_hmail))
-      fprintf (fp, "<a name=\"options2\" id=\"options2\"></a>");
+      fprintf (fp, "<a name=\"%s\" id=\"%s\"></a>",id,id);
     fprintf(fp, "<dfn>%s</dfn>:", lang[MSG_CONTEMPORARY_MSGS_SORTED]);
     if (show_index[dlev][DATE_INDEX])
       fprintf(fp, " [ <a href=\"%s#%d\" title=\"%s\">%s</a> ]", 
@@ -316,19 +317,22 @@ void fprint_menu0(FILE *fp, struct emailinfo *email, int pos)
       fprintf(fp, " [ <a href=\"%s#%d\" title=\"%s\">%s</a> ]", 
 	      index_name[dlev][AUTHOR_INDEX], num, 
 	      lang[MSG_LTITLE_BY_AUTHOR], lang[MSG_BY_AUTHOR]);
-    if (show_index[dlev][ATTACHMENT_INDEX]) {
+    if (show_index[dlev][ATTACHMENT_INDEX])
       fprintf(fp, " [ <a href=\"%s\" title=\"%s\">%s</a> ]", 
 	      index_name[dlev][ATTACHMENT_INDEX], 
 	      lang[MSG_LTITLE_BY_ATTACHMENT], lang[MSG_BY_ATTACHMENT]);
-      fprintf (fp, "</li>\n");
-      if (ihtmlhelpupfile)
-	fprintf(fp, "<li><dfn>%s</dfn>: %s</li>", lang[MSG_HELP], ihtmlhelpupfile);
-    }
+    fprintf (fp, "</li>\n");
+    if (ihtmlhelpupfile)
+      fprintf(fp, "<li><dfn>%s</dfn>: %s</li>", lang[MSG_HELP], ihtmlhelpupfile);
   }
   
   if (set_custom_archives && *set_custom_archives)
     fprintf(fp, "<li><dfn>%s</dfn>: %s</li>\n", lang[MSG_OTHER_MAIL_ARCHIVES], set_custom_archives);
-  fprintf (fp,"</ul>\n");
+
+  if (!(set_show_msg_links && set_show_msg_links != loc_cmp)
+      || (set_show_index_links && set_show_index_links != loc_cmp)){
+    fprintf (fp,"</ul>\n");
+  }
 #ifdef HAVE_ICONV
   if(tmpptr)
     free(tmpptr);
@@ -1096,7 +1100,7 @@ void printheaders (FILE *fp, struct emailinfo *email)
 	d_index = MSG_EXPIRED;
       if (email->is_deleted == 4 || email->is_deleted == 8)
 	d_index = MSG_FILTERED_OUT;
-      fprintf(fp, "<a name=\"start%d\" accesskey=\"j\" id=\"start\"></a>", email->msgnum);
+      fprintf(fp, "<a name=\"start%d\" accesskey=\"j\" id=\"start%d\"></a>", email->msgnum,email->msgnum);
       fprintf(fp, "<p>%s</p>\n", lang[d_index]);  /* AUDIT biege: No more warnings about format-bug */
       return;
     }
@@ -1199,14 +1203,14 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
 	d_index = MSG_EXPIRED;
       if (email->is_deleted == 4 || email->is_deleted == 8)
 	d_index = MSG_FILTERED_OUT;
-      fprintf(fp, "<a name=\"start%d\" accesskey=\"j\" id=\"start\"></a>", email->msgnum);
+      fprintf(fp, "<a name=\"start%d\" accesskey=\"j\" id=\"start%d\"></a>", email->msgnum,email->msgnum);
       fprintf(fp, "<p>%s</p>\n", lang[d_index]);	/* AUDIT biege: No more warnings about format-bug */
       return;
     }
     
     if (!set_showhtml) {
 	fprintf(fp, "<pre id=\"body\">\n");
-	fprintf(fp, "<a name=\"start%d\" accesskey=\"j\" id=\"start\"></a>", email->msgnum);
+	fprintf(fp, "<a name=\"start%d\" accesskey=\"j\" id=\"start%d\"></a>", email->msgnum,email->msgnum);
 	pre = TRUE;
     }
 
