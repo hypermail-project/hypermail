@@ -1002,39 +1002,100 @@ static void translatechars(char *start, char *end, struct Push *buff)
     }
 }
 
-static char *translateurl(char *url)
+
+/*
+ * translateurl(), to escape URI strings only.
+ *  this should be divided from convchars().
+ *
+ *   in_mailcommand: line is MAILCOMMAND, if 1
+ *
+ */
+static char *translateurl(char *line, int in_mailcommand)
 {
-    char *p;
-    struct Push buff;
-    unsigned int i;
-    char hexa[5];
 
-    INIT_PUSH(buff);
+  int hexbuflen;
+  char hexbuf[16];
+  struct Push buff;
+  INIT_PUSH(buff);		/* init macro */
+  
+  for(; *line; line++){
+    if(isalnum((int)*line)){
+      PushByte(&buff,*line);
+    }else{
+      switch (*line){
+	/* we can use unreserved characters, others should be escaped */
+	/*  RFC2396: */
+	/*  unreserved = alphanum | mark */
+	/*  mark = "-" | "_" | "." | "!" | "~" | "*" | "'" | "(" | ")" */
+      case '-':
+	PushByte(&buff,*line);
+	break;
+      case '_':
+	PushByte(&buff,*line);
+	break;
+      case '.':
+	PushByte(&buff,*line);
+	break;
+      case '!':
+	PushByte(&buff,*line);
+	break;
+      case '~':
+	PushByte(&buff,*line);
+	break;
+      case '*':
+	PushByte(&buff,*line);
+	break;
+      case '\'':
+	PushByte(&buff,*line);
+	break;
+      case '(':
+	PushByte(&buff,*line);
+	break;
+      case ')':
+	PushByte(&buff,*line);
+	break;
 
-    for (p = url; *p; p++) {
-	if (*p == '&')
-	    PushString(&buff, "&amp;");
-	else if (*p == '@' && set_mailcommand) 	/* we need to code @ as such to
-						   avoid a misconvertion */
-	  PushString(&buff, "&#64;");
-	else if ((unsigned char) *p > 127 && set_mailcommand) {
-	  i = (unsigned char) *p & 0xFF;
-	  snprintf (hexa, sizeof (hexa) -1, "%%%02x", i);
-	  PushString (&buff, hexa);
+	/*
+	 * following characters are reserved, but used in MAILCOMMAND
+	 */
+
+      case ':':
+	if (in_mailcommand){
+	  PushByte(&buff,*line);
+	  break;
 	}
-	else {
-	  /* JK: reaching this point means that we didn't need to do any of the
-	     special conversions for URLs, but we still need to make
-	     sure that it's a valid character. */
-	  char s[2] = "a";
-	  char *ptr;
-	  s[0] = *p;
-	  ptr = convchars (s, NULL);
-	  PushString (&buff, ptr);
-	  free (ptr);
+      case '?':
+	if (in_mailcommand){
+	  PushByte(&buff,*line);
+	  break;
 	}
+      case '&':
+	if (in_mailcommand){
+	  /* ...to reduce CPU cycles */
+	  PushString(&buff,"&amp;");
+	  break;
+	}
+      case '=':
+	if (in_mailcommand){
+	  PushByte(&buff,*line);
+	  break;
+	}
+      case '$':
+	if (in_mailcommand){
+	  PushByte(&buff,*line);
+	  break;
+	}
+
+      default:
+	/* URIs MUST NOT have non-ascii characters */
+	/* otherwise, we must use IRI */
+	hexbuflen=snprintf(hexbuf,4,"%%%02X",*line);
+	PushString(&buff,hexbuf);
+	break;
+      }
     }
-    RETURN_PUSH(buff);
+  } 
+  RETURN_PUSH(buff);
 }
 
 /* Given a string, replaces all instances of "oldpiece" with "newpiece".
@@ -1123,54 +1184,57 @@ char *replacechar(char *string, char old, char *new)
 
 char *makemailcommand(char *mailcommand, char *email, char *id, char *subject)
 {
-    int hasre;
-    char *cp;
-    char *tmpsubject;
-    char *convsubj;
+  char *newcmd = NULL, *newcmd2=NULL, *cp;
+  char *tmpsubject=NULL;
+  char *convsubj=NULL,*convemail=NULL,*convid=NULL;
+   
+  if ((cp = strrchr(email, ' ')) != NULL)
+    *cp = '\0';
 
-    char *newcmd = NULL;
-    char *newcmd2;
+  /* prepare "Re: " string, should this be localized? */
+  if(subject && isre(subject,NULL)){
+    trio_asprintf(&tmpsubject, "%s",subject);
+  }else{
+    trio_asprintf(&tmpsubject, "Re: %s",subject);
+  }
 
-    if (subject && isre(subject, NULL))
-	hasre = 1;
-    else
-	hasre = 0;
+  /* escape strings */
+  convsubj=translateurl(tmpsubject,0);
+  free(tmpsubject);
+  convemail=translateurl(email,0);
+  convid=translateurl(id,0);
+   
+  /* escape mailcommand, with keeping some delimiters */
+  newcmd = translateurl(mailcommand,1);
 
-    convsubj = convchars(subject, NULL);
+  /* put email address */
+  if (strlen(email)>0){
+    newcmd2 = replace(newcmd, "$TO", convemail);
+  }else{
+    newcmd2 = replace(newcmd, "$TO", "");
+  }
+  free(convemail);
+  free(newcmd);
 
-    /* remade to deal with any-length strings */
-    /* tmpsubject = maprintf("%s%s", (hasre) ? "" : "Re: ", (convsubj) ? convsubj : ""); */
-    trio_asprintf(&tmpsubject, "%s%s", (convsubj && !hasre)
-		  ? "Re: " : "", (convsubj) ? convsubj : "");
+  /* put message-id */
+  if (strlen(id)>0){
+    newcmd = replace(newcmd2, "$ID", convid);
+  }else{
+    newcmd = replace(newcmd2, "$ID", "");
+  }
+  free(convid);
+  free(newcmd2);
+   
+  /* put subject */
+  if (strlen(subject)>0){
+    newcmd2 = replace(newcmd, "$SUBJECT", convsubj);
+  }else{
+    newcmd2 = replace(newcmd, "$SUBJECT", "");
+  }
+  free(newcmd);
+  free(convsubj);
 
-
-	if ((cp = strrchr(email, ' ')) != NULL)
-	    *cp = '\0';
-
-	newcmd = replace(mailcommand, "$TO", email);
-	newcmd2 = replace(newcmd, "$ID", id);
-	free(newcmd);
-
-	newcmd = replace(newcmd2, "$SUBJECT", (tmpsubject) ? tmpsubject : "");
-	free(newcmd2);
-
-	newcmd2 = replacechar(newcmd, '%', "%25");
-	free(newcmd);
-
-	newcmd = replacechar(newcmd2, ' ', "%20");
-	free(newcmd2);
-
-	newcmd2 = replacechar(newcmd, '+', "%2B");
-	free(newcmd);
-
-	/* escape the special characters following the URL convention */
-	newcmd = translateurl (newcmd2);
-	free (newcmd2);
-
-	free(tmpsubject);
-
-    free(convsubj);
-    return newcmd;
+  return newcmd2;
 }
 
 char *unspamify(char *s)
@@ -1470,7 +1534,9 @@ char *parseurl(char *input, char *charset)
 		}
 	    }
 	    if(accepted) {
-	        char *urlbuff2 = translateurl(urlbuff);
+	      /* string is already escaped in URI context */
+	        char *urlbuff2 = convcharsnospamprotect(urlbuff,"us-ascii");
+
 		trio_snprintf(tempbuff, sizeof(tempbuff),
 			      "<a href=\"%s%s\">%s%s</a>",
 			      thisprotocol, urlbuff2, thisprotocol, urlbuff2);
