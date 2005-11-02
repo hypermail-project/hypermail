@@ -762,7 +762,7 @@ void printhtml(FILE *fp, char *line)
 void printdates(FILE *fp, struct header *hp, int year, int month, struct emailinfo *subdir_email,
 		char *prev_date_str)
 {
-  char *subj;
+  char *subj,*tmpptr=0;
   const char *startline;
   const char *break_str;
   const char *endline;
@@ -812,9 +812,11 @@ void printdates(FILE *fp, struct header *hp, int year, int month, struct emailin
       }
       fprintf(fp,"%s<a href=\"%s\">%s%s%s</a>%s<a name=\"%d\"><em>%s</em></a>%s%s%s\n",
 	      startline, msg_href(em, subdir_email, FALSE), 
-	      subj_tag, subj, subj_end_tag, break_str, em->msgnum, convchars(em->name,em->charset),
+	      subj_tag, subj, subj_end_tag, break_str, em->msgnum, tmpptr=convchars(em->name,em->charset),
 	      break_str, date_str, endline);
       free(subj);
+      if(tmpptr)
+	free(tmpptr);
     }
     printdates(fp, hp->right, year, month, subdir_email, prev_date_str);
   }
@@ -826,7 +828,7 @@ void printdates(FILE *fp, struct header *hp, int year, int month, struct emailin
 */
 int printattachments(FILE *fp, struct header *hp, struct emailinfo *subdir_email, bool *is_first)
 {
-    char *subj;
+    char *subj,*tmpptr=0;
     char *attdir;
     char *msgnum;
     int  nb_attach = 0;
@@ -850,13 +852,13 @@ int printattachments(FILE *fp, struct header *hp, struct emailinfo *subdir_email
 		/* consider that if there's an attachment directory, there are attachments */
 		nb_attach++;
 		if (set_indextable) {
-		  fprintf(fp, "<tr><td>%s%s</a></td><td><a name=\"%d\"><em>%s</em></a></td>" "<td>%s</td></tr>\n", msg_href(em, subdir_email, TRUE), subj, em->msgnum, convchars(em->name,em->charset), getindexdatestr(em->date));
+		  fprintf(fp, "<tr><td>%s%s</a></td><td><a name=\"%d\"><em>%s</em></a></td>" "<td>%s</td></tr>\n", msg_href(em, subdir_email, TRUE), subj, em->msgnum, tmpptr=convchars(em->name,em->charset), getindexdatestr(em->date));
 		}
 		else {
 		  fprintf(fp, "<li>%s%s<dfn>%s</dfn></a>&nbsp;" 
 			  "<a name=\"%d\"><em>%s</em></a>&nbsp;<em>(%s)</em>\n", 
 			  (*is_first) ? first_attributes : "",
-			  msg_href(em, subdir_email, TRUE), subj, em->msgnum, convchars(em->name,em->charset), 
+			  msg_href(em, subdir_email, TRUE), subj, em->msgnum, tmpptr=convchars(em->name,em->charset), 
 			  getindexdatestr(em->date));
 		  if (*is_first)
 		    *is_first = FALSE;
@@ -901,6 +903,8 @@ int printattachments(FILE *fp, struct header *hp, struct emailinfo *subdir_email
 	    }
 	    free(attdir);
 	    free(subj);
+	    if(tmpptr)
+	      free(tmpptr);
 	}
 	nb_attach += printattachments(fp, hp->right, subdir_email, is_first);
     }
@@ -2566,7 +2570,7 @@ void writethreads(int amountmsgs, struct emailinfo *email)
 void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
 		   int year, int month, struct emailinfo *subdir_email)
 {
-  char *subj;
+  char *subj, *tmpptr=0;
   const char *startline;
   const char *break_str;
   const char *endline;
@@ -2615,11 +2619,13 @@ void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
 	}
 	fprintf(fp,
 		"%s%s%s</a>%s <a name=\"%d\">%s</a>%s\n", startline,
-		msg_href(hp->data, subdir_email, TRUE), convchars(hp->data->name,hp->data->charset), break_str,
+		msg_href(hp->data, subdir_email, TRUE), tmpptr=convchars(hp->data->name,hp->data->charset), break_str,
 		hp->data->msgnum, date_str, endline);
 	*oldsubject = hp->data->unre_subject;
       
 	free(subj);
+	if(tmpptr)
+	  free(tmpptr);
     }
     printsubjects(fp, hp->right, oldsubject, year, month, subdir_email);
   }
