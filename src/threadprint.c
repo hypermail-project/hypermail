@@ -242,17 +242,23 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
 			       struct emailinfo* subdir_email, FILE *fp_body,
 			       int threadnum, bool is_first)
 {
-    char *subj;
+    char *subj, *tmpname;
     char *href = NULL;
     char buffer[256];
     char *first_attributes = (is_first) ? " accesskey=\"j\" name=\"first\" id=\"first\"" : "";
 
+#ifdef HAVE_ICONV
+    subj = convchars(email->subject, "utf-8");
+    tmpname = convchars(email->name, "utf-8");
+#else
     subj = convchars(email->subject, email->charset);
+    tmpname = convchars(email->name, email->charset);
+#endif
 
     if (set_files_by_thread) {
 	int maybe_reply = 0;
 	int is_reply = 1;
-	fprintf(fp_body, "<a name =\"%.4d\"></a>", email->msgnum);
+	fprintf(fp_body, "<a name =\"%.4d\" id=\"%.4d\"></a>", email->msgnum, email->msgnum);
 	print_headers(fp_body, email, TRUE);
 	if ((set_show_msg_links && set_show_msg_links != 4) || !set_usetable) {
 	    fprintf(fp_body, "</ul>\n");
@@ -273,10 +279,10 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
     if (set_indextable) {
 	fprintf(fp,
 		"<tr><td>%s<a href=\"%s\"%s><strong>%s</strong></a></td>"
-		"<td nowrap><a name=\"%d\">%s</a></td>" "<td nowrap>%s</td></tr>\n",
+		"<td nowrap><a name=\"%d\" id=\"%d\">%s</a></td>" "<td nowrap>%s</td></tr>\n",
 		level > 1 ? "--&gt; " : "", 
 		href, first_attributes,
-		subj, email->msgnum, email->name, getindexdatestr(email->date));
+		subj, email->msgnum, email->msgnum, tmpname, getindexdatestr(email->date));
     }
     else {
         if (num_open_li[level] != 0) {
@@ -284,11 +290,14 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
 	  num_open_li[level]--;
 	}
 	fprintf(fp, "<li><a href=\"%s\"%s>%s</a>&nbsp;"
-		"<a name=\"%d\"><em>%s</em></a>&nbsp;<em>(%s)</em>\n", 
+		"<a name=\"%d\" id=\"%d\"><em>%s</em></a>&nbsp;<em>(%s)</em>\n", 
 		href, first_attributes, 
-		subj, email->msgnum, email->name, getindexdatestr(email->date));
+		subj, email->msgnum, email->msgnum, tmpname, getindexdatestr(email->date));
     }
-    free(subj);
+    if (subj)
+      free(subj);
+    if (tmpname)
+      free(tmpname);
     ++num_replies[level];
     if (!set_indextable)
       ++num_open_li[level];
