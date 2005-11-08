@@ -264,12 +264,8 @@ void fprint_menu0(FILE *fp, struct emailinfo *email, int pos)
   char *tmpptr=i18n_convstring(email->subject,"UTF-8",email->charset,&tmplen);
 #endif
 
-  if (!(set_show_msg_links && set_show_msg_links != loc_cmp)
-      || (set_show_index_links && set_show_index_links != loc_cmp))
-    {
-      fprintf(fp, "<ul class=\"links\">\n");
-    }
-  
+  /* well... always put this element here.. */
+  fprintf(fp, "<ul class=\"links\">\n");
 
   if (set_mailcommand && set_hmail) {
     fprintf(fp, "<li><a name=\"%s\" id=\"%s\"></a><dfn>%s</dfn>:", 
@@ -329,10 +325,8 @@ void fprint_menu0(FILE *fp, struct emailinfo *email, int pos)
   if (set_custom_archives && *set_custom_archives)
     fprintf(fp, "<li><dfn>%s</dfn>: %s</li>\n", lang[MSG_OTHER_MAIL_ARCHIVES], set_custom_archives);
 
-  if (!(set_show_msg_links && set_show_msg_links != loc_cmp)
-      || (set_show_index_links && set_show_index_links != loc_cmp)){
-    fprintf (fp,"</ul>\n");
-  }
+  fprintf (fp,"</ul>\n");
+
 #ifdef HAVE_ICONV
   if(tmpptr)
     free(tmpptr);
