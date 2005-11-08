@@ -257,7 +257,7 @@ void fprint_menu0(FILE *fp, struct emailinfo *email, int pos)
   int num = email->msgnum;
   int loc_cmp = (pos == PAGE_BOTTOM ? 3 : 4);
   char *ptr;
-  char *id= (pos == PAGE_TOP) ? "option2" : "option3";
+  char *id= (pos == PAGE_TOP) ? "options2" : "options3";
 
 #ifdef HAVE_ICONV
   int tmplen;
@@ -1597,9 +1597,20 @@ int print_links_up(FILE *fp, struct emailinfo *email, int pos, int in_thread_fil
 		  free(ptr);
 	      }
 	    }
-	    fprintf(fp, " [ <a href=\"#options2\">%s</a> ]\n", lang[MSG_MORE_OPTIONS]);
+	    switch(set_show_index_links){
+	    case 0:
+	      break;
+	    case 1:
+	      fprintf(fp, " [ %s (<a href=\"#options2\">top</a>, <a href=\"#options3\">bottom</a>) ]\n", lang[MSG_MORE_OPTIONS]);
+	      break;
+	    case 3:
+	      fprintf(fp, " [ <a href=\"#options2\">%s</a> ]\n", lang[MSG_MORE_OPTIONS]);
+	      break;
+	    case 4:
+	      fprintf(fp, " [ <a href=\"#options3\">%s</a> ]\n", lang[MSG_MORE_OPTIONS]);
+	      break;
+	    }
 	    fprintf(fp, "</li>\n");
-
 	    
 	    fprintf(fp, "<li>\n");
 	    fprintf(fp, "<dfn>%s</dfn>:\n", lang[MSG_RELATED_MESSAGES]);
