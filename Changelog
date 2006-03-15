@@ -1,5 +1,7 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (Mar 14, 2006)
+  Fixed a core dump with linkquotes = 1 caused by Daigo's changes.
 
  Peter McCluskey (Sep 30, 2005)
   Fixed missing links at top when show_index_links is 1 or 3.

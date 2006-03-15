@@ -970,7 +970,8 @@ static char *ConvURLsWithHrefs(const char *line, char *mailid, char *mailsubject
  * message is in the archive, and call ConvURLsString on the rest of the line.
 */
 
-static char *ConvMsgid(char *line, char *inreply, char *mailid, char *mailsubject)
+static char *ConvMsgid(char *line, char *inreply, char *mailid,
+		       char *mailsubject, char *charset)
 {
     char *tmpline4;
     int subjmatch;
@@ -988,14 +989,14 @@ static char *ConvMsgid(char *line, char *inreply, char *mailid, char *mailsubjec
     tmpline1 = (char *)emalloc(c - line + 1);
     strncpy(tmpline1, line, c - line);	/* AUDIT biege: who gurantees that c-line doesnt become smaller 0? IOF? */
     tmpline1[c - line] = 0;
-    tmpline4 = ConvURLsString(tmpline1, mailid, mailsubject, NULL);
+    tmpline4 = ConvURLsString(tmpline1, mailid, mailsubject, charset);
     free(tmpline1);
     PushString(&buff, tmpline4);
     free(tmpline4);
     PushString(&buff, msg_href(ep, ep, TRUE));
     PushString(&buff, inreply);
     PushString(&buff, "</a>");
-    tmpline4 = ConvURLsString(c + strlen(inreply), mailid, mailsubject, NULL);
+    tmpline4 = ConvURLsString(c + strlen(inreply), mailid, mailsubject, charset);
     if (tmpline4) {
 	PushString(&buff, tmpline4);
 	free(tmpline4);
@@ -1046,7 +1047,7 @@ char *ConvURLsString(char *line, char *mailid, char *mailsubject, char *charset)
     if (set_linkquotes) {
 	char *inreply = getreply(line);
 	if (inreply) {
-	    parsed = ConvMsgid(line, inreply, mailid, mailsubject);
+	    parsed = ConvMsgid(line, inreply, mailid, mailsubject, charset);
 	    free(inreply);
 	    if (parsed)
 	        return parsed;
