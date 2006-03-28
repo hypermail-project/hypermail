@@ -2227,7 +2227,7 @@ void writearticles(int startnum, int maxnum)
 	fprintf(fp, "</div>\n");
 	
 	if (set_txtsuffix) {
-	  fprintf(fp, "<p><a href=\"%.4d.%s\">%s</a>", email->msgnum, set_txtsuffix, lang[MSG_TXT_VERSION]);
+	  fprintf(fp, "<p><a rel=\"nofollow\" href=\"%.4d.%s\">%s</a>", email->msgnum, set_txtsuffix, lang[MSG_TXT_VERSION]);
 	}
 	
 	printfooter(fp, mhtmlfooterfile, set_label, set_dir, email->subject, filename, FALSE);

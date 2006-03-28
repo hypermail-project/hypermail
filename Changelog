@@ -1,5 +1,8 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (Mar 27, 2006)
+  Add rel="nofollow" to text message URLs (option txtsuffix = 1).
+
  Peter McCluskey (Mar 14, 2006)
   Fixed a core dump with linkquotes = 1 caused by Daigo's changes.
 
