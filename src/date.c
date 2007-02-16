@@ -210,7 +210,7 @@ char *getdateindexdatestr(time_t yearsecs)
 
   /* store the previous dateformat */
   previous_dateformat = set_dateformat;
-  set_dateformat = "%A, %e %B";
+  set_dateformat = "%A, %e %B %Y";
   date = getdatestr (yearsecs);
   /* restore the previous dateformat */
   set_dateformat = previous_dateformat;

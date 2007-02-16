@@ -417,7 +417,7 @@ void crossindexthread2(int num)
     for (rp = ep->replylist; rp != NULL; rp = rp->next) {
 	if (!(rp->data->flags & USED_THREAD)) {
 	    rp->data->flags |= USED_THREAD;
-	    if (0) printf("add thread.b %d %d %d\n", num, rp->data->msgnum, rp->msgnum);
+	    if (0) fprintf(stderr, "add thread.b %d %d %d\n", num, rp->data->msgnum, rp->msgnum);
 	    threadlist = addreply(threadlist, num, rp->data, 0,
 				  &threadlist_end);
 	    printedlist = markasprinted(printedthreadlist, rp->msgnum);
@@ -1500,18 +1500,11 @@ int parsemail(char *mbox,	/* file name */
 		    else if (!strncasecmp(head->line, "From:", 5)) {
 			getname(head->line, &namep, &emailp);
 			head->parsedheader = TRUE;
-                        if (set_spamprotect) {
-			  if (set_antispamdomain) {
-			    emailp=spamify_replacedomain(emailp,set_antispamdomain);
-			    /* we need to "fix" the name as well, as sometimes
-			       the email ends up in the name part */
-			    namep=spamify_replacedomain(namep,set_antispamdomain);
-			  } else {
+            if (set_spamprotect) {
 			    emailp=spamify(emailp);
 			    /* we need to "fix" the name as well, as sometimes
 			       the email ends up in the name part */
 			    namep=spamify(namep);
-			  }
                         }
 		    }
 		    else if (!strncasecmp(head->line, "Message-Id:", 11)) {
