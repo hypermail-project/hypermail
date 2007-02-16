@@ -46,6 +46,10 @@
 #endif
 #endif
 
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
+
 static char *indextypename[NO_INDEX];
 
 #ifdef GDBM
@@ -1412,7 +1416,7 @@ void print_headers(FILE *fp, struct emailinfo *email, int in_thread_file)
   fprintf(fp, "<address class=\"headers\">\n");
 
 #ifdef HAVE_ICONV
-  int tmplen;
+  size_t tmplen;
   char *tmpsubject=i18n_convstring(email->subject,"UTF-8",email->charset,&tmplen);
   char *tmptmpname=i18n_convstring(email->name,"UTF-8",email->charset,&tmplen); 
   char *tmpname=convchars(tmptmpname,"utf-8");
@@ -2040,7 +2044,7 @@ void writearticles(int startnum, int maxnum)
     char *ptr;
 #ifdef HAVE_ICONV
     char *localsubject=NULL,*localname=NULL;
-    int convlen=0;
+    size_t convlen=0;
 #endif
 
 
