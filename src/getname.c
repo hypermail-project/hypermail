@@ -16,6 +16,16 @@ static int blankstring(char *str)
 
 char *spamify(char *input)
 {
+    if (set_antispamdomain) {
+        return spamify_replacedomain(input, set_antispamdomain);
+    }
+    else {
+        return spamify_small(input);
+    }
+}
+
+char *spamify_small(char *input)
+{
     int insertlen = strlen(set_antispam_at);
     /* we should replace the @-letter in the email address */
     int newlen = strlen(input) + insertlen;

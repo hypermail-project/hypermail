@@ -2265,6 +2265,8 @@ void writearticles(int startnum, int maxnum)
 	    if (hashnumlookup(num, &e3)) {
 #ifdef FASTREPLYCODE
 	      hashnumlookup(get_new_reply_to(), &e4);
+	      if(0)
+		fprintf(stderr, "update reply %2d %2d \n", get_new_reply_to(), num);
 	      replylist = addreply2(replylist, e4, e3, 0, &replylist_end);
 #else
 	      replylist = addreply(replylist, get_new_reply_to(), e3, 0, &replylist_end);
@@ -3152,7 +3154,7 @@ void write_toplevel_indices(int amountmsgs)
     char *index_title;
     char *filename;
     char *saved_set_dateformat;
-    char *abbr_dateformat = "%e %b %Y";
+    char *abbr_dateformat = "%d %b %Y";
     char *verbose_dateformat = "%A, %e %B %Y";
 
     char *tmpstr;
@@ -3301,7 +3303,7 @@ void write_toplevel_indices(int amountmsgs)
 	    }
 	}
 	if (started_line && fp)
-	    fprintf(fp, "    <td align=\"center\" class=\"count\">%d</td>\n  </tr>\n", sd->count);
+	    fprintf(fp, "    <td align=\"right\" class=\"count\">%d</td>\n  </tr>\n", sd->count);
     }
     set_dateformat = saved_set_dateformat;
 
