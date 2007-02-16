@@ -48,6 +48,10 @@
 #include <sys/dir.h>
 #endif
 
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
+
 /*
 ** LCC doesn't have lstat() defined in sys/stat.h.  We'll define it
 ** in lcc_extras.h, but really it just calls stat().
@@ -862,7 +866,7 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 
 #ifdef HAVE_ICONV
 	      char *orig2,*output2,*output3;
-	      int len;
+	      size_t len;
 	      orig2=output2=malloc(strlen(string)+1);
 	      memset(output2,0,strlen(string)+1);
 	      old_output=output;
@@ -3103,7 +3107,7 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
 #if HAVE_ICONV
 	if (charset){
 	  char *tmpptr;
-	  int tmplen=0;
+	  size_t tmplen=0;
 	  tmpptr=subject;
 	  subject=i18n_convstring(tmpptr,charset,"UTF-8",&tmplen);
 	  if(tmpptr)

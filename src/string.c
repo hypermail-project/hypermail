@@ -28,6 +28,10 @@
 #include "parse.h"
 #include "uconvert.h"
 
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
+
 /* I18N hack */
 #ifdef HAVE_ICONV_H
 #include <iconv.h>
@@ -93,9 +97,9 @@ char *i18n_canonicalize_charset(char *cs){
 }
 
 
-char *i18n_convstring(char *string, char *fromcharset, char *tocharset, int *len){
+char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *len){
 
-  int origlen,strleft,bufleft;
+  size_t origlen,strleft,bufleft;
   char *convbuf,*origconvbuf;
   iconv_t iconvfd;
   size_t ret;
@@ -1226,7 +1230,7 @@ char *makemailcommand(char *mailcommand, char *email, char *id, char *subject)
   free(newcmd2);
    
   /* put subject */
-  if (strlen(subject)>0){
+  if (subject && strlen(subject)>0){
     newcmd2 = replace(newcmd, "$SUBJECT", convsubj);
   }else{
     newcmd2 = replace(newcmd, "$SUBJECT", "");
