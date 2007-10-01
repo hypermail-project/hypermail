@@ -100,17 +100,20 @@ char *i18n_canonicalize_charset(char *cs){
 char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *len){
 
   size_t origlen,strleft,bufleft;
+  size_t origbuflen;
   char *convbuf,*origconvbuf;
   iconv_t iconvfd;
   size_t ret;
+  int error;
 
   if (string){
     strleft=origlen=strlen(string);
   }else{
     strleft=origlen=0;
   }
-  origconvbuf=convbuf=malloc(origlen*7+1);
-  memset(origconvbuf,0,origlen*7);
+  origbuflen = origlen*7;
+  origconvbuf=convbuf=malloc(origbuflen+1);
+  memset(origconvbuf,0,origbuflen);
   bufleft=origlen*7;
 
   if (!set_i18n || strcasecmp(fromcharset,tocharset)==0){
@@ -130,7 +133,7 @@ char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *
         printf("I18N: libiconv open error.\n");
       }
     }
-    origlen=sprintf(origconvbuf,"(unknown charset) %s",string);
+    origlen=snprintf(origconvbuf,origbuflen, "(unknown charset) %s",string);
     origconvbuf[origlen]=0x0;
     *len=origlen;
     return origconvbuf;
@@ -140,38 +143,51 @@ char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *
   iconv_close(iconvfd);
 
   if (ret==(size_t)-1){
+    error = 1;
     switch (errno){
     case E2BIG:
       if(set_showprogress){
 	printf("I18N: buffer overflow.\n");
       }
+      origlen=snprintf(origconvbuf, origbuflen,"(buffer overflow) %s",string);
+      error = 1;
       break;
     case EILSEQ:
       if(set_showprogress){
 	printf("I18N: invalid multibyte sequence, from %s to %s: %s.\n",fromcharset,tocharset,string);
       }
-      origlen=sprintf(origconvbuf,"(wrong string) %s",string);
+      origlen=snprintf(origconvbuf, origbuflen,"(wrong string) %s",string);
+      error = 1;
       break;
     case EINVAL:
       if(set_showprogress){
-	printf("I18N: incomplete multibyte sqeuence, from %s to %s: %s.\n",fromcharset,tocharset,string);
+	printf("I18N: incomplete multibyte sequence, from %s to %s: %s.\n",fromcharset,tocharset,string);
       }
-      origlen=sprintf(origconvbuf,"(wrong string) %s",string);
+      origlen=snprintf(origconvbuf, origbuflen,"(wrong string) %s",string);
+      error = 1;
       break;
     }
+  } else {
+    error = 0;
   }
 
-  /* hmm... do we really need to do this? (daigo) */
-  if (strncasecmp(tocharset,"ISO-2022-JP",11)==0){
-    *len=origlen*7-bufleft;
-    *(origconvbuf+*len)=0x1b;
-    *(origconvbuf+*len+1)=0x28;
-    *(origconvbuf+*len+2)=0x42;
-    *len+=3;
-  }else{
-    *len=origlen*7-bufleft;
+  if (error) {
+    origconvbuf[origlen]=0x0;
+    *len=origlen;
+  } else {
+    /* hmm... do we really need to do this? (daigo) */
+    if (strncasecmp(tocharset,"ISO-2022-JP",11)==0){
+      *len=origlen*7-bufleft;
+      *(origconvbuf+*len)=0x1b;
+      *(origconvbuf+*len+1)=0x28;
+      *(origconvbuf+*len+2)=0x42;
+      *len+=3;
+    }else{
+      *len=origlen*7-bufleft;
+    }
+    
+    *(origconvbuf+*len)=0x0;
   }
-  *(origconvbuf+*len)=0x0;
 
   return origconvbuf;
 }
@@ -182,7 +198,7 @@ char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *
 char *i18n_utf2numref(char *instr,int escape){
 
   char *ucs,*headofucs;
-  int len;
+  size_t len;
   struct Push buff;
   char strbuf[10];
 
@@ -196,7 +212,8 @@ char *i18n_utf2numref(char *instr,int escape){
   headofucs=ucs=i18n_convstring(instr, "UTF-8", "UCS-2BE", &len);
 
   unsigned int p;
-  for(;len>0; len-=2){
+  int i = (int) len;
+  for(; i > 0; i-=2){
     p=(unsigned char)*ucs*256+(unsigned char)*(ucs+1);
     if (p<128){
       /* keep ASCII characters human readable */
