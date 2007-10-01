@@ -46,7 +46,7 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
     register char *aptr;
     char c;
     char *ptr,*tmpptr=NULL;
-    int tmplen;
+    size_t tmplen;
 
     aptr = format;
 

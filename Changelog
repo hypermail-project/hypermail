@@ -1,5 +1,21 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (Oct 1, 2007)
+  Changes from Fumihiro Kato to fix bugs on 64 bit systems and some
+   possible buffer overflow problems.
+  Change in rules about whether to escape urls; it now seems to escape them
+   when found in the middle of the line the same way it has been doing when
+   they are at the start of a line.
+
+ Peter McCluskey (Feb 16, 2007)
+  Changes from Rick van der Zwet:
+   cosmetic = tweaking the interface a small bit (right align, the message 
+   numbers, years in the date listing
+   spamify-domain = obfuscate the body of the message as well (will also 
+   obfuscate 'ssh rick@foo.bar' this of course), moved the domain obfuscate 
+   yes/no to the general to make the function more portable
+ Changes from Mike Fabian changing int to size_t.
+
  Peter McCluskey (Mar 27, 2006)
   Add rel="nofollow" to text message URLs (option txtsuffix = 1).
 

@@ -914,11 +914,12 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 		/* base64 decoding */
 		int len;
 #ifdef HAVE_ICONV
+                size_t tmplen;
 		char *output2;
 		base64Decode(ptr, output, &len);
-		output2=i18n_convstring(output,charset,"UTF-8",&len);
-		memcpy(output,output2,len);
-		output += len;
+		output2=i18n_convstring(output,charset,"UTF-8",&tmplen);
+		memcpy(output,output2,tmplen);
+		output += tmplen;
 		free(output2);
 		memcpy(charsetsave,charset,strlen(charset)<255 ? strlen(charset) : 255 );
 #else

@@ -103,7 +103,7 @@ int uudecode(FILE *input,	/* get file data from (if needed) */
 	}
 
 	n = DEC(*p);
-	for (++p; n > 0; p += 4, n -= 3) {
+	for (++p; (n > 0) && (outlen < 80); p += 4, n -= 3) {
 	    if (n >= 3) {
 
 		if (!(IS_DEC(*p) && IS_DEC(*(p + 1)) && IS_DEC(*(p + 2)) && IS_DEC(*(p + 3))))
