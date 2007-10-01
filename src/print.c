@@ -264,7 +264,7 @@ void fprint_menu0(FILE *fp, struct emailinfo *email, int pos)
   char *id= (pos == PAGE_TOP) ? "options2" : "options3";
 
 #ifdef HAVE_ICONV
-  int tmplen;
+  size_t tmplen;
   char *tmpptr=i18n_convstring(email->subject,"UTF-8",email->charset,&tmplen);
 #endif
 
@@ -766,7 +766,7 @@ void printdates(FILE *fp, struct header *hp, int year, int month, struct emailin
   const char *endline;
   const char *subj_tag;
   const char *subj_end_tag;
-  static char date_str[DATESTRLEN+11]; /* made static for smaller stack */
+  static char date_str[DATESTRLEN+40]; /* made static for smaller stack */
   static char *first_attributes = "<a  accesskey=\"j\" name=\"first\" id=\"first\"></a>";
 
   if (hp != NULL) {
@@ -796,7 +796,7 @@ void printdates(FILE *fp, struct header *hp, int year, int month, struct emailin
 	  }
 	  else
 	    is_first = TRUE;
-	  sprintf(date_str, "<li>%s<dfn>%s</dfn><ul>\n", 
+	  snprintf(date_str, sizeof(date_str), "<li>%s<dfn>%s</dfn><ul>\n", 
 		  (is_first) ? first_attributes : "", tmp);
 	  fprintf (fp, "%s", date_str);
 	  strcpy (prev_date_str, tmp);
@@ -946,7 +946,11 @@ static char *ConvURLsWithHrefs(const char *line, char *mailid, char *mailsubject
     PushString(&retbuf, tmpline5);
     free(tmpline5);
     p += 4;
-    tmpline6 = ConvURLsString(p, mailid, mailsubject, charset);
+    tmpline6 = NULL;
+    /* pcm 2007-10-01 disabled the following ConvURLsString call to have */
+    /* it escape urls in mid line the same as it did for urls at start of */
+    /* line. I'm still puzzled why the change works. */
+    /* tmpline6 = ConvURLsString(p, mailid, mailsubject, charset); */
     if (!tmpline6) {
 	free(PUSH_STRING(retbuf));
 	return NULL;
@@ -1035,7 +1039,7 @@ char *ConvURLsString(char *line, char *mailid, char *mailsubject, char *charset)
     char *c;
 
 #ifdef HAVE_ICONV
-    int tmplen;
+    size_t tmplen;
     char *tmpptr=i18n_convstring(mailsubject,"UTF-8",charset,&tmplen);
     mailsubject=tmpptr;
 #endif
@@ -1136,7 +1140,7 @@ void printheaders (FILE *fp, struct emailinfo *email)
 	  }
 	  else{
 #ifdef HAVE_ICONV
-	    int tmplen;
+	    size_t tmplen;
 	    char *tmpptr=i18n_convstring(header_content,"UTF-8",email->charset,&tmplen);
 	    ConvURLs(fp, tmpptr, id, subject, email->charset);
 	    if (tmpptr)
@@ -1333,7 +1337,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
 	      }
 	      else {
 		fprintf(fp, "<%s class=\"%s\">", set_iquotes ? "em" : "span", find_quote_class(bp->line));
-		
+
 		ConvURLs(fp, bp->line, id, subject, email->charset);
 		
 		fprintf(fp, "%s<br />\n", (set_iquotes) ? "</em>" : "</span>");
@@ -1580,7 +1584,7 @@ int print_links_up(FILE *fp, struct emailinfo *email, int pos, int in_thread_fil
 	    if (set_mailcommand && set_hmail) {
 	      if ((email->msgid && email->msgid[0]) || (email->subject && email->subject[0])) {
 #ifdef HAVE_ICONV
-		int tmplen;
+		size_t tmplen;
 		char *tmpptr=i18n_convstring(email->subject,"UTF-8",email->charset,&tmplen);
 		ptr = makemailcommand(set_replymsg_command, set_hmail, email->msgid, 
 				      tmpptr);
@@ -2332,7 +2336,7 @@ void writedates(int amountmsgs, struct emailinfo *email)
     int newfile;
     char *filename;
     FILE *fp;
-    char prev_date_str[DATESTRLEN];
+    char prev_date_str[DATESTRLEN + 40];
     char *datename = index_name[email && email->subdir != NULL][DATE_INDEX];
     time_t start_date_num = email && email->subdir ? email->subdir->first_email->date : firstdatenum;
     time_t end_date_num = email && email->subdir ? email->subdir->last_email->date : lastdatenum;
@@ -2586,7 +2590,7 @@ void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
   const char *startline;
   const char *break_str;
   const char *endline;
-  static char date_str[DATESTRLEN+11]; /* made static for smaller stack */
+  static char date_str[DATESTRLEN+40]; /* made static for smaller stack */
   static char *first_attributes = "<a  accesskey=\"j\" name=\"first\" id=\"first\"></a>";
 
   if (hp != NULL) {
@@ -2626,7 +2630,7 @@ void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
 	else {
 	    startline = "<li>";
 	    break_str = "";
-	    sprintf(date_str, "<em>(%s)</em>", getindexdatestr(hp->data->date));
+	    snprintf(date_str, sizeof(date_str), "<em>(%s)</em>", getindexdatestr(hp->data->date));
 	    endline = "</li>";
 	}
 	fprintf(fp,
@@ -2733,7 +2737,7 @@ void printauthors(FILE *fp, struct header *hp, char **oldname,
   const char *startline;
   const char *break_str;
   const char *endline;
-  static char date_str[DATESTRLEN+11]; /* made static for smaller stack */
+  static char date_str[DATESTRLEN+40]; /* made static for smaller stack */
   static char *first_attributes = "<a  accesskey=\"j\" name=\"first\" id=\"first\"></a>";
 
   if (hp != NULL) {
@@ -2781,7 +2785,7 @@ void printauthors(FILE *fp, struct header *hp, char **oldname,
       else {
 	startline = "<li>";
 	break_str = "&nbsp;";
-	sprintf(date_str, "<em>(%s)</em>", getindexdatestr(hp->data->date));
+	snprintf(date_str, sizeof(date_str), "<em>(%s)</em>", getindexdatestr(hp->data->date));
 	endline = "</li>";
       }
       fprintf(fp,"%s%s%s</a>%s<a name=\"%d\" id=\"%d\">%s</a>%s\n",
@@ -3055,7 +3059,7 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
 		switch (j) {
 		    case DATE_INDEX:
 		      {
-			char prev_date_str[DATESTRLEN];
+			char prev_date_str[DATESTRLEN + 40];
 			prev_date_str[0] = '\0';
 		        printdates(fp1, datelist, y, m, NULL, prev_date_str);
 			if (*prev_date_str)  /* close the previous date item */
