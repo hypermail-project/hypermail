@@ -279,7 +279,7 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
     if (set_indextable) {
 	fprintf(fp,
 		"<tr><td>%s<a href=\"%s\"%s><strong>%s</strong></a></td>"
-		"<td nowrap><a name=\"%d\" id=\"%d\">%s</a></td>" "<td nowrap>%s</td></tr>\n",
+		"<td nowrap><a name=\"msg%d\" id=\"msg%d\">%s</a></td>" "<td nowrap>%s</td></tr>\n",
 		level > 1 ? "--&gt; " : "", 
 		href, first_attributes,
 		subj, email->msgnum, email->msgnum, tmpname, getindexdatestr(email->date));
@@ -290,7 +290,7 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
 	  num_open_li[level]--;
 	}
 	fprintf(fp, "<li><a href=\"%s\"%s>%s</a>&nbsp;"
-		"<a name=\"%d\" id=\"%d\"><em>%s</em></a>&nbsp;<em>(%s)</em>\n", 
+		"<a name=\"msg%d\" id=\"msg%d\"><em>%s</em></a>&nbsp;<em>(%s)</em>\n", 
 		href, first_attributes, 
 		subj, email->msgnum, email->msgnum, tmpname, getindexdatestr(email->date));
     }
