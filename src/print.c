@@ -302,19 +302,19 @@ void fprint_menu0(FILE *fp, struct emailinfo *email, int pos)
       fprintf (fp, "<a name=\"%s\" id=\"%s\"></a>",id,id);
     fprintf(fp, "<dfn>%s</dfn>:", lang[MSG_CONTEMPORARY_MSGS_SORTED]);
     if (show_index[dlev][DATE_INDEX])
-      fprintf(fp, " [ <a href=\"%s#%d\" title=\"%s\">%s</a> ]", 
+      fprintf(fp, " [ <a href=\"%s#msg%d\" title=\"%s\">%s</a> ]", 
 	      index_name[dlev][DATE_INDEX], num, 
 	      lang[MSG_LTITLE_BY_DATE], lang[MSG_BY_DATE]);
     if (show_index[dlev][THREAD_INDEX])
-      fprintf(fp, " [ <a href=\"%s#%d\" title=\"%s\">%s</a> ]", 
+      fprintf(fp, " [ <a href=\"%s#msg%d\" title=\"%s\">%s</a> ]", 
 	      index_name[dlev][THREAD_INDEX], num, 
 	      lang[MSG_LTITLE_BY_THREAD], lang[MSG_BY_THREAD]);
     if (show_index[dlev][SUBJECT_INDEX])
-      fprintf(fp, " [ <a href=\"%s#%d\" title=\"%s\">%s</a> ]", 
+      fprintf(fp, " [ <a href=\"%s#msg%d\" title=\"%s\">%s</a> ]", 
 	      index_name[dlev][SUBJECT_INDEX], num, 
 	      lang[MSG_LTITLE_BY_SUBJECT], lang[MSG_BY_SUBJECT]);
     if (show_index[dlev][AUTHOR_INDEX])
-      fprintf(fp, " [ <a href=\"%s#%d\" title=\"%s\">%s</a> ]", 
+      fprintf(fp, " [ <a href=\"%s#msg%d\" title=\"%s\">%s</a> ]", 
 	      index_name[dlev][AUTHOR_INDEX], num, 
 	      lang[MSG_LTITLE_BY_AUTHOR], lang[MSG_BY_AUTHOR]);
     if (show_index[dlev][ATTACHMENT_INDEX])
@@ -808,7 +808,7 @@ void printdates(FILE *fp, struct header *hp, int year, int month, struct emailin
 	subj_tag = "";
 	subj_end_tag = "";
       }
-      fprintf(fp,"%s<a href=\"%s\">%s%s%s</a>%s<a name=\"%d\" id=\"%d\"><em>%s</em></a>%s%s%s\n",
+      fprintf(fp,"%s<a href=\"%s\">%s%s%s</a>%s<a name=\"msg%d\" id=\"msg%d\"><em>%s</em></a>%s%s%s\n",
 	      startline, msg_href(em, subdir_email, FALSE), 
 	      subj_tag, subj, subj_end_tag, break_str, em->msgnum, em->msgnum, tmpptr=convchars(em->name,em->charset),
 	      break_str, date_str, endline);
@@ -850,11 +850,11 @@ int printattachments(FILE *fp, struct header *hp, struct emailinfo *subdir_email
 		/* consider that if there's an attachment directory, there are attachments */
 		nb_attach++;
 		if (set_indextable) {
-		  fprintf(fp, "<tr><td>%s%s</a></td><td><a name=\"%d\" id=\"%d\"><em>%s</em></a></td>" "<td>%s</td></tr>\n", msg_href(em, subdir_email, TRUE), subj, em->msgnum, em->msgnum, tmpptr=convchars(em->name,em->charset), getindexdatestr(em->date));
+		  fprintf(fp, "<tr><td>%s%s</a></td><td><a name=\"msg%d\" id=\"msg%d\"><em>%s</em></a></td>" "<td>%s</td></tr>\n", msg_href(em, subdir_email, TRUE), subj, em->msgnum, em->msgnum, tmpptr=convchars(em->name,em->charset), getindexdatestr(em->date));
 		}
 		else {
 		  fprintf(fp, "<li>%s%s<dfn>%s</dfn></a>&nbsp;" 
-			  "<a name=\"%d\" id=\"%d\"><em>%s</em></a>&nbsp;<em>(%s)</em>\n", 
+			  "<a name=\"msg%d\" id=\"msg%d\"><em>%s</em></a>&nbsp;<em>(%s)</em>\n", 
 			  (*is_first) ? first_attributes : "",
 			  msg_href(em, subdir_email, TRUE), subj, em->msgnum, em->msgnum, tmpptr=convchars(em->name,em->charset), 
 			  getindexdatestr(em->date));
@@ -1271,7 +1271,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
 		fprintf(fp, "</pre>\n");
 		pre = FALSE;
 	      }
-	      fprintf(fp, "<p>\n");
+	      fprintf(fp, "<br />\n");
 	    }
 	    else {
 	      if (!pre) {
@@ -1322,7 +1322,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
 	       Akis Karnouskos <akis@ceid.upatras.gr>     */
 	    {
 	      if (!pre)
-		fprintf(fp, "<p>");
+		fprintf(fp, "<br />");
 	    }
 	  else {
 	    if (insig) {
@@ -2634,7 +2634,7 @@ void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
 	    endline = "</li>";
 	}
 	fprintf(fp,
-		"%s%s%s</a>%s <a name=\"%d\" id=\"%d\">%s</a>%s\n", startline,
+		"%s%s%s</a>%s <a name=\"msg%d\" id=\"msg%d\">%s</a>%s\n", startline,
 		msg_href(hp->data, subdir_email, TRUE), tmpptr=convchars(hp->data->name,hp->data->charset), break_str,
 		hp->data->msgnum, hp->data->msgnum, date_str, endline);
 	*oldsubject = hp->data->unre_subject;
@@ -2788,7 +2788,7 @@ void printauthors(FILE *fp, struct header *hp, char **oldname,
 	snprintf(date_str, sizeof(date_str), "<em>(%s)</em>", getindexdatestr(hp->data->date));
 	endline = "</li>";
       }
-      fprintf(fp,"%s%s%s</a>%s<a name=\"%d\" id=\"%d\">%s</a>%s\n",
+      fprintf(fp,"%s%s%s</a>%s<a name=\"msg%d\" id=\"msg%d\">%s</a>%s\n",
 	      startline, msg_href(hp->data, subdir_email, TRUE), subj, break_str,
 	      hp->data->msgnum, hp->data->msgnum, date_str, endline);
       if(subj)
