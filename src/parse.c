@@ -866,7 +866,7 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 
 #ifdef HAVE_ICONV
 	      char *orig2,*output2,*output3;
-	      size_t len;
+	      size_t len, charsetlen;
 	      orig2=output2=malloc(strlen(string)+1);
 	      memset(output2,0,strlen(string)+1);
 	      old_output=output;
@@ -891,7 +891,9 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 		memcpy(output,output3,len);
 		output += len;
 		free(output3);
-		memcpy(charsetsave,charset,strlen(charset)<255 ? strlen(charset) : 255);
+		charsetlen = strlen(charset) < 255 ? strlen(charset) : 255;
+		memcpy(charsetsave,charset,charsetlen);
+		charsetsave[charsetlen] = '\0';
 #else
 		for (; *ptr; ptr++) {
 		    switch (*ptr) {
