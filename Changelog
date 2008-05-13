@@ -1,5 +1,10 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Peter McCluskey (May 13, 2008)
+  Change from Fumihiro Kato to fix bug that sometimes caused a charset
+   problem when Content-Type is us-ascii but message headers
+   include other encoded text like utf-8.
+
  Peter McCluskey (Nov 14, 2007)
   Applied xhtml patch from Zvi Har'El.
 
