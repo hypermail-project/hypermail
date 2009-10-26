@@ -1,5 +1,32 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Jose Kahan (Oct 23, 2009)
+  Various fixes / enhancements developed at W3C by Fumihiro Kato,
+  Daigo Matsubara and myself:
+  - Markup changes for deleted messages that are kept.
+  - New directive: htmlmessage_deleted for setting a custom HTML
+    message for the body of deleted messages.
+  - New directives: delete_incremental to disable deleting of existing
+    messages in the archive when doing an incremental add of a new
+    message. In some setups, if this feature is enabled, replies to
+    deleted messages will cause uncontrolled markup escape and
+    expansion. Feature is enabled by default.
+  - Updated list of known protocol uris that hypermail will convert
+    into links.
+  - Bug fix: setup.c:MakeConfig() CFG_SWITCH was using long instead of
+    int.
+  - New directive: fragment_prefix for customizing the prefix that is
+    put before each URI fragment in a message. Default value is "msg",
+    the previous hard-coded value.
+  - New directive: email_address_obfuscation foro enablingemail
+    address obfuscation using numeric character reference.
+  - New directive: inline_addlink to add in-line links to content that
+    is stored in the attachments subdirectory. 'inline_types" must
+    also be enabled.
+  - New directive: inreplyto_command, gives a URI template to a script
+    that hypermail will link to if it's unable to find a corresponding
+    Message-Id in the archive's messages.
+	            
  Peter McCluskey (May 13, 2008)
   Change from Fumihiro Kato to fix bug that sometimes caused a charset
    problem when Content-Type is us-ascii but message headers

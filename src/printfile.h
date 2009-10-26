@@ -6,10 +6,10 @@ int printfile(FILE *, char *, char *, char *, char *, char *, char *,
               char *, char *, char *, char *);
 
 void print_main_header(FILE *, bool, char *, char *, char *, char *, char *,
-		       char *, char *);
+		       char *, char *, int);
 
 void print_msg_header(FILE *, char *, char *, char *, char *, char *, 
-                      char *, char *, time_t, char *);
+                      char *, char *, time_t, char *, int);
 
 void print_index_header(FILE *, char *, char *, char *, char *);
 

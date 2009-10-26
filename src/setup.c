@@ -12,10 +12,11 @@
 
 #include "setup.h"
 #include "struct.h"
-#include "setup.h"
 #include "print.h"
 
+char *set_fragment_prefix;
 char *set_antispam_at;
+char *set_htmlmessage_deleted;
 char *set_language;
 char *set_htmlsuffix;
 char *set_mbox;
@@ -28,6 +29,7 @@ char *set_default_top_index;
 char *set_txtsuffix;
 char *set_antispamdomain;
 
+bool set_email_address_obfuscation;
 bool set_i18n;
 bool set_i18n_body;
 bool set_overwrite;
@@ -72,6 +74,7 @@ bool set_mbox_shortened;
 bool set_report_new_file;
 bool set_report_new_folder;
 bool set_use_sender_date;
+bool set_inline_addlink;
 
 int set_showhtml;
 int set_thrdlevels;
@@ -92,6 +95,7 @@ char *set_alts_text;
 char *set_mailcommand;
 char *set_newmsg_command;
 char *set_replymsg_command;
+char *set_inreplyto_command;
 char *set_mailto;
 char *set_hmail;
 char *set_domainaddr;
@@ -147,14 +151,24 @@ struct hmlist *set_expires = NULL;
 struct hmlist *set_delete_msgnum = NULL;
 char *set_delete_older;
 char *set_delete_newer;
+bool set_delete_incremental;
 int set_delete_level;
 
 struct Config cfg[] = {
+    {"fragment_prefix", &set_fragment_prefix, "msg", CFG_STRING,
+     "# put this string before the message number in each URI fragment.\n", FALSE},
+
+    {"email_address_obfuscation", &set_email_address_obfuscation, BFALSE, CFG_SWITCH,
+     "# set On to enable email address obfuscation using numeric character reference.\n",FALSE},
+
     {"i18n", &set_i18n, BTRUE, CFG_SWITCH,
-     "# Enable I18N features, must linked with iconv().\n",FALSE},
+     "# Enable I18N features, hypermail must be linked with libiconv.\n",FALSE},
 
     {"i18n_body", &set_i18n_body, BFALSE, CFG_SWITCH,
      "# Translate message body into UTF-8. \"i18n\" must be enabled.\n",FALSE},
+
+    {"htmlmessage_deleted",  &set_htmlmessage_deleted, NULL, CFG_STRING,
+     "# markup message for deleted messages.\n",FALSE},
 
     {"antispam_at", &set_antispam_at, ANTISPAM_AT, CFG_STRING,
      "# replace any @ sign with this string, if spam flags enabled.\n", FALSE},
@@ -421,6 +435,12 @@ struct Config cfg[] = {
      "# and $ID can be used in constructing the command string. The value\n"
      "# from mailcommand will be used if this option is not specified.\n", FALSE},
 
+    {"inreplyto_command", &set_inreplyto_command, NULL, CFG_STRING,
+     "# This gives a URI template to a script that hypermail will link to\n"
+     "# if it's unable to find in the archive's messages the MID corresponding\n"
+     "# to an In-Reply-To header. The variable $ID is used to say how the\n"
+     "# MID will appear in the link.\n", FALSE},
+
     {"domainaddr", &set_domainaddr, DOMAINADDR, CFG_STRING,
      "# Set this to the domainname you want added to a mail address\n"
      "# appearing in the RFC822 field which lack a hostname.\n", FALSE},
@@ -445,6 +465,10 @@ struct Config cfg[] = {
     {"inline_types", &set_inline_types, INLINE_TYPES, CFG_LIST,
      "# This is the list of MIME types that you want <img> tags to as\n"
      "# opposed to simply <a href> to from the message.\n", FALSE},
+
+    {"inline_addlink", &set_inline_addlink, BTRUE, CFG_SWITCH,
+     "# Define to On to add inline links to content that is stored in the\n"
+     "# attachments subdirectory.  'inline_types' must also be enabled.\n", FALSE},
 
     {"prefered_types", &set_prefered_types, NULL, CFG_LIST,
      "# When mails using multipart/mixed types are scanned, this list of\n"
@@ -675,6 +699,16 @@ struct Config cfg[] = {
      "# This is the list of message numbers that should be deleted from the\n"
      "# html archive. The mbox is not changed.\n", FALSE},
 
+    {"delete_incremental", &set_delete_incremental, BTRUE, CFG_SWITCH,
+     "# If this option is enabled, hypermail will perform deletions on old\n"
+     "# messages when run in incremental mode (according to the other delete\n"
+     "# configuring option). Note that depending on your hypermail setup,\n"
+     "# the size of the archive, and the complexity of the markup,\n"
+     "# there may be memory and parsing issues, specifically when there are\n"
+     "# non-deleted replies to a deleted message.\n"
+     "# If this option is disabled, deleted messages will only be removed\n"
+     "# when rebuilding the whole archive.\n", FALSE},
+
     {"delete_level", &set_delete_level, INT(DELETE_LEAVES_STUBS), CFG_INTEGER,
      "# 0 - remove deleted and expired files. Note that with this choice\n"
      "#     threading may be screwed up if there are replies to deleted or\n"
@@ -871,7 +905,7 @@ void MakeConfig(bool comments)
 		    /* they differ, show the actual contents */
 		    fprintf(stdout, "%s = %s\n",
 			    cfg[i].label,
-			    *(long *)(cfg[i].value) ? "On" : "Off");
+			    *(int *)(cfg[i].value) ? "On" : "Off");
 		else if (comments)
 /*
 		    fprintf(stdout, "#%s = %s\n", cfg[i].label,
@@ -992,7 +1026,7 @@ void PostConfig(void)
 int ConfigAddItem(char *cfg_line)
 {
     char keyword[256];
-    char towhat[501];
+    char towhat[1001]; /* increased due to htmlmessage_deleted */
     char *keywp;
     int i;
     char *line = cfg_line;
@@ -1186,6 +1220,7 @@ void dump_config(void)
     printf("set_stripsubject = %s\n",set_stripsubject ? set_stripsubject : "Not set");
     printf("set_mailcommand = %s\n",set_mailcommand ? set_mailcommand : "Not set");
     printf("set_replymsg_command = %s\n",set_replymsg_command ? set_replymsg_command : "Not set");
+    printf("set_inreplyto_command = %s\n",set_inreplyto_command ? set_inreplyto_command : "Not set");
     printf("set_newmsg_command = %s\n",set_newmsg_command ? set_newmsg_command : "Not set");
     printf("set_mailto = %s\n",set_mailto ? set_mailto : "Not set");
     printf("set_hmail = %s\n",set_hmail ? set_hmail : "Not set");
@@ -1244,6 +1279,7 @@ void dump_config(void)
     printf("set_yearly_index = %d\n",set_yearly_index);
     printf("set_msgsperfolder = %d\n",set_msgsperfolder);
     printf("set_iso2022jp = %d\n",set_iso2022jp);
+    printf("set_delete_incremental = %d\n",set_delete_incremental);
     printf("set_delete_level = %d\n",set_delete_level);
     printf("set_delete_older = %d\n",set_delete_older);
     printf("set_delete_newer = %d\n",set_delete_newer);

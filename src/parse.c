@@ -2629,15 +2629,31 @@ msgid);
 					inlinecontent(type)) {
 					/* if we know our browsers can show this type of context
 					   as-is, we make a <img> tag instead of <a href>! */
-
+ 				      if(set_inline_addlink){
+ 					char *created_link =
+					  createlink(set_attachmentlink,
+						     &att_dir[strlen(dir)
+							      + 1],
+						     file, num, type);
+ 					trio_snprintf(buffer, sizeof(buffer),
+						      "<p><img src=\"%s%s%c%s\" alt=\"%s\" />\n<br />\n(%s %s: <a href=\"%s%s\">%s</a>)</p>\n",
+						      subdir ? subdir->rel_path_to_top : "",
+						      &att_dir[strlen(dir) + 1],
+						      PATH_SEPARATOR, file,
+						      desc, type,
+						      lang[MSG_ATTACHMENT],
+						      subdir ? subdir->rel_path_to_top : "",
+						      created_link, file);
+ 					free(created_link);
+ 				      }else {
 					trio_snprintf(buffer, sizeof(buffer),
 						 "<img src=\"%s%s%c%s\" alt=\"%s\" />\n",
 						 subdir ? subdir->rel_path_to_top : "",
 						 &att_dir[strlen(dir) + 1],
 						 PATH_SEPARATOR, file,
 						 desc);
-				    }
-				    else {
+				      }
+				    } else {
 					char *created_link =
 					    createlink(set_attachmentlink,
 						       &att_dir[strlen(dir)
@@ -3003,7 +3019,7 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
 		else if (!strcasecmp(command, "name"))
 		    name = getvalue(line);
 		else if (!strcasecmp(command, "email"))
-		    email = getvalue(line);
+		    email = unobfuscate_email_address(getvalue(line));
 		else if (!strcasecmp(command, "subject")) {
 		    valp = getvalue(line);
 		    {

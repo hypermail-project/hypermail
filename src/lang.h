@@ -226,7 +226,7 @@ struct language_entry {
 #define MSG_TO                                   161
 #define MSG_FROM_TITLE                           162
 #define MSG_ON_TITLE                             163
-
+#define MSG_UNKNOWN_IN_REPLY_TO                  164
 #ifdef MAIN_FILE
 
 /*
@@ -414,6 +414,7 @@ char *de[] = {       /* German */
   " bis ", /* to - HTML */
   "from", /* from - HTML */
   "on", /* on - HTML */
+  "message archived in another list or period", /* unknown in reply to - HTML */
   NULL,                              /* End Of Message Table - NOWHERE*/
 };
 
@@ -588,6 +589,7 @@ char *pl[] = {                      /* English */
   " to ", /* to - HTML */
   "from", /* from - HTML */
   "on", /* on - HTML */
+  "message archived in another list or period", /* unknown in reply to - HTML */
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -763,6 +765,7 @@ char *en[] = {       /* English */
   " to ", /* to - HTML */
   "from", /* from - HTML */
   "on", /* on - HTML */
+  "message archived in another list or period", /* unknown in reply to - HTML */
   NULL,                         /* End Of Message Table      - NOWHERE*/
 };
 
@@ -948,6 +951,7 @@ char *es[] = {       /* Espanol/Spanish */
   " to ", /* to - HTML */
   "from", /* from - HTML */
   "on", /* on - HTML */
+  "message archived in another list or period", /* unknown in reply to - HTML */
   NULL,                               /* End Of Message Table */
 };
 
@@ -1125,6 +1129,7 @@ char *pt[] = {                     /* Brazilian Portuguese */
   "por anexo",                         /* by attachment - HTML */
   "período",                           /* period - HTML */
   " para ",                            /* to - HTML */
+  "message archived in another list or period", /* unknown in reply to - HTML */
   NULL,                                /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1298,6 +1303,7 @@ char *fi[] = {       /* Finnish */
   " to ", /* to - HTML */
   "from", /* from - HTML */
   "on", /* on - HTML */
+  "message archived in another list or period", /* unknown in reply to - HTML */
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1474,6 +1480,7 @@ char *it[] = {       /* Italian */
   " to ", /* to - HTML */
   "from", /* from - HTML */
   "on", /* on - HTML */
+  "message archived in another list or period", /* unknown in reply to - HTML */
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1649,6 +1656,7 @@ char *fr[] = {       /* French */
   " &eagrave; ", /* to - HTML */
   "from", /* from - HTML */
   "on", /* on - HTML */
+  "message archived in another list or period", /* unknown in reply to - HTML */
   NULL,                                    /* End Of Message Table  - NOWHERE*/
 };
 
@@ -1826,6 +1834,7 @@ char *is[] = {       /* Icelandic */
   " to ", /* to - HTML */
   "from", /* from - HTML */
   "on", /* on - HTML */
+  "message archived in another list or period", /* unknown in reply to - HTML */
   NULL,                               /* End Of Message Table      - NOWHERE*/
 };
 
@@ -2006,6 +2015,7 @@ char *sv[] = {
   " to ", /* to - HTML */
   "from", /* from - HTML */
   "on", /* on - HTML */
+  "message archived in another list or period", /* unknown in reply to - HTML */
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 
@@ -2186,6 +2196,7 @@ char *no[] = {
   " to ", /* to - HTML */
   "from", /* from - HTML */
   "on", /* on - HTML */
+  "message archived in another list or period", /* unknown in reply to - HTML */
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 
@@ -2367,6 +2378,7 @@ char *gr[] = {       /* Greek */
   " to ", /* to - HTML */
   "from", /* from - HTML */
   "on", /* on - HTML */
+  "message archived in another list or period", /* unknown in reply to - HTML */
   NULL,                           	/* End Of Message Table - NOWHERE*/
 };
 
@@ -2540,6 +2552,7 @@ char *ru[] = {     /* Russian */
   " to ", /* to - HTML */
   "from", /* from - HTML */
   "on", /* on - HTML */
+  "message archived in another list or period", /* unknown in reply to - HTML */
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 

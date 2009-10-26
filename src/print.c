@@ -268,8 +268,10 @@ void fprint_menu0(FILE *fp, struct emailinfo *email, int pos)
   char *tmpptr=i18n_convstring(email->subject,"UTF-8",email->charset,&tmplen);
 #endif
 
-  /* well... always put this element here.. */
-  fprintf(fp, "<ul class=\"links\">\n");
+  if (!(set_show_msg_links && set_show_msg_links != loc_cmp)
+      || (set_show_index_links && set_show_index_links != loc_cmp)) {
+    fprintf(fp, "<ul class=\"links\">\n");
+  }
 
   if (set_mailcommand && set_hmail) {
     fprintf(fp, "<li><a name=\"%s\" id=\"%s\"></a><dfn>%s</dfn>:", 
@@ -302,20 +304,20 @@ void fprint_menu0(FILE *fp, struct emailinfo *email, int pos)
       fprintf (fp, "<a name=\"%s\" id=\"%s\"></a>",id,id);
     fprintf(fp, "<dfn>%s</dfn>:", lang[MSG_CONTEMPORARY_MSGS_SORTED]);
     if (show_index[dlev][DATE_INDEX])
-      fprintf(fp, " [ <a href=\"%s#msg%d\" title=\"%s\">%s</a> ]", 
-	      index_name[dlev][DATE_INDEX], num, 
+      fprintf(fp, " [ <a href=\"%s#%s%d\" title=\"%s\">%s</a> ]", 
+	      index_name[dlev][DATE_INDEX], set_fragment_prefix, num, 
 	      lang[MSG_LTITLE_BY_DATE], lang[MSG_BY_DATE]);
     if (show_index[dlev][THREAD_INDEX])
-      fprintf(fp, " [ <a href=\"%s#msg%d\" title=\"%s\">%s</a> ]", 
-	      index_name[dlev][THREAD_INDEX], num, 
+      fprintf(fp, " [ <a href=\"%s#%s%d\" title=\"%s\">%s</a> ]",
+	      index_name[dlev][THREAD_INDEX], set_fragment_prefix, num, 
 	      lang[MSG_LTITLE_BY_THREAD], lang[MSG_BY_THREAD]);
     if (show_index[dlev][SUBJECT_INDEX])
-      fprintf(fp, " [ <a href=\"%s#msg%d\" title=\"%s\">%s</a> ]", 
-	      index_name[dlev][SUBJECT_INDEX], num, 
+      fprintf(fp, " [ <a href=\"%s#%s%d\" title=\"%s\">%s</a> ]", 
+	      index_name[dlev][SUBJECT_INDEX], set_fragment_prefix, num, 
 	      lang[MSG_LTITLE_BY_SUBJECT], lang[MSG_BY_SUBJECT]);
     if (show_index[dlev][AUTHOR_INDEX])
-      fprintf(fp, " [ <a href=\"%s#msg%d\" title=\"%s\">%s</a> ]", 
-	      index_name[dlev][AUTHOR_INDEX], num, 
+      fprintf(fp, " [ <a href=\"%s#%s%d\" title=\"%s\">%s</a> ]", 
+	      index_name[dlev][AUTHOR_INDEX], set_fragment_prefix, num, 
 	      lang[MSG_LTITLE_BY_AUTHOR], lang[MSG_BY_AUTHOR]);
     if (show_index[dlev][ATTACHMENT_INDEX])
       fprintf(fp, " [ <a href=\"%s\" title=\"%s\">%s</a> ]", 
@@ -329,7 +331,10 @@ void fprint_menu0(FILE *fp, struct emailinfo *email, int pos)
   if (set_custom_archives && *set_custom_archives)
     fprintf(fp, "<li><dfn>%s</dfn>: %s</li>\n", lang[MSG_OTHER_MAIL_ARCHIVES], set_custom_archives);
 
-  fprintf (fp,"</ul>\n");
+  if (!(set_show_msg_links && set_show_msg_links != loc_cmp)
+      || (set_show_index_links && set_show_index_links != loc_cmp)) {
+    fprintf (fp,"</ul>\n");
+  }
 
 #ifdef HAVE_ICONV
   if(tmpptr)
@@ -808,9 +813,11 @@ void printdates(FILE *fp, struct header *hp, int year, int month, struct emailin
 	subj_tag = "";
 	subj_end_tag = "";
       }
-      fprintf(fp,"%s<a href=\"%s\">%s%s%s</a>%s<a name=\"msg%d\" id=\"msg%d\"><em>%s</em></a>%s%s%s\n",
+      fprintf(fp,"%s<a href=\"%s\">%s%s%s</a>%s<a name=\"%s%d\" id=\"%s%d\"><em>%s</em></a>%s%s%s\n",
 	      startline, msg_href(em, subdir_email, FALSE), 
-	      subj_tag, subj, subj_end_tag, break_str, em->msgnum, em->msgnum, tmpptr=convchars(em->name,em->charset),
+	      subj_tag, subj, subj_end_tag, break_str, 
+	      set_fragment_prefix, em->msgnum, set_fragment_prefix, em->msgnum, 
+	      tmpptr=convchars(em->name,em->charset),
 	      break_str, date_str, endline);
       free(subj);
       if(tmpptr)
@@ -850,13 +857,16 @@ int printattachments(FILE *fp, struct header *hp, struct emailinfo *subdir_email
 		/* consider that if there's an attachment directory, there are attachments */
 		nb_attach++;
 		if (set_indextable) {
-		  fprintf(fp, "<tr><td>%s%s</a></td><td><a name=\"msg%d\" id=\"msg%d\"><em>%s</em></a></td>" "<td>%s</td></tr>\n", msg_href(em, subdir_email, TRUE), subj, em->msgnum, em->msgnum, tmpptr=convchars(em->name,em->charset), getindexdatestr(em->date));
+		  fprintf(fp, "<tr><td>%s%s</a></td><td><a name=\"%s%d\" id=\"%s%d\"><em>%s</em></a></td>" "<td>%s</td></tr>\n", msg_href(em, subdir_email, TRUE), subj, set_fragment_prefix, em->msgnum, set_fragment_prefix, em->msgnum, tmpptr=convchars(em->name,em->charset), getindexdatestr(em->date));
 		}
 		else {
 		  fprintf(fp, "<li>%s%s<dfn>%s</dfn></a>&nbsp;" 
-			  "<a name=\"msg%d\" id=\"msg%d\"><em>%s</em></a>&nbsp;<em>(%s)</em>\n", 
+			  "<a name=\"%s%d\" id=\"%s%d\"><em>%s</em></a>&nbsp;<em>(%s)</em>\n", 
 			  (*is_first) ? first_attributes : "",
-			  msg_href(em, subdir_email, TRUE), subj, em->msgnum, em->msgnum, tmpptr=convchars(em->name,em->charset), 
+			  msg_href(em, subdir_email, TRUE), subj, 
+			  set_fragment_prefix, em->msgnum, 
+			  set_fragment_prefix, em->msgnum, 
+			  tmpptr=convchars(em->name,em->charset), 
 			  getindexdatestr(em->date));
 		  if (*is_first)
 		    *is_first = FALSE;
@@ -1108,7 +1118,7 @@ void printheaders (FILE *fp, struct emailinfo *email)
       if (email->is_deleted == 4 || email->is_deleted == 8)
 	d_index = MSG_FILTERED_OUT;
       fprintf(fp, "<a name=\"start%d\" accesskey=\"j\" id=\"start%d\"></a>", email->msgnum,email->msgnum);
-      fprintf(fp, "<p>%s</p>\n", lang[d_index]);  /* AUDIT biege: No more warnings about format-bug */
+      fprintf(fp, "<span id=\"deleted\">(%s)</span>\n", lang[d_index]);
       return;
     }
     
@@ -1210,8 +1220,16 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
 	d_index = MSG_EXPIRED;
       if (email->is_deleted == 4 || email->is_deleted == 8)
 	d_index = MSG_FILTERED_OUT;
-      fprintf(fp, "<a name=\"start%d\" accesskey=\"j\" id=\"start%d\"></a>", email->msgnum,email->msgnum);
-      fprintf(fp, "<p>%s</p>\n", lang[d_index]);	/* AUDIT biege: No more warnings about format-bug */
+      switch(d_index) {
+      case MSG_DELETED:
+	if(set_htmlmessage_deleted){
+	  fprintf(fp,"%s\n",set_htmlmessage_deleted);
+	  break;
+	}
+      default:
+	fprintf(fp, "<a name=\"start\" accesskey=\"j\" id=\"start\"></a>");
+	fprintf(fp, "<p>%s</p>\n", lang[d_index]);
+      }
       return;
     }
     
@@ -1443,7 +1461,7 @@ void print_headers(FILE *fp, struct emailinfo *email, int in_thread_file)
 				  email->msgid, email->subject);
 #endif
       fprintf(fp, "&lt;<a href=\"%s\">%s</a>&gt;", ptr ? ptr : "",
-	      tmpname);
+	      obfuscate_email_address(email->emailaddr));
       if (ptr)
 	free(ptr);
     }
@@ -1460,7 +1478,7 @@ void print_headers(FILE *fp, struct emailinfo *email, int in_thread_file)
 				    email->msgid, email->subject);
 #endif
 	fprintf(fp, "%s &lt;<a href=\"%s\">%s</a>&gt;", tmpname, ptr ? ptr : "",
-		email->emailaddr);
+		obfuscate_email_address(email->emailaddr));
       if (ptr)
 	free(ptr);
     }
@@ -1700,6 +1718,19 @@ int print_links_up(FILE *fp, struct emailinfo *email, int pos, int in_thread_fil
 		  free (ptr);
 		if (tmpptr)
 		  free (tmpptr);
+
+	      } else if (set_inreplyto_command) {
+		char *tmpptr;
+
+		tmpptr = makeinreplytocommand(set_inreplyto_command, email->inreplyto);
+		if (tmpptr) {		
+		  /* use an msgid resolver */
+		  fprintf(fp, "[ <a href=\"%s\"  title=\"%s\">%s</a> ]\n", 
+			  tmpptr,
+			  lang[MSG_UNKNOWN_IN_REPLY_TO],
+			  lang[MSG_IN_REPLY_TO]);
+		  free (tmpptr);
+		}
 	      }
 	    }
 	
@@ -1862,6 +1893,21 @@ int print_links(FILE *fp, struct emailinfo *email, int pos, int in_thread_file)
 	      free(ptr);
 	    if (ptr2)
 	      free(ptr2);
+
+	  } else if (set_inreplyto_command) {
+	    char *tmpptr;
+
+	    tmpptr = makeinreplytocommand(set_inreplyto_command, email->inreplyto);
+	    if (tmpptr) {		
+	      /* use an msgid resolver */
+	      fprintf(fp, "<li><dfn>%s</dfn>:", lang[MSG_IN_REPLY_TO]);
+	      fprintf(fp, " [ <a href=\"%s\" title=\"%s : %s\">%s</a> ]</li>\n", 
+		      tmpptr,
+		      lang[MSG_LTITLE_IN_REPLY_TO],
+		      lang[MSG_UNKNOWN_IN_REPLY_TO],
+		      lang[MSG_UNKNOWN_IN_REPLY_TO]);
+	      free (tmpptr);
+	    }
 	  }
 	}
 
@@ -2132,10 +2178,10 @@ void writearticles(int startnum, int maxnum)
 	 */
 #ifdef HAVE_ICONV
 	print_msg_header(fp, set_label, localsubject, set_dir, localname, email->emailaddr, 
-			 email->msgid, email->charset, email->date, filename);
+			 email->msgid, email->charset, email->date, filename, email->is_deleted);
 #else
 	print_msg_header(fp, set_label, email->subject, set_dir, email->name, email->emailaddr, 
-			 email->msgid, email->charset, email->date, filename);
+			 email->msgid, email->charset, email->date, filename, email->is_deleted);
 #endif
 	fprintf (fp, "<div class=\"head\">\n");
 
@@ -2164,7 +2210,7 @@ void writearticles(int startnum, int maxnum)
 #else
 	printcomment(fp, "name", email->name);
 #endif
-	printcomment(fp, "email", email->emailaddr);
+	printcomment(fp, "email", obfuscate_email_address(email->emailaddr));
 #ifdef HAVE_ICONV
 	ptr = convcharsnospamprotect(localsubject, email->charset);
 #else
@@ -2634,9 +2680,11 @@ void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
 	    endline = "</li>";
 	}
 	fprintf(fp,
-		"%s%s%s</a>%s <a name=\"msg%d\" id=\"msg%d\">%s</a>%s\n", startline,
-		msg_href(hp->data, subdir_email, TRUE), tmpptr=convchars(hp->data->name,hp->data->charset), break_str,
-		hp->data->msgnum, hp->data->msgnum, date_str, endline);
+		"%s%s%s</a>%s <a name=\"%s%d\" id=\"%s%d\">%s</a>%s\n", startline,
+		msg_href(hp->data, subdir_email, TRUE), 
+		tmpptr=convchars(hp->data->name,hp->data->charset), break_str,
+		set_fragment_prefix, hp->data->msgnum, 
+		set_fragment_prefix, hp->data->msgnum, date_str, endline);
 	*oldsubject = hp->data->unre_subject;
       
 	free(subj);
@@ -2788,9 +2836,10 @@ void printauthors(FILE *fp, struct header *hp, char **oldname,
 	snprintf(date_str, sizeof(date_str), "<em>(%s)</em>", getindexdatestr(hp->data->date));
 	endline = "</li>";
       }
-      fprintf(fp,"%s%s%s</a>%s<a name=\"msg%d\" id=\"msg%d\">%s</a>%s\n",
+      fprintf(fp,"%s%s%s</a>%s<a name=\"%s%d\" id=\"%s%d\">%s</a>%s\n",
 	      startline, msg_href(hp->data, subdir_email, TRUE), subj, break_str,
-	      hp->data->msgnum, hp->data->msgnum, date_str, endline);
+	      set_fragment_prefix, hp->data->msgnum, set_fragment_prefix, hp->data->msgnum, 
+	      date_str, endline);
       if(subj)
 	free(subj);
       if(tmpname)

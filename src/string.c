@@ -32,6 +32,142 @@
 #include <string.h>
 #endif
 
+
+/*
+** email address obfuscation
+*/
+char *obfuscate_email_address(char *address)
+{
+  char sbuf[10];
+  struct Push buf;
+  int at_mailbox=1;
+  char *sentinel;
+  
+  if (!set_email_address_obfuscation){
+    return address;
+  }
+  
+  sentinel=strlen(address)+address;
+  
+  INIT_PUSH(buf);
+  while (address<sentinel){
+    if (*address=='@'){
+      PushString(&buf,"&#x40;");
+      at_mailbox=0;
+    }else{
+      if(!at_mailbox){
+	sprintf(sbuf,"&#%04d;",*address);
+	PushString(&buf,sbuf);
+      }else{
+	sbuf[0]=*address;
+	sbuf[1]=0x0;
+	PushString(&buf,sbuf);
+      }
+    }
+    address++;
+  }
+  RETURN_PUSH(buf);
+}
+
+char *unobfuscate_email_address(char *address){
+
+#define uea_sbufsize 6
+  int flag=0; /* 1==obfuscated string */
+  int on_error=0; /* 1==something was happen */
+  int on_hex=0; /* 1==base 16 */
+  int at_mailbox=1; /* 1==mailbox part */
+  char *sentinel;
+  
+  char sbuf[uea_sbufsize+1];
+  int scount=0;
+  struct Push buf;
+  long c;
+  
+  INIT_PUSH(buf);
+  
+  sentinel=strlen(address)+address;
+  
+  
+  while (address<sentinel){
+    switch (*address){
+    case '&':
+      if(strncmp(address,"&#x40;",6)==0){
+	PushByte(&buf, '@');
+	address+=5;
+	flag=0;
+	on_error=0;
+	on_hex=0;
+	at_mailbox=0;
+	break;
+      }
+      if (at_mailbox){
+	PushByte(&buf, '&');
+	break;
+      }
+      if (flag==0){
+	flag=1;
+      }else{
+	/* broken string */
+	on_error=1;
+      }
+      break;
+    case ';':
+      if (at_mailbox){
+	PushByte(&buf, ';');
+	break;
+      }
+      if (flag==1){
+	flag=0;
+	sbuf[scount]=0;
+	if(on_hex==1){
+	  c=strtol(sbuf,NULL,16);
+	}else{
+	  c=strtol(sbuf,NULL,10);
+	}
+	if (on_error==0){
+	  PushByte(&buf, (unsigned char)c); /* should be ASCII */
+	} /* simply discard error */
+	scount=0;
+	on_error=0;
+      }else{
+	/* broken string */
+	on_error=1;
+      }
+      break;
+    case '#':
+      if (at_mailbox){
+	PushByte(&buf, '#');
+	break;
+      }
+      if (flag==1){
+	if (*(address+1)=='x'){
+	  on_hex=1;
+	  address++;
+	}else{
+	  on_hex=0;
+	}
+	break;
+      }else{
+	PushByte(&buf, *address);
+      }
+      break;
+    default:
+      if (at_mailbox || flag==0){
+	PushByte(&buf, *address);
+      }else{
+	sbuf[scount++]=*address;
+	if (scount>=uea_sbufsize){
+	  /* broken string */
+	  scount=0;
+	  on_error=1;
+	}
+      }
+    }
+    address++;
+  }
+  RETURN_PUSH(buf);
+}
+
 /* I18N hack */
 #ifdef HAVE_ICONV_H
 #include <iconv.h>
@@ -499,7 +635,7 @@ void strtolower(char *string)
 
 /* Stolen-- stolen!-- from glibc 2.1. Please don't sue me. */
 
-char *strcasestr (char *phaystack, const char *pneedle)
+char *strcasestr (const char *phaystack, const char *pneedle)
 {
   register unsigned char *haystack;
   register const unsigned char *needle;
@@ -1222,7 +1358,11 @@ char *makemailcommand(char *mailcommand, char *email, char *id, char *subject)
   /* escape strings */
   convsubj=translateurl(tmpsubject,0);
   free(tmpsubject);
-  convemail=translateurl(email,0);
+  if(set_email_address_obfuscation){
+    convemail=obfuscate_email_address(email);
+  }else{
+    convemail=translateurl(email,0);
+  }
   convid=translateurl(id,0);
    
   /* escape mailcommand, with keeping some delimiters */
@@ -1256,6 +1396,37 @@ char *makemailcommand(char *mailcommand, char *email, char *id, char *subject)
   free(convsubj);
 
   return newcmd2;
+}
+
+/*
+** Generates the inreplyto command to use from the 
+** default inreplyto command and the the current ID of the
+** message,
+**
+** Returns an ALLOCATED string!
+*/
+
+char *makeinreplytocommand(char *inreplytocommand, char *id)
+{
+  char *newcmd = NULL;
+  char *convid = NULL;
+
+  /* escape id */
+  if (set_email_address_obfuscation){
+    convid = obfuscate_email_address (id);
+  } else {
+    convid = translateurl (id, 0);
+  }
+
+  /* replace message-id */
+  if (strlen (id)>0) {
+    newcmd = replace (inreplytocommand, "$ID", convid);
+  } else {
+    newcmd = replace (inreplytocommand, "$ID", "");
+  }
+  free (convid);
+   
+  return newcmd;
 }
 
 char *unspamify(char *s)
@@ -1370,8 +1541,8 @@ char *parseemail(char *input,	/* string to parse */
 							mailaddr, mid,
 							msubject);
 			trio_snprintf(tempbuff, sizeof(tempbuff),
-				      "<a href=\"%s\">%.*s%s%s</a>", mailcmd,
-				      ptr - email, email, at, mailbuff);
+				      "<a href=\"%s\">%s</a>", mailcmd,
+				      obfuscate_email_address(mailaddr));
 
 			free(mailcmd);
 
@@ -1419,10 +1590,20 @@ static char *url[] = {
 #endif
     "gopher://",
     "nntp://",
-    "wais://",
+    /* "wais://", */ /* deprecated */
     "telnet://",
-    "prospero://",
+    "prospero://", /* deprecated */
 /* "mailto:", *//* Can't have mailto: as it will be converted twice */
+    "tel:",
+    "fax:",
+    "rtsp://",
+    "im:",
+    /* some non RFC or experimental or de-facto ones */
+    "cap://",
+    "feed://",
+    "webcal://",
+    "irc://",
+    "callto:",
     NULL
 };
 
@@ -1461,7 +1642,7 @@ char *parseurl(char *input, char *charset)
     while (1) {
 	char *leftmost = NULL;
 	char **up;
-	char *thisprotocol = NULL;
+	char thisprotocol[256];
 	char *p;
 
 	/* Loop on protocol prefixes, searching for the leftmost. */
@@ -1502,8 +1683,16 @@ char *parseurl(char *input, char *charset)
                  * so note the match and keep looking for other protocols. 
                  */
 		if (!leftmost || p < leftmost) {
+		    char *endp;
+		    int len;
 		    leftmost = p;
-		    thisprotocol = *up;
+		    memset(thisprotocol, 0, sizeof(thisprotocol));
+		    endp = strstr(p, "://");
+		    if (endp) {
+			len = endp - p + 3;
+			strncpy(thisprotocol, p, len);
+			thisprotocol[len] = '\0';
+		    }
 		}
 	    }
 	}
