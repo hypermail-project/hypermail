@@ -82,13 +82,15 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 		    free(tmpptr);
 		  fprintf(fp,
 			"<meta name=\"Author\" content=\"%s (%s)\" />",
-			cp, email);
+			cp, obfuscate_email_address(email));
 		  if (cp)
 		    free(cp);
 #else
 		fprintf(fp,
 			"<meta name=\"Author\" content=\"%s (%s)\" />",
-			name, email);
+			tmpptr=convchars(name,charset), obfuscate_email_address(email));
+		if (tmpptr)
+		  free(tmpptr);
 #endif
 		}
 		continue;
@@ -220,7 +222,7 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 
 void print_main_header(FILE *fp, bool index_header, char *label, char *name,
 		       char *email, char *subject, char *charset,
-		       char *date, char *filename)
+		       char *date, char *filename, int is_deleted)
 {
     char *title;
     char *rp;
@@ -292,7 +294,7 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
     free(title);
 
     if (name && email){
-      fprintf(fp, "<meta name=\"Author\" content=\"%s (%s)\" />\n",convchars(name,charset),email);
+      fprintf(fp, "<meta name=\"Author\" content=\"%s (%s)\" />\n",convchars(name,charset),obfuscate_email_address(email));
     }
     fprintf(fp, "<meta name=\"Subject\" content=\"%s\" />\n", rp =
 	    convchars(subject, charset));
@@ -301,6 +303,11 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
 	fprintf(fp, "<meta name=\"Date\" content=\"%s\" />\n",date);
     if (use_mailto)
 	fprintf(fp, "<link rev=\"made\" href=\"mailto:%s\" />\n", set_mailto);
+
+    /* to avoid bots */
+    if (is_deleted){
+      fprintf(fp,"<meta name=\"ROBOTS\" content=\"noindex\" />\n");
+    }
 
     /* print the css url according to the type of header */
     if (index_header && set_icss_url && *set_icss_url) {
@@ -370,14 +377,14 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
 
 void print_msg_header(FILE *fp, char *label, char *subject,
 		      char *dir, char *name, char *email, char *msgid,
-		      char *charset, time_t date, char *filename)
+		      char *charset, time_t date, char *filename,int is_deleted)
 {
     if (mhtmlheaderfile)
 	printfile(fp, mhtmlheaderfile, set_label, subject, set_dir, name, 
 		  email, msgid, charset, secs_to_iso_meta(date), filename);
     else {
 	print_main_header(fp, FALSE, set_label, name, email, subject,
-			  charset, secs_to_iso_meta(date), filename);
+			  charset, secs_to_iso_meta(date), filename, is_deleted);
     }
 }
 
@@ -405,12 +412,12 @@ void print_index_header(FILE *fp, char *label, char *dir, char *subject,
 	/* print the navigation bar to upper levels */
 #ifdef HAVE_ICONV
       if (set_i18n){
-	print_main_header(fp, TRUE, label, NULL, NULL, subject, "UTF-8", NULL, NULL);
+	print_main_header(fp, TRUE, label, NULL, NULL, subject, "UTF-8", NULL, NULL, 0);
       }else{
-		print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL, NULL);
+		print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL, NULL, 0);
       }
 #else
-	print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL, NULL);
+	print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL, NULL, 0);
 #endif
 	fprintf (fp, "<div class=\"head\">\n");
 	if (ihtmlnavbar2upfile)
@@ -436,7 +443,7 @@ void printfooter(FILE *fp, char *htmlfooter, char *label, char *dir,
     else {
 	fprintf(fp, "<p><small><em>\n");
 	fprintf(fp, "%s ", lang[MSG_ARCHIVE_GENERATED_BY]);
-	fprintf(fp, "<a href=\"%s\">%s %s</a> \n", HMURL, PROGNAME, VERSION);
+	fprintf(fp, "<a href=\"%s\">%s %s</a>\n", HMURL, PROGNAME, VERSION);
 	fprintf(fp, ": %s\n", getlocaltime());
 	fprintf(fp, "</em></small></p>\n");
     }

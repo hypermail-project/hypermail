@@ -35,6 +35,8 @@ void PreConfig(void);
 void PostConfig(void);
 
 extern char *set_antispam_at;
+extern char *set_htmlmessage_deleted;
+extern char *set_fragment_prefix;
 extern char *set_language;
 extern char *set_htmlsuffix;
 extern char *set_mbox;
@@ -46,6 +48,7 @@ extern char *set_defaultindex;
 extern char *set_default_top_index;
 extern char *set_txtsuffix;
 
+extern bool set_email_address_obfuscation;
 extern bool set_i18n;
 extern bool set_i18n_body;
 extern bool set_overwrite;
@@ -90,6 +93,7 @@ extern bool set_mbox_shortened;
 extern bool set_report_new_file;
 extern bool set_report_new_folder;
 extern bool set_use_sender_date;
+extern bool set_inline_addlink;
 
 extern int set_showhtml;
 extern int set_thrdlevels;
@@ -109,6 +113,7 @@ extern char *set_label;
 extern char *set_mailcommand;
 extern char *set_newmsg_command;
 extern char *set_replymsg_command;
+extern char *set_inreplyto_command;
 extern char *set_mailto;
 extern char *set_hmail;
 extern char *set_domainaddr;
@@ -165,6 +170,7 @@ extern struct hmlist *set_expires;
 extern struct hmlist *set_delete_msgnum;
 extern char *set_delete_older;
 extern char *set_delete_newer;
+extern bool set_delete_incremental;
 extern int set_delete_level;
 /* values for delete_level: */
 enum { DELETE_REMOVES_FILES,

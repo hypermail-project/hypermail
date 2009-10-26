@@ -93,6 +93,9 @@ void dump_config(void);
 /*
 ** string.c functions
 */
+char *obfuscate_email_address (char *);
+char *unobfuscate_email_address (char *);
+
 char *i18n_convstring(char *, char *, char *, size_t *);
 char *i18n_utf2numref(char *, int);
 char *i18n_numref2utf(char *);
@@ -101,7 +104,7 @@ char *PushByte(struct Push *, char);
 char *PushString(struct Push *, const char *);
 char *PushNString(struct Push *, const char *, int);
 
-char *strcasestr (char *, const char *);
+char *strcasestr (const char *, const char *);
 char *strsav(const char *);
 char *strreplace(char *, char *);
 void strcpymax(char *, const char *, int);
@@ -120,6 +123,7 @@ char *convchars(char *, char *);
 char *convcharsnospamprotect(char *, char *);
 char *unconvchars(char *);
 char *makemailcommand(char *, char *, char *, char *);
+char *makeinreplytocommand(char *, char *);
 char *unspamify(char *);
 char *parseemail(char *, char *, char *);
 char *parseurl(char *, char *);

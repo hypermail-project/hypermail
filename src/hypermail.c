@@ -623,7 +623,11 @@ int main(int argc, char **argv)
 
 	writearticles(amount_old, max_msgnum + 1);
 
-	if (deletedlist)
+	/* JK: in function of other hypermail configuration options, 
+	   delete_incremental will continuous escape and add more markup
+	   to non-deleted messages that are replies to deleted messages.
+	   Thus, a setup option to disable it */
+	if (set_delete_incremental && deletedlist)
 	    update_deletions(amount_old);
 
 	if (set_show_msg_links) {
