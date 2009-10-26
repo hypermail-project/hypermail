@@ -306,6 +306,41 @@ to accept messages without a Message-ID header.  Set this to
 to discard messages without a Message-ID header.  By default such 
 messages are discarded.
 .TP
+.B fragment_prefix =  "string"
+Put this string before the message number in each URI fragment. The defaul
+prefix is
+.B msg.
+.TP
+.B email_address_obfuscation = boolean_number
+Set to
+.B 1
+to enable email address obfuscation using numeric character references.
+Option 
+.B disabled
+by default.
+.TP
+.B i18n = boolean_number
+Enable I18N features, hypermail must be linked with 
+.B libiconv.
+Option
+.B disabled
+by default.
+.TP
+.B i18n_body = boolean_number
+Translate message body into UTF-8. The
+.B i18n
+configuration option must be
+.B  enabled.
+Option
+.B disabled
+by default.
+.TP
+.B htmlmessage_deleted = "string"
+Set this to HTML markup you want to appear in the body of deleted 
+messages. Option 
+.B disabled
+by default.
+.TP
 .B spamprotect = boolean_number
 Set this to 
 .B 1
@@ -458,6 +493,18 @@ html archive. The mbox is not changed.
  3 - leave all messages
 Deleted and expired messages are removed from the index files
 regardless of the delete_level selection. The default is 1.
+.TP
+.B delete_incremental =  boolean_number
+If this option is enabled, hypermail will perform deletions on old
+messages when run in incremental mode (according to the other delete
+configuration options). Note that depending on your hypermail setup,
+the size of the archive, and the complexity of the markup,
+there may be memory and parsing issues, specifically when there are
+non-deleted replies to a deleted message.
+If this option is disabled, deleted messages will only be removed
+when rebuilding the whole archive. Option
+.B enabled
+by default.
 .TP
 .B txtsuffix = "suffix"
  If you want the original mail messages archived in individual files,
@@ -659,7 +706,42 @@ statement.
 Set this to the list's submission address.  When enabled, this can be 
 used to submit a new message to the list served by the hypermail archive. 
 .B "NONE" 
-means don't use it. 
+means don't use it.
+.TP
+.B newmsg_command = "mailto:$TO"
+This specifies the mail command to use when converting the
+.B set_hmail
+address to links in replies. The variables
+.B $TO, 
+.B $SUBJECT,
+and 
+.B $ID 
+can be used in constructing the command string.
+.TP
+.B replymsg_command = "mailto:$TO"
+This specifies the mail command to use when converting the
+set_hmail address to links in replies. The variables 
+.B $TO, 
+.B $SUBJECT,
+and 
+.B $ID
+can be used in constructing the command string. The value
+from mailcommand will be used if this option is not specified.
+.TP
+.B inreplyto_command = "URL"
+This gives a URI template to a script that hypermail will link to
+if it's unable to find in the archive's messages the MID corresponding
+to an
+.B In-Reply-To
+header. The variable
+.B $ID
+is used to specify where the
+.B Message-Identifier value
+will appear in the link. A possible command one could use is
+.B http://example.org/mid-resolver/$ID.
+This option is 
+.B disabled
+by default.
 .TP
 .B icss_url = "URL"
 This will link an external stylesheet found at the given URL to
@@ -711,6 +793,14 @@ on a single line.  Note: Order is important.
 This is the list of MIME types that you want inlined as opposed to
 simply linked into the message.  They can be listed individually on 
 multiple lines or comma or space separated on a single line.
+.TP
+.B inline_addlink = boolean_number
+Enable add inline links to content that is stored in the
+attachments subdirectory.  Option
+.B inline_types
+must also be enabled. This option is 
+.B enabled
+by default.
 .TP
 .B ignore_types = types_of_MIME_attachments_to_ignore 
 This is the list of MIME attachment types that you do not want to

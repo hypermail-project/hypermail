@@ -1,12 +1,16 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  Jose Kahan (Oct 23, 2009)
+  - Updated hmrc.4 and hmrc.html to descrbie the new features.
+  - Fixed some self-introduced spelling errors in setup.c
+
+ Jose Kahan (Oct 23, 2009)
   Various fixes / enhancements developed at W3C by Fumihiro Kato,
   Daigo Matsubara and myself:
   - Markup changes for deleted messages that are kept.
   - New directive: htmlmessage_deleted for setting a custom HTML
     message for the body of deleted messages.
-  - New directives: delete_incremental to disable deleting of existing
+  - New directive: delete_incremental to disable deleting of existing
     messages in the archive when doing an incremental add of a new
     message. In some setups, if this feature is enabled, replies to
     deleted messages will cause uncontrolled markup escape and

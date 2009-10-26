@@ -159,7 +159,7 @@ struct Config cfg[] = {
      "# put this string before the message number in each URI fragment.\n", FALSE},
 
     {"email_address_obfuscation", &set_email_address_obfuscation, BFALSE, CFG_SWITCH,
-     "# set On to enable email address obfuscation using numeric character reference.\n",FALSE},
+     "# set to On to enable email address obfuscation using numeric character references.\n",FALSE},
 
     {"i18n", &set_i18n, BTRUE, CFG_SWITCH,
      "# Enable I18N features, hypermail must be linked with libiconv.\n",FALSE},
@@ -168,7 +168,8 @@ struct Config cfg[] = {
      "# Translate message body into UTF-8. \"i18n\" must be enabled.\n",FALSE},
 
     {"htmlmessage_deleted",  &set_htmlmessage_deleted, NULL, CFG_STRING,
-     "# markup message for deleted messages.\n",FALSE},
+     "# Set this to HTML markup you want to appear in the body of deleted\n"
+     "# messages.\n",FALSE},
 
     {"antispam_at", &set_antispam_at, ANTISPAM_AT, CFG_STRING,
      "# replace any @ sign with this string, if spam flags enabled.\n", FALSE},
@@ -438,8 +439,8 @@ struct Config cfg[] = {
     {"inreplyto_command", &set_inreplyto_command, NULL, CFG_STRING,
      "# This gives a URI template to a script that hypermail will link to\n"
      "# if it's unable to find in the archive's messages the MID corresponding\n"
-     "# to an In-Reply-To header. The variable $ID is used to say how the\n"
-     "# MID will appear in the link.\n", FALSE},
+     "# to an In-Reply-To header. The variable $ID is used to specify where the\n"
+     "# Message-Identifier value will appear in the link.\n", FALSE},
 
     {"domainaddr", &set_domainaddr, DOMAINADDR, CFG_STRING,
      "# Set this to the domainname you want added to a mail address\n"
@@ -467,8 +468,8 @@ struct Config cfg[] = {
      "# opposed to simply <a href> to from the message.\n", FALSE},
 
     {"inline_addlink", &set_inline_addlink, BTRUE, CFG_SWITCH,
-     "# Define to On to add inline links to content that is stored in the\n"
-     "# attachments subdirectory.  'inline_types' must also be enabled.\n", FALSE},
+     "# Set to On to add inline links to content that is stored in the\n"
+     "# attachments subdirectory.  'inline_types' must be enabled.\n", FALSE},
 
     {"prefered_types", &set_prefered_types, NULL, CFG_LIST,
      "# When mails using multipart/mixed types are scanned, this list of\n"
