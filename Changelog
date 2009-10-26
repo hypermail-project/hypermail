@@ -1,10 +1,9 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Jose Kahan (Oct 23, 2009)
+ Jose Kahan (Oct 26, 2009)
   - Updated hmrc.4 and hmrc.html to descrbie the new features.
-  - Fixed some self-introduced spelling errors in setup.c
 
- Jose Kahan (Oct 23, 2009)
+ Jose Kahan (Oct 26, 2009)
   Various fixes / enhancements developed at W3C by Fumihiro Kato,
   Daigo Matsubara and myself:
   - Markup changes for deleted messages that are kept.
