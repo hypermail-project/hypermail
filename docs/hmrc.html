@@ -28,6 +28,7 @@ on or off.
     <ul>
     <li><a href="#language">language</a> English, German, French, etc.
     <li><a href="#iso2022jp">iso2022jp</a> Japanese characters
+    <li><a href="#i18n">i18n</a> enable Internationalization (i18n) features
     <li><a href="#eurodate">eurodate</a> format
     <li><a href="#dateformat">dateformat</a> strftime-style format string
     <li><a href="#isodate">isodate</a> standard YYYY-MM-DD HH:MM:SS format
@@ -39,6 +40,7 @@ on or off.
     <li><a href="#hmail">hmail</a> list submission address
     <li><a href="#newmsg_command">newmsg_command</a> new list message mailto
     <li><a href="#replymsg_command">replymsg_command</a> reply mailto
+    <li><a href="#inreplyto_command">inreplyto_command</a> resolver for messages found outside the archive
     </ul>
   <li><a href="#misc_pages">Miscellaneous</a>
     <ul>
@@ -47,6 +49,8 @@ on or off.
     <li><a href="#mailto">mailto</a> for &lt;link rev=made href=mailto:
     <li><a href="#domainaddr">domainaddr</a> to append to incomplete addresses
     <li><a href="#use_sender_date">use_sender_date</a> which date to trust more
+    <li><a href="#fragment_prefix">fragment_prefix</a> how to prefix each URI fragment
+    <li><a href="#email_address_obfuscation">email_address_obfuscation</a> simple obfuscation of email addresses
     </ul>
   </ul>
 <li><a href="#index">Index page options</a>
@@ -91,6 +95,7 @@ on or off.
     <li><a href="#href_detection">href_detection</a> how to handle URLs
     <li><a href="#showbr">showbr</a> line wrapping for body
     <li><a href="#iquotes">iquotes</a> italicize quotes
+    <li><a href="#i18n_body">i18n_body</a> translate message body into UTF-8  
     <li><a href="#mcss_url">mcss_url</a> stylesheet
     <li><a href="#quote_hide_threshold">quote_hide_threshold</a> cut excessive quoting
     <li><a href="#files_by_thread">files_by_thread</a> add file with all messages in 1 thread
@@ -123,6 +128,7 @@ on or off.
   <li><a href="#usemeta">usemeta</a> save Content-Type in meta file
   <li><a href="#text_types">text_types</a> what types are like text/plain?
   <li><a href="#inline_types">inline_types</a> list what should go on main page
+  <li><a href="#inline_addlink">inline_addlink</a> add in-line links to attachments
   <li><a href="#prefered_types">prefered_types</a> choose from multipart/mixed
   <li><a href="#ignore_types">ignore_types</a> discard text/x-vcard, etc
   <li><a href="#attachmentlink">attachmentlink</a> control filenames
@@ -173,6 +179,8 @@ on or off.
     <li><a href="#delete_newer">delete_newer</a> delete messages after a date
     <li><a href="#delete_msgnum">delete_msgnum</a> delete these messages
     <li><a href="#delete_level">delete_level</a> what to do with deleted messages
+    <li><a href="#delete_incremental">delete_incremental</a> remove previous deleted messages on-the-fly
+    <li><a href="#htmlmessage_deleted">htmlmessage_deleted</a> custom markup body for deleted messages
     <li><a href="#progress">progress</a> verbosity
     <li><a href="#warn_surpressions">warn_surpressions</a> warn about ignored messages
     <li><a href="#uselock">uselock</a> serialize
@@ -183,11 +191,11 @@ on or off.
     </ul>
   </ul>
 </ul>
-</p>
+
 <h2><a name="allpages">Options affecting both messages and index pages</a></h2>
 <h3><a name="locale">Locale</a></h3>
 <dl>
-<a name="language"></a>
+<a id="language" name="language"></a>
 <dt><strong>language = [ two-or-more-letter-language-id ]</strong></dt><dd>
  This is a two-letter string specifying the default
 language  to  use, or a longer string specifying a language
@@ -223,6 +231,14 @@ Set this to On to support ISO-2022-JP messages.
 <br>
 <br><i>iso2022jp = 0</i>
 </dd>
+<a name="i18n"></a>
+<dt><strong>i18n = [ 0 | 1 ]</strong></dt><dd>
+Enable I18N features, hypermail must be linked with 
+<a href="http://www.gnu.org/software/libiconv/">libiconv</a>.
+<br>
+<br><i>i18n = 1</i> (disabled by default)
+</dd>
+
 <a name="eurodate"></a>
 <dt><strong>eurodate = [ 0 | 1 ]</strong></dt><dd>
 Set this to reflect how you want dates displayed in the index files.
@@ -296,6 +312,17 @@ to the command, but I've heard no reports of this actually working.
 <br><i>replymsg_command=mailto:$TO?Subject=$SUBJECT</i>
 </dd>
 
+<a name="inreplyto_command"></a>
+<dt><strong>inreplyto_command = [ string ]</strong></dt><dd>
+This specifies a URI template to a script that hypermail will link to
+if it's unable to find in the archive's messages the MID corresponding
+to an <em>In-Reply-To</em> header. The variable <em>$ID</em>
+is used to specify where the <em>Message-Identifier value</em>
+will appear in the link.
+<br />
+<br><em>inreplyto_command = http://example.org/mid-resolver/$ID.</em> (disabled by default)
+</dd>
+
 <h3><a name="misc_pages">Miscellaneous</a></h3>
 
 <a name="stripsubject"></a>
@@ -355,6 +382,18 @@ or sorting. Details of which purposes this affects may change
 in the future.
 <br>
 <br><i>use_sender_date = 0</i>
+</dd>
+<a name="fragment_prefix"></a>
+<dt><strong>fragment_prefix = [ preifx ]</strong></dt><dd>
+Put this string before the message number in each URI fragment.
+<br>
+<br><i>fragment_prefix = id</i> (default is <em>msg</em>)
+</dd>
+<a name="email_address_obfuscationx"></a>
+<dt><strong>email_address_obfuscation = [ 0 | 1 ]</strong></dt><dd>
+Set to 1 to enable email address obfuscation using numeric character references.
+<br>
+<br><i>mail_address_obfuscationx = 1</i> (disabled by default)
 </dd>
 
 <h2><a name="index">Index page options</a></h2>
@@ -626,6 +665,13 @@ take effect if showhtml is set to 1.
 <br>
 <br><i>iquotes = 1</i>
 </dd>
+<a name="i18n_body"></a>
+<dt><strong>i18n_body = [ 0 | 1 ]</strong></dt><dd>
+Translate message body into UTF-8. The 
+<i>i18n</i> configuration option must be  enabled.
+<br>
+<br><i>i18n_body = 1</i> (disabled by default)
+</dd>
 
 <a name="mcss_url"></a>
 <dt><strong>mcss_url= [ URL | NONE ]</strong></dt><dd>
@@ -854,6 +900,14 @@ multiple lines or comma or space separated on a single line.
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inline_types = image/jpeg
 <br>
 <br><i>inline_types = image/gif image/jpeg</i>
+</dd>
+
+<a name="inline_addlink"></a>
+<dt><strong>inline_addlink =  [ 0 | 1 ]</strong></dt><dd>
+Set to On to add inline links to content that is stored in the\
+attachments subdirectory. <strong>inline_types</strong> must be enabled.
+<br />
+<br / ><i>inline_addlink = 1</i> (enabled by default)
 </dd>
 
 <a name="prefered_types"></a>
@@ -1227,6 +1281,27 @@ what happens to the message.
 <br>
 <br><i>delete_level = 1</i>
 </dd>
+<a name="delete_incremental"></a>
+<dt><strong>delete_incremental = [ 0 | 1 ]</strong></dt><dd>
+<br>If this option is enabled, hypermail will perform deletions on old
+messages when run in incremental mode (according to the other delete
+configuration options). Note that depending on your hypermail setup,
+the size of the archive, and the complexity of the markup,
+there may be memory and parsing issues, specifically when there are
+non-deleted replies to a deleted message.
+If this option is disabled, deleted messages will only be removed
+when rebuilding the whole archive.
+<br />
+<br><i>delete_incremental = 0</i> (enabled by default)
+</dd>
+<a name="htmlmessage_deleted"></a>
+<dt><strong>htmlmessage_deleted = [HTML markup string]</strong></dt><dd>
+<br> Custom markup to use in the body of deleted messages when <em>delete_level</em>
+is equal or superior to 2.
+<br>
+<br><i>htmlmessage_deleted = &lt;div class="spam"&gt;&lt;img src="http://example.org/Mail/noUCE.png" alt="unsolicited bulk email removed" /&gt; &lt;p class="spammes"&gt;This message was determined to be unsolicited bulk email and has been removed from our archives.&lt;/p&gt;&lt;p class="spamfooter"&gt;The removal of this email is consistent with &lt;a href="http://example.org/Mail/"&gt;example.org's Mailing List and Archive Usage Policy.&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</i> (disabled by default)
+</dd>
+
 <a name="progress"></a>
 <dt><strong>progress = [ 0 | 1 | 2 ]</strong></dt><dd>
 Set to 1 or 2 to show progress as Hypermail works. Set to 0 for silent
