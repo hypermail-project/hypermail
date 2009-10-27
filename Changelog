@@ -1,5 +1,10 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Jose Kahan (Oct 27, 2009)
+	
+  - Added two new accesskeys in messages: 't' ->  next message
+    in thread, 'd' -> next message 
+	
  Jose Kahan (Oct 26, 2009)
   - Updated hmrc.4 and hmrc.html to descrbie the new features.
 
