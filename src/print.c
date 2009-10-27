@@ -1651,7 +1651,7 @@ int print_links_up(FILE *fp, struct emailinfo *email, int pos, int in_thread_fil
 	      ptr = convchars(email2->subject, email2->charset);
 	      tmpptr= convchars(email2->name,email2->charset);
 #endif
-	      fprintf(fp, "[ <a href=\"%s\" title=\"%s: &quot;%s&quot;\">%s</a> ]\n", 
+	      fprintf(fp, "[ <a href=\"%s\" accesskey=\"d\" title=\"%s: &quot;%s&quot;\">%s</a> ]\n", 
 		      msg_href (email2, email, FALSE), 
 		      tmpptr, ptr ? ptr : "", 
 		      lang[MSG_NEXT_MESSAGE]);
@@ -1747,7 +1747,7 @@ int print_links_up(FILE *fp, struct emailinfo *email, int pos, int in_thread_fil
 	      ptr = convchars(email_next_in_thread->subject, email_next_in_thread->charset);
 	      tmpptr=convchars(email_next_in_thread->name,email_next_in_thread->charset);
 #endif
-	      fprintf(fp, "[ <a href=\"%s\" title=\"%s: &quot;%s&quot;\">%s</a> ]\n", 
+	      fprintf(fp, "[ <a href=\"%s\" accesskey=\"t\" title=\"%s: &quot;%s&quot;\">%s</a> ]\n", 
 		      href01(email, email_next_in_thread, in_thread_file, FALSE),
 		      tmpptr, ptr, 
 		      lang[MSG_NEXT_IN_THREAD]);
