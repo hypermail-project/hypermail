@@ -1,5 +1,8 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+============================
+HYPERMAIL VERSION 2.3.0:
+============================	
  Jose Kahan (Oct 27, 2009)
 	
   - Added two new accesskeys in messages: 't' ->  next message
