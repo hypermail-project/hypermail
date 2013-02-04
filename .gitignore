@@ -1,0 +1,13 @@
+#
+# files that we want to ignore:
+#
+
+# compiled files
+*.o
+
+# vi or emacs edited ones
+*.~
+\#.*
+
+# swap files
+.swp
