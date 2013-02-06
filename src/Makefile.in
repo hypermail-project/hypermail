@@ -142,45 +142,56 @@ distclean: clobber
 # Regenerate this dependency list with gcc -MM *.c:
 #
 
-base64.o: base64.c hypermail.h ../config.h ../patchlevel.h trio.h proto.h \
-  lang.h base64.h
-date.o: date.c hypermail.h ../config.h ../patchlevel.h trio.h proto.h \
-  lang.h setup.h
+base64.o: base64.c hypermail.h ../config.h ../patchlevel.h trio.h \
+ triodef.h proto.h lang.h base64.h
+date.o: date.c hypermail.h ../config.h ../patchlevel.h trio.h triodef.h \
+ proto.h lang.h setup.h
 dmatch.o: dmatch.c dmatch.h ../config.h
 domains.o: domains.c hypermail.h ../config.h ../patchlevel.h trio.h \
-  proto.h lang.h domains.h
+ triodef.h proto.h lang.h domains.h
+file.o: file.c hypermail.h ../config.h ../patchlevel.h trio.h triodef.h \
+ proto.h lang.h setup.h struct.h
 finelink.o: finelink.c hypermail.h ../config.h ../patchlevel.h trio.h \
-  proto.h lang.h finelink.h setup.h print.h struct.h search.h
+ triodef.h proto.h lang.h finelink.h setup.h print.h struct.h search.h
 getdate.o: getdate.c ../config.h setup.h getdate.h
 getname.o: getname.c hypermail.h ../config.h ../patchlevel.h trio.h \
-  proto.h lang.h getname.h setup.h
+ triodef.h proto.h lang.h getname.h setup.h
 hypermail.o: hypermail.c hypermail.h ../config.h ../patchlevel.h trio.h \
-  proto.h lang.h defaults.h setup.h parse.h print.h finelink.h search.h \
-  struct.h
-lang.o: lang.c hypermail.h ../config.h ../patchlevel.h trio.h proto.h \
-  lang.h
-lock.o: lock.c hypermail.h ../config.h ../patchlevel.h trio.h proto.h \
-  lang.h setup.h
-mail.o: mail.c ../libcgi/cgi.h ../config.h
-mem.o: mem.c hypermail.h ../config.h ../patchlevel.h trio.h proto.h \
-  lang.h
+ triodef.h proto.h lang.h defaults.h setup.h parse.h print.h finelink.h \
+ search.h struct.h
+lang.o: lang.c hypermail.h ../config.h ../patchlevel.h trio.h triodef.h \
+ proto.h lang.h
+lock.o: lock.c hypermail.h ../config.h ../patchlevel.h trio.h triodef.h \
+ proto.h lang.h setup.h
+mail.o: mail.c ../libcgi/cgi.h ../libcgi/../config.h ../config.h
+mem.o: mem.c hypermail.h ../config.h ../patchlevel.h trio.h triodef.h \
+ proto.h lang.h
+parse.o: parse.c hypermail.h ../config.h ../patchlevel.h trio.h triodef.h \
+ proto.h lang.h setup.h struct.h uudecode.h base64.h search.h getname.h \
+ parse.h print.h
+print.o: print.c hypermail.h ../config.h ../patchlevel.h trio.h triodef.h \
+ proto.h lang.h setup.h struct.h printfile.h print.h parse.h txt2html.h \
+ finelink.h threadprint.h
 printfile.o: printfile.c hypermail.h ../config.h ../patchlevel.h trio.h \
-  proto.h lang.h setup.h print.h printfile.h
-quotes.o: quotes.c hypermail.h ../config.h ../patchlevel.h trio.h proto.h \
-  lang.h setup.h
-search.o: search.c hypermail.h ../config.h ../patchlevel.h trio.h proto.h \
-  lang.h setup.h struct.h print.h search.h
-setup.o: setup.c hypermail.h ../config.h ../patchlevel.h trio.h proto.h \
-  lang.h defaults.h setup.h struct.h print.h
-string.o: string.c hypermail.h ../config.h ../patchlevel.h trio.h proto.h \
-  lang.h setup.h parse.h
-struct.o: struct.c hypermail.h ../config.h ../patchlevel.h trio.h proto.h \
-  lang.h dmatch.h setup.h struct.h parse.h
+ triodef.h proto.h lang.h setup.h print.h printfile.h struct.h
+quotes.o: quotes.c hypermail.h ../config.h ../patchlevel.h trio.h \
+ triodef.h proto.h lang.h setup.h
+search.o: search.c hypermail.h ../config.h ../patchlevel.h trio.h \
+ triodef.h proto.h lang.h setup.h struct.h print.h search.h
+setup.o: setup.c hypermail.h ../config.h ../patchlevel.h trio.h triodef.h \
+ proto.h lang.h defaults.h setup.h struct.h print.h
+string.o: string.c hypermail.h ../config.h ../patchlevel.h trio.h \
+ triodef.h proto.h lang.h setup.h parse.h uconvert.h
+struct.o: struct.c hypermail.h ../config.h ../patchlevel.h trio.h \
+ triodef.h proto.h lang.h dmatch.h setup.h struct.h parse.h getname.h
 threadprint.o: threadprint.c hypermail.h ../config.h ../patchlevel.h \
-  trio.h proto.h lang.h setup.h struct.h threadprint.h printfile.h
-trio.o: trio.c triodef.h trio.h triop.h trionan.h strio.h
+ trio.h triodef.h proto.h lang.h setup.h struct.h threadprint.h \
+ printfile.h print.h
+trio.o: trio.c triodef.h trio.h triop.h trionan.h triostr.h
 trionan.o: trionan.c triodef.h trionan.h
+triostr.o: triostr.c triodef.h triostr.h triop.h
 txt2html.o: txt2html.c hypermail.h ../config.h ../patchlevel.h trio.h \
-  proto.h lang.h setup.h print.h finelink.h txt2html.h
+ triodef.h proto.h lang.h setup.h print.h finelink.h txt2html.h
 uudecode.o: uudecode.c hypermail.h ../config.h ../patchlevel.h trio.h \
-  proto.h lang.h setup.h uudecode.h
+ triodef.h proto.h lang.h setup.h uudecode.h
+

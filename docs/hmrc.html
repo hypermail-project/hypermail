@@ -1,1391 +1,1555 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
-   "http://www.w3.org/TR/REC-html40/loose.dtd">
+"http://www.w3.org/TR/REC-html40/loose.dtd">
 <html>
 <head>
+<meta name="generator" content=
+"HTML Tidy for Linux/x86 (vers 25 March 2009), see www.w3.org">
 <title>Hypermail - hmrc list configuration</title>
 <link rev="made" href="mailto:hypermail@hypermail-project.org">
 </head>
-<body bgcolor="#ffffff" text="#000000">
-<h1 align=center><img src="hypermail.png" width="60" align="middle" height="60" alt="">&nbsp;&nbsp;&nbsp;Hypermail List Configuration File</h1>
-<hr width=400 noshade>
-<p>
-The hypermail list configuration file is used to specify <em>list 
-specific</em> or <em>user specific</em> information to hypermail.
-Comments are denoted by the '#' character at the begining of the line.
-The file to use can be specified via the -c command line argument.
-The default file is .hmrc in the user's home directory.
-</p><p>
-Examples listed on this page are shown <i>in this style</i>. The default
-value is shown unless otherwise indicated. <b>Off</b> is equivalent
-to 0, and <b>On</b> is equivalent to 1 for options which are either
-on or off.
-</p>
-<p>
+<body bgcolor="#FFFFFF" text="#000000">
+<h1 align="center"><img src="hypermail.png" width="60" align=
+"middle" height="60" alt="">&nbsp;&nbsp;&nbsp;Hypermail List
+Configuration File</h1>
+<hr width="400" noshade>
+<p>The hypermail list configuration file is used to specify
+<em>list specific</em> or <em>user specific</em> information to
+hypermail. Comments are denoted by the '#' character at the
+begining of the line. The file to use can be specified via the -c
+command line argument. The default file is .hmrc in the user's home
+directory.</p>
+<p>Examples listed on this page are shown <i>in this style</i>. The
+default value is shown unless otherwise indicated. <b>Off</b> is
+equivalent to 0, and <b>On</b> is equivalent to 1 for options which
+are either on or off.</p>
 <ul>
-<li><a href="#allpages">Options affecting both messages and index pages</a>
-  <ul>
-  <li><a href="#locale">Locale</a>
-    <ul>
-    <li><a href="#language">language</a> English, German, French, etc.
-    <li><a href="#iso2022jp">iso2022jp</a> Japanese characters
-    <li><a href="#i18n">i18n</a> enable Internationalization (i18n) features
-    <li><a href="#eurodate">eurodate</a> format
-    <li><a href="#dateformat">dateformat</a> strftime-style format string
-    <li><a href="#isodate">isodate</a> standard YYYY-MM-DD HH:MM:SS format
-    <li><a href="#gmtime">gmtime</a> GMT/UTC vs local time
-    </ul>
-  <li><a href="#headers">Headers</a>
-    <ul>
-    <li><a href="#label">label</a> set the &lt;title&gt;
-    <li><a href="#hmail">hmail</a> list submission address
-    <li><a href="#newmsg_command">newmsg_command</a> new list message mailto
-    <li><a href="#replymsg_command">replymsg_command</a> reply mailto
-    <li><a href="#inreplyto_command">inreplyto_command</a> resolver for messages found outside the archive
-    </ul>
-  <li><a href="#misc_pages">Miscellaneous</a>
-    <ul>
-    <li><a href="#stripsubject">stripsubject</a> text to be removed from subject line
-    <li><a href="#mailcommand">mailcommand</a> controls most mailto's
-    <li><a href="#mailto">mailto</a> for &lt;link rev=made href=mailto:
-    <li><a href="#domainaddr">domainaddr</a> to append to incomplete addresses
-    <li><a href="#use_sender_date">use_sender_date</a> which date to trust more
-    <li><a href="#fragment_prefix">fragment_prefix</a> how to prefix each URI fragment
-    <li><a href="#email_address_obfuscation">email_address_obfuscation</a> simple obfuscation of email addresses
-    </ul>
-  </ul>
-<li><a href="#index">Index page options</a>
-  <ul>
-  <li><a href="#index_avail">Index availability</a>
-    <ul>
-    <li><a href="#folder_by_date">folder_by_date</a> split into subdirs by date
-    <li><a href="#msgsperfolder">msgsperfolder</a> split into subdirs of n messages
-    <li><a href="#monthly_index">monthly_index</a> create monthly index files
-    <li><a href="#yearly_index">yearly_index</a> create yearly index files
-    <li><a href="#defaultindex">defaultindex</a> what goes in index.html
-    <li><a href="#default_top_index">default_top_index</a> what goes in top directory index.html
-    <li><a href="#avoid_indices">avoid_indices</a> don't generate these files
-    <li><a href="#avoid_top_indices">avoid_top_indices</a> don't generate these files
-    <li><a href="#attachmentsindex">attachmentsindex</a> create these files
-    <li><a href="#latest_folder">latest_folder</a> symlink to recent subdir
-    </ul>
-  <li><a href="#index_body">Body style</a>
-    <ul>
-    <li><a href="#indextable">indextable</a> style of message lists
-    <li><a href="#reverse">reverse</a> sort order, date/thread files
-    <li><a href="#reverse_folders">reverse_folders</a> sort order, list of folders
-    <li><a href="#thrdlevels">thrdlevels</a> max indentation
-    <li><a href="#thread_file_depth">thread_file_depth</a> threads get their own files
-    <li><a href="#icss_url">icss_url</a> stylesheet
-    <li><a href="#describe_folder">describe_folder</a> labels for subdirs
-    </ul>
-  <li><a href="#footers">Headers/footers</a>
-    <ul>
-    <li><a href="#archives">archives</a> link to other archives
-    <li><a href="#custom_archives">custom_archives</a> link to other archives
-    <li><a href="#about">about</a> descriptive link
-    <li><a href="#ihtmlheaderfile">ihtmlheaderfile</a> template
-    <li><a href="#ihtmlfooterfile">ihtmlfooterfile</a> template
-    </ul>
-  </ul>
-<li><a href="#messages">Message page options</a>
-  <ul>
-  <li><a href="#msg_body">Body style</a>
-    <ul>
-    <li><a href="#showhtml">showhtml</a> how much conversion to html?
-    <li><a href="#href_detection">href_detection</a> how to handle URLs
-    <li><a href="#showbr">showbr</a> line wrapping for body
-    <li><a href="#iquotes">iquotes</a> italicize quotes
-    <li><a href="#i18n_body">i18n_body</a> translate message body into UTF-8  
-    <li><a href="#mcss_url">mcss_url</a> stylesheet
-    <li><a href="#quote_hide_threshold">quote_hide_threshold</a> cut excessive quoting
-    <li><a href="#files_by_thread">files_by_thread</a> add file with all messages in 1 thread
-    </ul>
-  <li><a href="#links">Links</a>
-    <ul>
-    <li><a href="#linkquotes">linkquotes</a> fine-grained link to source of quoted text
-    <li><a href="#searchbackmsgnum">searchbackmsgnum</a> linkquotes performance
-    <li><a href="#link_to_replies">link_to_replies</a> fine-grained link to responses
-    <li><a href="#quote_link_string">quote_link_string</a> linkquotes labels
-    <li><a href="#spamprotect">spamprotect</a> obfuscate email addresses
-    <li><a href="#antispamdomain">antispamdomain</a> how to obfuscate address
-    <li><a href="#spamprotect_id">spamprotect_id</a> obfuscate message ids
-    </ul>
-  <li><a href="#msg_head">Headers/footers</a>
-    <ul>
-    <li><a href="#showreplies">showreplies</a> list of messages
-    <li><a href="#show_msg_links">show_msg_links</a> next, previous, next in thread
-    <li><a href="#show_index_links">show_index_links</a> control links to index pages
-    <li><a href="#showheaders">showheaders</a> To:, From:, Subject:
-    <li><a href="#show_headers">show_headers</a> others (Message-ID, etc)
-    <li><a href="#mhtmlheaderfile">mhtmlheaderfile</a> template
-    <li><a href="#mhtmlfooterfile">mhtmlfooterfile</a> template
-    </ul>
-  </ul>
-
-<li><a href="#attachments">Attachments</a> <b>Note that some of these may affect security</b>
-  <ul>
-  <li><a href="#inlinehtml">inlinehtml</a> where to put text/html
-  <li><a href="#usemeta">usemeta</a> save Content-Type in meta file
-  <li><a href="#text_types">text_types</a> what types are like text/plain?
-  <li><a href="#inline_types">inline_types</a> list what should go on main page
-  <li><a href="#inline_addlink">inline_addlink</a> add in-line links to attachments
-  <li><a href="#prefered_types">prefered_types</a> choose from multipart/mixed
-  <li><a href="#ignore_types">ignore_types</a> discard text/x-vcard, etc
-  <li><a href="#attachmentlink">attachmentlink</a> control filenames
-  <li><a href="#unsafe_chars">unsafe_chars</a> restrict filename chars
-  <li><a href="#save_alts">save_alts</a> multipart/alternative handling
-  <li><a href="#alts_text">alts_text</a> text for some save_alts choices
-  <li><a href="#filename_base">filename_base</a> attachment file name
-  </ul>
-
-<li><a href="#sysadmin">System Administration</a>
-  <ul>
-  <li><a href="#input">Message Input</a>
-    <ul>
-    <li><a href="#increment">increment</a> append new message(s) to old archive
-    <li><a href="#readone">readone</a> treat input as one message
-    <li><a href="#mbox">mbox</a> read messages from this file
-    <li><a href="#mbox_shortened">mbox_shortened</a> allow partial mbox
-    <li><a href="#ietf_mbox">ietf_mbox</a> file format
-    <li><a href="#discard_dup_msgids">discard_dup_msgids</a>
-    <li><a href="#require_msgids">require_msgids</a> discard messages without ids
-    </ul>
-  <li><a href="#filters">Message Filtering</a>
-    <ul>
-    <li><a href="#filter_out">filter_out</a> delete files with header line(s)
-    <li><a href="#filter_require">filter_require</a> delete files without header line(s)
-    <li><a href="#filter_out_full_body">filter_out_full_body</a> delete files with line(s)
-    <li><a href="#filter_require_full_body">filter_require_full_body</a> delete files without line(s)
-    </ul>
-  <li><a href="#files">Filesystem Output</a>
-    <ul>
-    <li><a href="#dir">dir</a> where the archive goes
-    <li><a href="#overwrite">overwrite</a> regenerate old messages
-    <li><a href="#htmlsuffix">htmlsuffix</a> .html, .htm, etc
-    <li><a href="#dirmode">dirmode</a> chmod directories
-    <li><a href="#filemode">filemode</a> chmod html files
-    <li><a href="#filename_base">filename_base</a> attachment file name
-    </ul>
-  <li><a href="#sysmisc">Miscellaneous</a>
-    <ul>
-    <li><a href="#usegdbm">usegdbm</a> cache header info
-    <li><a href="#writehaof">writehaof</a> write XML archive overview file
-    <li><a href="#append">append</a> create mbox archive also
-    <li><a href="#append_filename">append_filename</a> name of mbox output
-    <li><a href="#txtsuffix">txtsuffix</a> save each raw message
-    <li><a href="#deleted">deleted</a> what headers indicate deletion
-    <li><a href="#expires">expires</a> what headers indicate expire date
-    <li><a href="#delete_older">delete_older</a> delete messages before a date
-    <li><a href="#delete_newer">delete_newer</a> delete messages after a date
-    <li><a href="#delete_msgnum">delete_msgnum</a> delete these messages
-    <li><a href="#delete_level">delete_level</a> what to do with deleted messages
-    <li><a href="#delete_incremental">delete_incremental</a> remove previous deleted messages on-the-fly
-    <li><a href="#htmlmessage_deleted">htmlmessage_deleted</a> custom markup body for deleted messages
-    <li><a href="#progress">progress</a> verbosity
-    <li><a href="#warn_surpressions">warn_surpressions</a> warn about ignored messages
-    <li><a href="#uselock">uselock</a> serialize
-    <li><a href="#locktime">locktime</a> timeouts
-    <li><a href="#base_url">base_url</a>
-    <li><a href="#report_new_folder">report_new_folder</a> notify when creating directory
-    <li><a href="#report_new_file">report_new_file</a> notify when creating new message files
-    </ul>
-  </ul>
+<li><a href="#allpages">Options affecting both messages and index
+pages</a>
+<ul>
+<li><a href="#locale">Locale</a>
+<ul>
+<li><a href="#language">language</a> English, German, French,
+etc.</li>
+<li><a href="#iso2022jp">iso2022jp</a> Japanese characters</li>
+<li><a href="#i18n">i18n</a> enable Internationalization (i18n)
+features</li>
+<li><a href="#eurodate">eurodate</a> format</li>
+<li><a href="#dateformat">dateformat</a> strftime-style format
+string</li>
+<li><a href="#isodate">isodate</a> standard YYYY-MM-DD HH:MM:SS
+format</li>
+<li><a href="#gmtime">gmtime</a> GMT/UTC vs local time</li>
 </ul>
-
-<h2><a name="allpages">Options affecting both messages and index pages</a></h2>
-<h3><a name="locale">Locale</a></h3>
-<dl>
+</li>
+<li><a href="#headers">Headers</a>
+<ul>
+<li><a href="#label">label</a> set the &lt;title&gt;</li>
+<li><a href="#hmail">hmail</a> list submission address</li>
+<li><a href="#newmsg_command">newmsg_command</a> new list message
+mailto</li>
+<li><a href="#replymsg_command">replymsg_command</a> reply
+mailto</li>
+<li><a href="#inreplyto_command">inreplyto_command</a> resolver for
+messages found outside the archive</li>
+</ul>
+</li>
+<li><a href="#misc_pages">Miscellaneous</a>
+<ul>
+<li><a href="#stripsubject">stripsubject</a> text to be removed
+from subject line</li>
+<li><a href="#mailcommand">mailcommand</a> controls most
+mailto's</li>
+<li><a href="#mailto">mailto</a> for &lt;link rev=made
+href=mailto:</li>
+<li><a href="#domainaddr">domainaddr</a> to append to incomplete
+addresses</li>
+<li><a href="#use_sender_date">use_sender_date</a> which date to
+trust more</li>
+<li><a href="#fragment_prefix">fragment_prefix</a> how to prefix
+each URI fragment</li>
+<li><a href=
+"#email_address_obfuscation">email_address_obfuscation</a> simple
+obfuscation of email addresses</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#index">Index page options</a>
+<ul>
+<li><a href="#index_avail">Index availability</a>
+<ul>
+<li><a href="#folder_by_date">folder_by_date</a> split into subdirs
+by date</li>
+<li><a href="#msgsperfolder">msgsperfolder</a> split into subdirs
+of n messages</li>
+<li><a href="#monthly_index">monthly_index</a> create monthly index
+files</li>
+<li><a href="#yearly_index">yearly_index</a> create yearly index
+files</li>
+<li><a href="#defaultindex">defaultindex</a> what goes in
+index.html</li>
+<li><a href="#default_top_index">default_top_index</a> what goes in
+top directory index.html</li>
+<li><a href="#avoid_indices">avoid_indices</a> don't generate these
+files</li>
+<li><a href="#avoid_top_indices">avoid_top_indices</a> don't
+generate these files</li>
+<li><a href="#attachmentsindex">attachmentsindex</a> create these
+files</li>
+<li><a href="#latest_folder">latest_folder</a> symlink to recent
+subdir</li>
+</ul>
+</li>
+<li><a href="#index_body">Body style</a>
+<ul>
+<li><a href="#indextable">indextable</a> style of message
+lists</li>
+<li><a href="#reverse">reverse</a> sort order, date/thread
+files</li>
+<li><a href="#reverse_folders">reverse_folders</a> sort order, list
+of folders</li>
+<li><a href="#thrdlevels">thrdlevels</a> max indentation</li>
+<li><a href="#thread_file_depth">thread_file_depth</a> threads get
+their own files</li>
+<li><a href="#icss_url">icss_url</a> stylesheet</li>
+<li><a href="#describe_folder">describe_folder</a> labels for
+subdirs</li>
+</ul>
+</li>
+<li><a href="#footers">Headers/footers</a>
+<ul>
+<li><a href="#archives">archives</a> link to other archives</li>
+<li><a href="#custom_archives">custom_archives</a> link to other
+archives</li>
+<li><a href="#about">about</a> descriptive link</li>
+<li><a href="#ihtmlheaderfile">ihtmlheaderfile</a> template</li>
+<li><a href="#ihtmlfooterfile">ihtmlfooterfile</a> template</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#messages">Message page options</a>
+<ul>
+<li><a href="#msg_body">Body style</a>
+<ul>
+<li><a href="#showhtml">showhtml</a> how much conversion to
+html?</li>
+<li><a href="#href_detection">href_detection</a> how to handle
+URLs</li>
+<li><a href="#showbr">showbr</a> line wrapping for body</li>
+<li><a href="#iquotes">iquotes</a> italicize quotes</li>
+<li><a href="#i18n_body">i18n_body</a> translate message body into
+UTF-8</li>
+<li><a href="#mcss_url">mcss_url</a> stylesheet</li>
+<li><a href="#quote_hide_threshold">quote_hide_threshold</a> cut
+excessive quoting</li>
+<li><a href="#files_by_thread">files_by_thread</a> add file with
+all messages in 1 thread</li>
+</ul>
+</li>
+<li><a href="#links">Links</a>
+<ul>
+<li><a href="#linkquotes">linkquotes</a> fine-grained link to
+source of quoted text</li>
+<li><a href="#searchbackmsgnum">searchbackmsgnum</a> linkquotes
+performance</li>
+<li><a href="#link_to_replies">link_to_replies</a> fine-grained
+link to responses</li>
+<li><a href="#quote_link_string">quote_link_string</a> linkquotes
+labels</li>
+<li><a href="#spamprotect">spamprotect</a> obfuscate email
+addresses</li>
+<li><a href="#antispamdomain">antispamdomain</a> how to obfuscate
+address</li>
+<li><a href="#spamprotect_id">spamprotect_id</a> obfuscate message
+ids</li>
+</ul>
+</li>
+<li><a href="#msg_head">Headers/footers</a>
+<ul>
+<li><a href="#showreplies">showreplies</a> list of messages</li>
+<li><a href="#show_msg_links">show_msg_links</a> next, previous,
+next in thread</li>
+<li><a href="#show_index_links">show_index_links</a> control links
+to index pages</li>
+<li><a href="#showheaders">showheaders</a> To:, From:,
+Subject:</li>
+<li><a href="#show_headers">show_headers</a> others (Message-ID,
+etc)</li>
+<li><a href="#mhtmlheaderfile">mhtmlheaderfile</a> template</li>
+<li><a href="#mhtmlfooterfile">mhtmlfooterfile</a> template</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#attachments">Attachments</a> <b>Note that some of
+these may affect security</b>
+<ul>
+<li><a href="#inlinehtml">inlinehtml</a> where to put
+text/html</li>
+<li><a href="#usemeta">usemeta</a> save Content-Type in meta
+file</li>
+<li><a href="#text_types">text_types</a> what types are like
+text/plain?</li>
+<li><a href="#inline_types">inline_types</a> list what should go on
+main page</li>
+<li><a href="#inline_addlink">inline_addlink</a> add in-line links
+to attachments</li>
+<li><a href="#prefered_types">prefered_types</a> choose from
+multipart/mixed</li>
+<li><a href="#ignore_types">ignore_types</a> discard text/x-vcard,
+etc</li>
+<li><a href="#attachmentlink">attachmentlink</a> control
+filenames</li>
+<li><a href="#unsafe_chars">unsafe_chars</a> restrict filename
+chars</li>
+<li><a href="#save_alts">save_alts</a> multipart/alternative
+handling</li>
+<li><a href="#alts_text">alts_text</a> text for some save_alts
+choices</li>
+<li><a href="#filename_base">filename_base</a> attachment file
+name</li>
+</ul>
+</li>
+<li><a href="#sysadmin">System Administration</a>
+<ul>
+<li><a href="#input">Message Input</a>
+<ul>
+<li><a href="#increment">increment</a> append new message(s) to old
+archive</li>
+<li><a href="#readone">readone</a> treat input as one message</li>
+<li><a href="#mbox">mbox</a> read messages from this file</li>
+<li><a href="#mbox_shortened">mbox_shortened</a> allow partial
+mbox</li>
+<li><a href="#ietf_mbox">ietf_mbox</a> file format</li>
+<li><a href="#discard_dup_msgids">discard_dup_msgids</a></li>
+<li><a href="#require_msgids">require_msgids</a> discard messages
+without ids</li>
+</ul>
+</li>
+<li><a href="#filters">Message Filtering</a>
+<ul>
+<li><a href="#filter_out">filter_out</a> delete files with header
+line(s)</li>
+<li><a href="#filter_require">filter_require</a> delete files
+without header line(s)</li>
+<li><a href="#filter_out_full_body">filter_out_full_body</a> delete
+files with line(s)</li>
+<li><a href=
+"#filter_require_full_body">filter_require_full_body</a> delete
+files without line(s)</li>
+</ul>
+</li>
+<li><a href="#files">Filesystem Output</a>
+<ul>
+<li><a href="#dir">dir</a> where the archive goes</li>
+<li><a href="#overwrite">overwrite</a> regenerate old messages</li>
+<li><a href="#htmlsuffix">htmlsuffix</a> .html, .htm, etc</li>
+<li><a href="#dirmode">dirmode</a> chmod directories</li>
+<li><a href="#filemode">filemode</a> chmod html files</li>
+<li><a href="#filename_base">filename_base</a> attachment file
+name</li>
+</ul>
+</li>
+<li><a href="#sysmisc">Miscellaneous</a>
+<ul>
+<li><a href="#usegdbm">usegdbm</a> cache header info</li>
+<li><a href="#writehaof">writehaof</a> write XML archive overview
+file</li>
+<li><a href="#append">append</a> create mbox archive also</li>
+<li><a href="#append_filename">append_filename</a> name of mbox
+output</li>
+<li><a href="#txtsuffix">txtsuffix</a> save each raw message</li>
+<li><a href="#annotated">deleted</a> what headers indicate message
+annotations</li>
+<li><a href="#deleted">deleted</a> what headers indicate deletion
+<strong>deprecated</strong></li>
+<li><a href="#expires">expires</a> what headers indicate expire
+date</li>
+<li><a href="#delete_older">delete_older</a> delete messages before
+a date</li>
+<li><a href="#delete_newer">delete_newer</a> delete messages after
+a date</li>
+<li><a href="#delete_msgnum">delete_msgnum</a> delete these
+messages</li>
+<li><a href="#delete_level">delete_level</a> what to do with
+deleted messages</li>
+<li><a href="#delete_incremental">delete_incremental</a> remove
+previous deleted messages on-the-fly</li>
+<li><a href="#htmlmessage_edited">htmlmessage_edited</a> custom
+markup body for edited messages</li>
+<li><a href=
+"#htmlmessage_deleted_other">htmlmessage_deleted_other</a> custom
+markup body for deleted messages (by reasons other than spam)</li>
+<li><a href=
+"#htmlmessage_deleted_spam">htmlmessage_deleted_spam</a> custom
+markup body for deleted messages (by spam reasons)</li>
+<li><a href="#progress">progress</a> verbosity</li>
+<li><a href="#warn_surpressions">warn_surpressions</a> warn about
+ignored messages</li>
+<li><a href="#uselock">uselock</a> serialize</li>
+<li><a href="#locktime">locktime</a> timeouts</li>
+<li><a href="#base_url">base_url</a></li>
+<li><a href="#report_new_folder">report_new_folder</a> notify when
+creating directory</li>
+<li><a href="#report_new_file">report_new_file</a> notify when
+creating new message files</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2><a name="allpages" id="allpages">Options affecting both
+messages and index pages</a></h2>
+<h3><a name="locale" id="locale">Locale</a></h3>
 <a id="language" name="language"></a>
-<dt><strong>language = [ two-or-more-letter-language-id ]</strong></dt><dd>
- This is a two-letter string specifying the default
-language  to  use, or a longer string specifying a language
-and locale. Set this the value of the language
-table you wish  to  use  when  running  and  generating
-archives.  See also <a href="#iso2022jp">iso2022jp</a>
-and <a href="#eurodate">eurodate</a>.
-<br> 
-<br> Current supported languages, with their default locales:
+<dl>
+<dt><strong>language = [ two-or-more-letter-language-id
+]</strong></dt>
+<dd>This is a two-letter string specifying the default language to
+use, or a longer string specifying a language and locale. Set this
+the value of the language table you wish to use when running and
+generating archives. See also <a href="#iso2022jp">iso2022jp</a>
+and <a href="#eurodate">eurodate</a>.<br>
 <br>
-<br>de (de_DE) - German
-<br>en (en_US) - English
-<br>es (es_ES) - Spanish
-<br>fi (fi_FI) - Finnish
-<br>fr (fr_FR) - French
-<br>el (el) - Greek
-<br>gr (el_GR) - Greek
-<br>is (is_IS) - Icelandic
-<br>no (no_NO) - Norwegian
-<br>pl (pl_PL) - Polish
-<br>pt (pt_BR) - Brazilian Portuguese
-<br>ru (ru_RU) - Russian
-<br>sv (sv_SE) - Swedish
+Current supported languages, with their default locales:<br>
 <br>
-<br>The directory /usr/share/i18n/locales on many systems has the locale
-codes that are available on that system.
+de (de_DE) - German<br>
+en (en_US) - English<br>
+es (es_ES) - Spanish<br>
+fi (fi_FI) - Finnish<br>
+fr (fr_FR) - French<br>
+el (el) - Greek<br>
+gr (el_GR) - Greek<br>
+is (is_IS) - Icelandic<br>
+no (no_NO) - Norwegian<br>
+pl (pl_PL) - Polish<br>
+pt (pt_BR) - Brazilian Portuguese<br>
+ru (ru_RU) - Russian<br>
+sv (sv_SE) - Swedish<br>
 <br>
-<br><i>language = en</i>
-</dd>
-<a name="iso2022jp"></a>
-<dt><strong>iso2022jp = [ 0 | 1 ]</strong></dt><dd>
-Set this to On to support ISO-2022-JP messages.
+The directory /usr/share/i18n/locales on many systems has the
+locale codes that are available on that system.<br>
 <br>
-<br><i>iso2022jp = 0</i>
-</dd>
-<a name="i18n"></a>
-<dt><strong>i18n = [ 0 | 1 ]</strong></dt><dd>
-Enable I18N features, hypermail must be linked with 
-<a href="http://www.gnu.org/software/libiconv/">libiconv</a>.
+<i>language = en</i></dd>
+</dl>
+<a name="iso2022jp" id="iso2022jp"></a>
+<dl>
+<dt><strong>iso2022jp = [ 0 | 1 ]</strong></dt>
+<dd>Set this to On to support ISO-2022-JP messages.<br>
 <br>
-<br><i>i18n = 1</i> (disabled by default)
-</dd>
-
-<a name="eurodate"></a>
-<dt><strong>eurodate = [ 0 | 1 ]</strong></dt><dd>
-Set this to reflect how you want dates displayed in the index files.
-<br> Set as 1 to to use European date format "DD MM YYYY".
-<br> Define as 0 to to use American date format "MM DD YYYY".
+<i>iso2022jp = 0</i></dd>
+</dl>
+<a name="i18n" id="i18n"></a>
+<dl>
+<dt><strong>i18n = [ 0 | 1 ]</strong></dt>
+<dd>Enable I18N features, hypermail must be linked with <a href=
+"http://www.gnu.org/software/libiconv/">libiconv</a>.<br>
 <br>
-<br><i>eurodate = 0</i>
-</dd>
-<a name="dateformat"></a>
-<dt><strong>dateformat = strftime-date-format</strong></dt><dd>
- Format used in strftime(3) call for  displaying  dates.
-<br> See strftime(3) for the valid conversion specifications.
+<i>i18n = 1</i> (disabled by default)</dd>
+</dl>
+<a name="eurodate" id="eurodate"></a>
+<dl>
+<dt><strong>eurodate = [ 0 | 1 ]</strong></dt>
+<dd>Set this to reflect how you want dates displayed in the index
+files.<br>
+Set as 1 to to use European date format "DD MM YYYY".<br>
+Define as 0 to to use American date format "MM DD YYYY".<br>
 <br>
-<br><i>dateformat = "%D-%r Z"</i> (disabled by default)
-</dd>
-<a name="isodate"></a>
-<dt><strong>isodate = [ 0 | 1 ]</strong></dt><dd>
-Set this to On to display article received dates in
-YYYY-MM-DD HH:MM:SS format. If used with the gmtime option, a
-Z will be inserted between the DD and HH.
+<i>eurodate = 0</i></dd>
+</dl>
+<a name="dateformat" id="dateformat"></a>
+<dl>
+<dt><strong>dateformat = strftime-date-format</strong></dt>
+<dd>Format used in strftime(3) call for displaying dates.<br>
+See strftime(3) for the valid conversion specifications.<br>
 <br>
-<br><i>isodate = 0</i>
-</dd>
-<a name="gmtime"></a>
-<dt><strong>gmtime = [ 0 | 1 ]</strong></dt><dd>
- Set this to On to display article received dates using
-Greenwich Mean Time (UTC) rather than local time.
+<i>dateformat = "%D-%r Z"</i> (disabled by default)</dd>
+</dl>
+<a name="isodate" id="isodate"></a>
+<dl>
+<dt><strong>isodate = [ 0 | 1 ]</strong></dt>
+<dd>Set this to On to display article received dates in YYYY-MM-DD
+HH:MM:SS format. If used with the gmtime option, a Z will be
+inserted between the DD and HH.<br>
 <br>
-<br><i>gmtime = 0</i>
-</dd>
-<h3><a name="headers">Header options</a></h3>
-<a name="label"></a>
-<dt><strong>label = [ Title | NONE ]</strong></dt><dd>
-This is the default title you want to call your archives.
-<br> Set this to NONE to use the name of the input mailbox.
+<i>isodate = 0</i></dd>
+</dl>
+<a name="gmtime" id="gmtime"></a>
+<dl>
+<dt><strong>gmtime = [ 0 | 1 ]</strong></dt>
+<dd>Set this to On to display article received dates using
+Greenwich Mean Time (UTC) rather than local time.<br>
 <br>
-<br><i>label = Hypermail Development List</i>  (default value is filename?????)
-</dd>
-
-<a name="hmail"></a>
-<dt><strong>hmail = [ Mailing List Submission Address | NONE ]</strong></dt><dd>
-Set this to the list's submission address. When enabled, this can be
-used to submit a new message to the list served by the hypermail archive.
-"NONE" means don't use it.  
+<i>gmtime = 0</i></dd>
+<dd>
+<h3><a name="headers" id="headers">Header options</a></h3>
+<a name="label" id="label"></a></dd>
+<dt><strong>label = [ Title | NONE ]</strong></dt>
+<dd>This is the default title you want to call your archives.<br>
+Set this to NONE to use the name of the input mailbox.<br>
 <br>
-<br><i>hmail = hypermail@hypermail.org</i> (disabled by default)
-</dd>
-
-<a name="newmsg_command"></a>
-<dt><strong>newmsg_command = [ string ]</strong></dt><dd>
-This specifies the mail command to use when converting the
+<i>label = Hypermail Development List</i> (default value is
+filename?????)</dd>
+</dl>
+<a name="hmail" id="hmail"></a>
+<dl>
+<dt><strong>hmail = [ Mailing List Submission Address | NONE
+]</strong></dt>
+<dd>Set this to the list's submission address. When enabled, this
+can be used to submit a new message to the list served by the
+hypermail archive. "NONE" means don't use it.<br>
+<br>
+<i>hmail = hypermail@hypermail.org</i> (disabled by default)</dd>
+</dl>
+<a name="newmsg_command" id="newmsg_command"></a>
+<dl>
+<dt><strong>newmsg_command = [ string ]</strong></dt>
+<dd>This specifies the mail command to use when converting the
 set_hmail address to links in replies. The variables $TO, $SUBJECT,
-and $ID can be used in constructing the command string.
+and $ID can be used in constructing the command string.<br>
 <br>
-<br><i>newmsg_command=mailto:$TO</i>
-</dd>
-
-<a name="replymsg_command"></a>
-<dt><strong>replymsg_command = [ string ]</strong></dt><dd>
-This specifies the mail command to use when converting the
+<i>newmsg_command=mailto:$TO</i></dd>
+</dl>
+<a name="replymsg_command" id="replymsg_command"></a>
+<dl>
+<dt><strong>replymsg_command = [ string ]</strong></dt>
+<dd>This specifies the mail command to use when converting the
 set_hmail address to links in replies. The variables $TO, $SUBJECT,
 and $ID can be used in constructing the command string. The value
-from the <a href="#mailcommand">mailcommand</a> option will be used if this option is not specified.
-<br>
+from the <a href="#mailcommand">mailcommand</a> option will be used
+if this option is not specified.<br>
 There may be browsers that will benefit from adding something like
-<blockquote>
-%26In-Reply-To=&amp;lt;$ID&amp;gt;
-</blockquote>
-to the command, but I've heard no reports of this actually working.
+<blockquote>%26In-Reply-To=&amp;lt;$ID&amp;gt;</blockquote>
+to the command, but I've heard no reports of this actually
+working.<br>
 <br>
-<br><i>replymsg_command=mailto:$TO?Subject=$SUBJECT</i>
-</dd>
-
-<a name="inreplyto_command"></a>
-<dt><strong>inreplyto_command = [ string ]</strong></dt><dd>
-This specifies a URI template to a script that hypermail will link to
-if it's unable to find in the archive's messages the MID corresponding
-to an <em>In-Reply-To</em> header. The variable <em>$ID</em>
-is used to specify where the <em>Message-Identifier value</em>
-will appear in the link.
-<br />
-<br><em>inreplyto_command = http://example.org/mid-resolver/$ID.</em> (disabled by default)
-</dd>
-
-<h3><a name="misc_pages">Miscellaneous</a></h3>
-
-<a name="stripsubject"></a>
-<dt><strong>stripsubject = [ string | NONE ]</strong></dt><dd>
- A string to be stripped from all subject lines. Helps
-unclutter  mailing  lists  which  add  tags  to subject lines.
+<i>replymsg_command=mailto:$TO?Subject=$SUBJECT</i></dd>
+</dl>
+<a name="inreplyto_command" id="inreplyto_command"></a>
+<dl>
+<dt><strong>inreplyto_command = [ string ]</strong></dt>
+<dd>This specifies a URI template to a script that hypermail will
+link to if it's unable to find in the archive's messages the MID
+corresponding to an <em>In-Reply-To</em> header. The variable
+<em>$ID</em> is used to specify where the <em>Message-Identifier
+value</em> will appear in the link.<br>
 <br>
-<br><i>stripsubject = NONE</i>
-</dd>
-
-<a name="mailcommand"></a>
-<dt><strong>mailcommand = [ direct mailto | cgi-bin script path | NONE ]</strong></dt><dd>
-This is the mail command that email links go to, for instance
-"mailto:$TO" or "/cgi-bin/mail?to=$TO&amp;replyto=$ID&amp;subject=$SUBJECT" 
-<br> In constructing this command, you can specify variables:
+<em>inreplyto_command = http://example.org/mid-resolver/$ID.</em>
+(disabled by default)</dd>
+</dl>
+<h3><a name="misc_pages" id="misc_pages">Miscellaneous</a></h3>
+<a name="stripsubject" id="stripsubject"></a>
+<dl>
+<dt><strong>stripsubject = [ string | NONE ]</strong></dt>
+<dd>A string to be stripped from all subject lines. Helps unclutter
+mailing lists which add tags to subject lines.<br>
 <br>
-<br> $TO : the email address of the person you're sending mail to.
-<br> $ID : the ID of the message you're replying to.
-<br> $SUBJECT: the subject you're replying to.
-<br> 
-<br> NONE disables mailcommand usage.
+<i>stripsubject = NONE</i></dd>
+</dl>
+<a name="mailcommand" id="mailcommand"></a>
+<dl>
+<dt><strong>mailcommand = [ direct mailto | cgi-bin script path |
+NONE ]</strong></dt>
+<dd>This is the mail command that email links go to, for instance
+"mailto:$TO" or
+"/cgi-bin/mail?to=$TO&amp;replyto=$ID&amp;subject=$SUBJECT"<br>
+In constructing this command, you can specify variables:<br>
 <br>
-There may be browsers that will benefit from adding something like
-<blockquote>
-%26In-Reply-To=&amp;lt;$ID&amp;gt;
-</blockquote>
-to the command, but I've heard no reports of this actually working.
+$TO : the email address of the person you're sending mail to.<br>
+$ID : the ID of the message you're replying to.<br>
+$SUBJECT: the subject you're replying to.<br>
 <br>
-<br><i>mailcommand = mailto:$TO?Subject=$SUBJECT</i>
-</dd>
-<a name="mailto"></a>
-<dt><strong>mailto = [ email-address | NONE ]</strong></dt><dd>
-The address of the contact point that is put in the HTML header line 
-<br>   &lt;LINK REV=made HREF=mailto:mailto&gt;
+NONE disables mailcommand usage.<br>
+There may be browsers that will benefit from adding something
+like</dd>
+</dl>
+<blockquote>%26In-Reply-To=&amp;lt;$ID&amp;gt;</blockquote>
+to the command, but I've heard no reports of this actually
+working.<br>
 <br>
-<br> The &lt;LINK...&gt; header can be disabled by default by setting 
-mailto to NONE.
+<i>mailcommand = mailto:$TO?Subject=$SUBJECT</i>
+<dl>
+<dd><a name="mailto" id="mailto"></a></dd>
+<dt><strong>mailto = [ email-address | NONE ]</strong></dt>
+<dd>The address of the contact point that is put in the HTML header
+line<br>
+&lt;LINK REV=made HREF=mailto:mailto&gt;<br>
 <br>
-<br><i>mailto = webmaster@hypermail.org</i> (disabled by default)
-</dd>
-<a name="domainaddr"></a>
-<dt><strong>domainaddr = [ domainname | NONE ]</strong></dt><dd>
-Domain-ize Addresses -- addresses appearing in the RFC2822 field 
-which lack hostname can't be made into proper HREFs.  Because the 
-MTA resides on the same host as the list, it is often not required
-to domain-ize these addresses for delivery.  In such cases, hypermail
-will add the DOMAINADDR to the email address.
+The &lt;LINK...&gt; header can be disabled by default by setting
+mailto to NONE.<br>
 <br>
-<br><i>domainaddr = hypermail.org</i> (disabled by default)
-</dd>
-<a name="use_sender_date"></a>
-<dt><strong>use_sender_date = [ 0 | 1 ]</strong></dt><dd>
-Set this to On to have it use the Date: header (created by the
+<i>mailto = webmaster@hypermail.org</i> (disabled by default)</dd>
+<dd><a name="domainaddr" id="domainaddr"></a></dd>
+<dt><strong>domainaddr = [ domainname | NONE ]</strong></dt>
+<dd>Domain-ize Addresses -- addresses appearing in the RFC2822
+field which lack hostname can't be made into proper HREFs. Because
+the MTA resides on the same host as the list, it is often not
+required to domain-ize these addresses for delivery. In such cases,
+hypermail will add the DOMAINADDR to the email address.<br>
+<br>
+<i>domainaddr = hypermail.org</i> (disabled by default)</dd>
+<dd><a name="use_sender_date" id="use_sender_date"></a></dd>
+<dt><strong>use_sender_date = [ 0 | 1 ]</strong></dt>
+<dd>Set this to On to have it use the Date: header (created by the
 the system that sent the message) rather than the date/time the
-message was received, for purposes such as putting in folders
-or sorting. Details of which purposes this affects may change
-in the future.
+message was received, for purposes such as putting in folders or
+sorting. Details of which purposes this affects may change in the
+future.<br>
 <br>
-<br><i>use_sender_date = 0</i>
-</dd>
-<a name="fragment_prefix"></a>
-<dt><strong>fragment_prefix = [ preifx ]</strong></dt><dd>
-Put this string before the message number in each URI fragment.
+<i>use_sender_date = 0</i></dd>
+<dd><a name="fragment_prefix" id="fragment_prefix"></a></dd>
+<dt><strong>fragment_prefix = [ preifx ]</strong></dt>
+<dd>Put this string before the message number in each URI
+fragment.<br>
 <br>
-<br><i>fragment_prefix = id</i> (default is <em>msg</em>)
-</dd>
-<a name="email_address_obfuscationx"></a>
-<dt><strong>email_address_obfuscation = [ 0 | 1 ]</strong></dt><dd>
-Set to 1 to enable email address obfuscation using numeric character references.
+<i>fragment_prefix = id</i> (default is <em>msg</em>)</dd>
+<dd><a name="email_address_obfuscationx" id=
+"email_address_obfuscationx"></a></dd>
+<dt><strong>email_address_obfuscation = [ 0 | 1 ]</strong></dt>
+<dd>Set to 1 to enable email address obfuscation using numeric
+character references.<br>
 <br>
-<br><i>mail_address_obfuscationx = 1</i> (disabled by default)
-</dd>
-
-<h2><a name="index">Index page options</a></h2>
-<h3><a name="index_avail">Index availability</a></h3>
-
-<a name="folder_by_date"></a>
-<dt><strong>folder_by_date = [ strftime-date-format ]</strong></dt><dd>
-This string causes the messages to be put in subdirectories
-by date. The string will be passed to strftime(3) to generate
+<i>mail_address_obfuscationx = 1</i> (disabled by default)</dd>
+</dl>
+<h2><a name="index" id="index">Index page options</a></h2>
+<h3><a name="index_avail" id="index_avail">Index
+availability</a></h3>
+<a name="folder_by_date" id="folder_by_date"></a>
+<dl>
+<dt><strong>folder_by_date = [ strftime-date-format ]</strong></dt>
+<dd>This string causes the messages to be put in subdirectories by
+date. The string will be passed to strftime(3) to generate
 subdirectory names based on message dates. Suggested values are
-&quot;%y%m&quot; or &quot;%b%y&quot; for monthly subdirectories, &quot;%Y&quot; for
-yearly, &quot;%G/%V&quot; for weekly. Do not alter this for an existing
-archive without removing the old html files. If you use this
-and update the archive incrementally (e.g. with -u), you must
-use the <a href="#usegdbm">usegdbm</a> option.
+"%y%m" or "%b%y" for monthly subdirectories, "%Y" for yearly,
+"%G/%V" for weekly. Do not alter this for an existing archive
+without removing the old html files. If you use this and update the
+archive incrementally (e.g. with -u), you must use the <a href=
+"#usegdbm">usegdbm</a> option.<br>
 <br>
-<br><i>folder_by_date = %y%m</i> (disabled by default)
-</dd>
-<a name="monthly_index"></a>
-<dt><strong>monthly_index = [ 0 | 1 ]</strong></dt><dd>
-Set this to On to create additional index files broken up
-by month. A summary.html file will provide links to all the
-monthly indices.
+<i>folder_by_date = %y%m</i> (disabled by default)</dd>
+<dd><a name="monthly_index" id="monthly_index"></a></dd>
+<dt><strong>monthly_index = [ 0 | 1 ]</strong></dt>
+<dd>Set this to On to create additional index files broken up by
+month. A summary.html file will provide links to all the monthly
+indices.<br>
 <br>
-<br><i>monthly_index = 0</i>
-</dd>
-<a name="msgsperfolder"></a>
-<dt><strong>msgsperfolder = integer </strong></dt><dd>
-Put messages in subdirectories with this many messages per
+<i>monthly_index = 0</i></dd>
+<dd><a name="msgsperfolder" id="msgsperfolder"></a></dd>
+<dt><strong>msgsperfolder = integer</strong></dt>
+<dd>Put messages in subdirectories with this many messages per
 directory. Do not use this and folder_by_date on the same archive.
 Do not alter this for an existing archive without removing the old
 html files. Deleted/expired messages <strong>are counted</strong>
-for the purpose of deciding how many messages to put in a subdirectory.
+for the purpose of deciding how many messages to put in a
+subdirectory.<br>
 <br>
-<br><i>msgsperfolder = 100</i> (disabled by default)
-</dd>
-<a name="yearly_index"></a>
-<dt><strong>yearly_index = [ 0 | 1 ]</strong></dt><dd>
-Set this to On to create additional index files broken up
-by year. A summary.html file will provide links to all the
-yearly indices.
+<i>msgsperfolder = 100</i> (disabled by default)</dd>
+<dd><a name="yearly_index" id="yearly_index"></a></dd>
+<dt><strong>yearly_index = [ 0 | 1 ]</strong></dt>
+<dd>Set this to On to create additional index files broken up by
+year. A summary.html file will provide links to all the yearly
+indices.<br>
 <br>
-<br><i>yearly_index = 0</i>
-</dd>
-<a name="defaultindex"></a>
-<dt><strong>defaultindex = [ thread | date | subject | author | attachment ]</strong></dt><dd>
-This indicates the default type of main index hypermail will generate.
-Users see this type of index when the archive is first accessed.
-When using the <a href="#folder_by_date">folder_by_date</a> or <a href="#msgsperfolder">msgsperfolder</a> options, this option
-applies to subdirectories.
-<br> 
-<br><i>defaultindex = thread</i>
-</dd>
-
-<a name="default_top_index"></a>
-<dt><strong>default_top_index = [ folders | thread | date | subject | author | attachment ]</strong></dt><dd>
-This specifies the default index that  users can view when
-entering the top level of an archive that uses the <a href="#folder_by_date">folder_by_date</a>
-or <a href="#msgsperfolder">msgsperfolder</a> option.
-<br> 
-<br><i>default_top_index = folders</i>
-</dd>
-
-<a name="avoid_indices"></a>
-<dt><strong>avoid_indices = [ string ]</strong></dt><dd>
-This is a list of index files to not generate. Valid types are
-date, thread, author, and subject.
-They can be listed individually on multiple lines or comma or space 
-separated on a single line. When using the <a href="#folder_by_date">folder_by_date</a> or
-<a href="#msgsperfolder">msgsperfolder</a> options, this option applies to subdirectories.
+<i>yearly_index = 0</i></dd>
+<dd><a name="defaultindex" id="defaultindex"></a></dd>
+<dt><strong>defaultindex = [ thread | date | subject | author |
+attachment ]</strong></dt>
+<dd>This indicates the default type of main index hypermail will
+generate. Users see this type of index when the archive is first
+accessed. When using the <a href=
+"#folder_by_date">folder_by_date</a> or <a href=
+"#msgsperfolder">msgsperfolder</a> options, this option applies to
+subdirectories.<br>
 <br>
-<br><i>avoid_indices = subject author</i> (disabled by default)
-</dd>
-
-<a name="avoid_top_indices"></a>
-<dt><strong>avoid_top_indices = [ string ]</strong></dt><dd>
-This is a list of index files to not generate for the top
-directory of an archive using the folder_by_date or
-msgsperfolder option. Valid types are date, thread, author,
-subject, folders, and attachment.
+<i>defaultindex = thread</i></dd>
+<dd><a name="default_top_index" id="default_top_index"></a></dd>
+<dt><strong>default_top_index = [ folders | thread | date | subject
+| author | attachment ]</strong></dt>
+<dd>This specifies the default index that users can view when
+entering the top level of an archive that uses the <a href=
+"#folder_by_date">folder_by_date</a> or <a href=
+"#msgsperfolder">msgsperfolder</a> option.<br>
 <br>
-<br><i>avoid_top_indices = date thread author subject</i>
-</dd>
-
-<a name="attachmentsindex"></a>
-<dt><strong>attachmentsindex = [ 0 | 1 ]</strong></dt><dd>
-Set this to Off to make hypermail not output an index of messages
-with attachments.
+<i>default_top_index = folders</i></dd>
+<dd><a name="avoid_indices" id="avoid_indices"></a></dd>
+<dt><strong>avoid_indices = [ string ]</strong></dt>
+<dd>This is a list of index files to not generate. Valid types are
+date, thread, author, and subject. They can be listed individually
+on multiple lines or comma or space separated on a single line.
+When using the <a href="#folder_by_date">folder_by_date</a> or
+<a href="#msgsperfolder">msgsperfolder</a> options, this option
+applies to subdirectories.<br>
 <br>
-<br><i>attachmentsindex = On</i>
-</dd>
-<a name="latest_folder"></a>
-<dt><strong>latest_folder = [ string ]</strong></dt><dd>
-If <a href="#folder_by_date">folder_by_date</a> or <a href="#msgsperfolder">msgsperfolder</a> are in use, create
-a symbolic link by this name to the most recently created
-subdirectory. Note that many web servers are configured to
-not follow symbolic links for security reasons. The link will
-be created in the directory specified by the "dir" or "-d" option.
+<i>avoid_indices = subject author</i> (disabled by default)</dd>
+<dd><a name="avoid_top_indices" id="avoid_top_indices"></a></dd>
+<dt><strong>avoid_top_indices = [ string ]</strong></dt>
+<dd>This is a list of index files to not generate for the top
+directory of an archive using the folder_by_date or msgsperfolder
+option. Valid types are date, thread, author, subject, folders, and
+attachment.<br>
 <br>
-<br><i>latest_folder = current</i> (disabled by default)
-</dd>
-
-<h3><a name="index_body">Index body style</a></h3>
-
-<a name="indextable"></a>
-<dt><strong>indextable = [ 0 | 1 ]</strong></dt><dd>
-Setting this variable to 1 will tell Hypermail to  generate  
-a message index Subject/Author/Date listings using a table 
-format. Set to 0 if you want the standard Hypermail index 
-page look and feel.
+<i>avoid_top_indices = date thread author subject</i></dd>
+<dd><a name="attachmentsindex" id="attachmentsindex"></a></dd>
+<dt><strong>attachmentsindex = [ 0 | 1 ]</strong></dt>
+<dd>Set this to Off to make hypermail not output an index of
+messages with attachments.<br>
 <br>
-<br><i>indextable = 0</i>
-</dd>
-
-<a name="reverse"></a>
-<dt><strong>reverse = [ 0 | 1 ]</strong></dt><dd>
-Setting this variable to 1 will reverse-sort the article
-entries in the date and thread index files by the date they 
-were received. That is, the most recent  messages  will  appear 
-at the top of the index rather than the other way around.
-Set to 0 if you want latest message on the bottom for date and
-thread indexes. 
+<i>attachmentsindex = On</i></dd>
+<dd><a name="latest_folder" id="latest_folder"></a></dd>
+<dt><strong>latest_folder = [ string ]</strong></dt>
+<dd>If <a href="#folder_by_date">folder_by_date</a> or <a href=
+"#msgsperfolder">msgsperfolder</a> are in use, create a symbolic
+link by this name to the most recently created subdirectory. Note
+that many web servers are configured to not follow symbolic links
+for security reasons. The link will be created in the directory
+specified by the "dir" or "-d" option.<br>
 <br>
-<br><i>reverse = 0</i>
-</dd>
-
-<a name="reverse_folders"></a>
-<dt><strong>reverse_folders = [ 0 | 1 ]</strong></dt><dd>
- Setting this variable to On will reverse-sort the list of
-folders. That is, the most recent folders will appear at
-the top of the index rather than the other way around.
+<i>latest_folder = current</i> (disabled by default)</dd>
+</dl>
+<h3><a name="index_body" id="index_body">Index body style</a></h3>
+<a name="indextable" id="indextable"></a>
+<dl>
+<dt><strong>indextable = [ 0 | 1 ]</strong></dt>
+<dd>Setting this variable to 1 will tell Hypermail to generate a
+message index Subject/Author/Date listings using a table format.
+Set to 0 if you want the standard Hypermail index page look and
+feel.<br>
 <br>
-<br><i>reverse_folders = 0</i>
-</dd>
-
-<a name="thrdlevels"></a>
-<dt><strong>thrdlevels =  number</strong></dt><dd>
-This specifies the number of thread levels to outline in the thread 
-index. For instance, if thrdlevels is 2, replies to messages will 
-be indented once in the index, but replies to replies, etc., will only 
-be indented once as well. The normal value is 4.
+<i>indextable = 0</i></dd>
+<dd><a name="reverse" id="reverse"></a></dd>
+<dt><strong>reverse = [ 0 | 1 ]</strong></dt>
+<dd>Setting this variable to 1 will reverse-sort the article
+entries in the date and thread index files by the date they were
+received. That is, the most recent messages will appear at the top
+of the index rather than the other way around. Set to 0 if you want
+latest message on the bottom for date and thread indexes.<br>
 <br>
-<br><i>thrdlevels = 4</i>
-</dd>
-
-<a name="thread_file_depth"></a>
-<dt><strong>thread_file_depth = [ 0 | 1 ]</strong></dt><dd>
-If nonzero, break the threads index file into multiple files,
+<i>reverse = 0</i></dd>
+<dd><a name="reverse_folders" id="reverse_folders"></a></dd>
+<dt><strong>reverse_folders = [ 0 | 1 ]</strong></dt>
+<dd>Setting this variable to On will reverse-sort the list of
+folders. That is, the most recent folders will appear at the top of
+the index rather than the other way around.<br>
+<br>
+<i>reverse_folders = 0</i></dd>
+<dd><a name="thrdlevels" id="thrdlevels"></a></dd>
+<dt><strong>thrdlevels = number</strong></dt>
+<dd>This specifies the number of thread levels to outline in the
+thread index. For instance, if thrdlevels is 2, replies to messages
+will be indented once in the index, but replies to replies, etc.,
+will only be indented once as well. The normal value is 4.<br>
+<br>
+<i>thrdlevels = 4</i></dd>
+<dd><a name="thread_file_depth" id="thread_file_depth"></a></dd>
+<dt><strong>thread_file_depth = [ 0 | 1 ]</strong></dt>
+<dd>If nonzero, break the threads index file into multiple files,
 with the initial message of each thread in the main index file
-along with links to files containing the replies. Setting this
-to 1 creates one file for each thread that has replies, and is
-recommended for archives with over a few hundred messages.
-Setting this greater than 1 will produce multiple levels of files
-for each thread whose replies are nested by more than 1 level,
-but that is rarely useful. This option is currently disabled
-if the indextable option is turned on, and probably needs to
-be less than thrdlevels.
+along with links to files containing the replies. Setting this to 1
+creates one file for each thread that has replies, and is
+recommended for archives with over a few hundred messages. Setting
+this greater than 1 will produce multiple levels of files for each
+thread whose replies are nested by more than 1 level, but that is
+rarely useful. This option is currently disabled if the indextable
+option is turned on, and probably needs to be less than
+thrdlevels.<br>
 <br>
-<br><i>thread_file_depth = 0</i>
-</dd>
-<a name="icss_url"></a>
-<dt><strong>icss_url= [ URL | NONE ]</strong></dt><dd>
-This option let's you specify an external stylesheet that you would like
-to link to the index files. The stylesheet will be linked to thru a LINK
-element in the HEAD in the document's HEAD.
-<br> By default, this option is deactivated.
+<i>thread_file_depth = 0</i></dd>
+<dd><a name="icss_url" id="icss_url"></a></dd>
+<dt><strong>icss_url= [ URL | NONE ]</strong></dt>
+<dd>This option let's you specify an external stylesheet that you
+would like to link to the index files. The stylesheet will be
+linked to thru a LINK element in the HEAD in the document's
+HEAD.<br>
+By default, this option is deactivated.<br>
 <br>
-<br><i>icss_url = http://www.w3.org/StyleSheets/Mail/public-messagelist.css</i>
-</dd>
-<a name="describe_folder"></a>
-<dt><strong>describe_folder = format string</strong></dt><dd>
-Controls the labels used in folders.html to describe the
-directories created by the <a href="#folder_by_date">folder_by_date</a> or <a href="#msgsperfolder">msgsperfolder</a>
-options. For folder_by_date labels, the describe_folder string
-will be passed to strftime(3) the same as the folder_by_date string.
-<br> For msgsperfolder:
-<br> %d for the directory number (starts with 0)
-<br> %D for the directory number (starts with 1)
-<br> %m for the number of the first message in the directory
-<br> %M for the number of the last message that can be put in the directory.
-<br> The default is the value of folder_by_date if that is selected, "%d" for msgsperfolder.
+<i>icss_url =
+http://www.w3.org/StyleSheets/Mail/public-messagelist.css</i></dd>
+<dd><a name="describe_folder" id="describe_folder"></a></dd>
+<dt><strong>describe_folder = format string</strong></dt>
+<dd>Controls the labels used in folders.html to describe the
+directories created by the <a href=
+"#folder_by_date">folder_by_date</a> or <a href=
+"#msgsperfolder">msgsperfolder</a> options. For folder_by_date
+labels, the describe_folder string will be passed to strftime(3)
+the same as the folder_by_date string.<br>
+For msgsperfolder:<br>
+%d for the directory number (starts with 0)<br>
+%D for the directory number (starts with 1)<br>
+%m for the number of the first message in the directory<br>
+%M for the number of the last message that can be put in the
+directory.<br>
+The default is the value of folder_by_date if that is selected,
+"%d" for msgsperfolder.<br>
 <br>
-<br><i>describe_folder = &quot;%b %Y&quot;</i>
-</dd>
-<h3><a name="footers">Index headers/footers</a></h3>
-
-<a name="archives"></a>
-<dt><strong>archives = [ URL | NONE ]</strong></dt><dd>
-This creates a link in the archived index pages labeled  
-"Other mail archives". Set this to NONE to omit such a link.
+<i>describe_folder = "%b %Y"</i></dd>
+</dl>
+<h3><a name="footers" id="footers">Index headers/footers</a></h3>
+<a name="archives" id="archives"></a>
+<dl>
+<dt><strong>archives = [ URL | NONE ]</strong></dt>
+<dd>This creates a link in the archived index pages labeled "Other
+mail archives". Set this to NONE to omit such a link.<br>
 <br>
-<br><i>archives = NONE</i>
-</dd>
-
-<a name="custom_archives"></a>
-<dt><strong>custom_archives = [ HTML text | NONE ]</strong></dt><dd>
-If this variable is defined, a navigation entry will be
-created below the sorted_by_x list entry, with the text
-"Other mail archives: " followed  by  the  value  of  this
-variable. Set it to NONE to ommit such an entry.
+<i>archives = NONE</i></dd>
+<dd><a name="custom_archives" id="custom_archives"></a></dd>
+<dt><strong>custom_archives = [ HTML text | NONE ]</strong></dt>
+<dd>If this variable is defined, a navigation entry will be created
+below the sorted_by_x list entry, with the text "Other mail
+archives: " followed by the value of this variable. Set it to NONE
+to ommit such an entry.<br>
 <br>
-<br><i>custom_archives = NONE</i>
-</dd>
-
-<a name="about"></a>
-<dt><strong>about = [ URL | NONE ]</strong></dt><dd>
-This creates a link in the archived index pages labeled  
-"About this archive". Set this to NONE to omit such a link.
+<i>custom_archives = NONE</i></dd>
+<dd><a name="about" id="about"></a></dd>
+<dt><strong>about = [ URL | NONE ]</strong></dt>
+<dd>This creates a link in the archived index pages labeled "About
+this archive". Set this to NONE to omit such a link.<br>
 <br>
-<br><i>about = NONE</i>
-</dd>
-<a name="ihtmlheaderfile"></a>
-<dt><strong>ihtmlheaderfile = [ path to index header template file | NONE ]</strong></dt><dd>
-Set this to the path to the Index header template file. The template
-file contains HTML directives and substitution cookies for runtime
-expansion.
+<i>about = NONE</i></dd>
+<dd><a name="ihtmlheaderfile" id="ihtmlheaderfile"></a></dd>
+<dt><strong>ihtmlheaderfile = [ path to index header template file
+| NONE ]</strong></dt>
+<dd>Set this to the path to the Index header template file. The
+template file contains HTML directives and substitution cookies for
+runtime expansion.<br>
 <br>
-<br><i>ihtmlheaderfile = /lists/hypermail-idxheader.hyp</i> (disabled by default)
-</dd>
-
-<a name="ihtmlfooterfile"></a>
-<dt><strong>ihtmlfooterfile = [ path to index footer template file | NONE ]</strong></dt><dd>
-Set this to the path to the Index footer template file. The template
-file contains HTML directives and substitution cookies for runtime
-expansion.
+<i>ihtmlheaderfile = /lists/hypermail-idxheader.hyp</i> (disabled
+by default)</dd>
+<dd><a name="ihtmlfooterfile" id="ihtmlfooterfile"></a></dd>
+<dt><strong>ihtmlfooterfile = [ path to index footer template file
+| NONE ]</strong></dt>
+<dd>Set this to the path to the Index footer template file. The
+template file contains HTML directives and substitution cookies for
+runtime expansion.<br>
 <br>
-<br><i>ihtmlfooterfile = /lists/hypermail-idxfooter.hyp</i> (disabled by default)
-</dd>
-
-<h2><a name="messages">Message page options</a></h2>
-<h3><a name="msg_body">Body style</a></h3>
-
-<a name="showhtml"></a>
-<dt><strong>showhtml = [ 0 | 1 | 2 ]</strong></dt><dd>
-Set this to 1 to show the articles in a proportionally-spaced
-font rather than a fixed-width (monospace) font. Setting this 
-option to 1 also tells Hypermail to attempt to italicize quoted 
-passages in articles.
-<br> Set this to 2 for more complex conversion to html
-similar to that in <a href="http://www.cs.wustl.edu/~seth/txt2html/">txt2html.pl</a>.
-<br> Showhtml = 2 will normally produce nicer looking results than
-<br> showhtml = 1, and showhtml = 0 will look pretty dull, but
-<br> 1 and 2 run risks of altering the appearance in undesired ways.
+<i>ihtmlfooterfile = /lists/hypermail-idxfooter.hyp</i> (disabled
+by default)</dd>
+</dl>
+<h2><a name="messages" id="messages">Message page options</a></h2>
+<h3><a name="msg_body" id="msg_body">Body style</a></h3>
+<a name="showhtml" id="showhtml"></a>
+<dl>
+<dt><strong>showhtml = [ 0 | 1 | 2 ]</strong></dt>
+<dd>Set this to 1 to show the articles in a proportionally-spaced
+font rather than a fixed-width (monospace) font. Setting this
+option to 1 also tells Hypermail to attempt to italicize quoted
+passages in articles.<br>
+Set this to 2 for more complex conversion to html similar to that
+in <a href=
+"http://www.cs.wustl.edu/~seth/txt2html/">txt2html.pl</a>.<br>
+Showhtml = 2 will normally produce nicer looking results than<br>
+showhtml = 1, and showhtml = 0 will look pretty dull, but<br>
+1 and 2 run risks of altering the appearance in undesired ways.<br>
 <br>
-<br><i>showhtml = 1</i>
-</dd>
-
-<a name="href_detection"></a>
-<dt><strong>href_detection = [ 0 | 1 ]</strong></dt><dd>
- Set this to 1 to assume that any string on the body of the message that
-says &lt;A HREF=&quot; ... &lt;/A&gt; is a URL, together with its markup
-and treat it as such.
+<i>showhtml = 1</i></dd>
+<dd><a name="href_detection" id="href_detection"></a></dd>
+<dt><strong>href_detection = [ 0 | 1 ]</strong></dt>
+<dd>Set this to 1 to assume that any string on the body of the
+message that says &lt;A HREF=" ... &lt;/A&gt; is a URL, together
+with its markup and treat it as such.<br>
 <br>
-<br><i>href_detection = 0</i>
-</dd>
-
-<a name="showbr"></a>
-<dt><strong>showbr = [ 0 | 1 ]</strong></dt><dd>
-Set this to 1 if you want article lines to end with the &lt;br&gt; tag.
-Else set to 0 to have non-quoted lines word-wrap. Only takes effect
-if showhtml is set to 1.
+<i>href_detection = 0</i></dd>
+<dd><a name="showbr" id="showbr"></a></dd>
+<dt><strong>showbr = [ 0 | 1 ]</strong></dt>
+<dd>Set this to 1 if you want article lines to end with the
+&lt;br&gt; tag. Else set to 0 to have non-quoted lines word-wrap.
+Only takes effect if showhtml is set to 1.<br>
 <br>
-<br><i>showbr = 1</i>
-</dd>
-<a name="iquotes"></a>
-<dt><strong>iquotes = [ 0 | 1 ]</strong></dt><dd>
-Set this to 1 if you want quoted lines to be shown in italics. Only
-take effect if showhtml is set to 1.
+<i>showbr = 1</i></dd>
+<dd><a name="iquotes" id="iquotes"></a></dd>
+<dt><strong>iquotes = [ 0 | 1 ]</strong></dt>
+<dd>Set this to 1 if you want quoted lines to be shown in italics.
+Only take effect if showhtml is set to 1.<br>
 <br>
-<br><i>iquotes = 1</i>
-</dd>
-<a name="i18n_body"></a>
-<dt><strong>i18n_body = [ 0 | 1 ]</strong></dt><dd>
-Translate message body into UTF-8. The 
-<i>i18n</i> configuration option must be  enabled.
+<i>iquotes = 1</i></dd>
+<dd><a name="i18n_body" id="i18n_body"></a></dd>
+<dt><strong>i18n_body = [ 0 | 1 ]</strong></dt>
+<dd>Translate message body into UTF-8. The <i>i18n</i>
+configuration option must be enabled.<br>
 <br>
-<br><i>i18n_body = 1</i> (disabled by default)
-</dd>
-
-<a name="mcss_url"></a>
-<dt><strong>mcss_url= [ URL | NONE ]</strong></dt><dd>
-This option let's you specify an external stylesheet that you would like
-to link to the message files. The stylesheet will be linked to thru a LINK
-element in the HEAD in the document's HEAD.
-By default, this option is inactive.
+<i>i18n_body = 1</i> (disabled by default)</dd>
+<dd><a name="mcss_url" id="mcss_url"></a></dd>
+<dt><strong>mcss_url= [ URL | NONE ]</strong></dt>
+<dd>This option let's you specify an external stylesheet that you
+would like to link to the message files. The stylesheet will be
+linked to thru a LINK element in the HEAD in the document's HEAD.
+By default, this option is inactive.<br>
 <br>
-<br><i>mcss_url = http://www.w3.org/StyleSheets/Mail/public-message.css</i>
-</dd>
-
-<a name="quote_hide_threshold"></a>
-<dt><strong>quote_hide_threshold = percent (integer)</strong></dt><dd>
-If the <a href="#linkquotes">linkquotes</a> option is on, setting this to an
-integer less than 100 will cause it to replace quoted
-text with one-line links if the percent of lines in the
-message body (exluding the signature) consisting of
-quoted text exceeds the number indicated by this option.
+<i>mcss_url =
+http://www.w3.org/StyleSheets/Mail/public-message.css</i></dd>
+<dd><a name="quote_hide_threshold" id=
+"quote_hide_threshold"></a></dd>
+<dt><strong>quote_hide_threshold = percent (integer)</strong></dt>
+<dd>If the <a href="#linkquotes">linkquotes</a> option is on,
+setting this to an integer less than 100 will cause it to replace
+quoted text with one-line links if the percent of lines in the
+message body (exluding the signature) consisting of quoted text
+exceeds the number indicated by this option.<br>
 <br>
-<br><i>quote_hide_threshold = 100</i>
-</dd>
-
-<a name="files_by_thread"></a>
-<dt><strong>files_by_thread = [ 0 | 1]</strong></dt><dd>
- Set this to 1 to generate (in addition to the usual files),
-a file for each thread that contains all the messages in that
-thread. The first line in each thread of the thread index page
-links to this file instead of to a single message.
+<i>quote_hide_threshold = 100</i></dd>
+<dd><a name="files_by_thread" id="files_by_thread"></a></dd>
+<dt><strong>files_by_thread = [ 0 | 1]</strong></dt>
+<dd>Set this to 1 to generate (in addition to the usual files), a
+file for each thread that contains all the messages in that thread.
+The first line in each thread of the thread index page links to
+this file instead of to a single message.<br>
 <br>
-<br><i>files_by_thread = 0</i>
-</dd>
-
-<h3><a name="links">Message page links</a></h3>
-<a name="linkquotes"></a>
-<dt><strong>linkquotes = [ 0 | 1 ]</strong></dt><dd>
- Set this to On to create fine-grained links from quoted
-text to the text where the quote originated. It also improves
-the threads index file by more accurately matching messages
-with replies. Note that this may be rather cpu intensive (see
-the <a href="#searchbackmsgnum">searchbackmsgnum</a> option to alter the performance).
+<i>files_by_thread = 0</i></dd>
+</dl>
+<h3><a name="links" id="links">Message page links</a></h3>
+<a name="linkquotes" id="linkquotes"></a>
+<dl>
+<dt><strong>linkquotes = [ 0 | 1 ]</strong></dt>
+<dd>Set this to On to create fine-grained links from quoted text to
+the text where the quote originated. It also improves the threads
+index file by more accurately matching messages with replies. Note
+that this may be rather cpu intensive (see the <a href=
+"#searchbackmsgnum">searchbackmsgnum</a> option to alter the
+performance).<br>
 <br>
-<br><i>linkquotes = 0</i>
-</dd>
-
-<a name="searchbackmsgnum"></a>
-<dt><strong>searchbackmsgnum = postive integer</strong></dt><dd>
-If the <a href="#linkquotes">linkquotes</a> option is on and an incremental update is being
-done (-u option), this controls the tradeoff between speed and
-the reliability of finding the right source for quoted text.
-Try to set it to the largest number of messages between a
-message and the final direct reply to that message.
+<i>linkquotes = 0</i></dd>
+<dd><a name="searchbackmsgnum" id="searchbackmsgnum"></a></dd>
+<dt><strong>searchbackmsgnum = postive integer</strong></dt>
+<dd>If the <a href="#linkquotes">linkquotes</a> option is on and an
+incremental update is being done (-u option), this controls the
+tradeoff between speed and the reliability of finding the right
+source for quoted text. Try to set it to the largest number of
+messages between a message and the final direct reply to that
+message.<br>
 <br>
-<br><i>searchbackmsgnum = 500</i>
-</dd>
-
-<a name="link_to_replies"></a>
-<dt><strong>link_to_replies = [ string | NONE]</strong></dt><dd>
-If the <a href="#linkquotes">linkquotes</a> option is on, specifying a string here
-causes it to generate links from original quoted text the
-location(s) in replies which quote them. The string
-is used to display the link.
+<i>searchbackmsgnum = 500</i></dd>
+<dd><a name="link_to_replies" id="link_to_replies"></a></dd>
+<dt><strong>link_to_replies = [ string | NONE]</strong></dt>
+<dd>If the <a href="#linkquotes">linkquotes</a> option is on,
+specifying a string here causes it to generate links from original
+quoted text the location(s) in replies which quote them. The string
+is used to display the link.<br>
 <br>
-<br><i>link_to_replies = NONE</i>
-</dd>
-
-<a name="quote_link_string"></a>
-<dt><strong>quote_link_string = [ string | NONE ]</strong></dt><dd>
-If the <a href="#quote_hide_threshold">quote_hide_threshold</a> option is being used, the
-quote_link_string will be used if available to display the
-link that replaces the quoted text. If no string is specified
-here, the first line of each section of quoted text will used.
+<i>link_to_replies = NONE</i></dd>
+<dd><a name="quote_link_string" id="quote_link_string"></a></dd>
+<dt><strong>quote_link_string = [ string | NONE ]</strong></dt>
+<dd>If the <a href="#quote_hide_threshold">quote_hide_threshold</a>
+option is being used, the quote_link_string will be used if
+available to display the link that replaces the quoted text. If no
+string is specified here, the first line of each section of quoted
+text will used.<br>
 <br>
-<br><i>quote_link_string = NONE</i>
-</dd>
-
-<a name="spamprotect"></a>
-<dt><strong>spamprotect = [ 0 | 1 ]</strong></dt><dd>
-Set this to On to make hypermail not output real email addresses
-in the output HTML but instead it will obfuscate them a little.
-You can control the obfuscation with <a href="#antispamdomain">antispamdomain</a>.
+<i>quote_link_string = NONE</i></dd>
+<dd><a name="spamprotect" id="spamprotect"></a></dd>
+<dt><strong>spamprotect = [ 0 | 1 ]</strong></dt>
+<dd>Set this to On to make hypermail not output real email
+addresses in the output HTML but instead it will obfuscate them a
+little. You can control the obfuscation with <a href=
+"#antispamdomain">antispamdomain</a>.<br>
 <br>
-<br><i>spamprotect = On</i>
-</dd>
-<a name="antispamdomain"></a>
-<dt><strong>antispamdomain = string with invalid domain</strong></dt><dd>
-By default the spamprotect option only does a small amount of massaging
-of email addresses. Use this to completely replace the domain
-from which a message originates (everything after the @)
-with some string to confuse screen-scraping programs.
-It is probably wise to make this an invalid mail domain.
+<i>spamprotect = On</i></dd>
+<dd><a name="antispamdomain" id="antispamdomain"></a></dd>
+<dt><strong>antispamdomain = string with invalid
+domain</strong></dt>
+<dd>By default the spamprotect option only does a small amount of
+massaging of email addresses. Use this to completely replace the
+domain from which a message originates (everything after the @)
+with some string to confuse screen-scraping programs. It is
+probably wise to make this an invalid mail domain.<br>
 <br>
-<br><i>antispamdomain = "email.domain.hidden"</i> (disabled by default)
-</dd>
-<a name="spamprotect_id"></a>
-<dt><strong>spamprotect_id = [ 0 | 1 ]</strong></dt><dd>
-Set this to On to make hypermail not output real email message
+<i>antispamdomain = "email.domain.hidden"</i> (disabled by
+default)</dd>
+<dd><a name="spamprotect_id" id="spamprotect_id"></a></dd>
+<dt><strong>spamprotect_id = [ 0 | 1 ]</strong></dt>
+<dd>Set this to On to make hypermail not output real email message
 ids in HTML comments (sometimes used internally by hypermail) but
 instead it will obfuscate them a little so they don't look like
-email addresses to spammers.
+email addresses to spammers.<br>
 <br>
-<br><i>spamprotect_id = On</i>
-</dd>
-<h3><a name="msg_head">Message page headers/footers</a></h3>
-<a name="showreplies"></a>
-<dt><strong>showreplies = [ 0 | 1 ]</strong></dt><dd>
-Set to 1 to show all replies to a message as links in article files. 
-If this is set to 0 no reply links are generated.
+<i>spamprotect_id = On</i></dd>
+</dl>
+<h3><a name="msg_head" id="msg_head">Message page
+headers/footers</a></h3>
+<a name="showreplies" id="showreplies"></a>
+<dl>
+<dt><strong>showreplies = [ 0 | 1 ]</strong></dt>
+<dd>Set to 1 to show all replies to a message as links in article
+files. If this is set to 0 no reply links are generated.<br>
 <br>
-<br><i>showreplies = 1</i>
-</dd>
-
-<a name="show_msg_links"></a>
-<dt><strong>show_msg_links = [ 0 | 1 | 3 | 4 ]</strong></dt><dd>
-Set this to 1 if you want links to Next, Prev, Next thread, Reply to, etc.
-displayed on the article pages. Setting this to 0 disables these links
-from appearing on the generated pages. Set it to 3 to produce those links
-only at the top of the message pages, or 4 to produce those links only at
-the bottom of the message.
+<i>showreplies = 1</i></dd>
+<dd><a name="show_msg_links" id="show_msg_links"></a></dd>
+<dt><strong>show_msg_links = [ 0 | 1 | 3 | 4 ]</strong></dt>
+<dd>Set this to 1 if you want links to Next, Prev, Next thread,
+Reply to, etc. displayed on the article pages. Setting this to 0
+disables these links from appearing on the generated pages. Set it
+to 3 to produce those links only at the top of the message pages,
+or 4 to produce those links only at the bottom of the message.<br>
 <br>
-<br><i>show_msg_links = 1</i>
-</dd>
-<a name="show_index_links"></a>
-<dt><strong>show_index_links = [ 0 | 1 | 3 | 4 ]</strong></dt><dd>
- Set this to 1 to show links to index pages from the top and
-bottom of each message file. Set it to 0 to avoid those links.
-Set it to 3 to show the links only at the top of the message
-pages, or 4 to produce those links only at the bottom of the message.
+<i>show_msg_links = 1</i></dd>
+<dd><a name="show_index_links" id="show_index_links"></a></dd>
+<dt><strong>show_index_links = [ 0 | 1 | 3 | 4 ]</strong></dt>
+<dd>Set this to 1 to show links to index pages from the top and
+bottom of each message file. Set it to 0 to avoid those links. Set
+it to 3 to show the links only at the top of the message pages, or
+4 to produce those links only at the bottom of the message.<br>
 <br>
-<br><i>show_index_links = 1</i>
-</dd>
-<a name="showheaders"></a>
-<dt><strong>showheaders = [ 0 | 1 ]</strong></dt><dd>
-Set this to 1 to show the RFC 2822 message headers To:, 
-From:, and Subject: information found in the email messages.
-Set to 0 if you want to hide mail headers in articles.
+<i>show_index_links = 1</i></dd>
+<dd><a name="showheaders" id="showheaders"></a></dd>
+<dt><strong>showheaders = [ 0 | 1 ]</strong></dt>
+<dd>Set this to 1 to show the RFC 2822 message headers To:, From:,
+and Subject: information found in the email messages. Set to 0 if
+you want to hide mail headers in articles.<br>
 <br>
-<br><i>showheaders = 0</i>
-</dd>
-
-<a name="show_headers"></a>
-<dt><strong>show_headers = List of RFC 2822 Headers to display</strong></dt><dd>
-This is the list of headers to be displayed if showheaders  
-is set to 1 (TRUE) They can be listed comman or space separated
-all on a single line such as
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;show_headers = From,Subject,Date,Message-ID
+<i>showheaders = 0</i></dd>
+<dd><a name="show_headers" id="show_headers"></a></dd>
+<dt><strong>show_headers = List of RFC 2822 Headers to
+display</strong></dt>
+<dd>This is the list of headers to be displayed if showheaders is
+set to 1 (TRUE) They can be listed comman or space separated all on
+a single line such as<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;show_headers =
+From,Subject,Date,Message-ID<br>
 <br>
-<br> or they can be listed individually or any combination of.
+or they can be listed individually or any combination of.<br>
 <br>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;show_headers = From
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;show_headers = Subject
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;show_headers = Date
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;show_headers = Message-ID
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;show_headers = From<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;show_headers = Subject<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;show_headers = Date<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;show_headers = Message-ID<br>
 <br>
-<br> If show_headers contains the special character ``*'', then
-hypermail will display all header lines.
+If show_headers contains the special character ``*'', then
+hypermail will display all header lines.<br>
+<strong>NOTE:</strong> Do not put the ':' at the end of the
+headers.<br>
 <br>
-<strong>NOTE:</strong> Do not put the ':' at the end of the headers.
+<i>show_headers = From,Subject,Date,Message-ID</i> (disabled by
+default)</dd>
+<dd><a name="mhtmlheaderfile" id="mhtmlheaderfile"></a></dd>
+<dt><strong>mhtmlheaderfile = [ path to message header template
+file | NONE ]</strong></dt>
+<dd>Set this to the path to the Message header template file. The
+template file contains HTML directives and substitution cookies for
+runtime expansion.<br>
 <br>
-<br><i>show_headers = From,Subject,Date,Message-ID</i> (disabled by default)
-</dd>
-
-<a name="mhtmlheaderfile"></a>
-<dt><strong>mhtmlheaderfile = [ path to message header template file | NONE ]</strong></dt><dd>
-Set this to the path to the Message header template file. The template
-file contains HTML directives and substitution cookies for runtime
-expansion.
+<i>mhtmlheaderfile = /lists/hypermail-msgheader.hyp</i> (disabled
+by default)</dd>
+<dd><a name="mhtmlfooterfile" id="mhtmlfooterfile"></a></dd>
+<dt><strong>mhtmlfooterfile = [ path to message footer template
+file | NONE ]</strong></dt>
+<dd>Set this to the path to the Message footer template file. The
+template file contains HTML directives and substitution cookies for
+runtime expansion.<br>
 <br>
-<br><i>mhtmlheaderfile = /lists/hypermail-msgheader.hyp</i> (disabled by default)
-</dd>
-<a name="mhtmlfooterfile"></a>
-<dt><strong>mhtmlfooterfile = [ path to message footer template file | NONE ]</strong></dt><dd>
-Set this to the path to the Message footer template file. The template
-file contains HTML directives and substitution cookies for runtime
-expansion.
+<i>mhtmlfooterfile = /lists/hypermail-msgfooter.hyp</i> (disabled
+by default)</dd>
+</dl>
+<h2><a name="attachments" id="attachments">Attachments</a></h2>
+<a name="inlinehtml" id="inlinehtml"></a>
+<dl>
+<dt><strong>inlinehtml [ 0 | 1 ]</strong></dt>
+<dd>Define to On to make text/html parts to get inlined with the
+mails. If set to Off, HTML-parts will be stored as separate files.
+A "Content-Disposition: attachment;" line in the mail will cause an
+HTML-part to be stored as a separate file even if this option is
+On.<br>
 <br>
-<br><i>mhtmlfooterfile = /lists/hypermail-msgfooter.hyp</i> (disabled by default)
-</dd>
-
-<h2><a name="attachments">Attachments</a></h2>
-
-<a name="inlinehtml"></a>
-<dt><strong>inlinehtml  [ 0 | 1 ]</strong></dt><dd>
-Define to On to make text/html parts to get inlined with the mails.
-If set to Off, HTML-parts will be stored as separate files.
-A "Content-Disposition: attachment;" line in the mail will
-cause an HTML-part to be stored as a separate file even if this option is On.
-<br>
-<br><i>inlinehtml = 1</i>
-</dd>
-
-<a name="usemeta"></a>
-<dt><strong>usemeta  [ 0 | 1 ]</strong></dt><dd>
- This option allows you to use metadata to store the content type
-of a MIME attachments and, later on,  when a user browses the
+<i>inlinehtml = 1</i></dd>
+<dd><a name="usemeta" id="usemeta"></a></dd>
+<dt><strong>usemeta [ 0 | 1 ]</strong></dt>
+<dd>This option allows you to use metadata to store the content
+type of a MIME attachments and, later on, when a user browses the
 attachment, send back this information in the HTTP Content-Type
-header. When set to <strong>1</strong>, the Content-Type header of a MIME
-attachment will be stored in a metadata file. 
-<br>Let us say that the MIME attachments for a message are
-stored in directory <strong>att-num</strong>. The metadata for those attachments
-will then be stored in  directory <strong>att-num/.meta</strong>. If a 
-MIME attachment is stored in file <strong>att-file</strong>, its metadata
-will be stored in file <strong>att-file.meta</strong>. This convention is 
-directly compatible with the Apache server handling of metadata.
+header. When set to <strong>1</strong>, the Content-Type header of
+a MIME attachment will be stored in a metadata file.<br>
+Let us say that the MIME attachments for a message are stored in
+directory <strong>att-num</strong>. The metadata for those
+attachments will then be stored in directory
+<strong>att-num/.meta</strong>. If a MIME attachment is stored in
+file <strong>att-file</strong>, its metadata will be stored in file
+<strong>att-file.meta</strong>. This convention is directly
+compatible with the Apache server handling of metadata.<br>
 <br>
-<br><i>usemeta = 0</i>
-</dd>
-
-<a name="text_types"></a>
-<dt><strong>text_types = list of types to be the same as text/plain</strong></dt><dd>
-This is a list of MIME types that you want hypermail to treat
-exactly as if they were text/plain. They can be listed individually 
-on multiple lines or comma or space separated on a single line.
+<i>usemeta = 0</i></dd>
+<dd><a name="text_types" id="text_types"></a></dd>
+<dt><strong>text_types = list of types to be the same as
+text/plain</strong></dt>
+<dd>This is a list of MIME types that you want hypermail to treat
+exactly as if they were text/plain. They can be listed individually
+on multiple lines or comma or space separated on a single line.<br>
 <br>
-<br><i>text_types = text, text/plain, message/rfc2822</i> (disabled by default)
-</dd>
-
-<a name="inline_types"></a>
-<dt><strong>inline_types = indicate data types data to be inlined</strong></dt><dd>
-This is the list of MIME types that you want inlined as opposed to
-simply linked into the message. They can be listed individually on 
-multiple lines or comma or space separated on a single line.
+<i>text_types = text, text/plain, message/rfc2822</i> (disabled by
+default)</dd>
+<dd><a name="inline_types" id="inline_types"></a></dd>
+<dt><strong>inline_types = indicate data types data to be
+inlined</strong></dt>
+<dd>This is the list of MIME types that you want inlined as opposed
+to simply linked into the message. They can be listed individually
+on multiple lines or comma or space separated on a single line.<br>
 <br>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inline_types = image/gif image/jpeg
-<br> or
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inline_types = image/gif
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inline_types = image/jpeg
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inline_types = image/gif
+image/jpeg<br>
+or<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inline_types = image/gif<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inline_types = image/jpeg<br>
 <br>
-<br><i>inline_types = image/gif image/jpeg</i>
-</dd>
-
-<a name="inline_addlink"></a>
-<dt><strong>inline_addlink =  [ 0 | 1 ]</strong></dt><dd>
-Set to On to add inline links to content that is stored in the\
-attachments subdirectory. <strong>inline_types</strong> must be enabled.
-<br />
-<br / ><i>inline_addlink = 1</i> (enabled by default)
-</dd>
-
-<a name="prefered_types"></a>
-<dt><strong>prefered_types = multipart/mixed types to present</strong></dt><dd>
-When mails using multipart/mixed or multipart/alternative types are scanned,
-this list of MIME types defines which part you want presented in the result.
+<i>inline_types = image/gif image/jpeg</i></dd>
+<dd><a name="inline_addlink" id="inline_addlink"></a></dd>
+<dt><strong>inline_addlink = [ 0 | 1 ]</strong></dt>
+<dd>Set to On to add inline links to content that is stored in the\
+attachments subdirectory. <strong>inline_types</strong> must be
+enabled.<br>
 <br>
-<br><i>prefered_types = text/plain, text/html</i>
-</dd>
-<a name="ignore_types"></a>
-<dt><strong>ignore_types = indicate types of attachments to ignore</strong></dt><dd>
-This is the list of MIME attachment types that you do not want to
-do anything with. They are quietly ignored and are not processed. 
-They can be listed individually on multiple lines or comma or space 
-separated on a single line.
-<p>
- Two special types may be used here:
-<br>$BINARY - ignore all types that would be stored as separate files.
-<br>$NONPLAIN - ignore all types not treated as text/plain, and all $BINARY types.
-<br>Note: the behavior of these may be affected by the <a href="#inlinehtml">inlinehtml</a> option.
-<p>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ignore_types = text/x-vcard application/x-msdownload
-<br> or
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ignore_types = text/x-vcard
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ignore_types = application/x-msdownload
+<i>inline_addlink = 1</i> (enabled by default)</dd>
+<dd><a name="prefered_types" id="prefered_types"></a></dd>
+<dt><strong>prefered_types = multipart/mixed types to
+present</strong></dt>
+<dd>When mails using multipart/mixed or multipart/alternative types
+are scanned, this list of MIME types defines which part you want
+presented in the result.<br>
 <br>
-<br><i>ignore_types = text/x-vcard
-<br>ignore_types = application/x-msdownload</i>
-</dd>
-
-<a name="attachmentlink"></a>
-<dt><strong>attachmentlink = attachment-link-format</strong></dt><dd>
-Format of the attachment links.
+<i>prefered_types = text/plain, text/html</i></dd>
+<dd><a name="ignore_types" id="ignore_types"></a></dd>
+<dt><strong>ignore_types = indicate types of attachments to
+ignore</strong></dt>
+<dd>This is the list of MIME attachment types that you do not want
+to do anything with. They are quietly ignored and are not
+processed. They can be listed individually on multiple lines or
+comma or space separated on a single line.</dd>
+</dl>
+<p>Two special types may be used here:<br>
+$BINARY - ignore all types that would be stored as separate
+files.<br>
+$NONPLAIN - ignore all types not treated as text/plain, and all
+$BINARY types.<br>
+Note: the behavior of these may be affected by the <a href=
+"#inlinehtml">inlinehtml</a> option.</p>
+<p><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ignore_types = text/x-vcard
+application/x-msdownload<br>
+or<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ignore_types = text/x-vcard<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ignore_types =
+application/x-msdownload<br>
 <br>
-<br>    %p for the full path to the attachment
-<br>    %f for the file name part only
-<br>    %d for the directory name only
-<br>    %n for the message number
-<br>    %c for the content type string
-<br> 
-<br><i>attachmentlink = "%p"</i>
-</dd>
-
-<a name="unsafe_chars"></a>
-<dt><strong>unsafe_chars = list of chars to prohibit</strong></dt><dd>
-Any characters listed in this string are removed from user-specified
-attachment filenames. Those characters will be replaced by a "_"
-(which means that specifying "_" here won't have any effect).
-Note that many characters (including / and \) are removed by the
-safe_filename in parse.c regardless of what this option says. There
-might be some security problems that can be prevented if you specify
-"." here (e.g. if a web server is configured to enable server side
-includes on filenames ending in something other than .shtml), but
-that will prevent browsers from recognizing many file types.
+<i>ignore_types = text/x-vcard<br>
+ignore_types = application/x-msdownload</i> <a name=
+"attachmentlink" id="attachmentlink"></a></p>
+<dl>
+<dt><strong>attachmentlink = attachment-link-format</strong></dt>
+<dd>Format of the attachment links.<br>
 <br>
-<br><i>unsafe_chars = "."</i> (disabled by default)
-</dd>
-
-<a name="save_alts"></a>
-<dt><strong>save_alts = [ 0 | 1 | 2 ]</strong></dt><dd>
- This controls what happens to alternatives (other than the prefered
-alternative) for multipart/alternative messages.
-<br> 0 - discard non-prefered alternatives
-<br> 1 - show all alternatives inline
-<br> 2 - put non-prefered alternatives in a separate file.
+%p for the full path to the attachment<br>
+%f for the file name part only<br>
+%d for the directory name only<br>
+%n for the message number<br>
+%c for the content type string<br>
 <br>
-<br><i>save_alts = 0</i>
-</dd>
-
-<a name="alts_text"></a>
-<dt><strong>alts_text = descriptive text</strong></dt><dd>
-If save_alts is 1, this text is put between the alternatives.
-<br>If save_alts is 2, this text is used to describe the link to each
-alternative file.
+<i>attachmentlink = "%p"</i></dd>
+<dd><a name="unsafe_chars" id="unsafe_chars"></a></dd>
+<dt><strong>unsafe_chars = list of chars to prohibit</strong></dt>
+<dd>Any characters listed in this string are removed from
+user-specified attachment filenames. Those characters will be
+replaced by a "_" (which means that specifying "_" here won't have
+any effect). Note that many characters (including / and \) are
+removed by the safe_filename in parse.c regardless of what this
+option says. There might be some security problems that can be
+prevented if you specify "." here (e.g. if a web server is
+configured to enable server side includes on filenames ending in
+something other than .shtml), but that will prevent browsers from
+recognizing many file types.<br>
 <br>
-<br><i>alts_text = "alternate version of message"</i> (the default if save_alts = 2)
-<br><i>alts_text = "&lt;hr&gt;"</i> (the default if save_alts = 1)
-</dd>
-
-<h2><a name="sysadmin">System administration</a></h2>
-<h3><a name="input">Message input</a></h3>
-
-<a name="increment"></a>
-<dt><strong>increment = [ -1 | 0 | 1 ]</strong></dt><dd>
-<br> Define as 1 to append all input messages to the end of existing archives.
-<br> Define as 0 for it to read a mailbox that corresponds to the entire
-archive. (See the <a href="#mbox_shortened">mbox_shortened</a> option for
-an exception to the requirement that it be the entire archive).
-If there are any existing html messages, it will figure out which
-ones at the end of the mailbox are new, and add only those that haven't been
-converted yet.
-<br> Define as -1 to have hypermail figure out whether the input
-is entirely new messages to be appended or whether it contains
+<i>unsafe_chars = "."</i> (disabled by default)</dd>
+<dd><a name="save_alts" id="save_alts"></a></dd>
+<dt><strong>save_alts = [ 0 | 1 | 2 ]</strong></dt>
+<dd>This controls what happens to alternatives (other than the
+prefered alternative) for multipart/alternative messages.<br>
+0 - discard non-prefered alternatives<br>
+1 - show all alternatives inline<br>
+2 - put non-prefered alternatives in a separate file.<br>
+<br>
+<i>save_alts = 0</i></dd>
+<dd><a name="alts_text" id="alts_text"></a></dd>
+<dt><strong>alts_text = descriptive text</strong></dt>
+<dd>If save_alts is 1, this text is put between the
+alternatives.<br>
+If save_alts is 2, this text is used to describe the link to each
+alternative file.<br>
+<br>
+<i>alts_text = "alternate version of message"</i> (the default if
+save_alts = 2)<br>
+<i>alts_text = "&lt;hr&gt;"</i> (the default if save_alts = 1)</dd>
+</dl>
+<h2><a name="sysadmin" id="sysadmin">System administration</a></h2>
+<h3><a name="input" id="input">Message input</a></h3>
+<a name="increment" id="increment"></a>
+<dl>
+<dt><strong>increment = [ -1 | 0 | 1 ]</strong></dt>
+<dd><br>
+Define as 1 to append all input messages to the end of existing
+archives.<br>
+Define as 0 for it to read a mailbox that corresponds to the entire
+archive. (See the <a href="#mbox_shortened">mbox_shortened</a>
+option for an exception to the requirement that it be the entire
+archive). If there are any existing html messages, it will figure
+out which ones at the end of the mailbox are new, and add only
+those that haven't been converted yet.<br>
+Define as -1 to have hypermail figure out whether the input is
+entirely new messages to be appended or whether it contains
 messages that are already in the archive. A value of -1 cannot be
 used with the mbox_shortened option or with the -i command line
 option or with mbox = NONE.<br>
-<br><i>increment = 0</i>
-</dd>
-
-<a name="readone"></a>
-<dt><strong>readone = [ 0 | 1 ]</strong></dt><dd>
-Set this to 1 to specify there is only one message in the input.
-<br> 
-<br><i>readone = 0</i>
-</dd>
-
-<a name="mbox"></a>
-<p> <dt><strong>mbox = [ filename | NONE ]</strong></dt><dd>
-This is the default mailbox to read messages in from.  Set this 
-with a value of NONE to read from standard input as the default.
 <br>
-<br><i>mbox = NONE</i>
-</dd>
-
-<a name="mbox_shortened"></a>
-<p> <dt><strong>mbox_shortened = [ 0 | 1 ]</strong></dt><dd>
- Set this to 1 to enable use of mbox that has had some of its
+<i>increment = 0</i></dd>
+<dd><a name="readone" id="readone"></a></dd>
+<dt><strong>readone = [ 0 | 1 ]</strong></dt>
+<dd>Set this to 1 to specify there is only one message in the
+input.<br>
+<br>
+<i>readone = 0</i></dd>
+<dd><a name="mbox" id="mbox"></a></dd>
+</dl>
+<dl>
+<dt><strong>mbox = [ filename | NONE ]</strong></dt>
+<dd>This is the default mailbox to read messages in from. Set this
+with a value of NONE to read from standard input as the
+default.<br>
+<br>
+<i>mbox = NONE</i></dd>
+<dd><a name="mbox_shortened" id="mbox_shortened"></a></dd>
+</dl>
+<dl>
+<dt><strong>mbox_shortened = [ 0 | 1 ]</strong></dt>
+<dd>Set this to 1 to enable use of mbox that has had some of its
 initial messages deleted. Requires usegdbm = 1 and increment = 0.
-The first message in the shortened mbox must have a Message-Id header.
-If <a href="#discard_dup_msgids">discard_dup_msgids</a> is 0, the first message in the shortened mbox
-may not have the same Message-Id as a message that was deleted.
-The mbox may not be altered in any way other than deleting from
-beginning of the mbox or appending new messages to the end (unless
-you rebuild the archive from scratch using a complete mbox).
+The first message in the shortened mbox must have a Message-Id
+header. If <a href="#discard_dup_msgids">discard_dup_msgids</a> is
+0, the first message in the shortened mbox may not have the same
+Message-Id as a message that was deleted. The mbox may not be
+altered in any way other than deleting from beginning of the mbox
+or appending new messages to the end (unless you rebuild the
+archive from scratch using a complete mbox).<br>
 <br>
-<br><i>mbox_shortened = 0</i>
-</dd>
-
-<a name="ietf_mbox"></a>
-<dt><strong>ietf_mbox = [ 0 | 1 ]</strong></dt><dd>
-Setting this variable to 1 will tell hypermail that the
-mbox  is  formatted  according to the IETF mbox convention:
-all lines, except for the envelope, are  prefixed
-with a &gt; char.
+<i>mbox_shortened = 0</i></dd>
+<dd><a name="ietf_mbox" id="ietf_mbox"></a></dd>
+<dt><strong>ietf_mbox = [ 0 | 1 ]</strong></dt>
+<dd>Setting this variable to 1 will tell hypermail that the mbox is
+formatted according to the IETF mbox convention: all lines, except
+for the envelope, are prefixed with a &gt; char.<br>
 <br>
-<br><i>ietf_mbox = 0</i>
-</dd>
-
-<a name="discard_dup_msgids"></a>
-<dt><strong>discard_dup_msgids = [ 0 | 1 ]</strong></dt><dd>
-Set this to 0 to accept messages with a Message-ID matching that 
-of a message already in this archive. By default such messages 
-are discarded.
+<i>ietf_mbox = 0</i></dd>
+<dd><a name="discard_dup_msgids" id="discard_dup_msgids"></a></dd>
+<dt><strong>discard_dup_msgids = [ 0 | 1 ]</strong></dt>
+<dd>Set this to 0 to accept messages with a Message-ID matching
+that of a message already in this archive. By default such messages
+are discarded.<br>
 <br>
-<br><i>discard_dup_msgids = 1</i>
-</dd>
-
-<a name="require_msgids"></a>
-<dt><strong>require_msgids = [ 0 | 1 ]</strong></dt><dd>
-Set this to 0 to accept messages without a Message-ID header.
-<br> Set this to 1 to discard messages without a Message-ID header.
-<br> By default such messages are discarded.
-<br> 
-<br><i>require_msgids = 1</i>
-</dd>
-
-<h3><a name="filters">Message Filtering</a></h3>
- Regular expression support is provided by the
-<a href="http://www.pcre.org/">PCRE</a>&nbsp; library package,
-which is open source software, written by Philip Hazel, and copyright
-by the University of Cambridge, England.
-<p>
- The full body searches can be slow, and do not match multi-line strings
-in message bodies. A string that spans multiple lines of a header can be
-matched.
-<p>
-
-<a name="filter_out"></a>
-<dt><strong>filter_out = expression</strong></dt><dd>
- Delete from the html archives any message having a header line
+<i>discard_dup_msgids = 1</i></dd>
+<dd><a name="require_msgids" id="require_msgids"></a></dd>
+<dt><strong>require_msgids = [ 0 | 1 ]</strong></dt>
+<dd>Set this to 0 to accept messages without a Message-ID
+header.<br>
+Set this to 1 to discard messages without a Message-ID header.<br>
+By default such messages are discarded.<br>
+<br>
+<i>require_msgids = 1</i></dd>
+</dl>
+<h3><a name="filters" id="filters">Message Filtering</a></h3>
+Regular expression support is provided by the <a href=
+"http://www.pcre.org/">PCRE</a>&nbsp; library package, which is
+open source software, written by Philip Hazel, and copyright by the
+University of Cambridge, England.
+<p>The full body searches can be slow, and do not match multi-line
+strings in message bodies. A string that spans multiple lines of a
+header can be matched.</p>
+<p><a name="filter_out" id="filter_out"></a></p>
+<dl>
+<dt><strong>filter_out = expression</strong></dt>
+<dd>Delete from the html archives any message having a header line
 which matches any of these expressions. Uses the same rules for
-deletion as the expires option. The expressions use the same
-syntax as Perl regular expressions.
-<p> The following examples should reject messages Cc'd to more than
-3 addresses or from any address at spammers.com. This option is disabled
-by default.
+deletion as the expires option. The expressions use the same syntax
+as Perl regular expressions.</dd>
+</dl>
+<p>The following examples should reject messages Cc'd to more than
+3 addresses or from any address at spammers.com. This option is
+disabled by default.<br>
 <br>
-<br><i>filter_out=Cc:([^,]*,){3}</i>
-<br><i>filter_out=From:.+@spammers.com</i>
-</dd>
-<a name="filter_require"></a>
-<dt><strong>filter_require = expression</strong></dt><dd>
- Delete from the html archives any message not having header lines
+<i>filter_out=Cc:([^,]*,){3}</i><br>
+<i>filter_out=From:.+@spammers.com</i> <a name="filter_require" id=
+"filter_require"></a></p>
+<dl>
+<dt><strong>filter_require = expression</strong></dt>
+<dd>Delete from the html archives any message not having header
+lines which match each of these expressions. Uses the same rules
+for deletion as the expires option. The expressions use the same
+syntax as Perl regular expressions.<br>
+<br>
+<i>filter_require =</i></dd>
+<dd><a name="filter_out_full_body" id=
+"filter_out_full_body"></a></dd>
+<dt><strong>filter_out_full_body = expression</strong></dt>
+<dd>Delete from the html archives any message having a line which
+matches any of these expressions. Uses the same rules for deletion
+as the expires option. The expressions use the same syntax as Perl
+regular expressions.<br>
+<br>
+<i>filter_out_full_body =</i></dd>
+<dd><a name="filter_require_full_body" id=
+"filter_require_full_body"></a></dd>
+<dt><strong>filter_require_full_body = expression</strong></dt>
+<dd>Delete from the html archives any message not having lines
 which match each of these expressions. Uses the same rules for
-deletion as the expires option. The expressions use the same
-syntax as Perl regular expressions.
+deletion as the expires option. The expressions use the same syntax
+as Perl regular expressions.<br>
 <br>
-<br><i>filter_require =</i>
-</dd>
-<a name="filter_out_full_body"></a>
-<dt><strong>filter_out_full_body = expression</strong></dt><dd>
- Delete from the html archives any message having a line
-which matches any of these expressions. Uses the same rules for
-deletion as the expires option. The expressions use the same
-syntax as Perl regular expressions.
+<i>filter_require_full_body =</i></dd>
+</dl>
+<h3><a name="files" id="files">Filesystem output</a></h3>
+<a name="dir" id="dir"></a>
+<dl>
+<dt><strong>dir = [ directory path | NONE ]</strong></dt>
+<dd>This is the default directory that Hypermail uses when creating
+and updating archives. If set to NONE, the directory will have the
+same name as the input mailbox.<br>
+Note that the date that Hypermail was run will be used, not a date
+from the message (use the <a href=
+"#folder_by_date">folder_by_date</a> option to have Hypermail use
+dates from messages).<br>
 <br>
-<br><i>filter_out_full_body =</i>
-</dd>
-<a name="filter_require_full_body"></a>
-<dt><strong>filter_require_full_body = expression</strong></dt><dd>
- Delete from the html archives any message not having lines
-which match each of these expressions. Uses the same rules for
-deletion as the expires option. The expressions use the same
-syntax as Perl regular expressions.
-<br>
-<br><i>filter_require_full_body = </i>
-</dd>
-
-<h3><a name="files">Filesystem output</a></h3>
-<a name="dir"></a>
-<dt><strong>dir = [ directory path | NONE ]</strong></dt><dd>
-This is the default directory that Hypermail uses when creating 
-and updating archives. If set to NONE, the directory will have the 
-same name as the input mailbox.
-<br> Note that the date that Hypermail was run will be used, not
-a date from the message (use the <a href="#folder_by_date">folder_by_date</a> option to
-have Hypermail use dates from messages).
-<br>
-<br><i>dir = NONE</i>
-</dd>
-
-<a name="overwrite"></a>
-<dt><strong>overwrite = [ 0 | 1 ]</strong></dt><dd>
-Set to 1 to make Hypermail rewrite all messages.
-<br>Set to 0 to rewrite as few messages as possible.
-<br>Rewriting all messages is slower, but if you change the options
+<i>dir = NONE</i></dd>
+<dd><a name="overwrite" id="overwrite"></a></dd>
+<dt><strong>overwrite = [ 0 | 1 ]</strong></dt>
+<dd>Set to 1 to make Hypermail rewrite all messages.<br>
+Set to 0 to rewrite as few messages as possible.<br>
+Rewriting all messages is slower, but if you change the options
 that control the appearance of the messages you may want to rewrite
-all the messages to make the appearance consistent throughout the archive.
-(This defaulted to 1 for most versions 2.0 through 2.1.3, presumably
-to encourage archives that upgraded to have a single style. The default
-was changed back to 0 after 2.1.3).
-<br> 
-<br><i>overwrite = 0</i>
-</dd>
-
-<a name="htmlsuffix"></a>
-<dt><strong>htmlsuffix = [ html | htm | shtml ... ]</strong></dt><dd>
-Use this to specify the html file suffix to be used when Hypermail
-generates the html files. This is dependent on local needs. Do not 
-put a '.' in the value. It would result in "file..html", probably
-not what you want.
+all the messages to make the appearance consistent throughout the
+archive. (This defaulted to 1 for most versions 2.0 through 2.1.3,
+presumably to encourage archives that upgraded to have a single
+style. The default was changed back to 0 after 2.1.3).<br>
 <br>
-<br><i>htmlsuffix = shtml</i>
-</dd>
-
-<a name="dirmode"></a>
-<dt><strong>dirmode = octal number</strong></dt><dd>
-This is an octal number representing the rwx modes that new directories 
-are set to when they are created. If the archives will be made publically 
-available, it's a good idea to define this as 0755. This must be an octal 
-number.
+<i>overwrite = 0</i></dd>
+<dd><a name="htmlsuffix" id="htmlsuffix"></a></dd>
+<dt><strong>htmlsuffix = [ html | htm | shtml ... ]</strong></dt>
+<dd>Use this to specify the html file suffix to be used when
+Hypermail generates the html files. This is dependent on local
+needs. Do not put a '.' in the value. It would result in
+"file..html", probably not what you want.<br>
 <br>
-<br><i>dirmode = 0755</i>
-</dd>
-
-<a name="filemode"></a>
-<dt><strong>filemode = octal number</strong></dt><dd>
-This is an octal number representing the permission modes that new files 
-are set to when they are created. If the archives will be made publically 
-available, it's a good idea to define this as 0644. This must be an octal 
-number.
+<i>htmlsuffix = shtml</i></dd>
+<dd><a name="dirmode" id="dirmode"></a></dd>
+<dt><strong>dirmode = octal number</strong></dt>
+<dd>This is an octal number representing the rwx modes that new
+directories are set to when they are created. If the archives will
+be made publically available, it's a good idea to define this as
+0755. This must be an octal number.<br>
 <br>
-<br><i>filemode = 0644</i>
-</dd>
-
-<a name="filename_base"></a>
-<dt><strong>filename_base = [ string ]</strong></dt><dd>
-This option overrides the normal rules for creating attachment
-file names, and creates file names from the string that this
-option is set to plus a file name extension if one can be found
-in the name supplied by the message. This option is mainly for
-languages that use different character sets from English.
+<i>dirmode = 0755</i></dd>
+<dd><a name="filemode" id="filemode"></a></dd>
+<dt><strong>filemode = octal number</strong></dt>
+<dd>This is an octal number representing the permission modes that
+new files are set to when they are created. If the archives will be
+made publically available, it's a good idea to define this as 0644.
+This must be an octal number.<br>
 <br>
-<br><i>filename_base = attachment</i> (disabled by default)
-</dd>
-
-<h3><a name="sysmisc">System miscellaneous</a></h3>
-
-<a name="usegdbm"></a>
-<dt><strong>usegdbm = [ 0 | 1 ]</strong></dt><dd>
-Set this to 1 to use gdbm to implement a header cache.
-This will speed up hypermail, especially if your filesystem is slow.
-It will not provide any speedup with the <a href="#linkquotes">linkquotes</a> option.
+<i>filemode = 0644</i></dd>
+<dd><a name="filename_base" id="filename_base"></a></dd>
+<dt><strong>filename_base = [ string ]</strong></dt>
+<dd>This option overrides the normal rules for creating attachment
+file names, and creates file names from the string that this option
+is set to plus a file name extension if one can be found in the
+name supplied by the message. This option is mainly for languages
+that use different character sets from English.<br>
 <br>
-<br><i>usegdbm = 0</i>
-</dd>
-<a name="writehaof"></a>
-<dt><strong>writehaof = [ 0 | 1 ]</strong></dt><dd>
-Set this to On to let hypermail write an XML archive overview file
-in each directory. The filename is archive_overview.haof.
+<i>filename_base = attachment</i> (disabled by default)</dd>
+</dl>
+<h3><a name="sysmisc" id="sysmisc">System miscellaneous</a></h3>
+<a name="usegdbm" id="usegdbm"></a>
+<dl>
+<dt><strong>usegdbm = [ 0 | 1 ]</strong></dt>
+<dd>Set this to 1 to use gdbm to implement a header cache. This
+will speed up hypermail, especially if your filesystem is slow. It
+will not provide any speedup with the <a href=
+"#linkquotes">linkquotes</a> option.<br>
 <br>
-<br><i>writehaof = 0</i>
-</dd>
-<a name="append"></a>
-<dt><strong>append = [ 0 | 1 ]</strong></dt><dd>
-Set this to On to maintain a parallel mbox archive. The file
-name defaults to mbox in the directory specified by -d or dir.
+<i>usegdbm = 0</i></dd>
+<dd><a name="writehaof" id="writehaof"></a></dd>
+<dt><strong>writehaof = [ 0 | 1 ]</strong></dt>
+<dd>Set this to On to let hypermail write an XML archive overview
+file in each directory. The filename is archive_overview.haof.<br>
 <br>
-<br><i>append = 1</i>
-</dd>
-<a name="append_filename"></a>
-<dt><strong>append_filename = [ string ]</strong></dt><dd>
- Specifies the filename to be used by the append option.
-$DIR may be used to specify a name relative to the directory
-specified in the -d or dir option.
+<i>writehaof = 0</i></dd>
+<dd><a name="append" id="append"></a></dd>
+<dt><strong>append = [ 0 | 1 ]</strong></dt>
+<dd>Set this to On to maintain a parallel mbox archive. The file
+name defaults to mbox in the directory specified by -d or dir.<br>
 <br>
-<br><i>append_filename = $DIR/INBOX</i>
-</dd>
-<a name="txtsuffix"></a>
-<dt><strong>txtsuffix = [ string ]</strong></dt><dd>
-If you want the original mail messages archived in individual files,
-set this to the extension that you want these messages to have
-(recommended value: <strong>txt</strong>).
+<i>append = 1</i></dd>
+<dd><a name="append_filename" id="append_filename"></a></dd>
+<dt><strong>append_filename = [ string ]</strong></dt>
+<dd>Specifies the filename to be used by the append option. $DIR
+may be used to specify a name relative to the directory specified
+in the -d or dir option.<br>
 <br>
-<br><i>txtsuffix = txt</i> (off by default)
-</dd>
-<a name="deleted"></a>
-<dt><strong>deleted = list of headers used to indicate deletion</strong></dt><dd>
- This is the list of headers that indicate the message should
-not be displayed if the value of this header is 'yes'.
- See the <a href="#delete_level">delete_level</a> option for more info about
-what happens to the message.
+<i>append_filename = $DIR/INBOX</i></dd>
+<dd><a name="txtsuffix" id="txtsuffix"></a></dd>
+<dt><strong>txtsuffix = [ string ]</strong></dt>
+<dd>If you want the original mail messages archived in individual
+files, set this to the extension that you want these messages to
+have (recommended value: <strong>txt</strong>).<br>
 <br>
-<br><i>deleted = X-Hypermail-Deleted X-No-Archive</i>
-</dd>
-<a name="expires"></a>
-<dt><strong>expires = list of headers used to indicate expiration</strong></dt><dd>
- This is the list of headers that indicate the message should
+<i>txtsuffix = txt</i> (off by default)</dd>
+<dd><a name="annotated" id="annotated"></a></dd>
+<dt><strong>annotated = list of headers used to indicate
+deletion</strong></dt>
+<dd>This is the list of headers that indicate that a message
+contains an annotation. Options <strong>disabled</strong> by
+default.<br>
+<br>
+In an annotated message, the values of the header specify the type
+of annotations. The header may have one or more comma-separated
+values. Order and case are not important. Hypermail recognizes two
+types of annotations: <strong>content</strong> and
+<strong>robot</strong> annotations.<br>
+<br>
+<strong>Content annotations</strong> give information to the reader
+about how an archive maintainer has operated on an original
+received message. This operation typically happens as a belated
+action, for example, when removing spam from an existing archive.
+Content annotations can have one, and only one, of the following
+values:<br>
+<dl>
+<dt>spam</dt>
+<dd>message deleted because it is spam;</dd>
+<dt>deleted</dt>
+<dd>message deleted, other reasons;</dd>
+<dt>edited</dt>
+<dd>original received message was manually edited.</dd>
+</dl>
+<br>
+If a message specifies more than one content annotation, only the
+first one will be taken into account. You can customize the markup
+that\'s shown for content annotations by means of the <a href=
+"#htmlmessage_deleted_other">htmlmessage_deleted_other</a>,
+<a href="#htmlmessage_deleted_spam">htmlmessage_deleted_spam</a>,
+and <a href="#htmlmessage_edited">htmlmessage_edited</a>
+directives. See also the <a href="#delete_level">delete_level</a>
+option for more info about what happens to a deleted message.<br>
+<br>
+<strong>Robot annotations</strong> instruct a visiting web robot if
+a the contents of a message should be indexed and/or if the
+outgoing links from the message should be followed, doing so thru a
+specific HTML meta tag (browse <a href=
+"http://www.robotstxt.org/">About the Robots &lt;META&gt; tag</a>
+for further details).<br>
+Robot annotations can have either one or both of the following
+values:
+<dl>
+<dt>nofollow</dt>
+<dd>do not follow outgoing HTML links from this file;</dd>
+<dt>noindex</dt>
+<dd>do not index this file.</dd>
+</dl>
+<br>
+You can use one or both robot annotation values and combine them
+with the <strong>edited</strong> content annotation. Note that
+<strong>spam</strong> and <strong>deleted</strong> annotations have
+an implicit robot <strong>noindex</strong> annotation. In such
+case, user supplied robot annotations values will be silently
+ignored.<br>
+<br>
+Note that the list maintainer must be careful on whether to accept
+incoming messages containing the <strong>annotated</strong> header.
+If the policy is not to allow that header on incoming messages, it
+must be filtered out before the message is stored or acted upon by
+hypermail.<br>
+<br>
+In an <strong>hmrc</strong> file:<br>
+<em>annotated = X-Hypermail-Annotated</em> (off by default)<br>
+In a message:<br>
+<em>X-Hypermail-Annotated: edited, noindex</em></dd>
+<dd><a name="deleted" id="deleted"></a></dd>
+<dt><strong>deleted = list of headers used to indicate
+deletion</strong> <strong>[DEPRECATED]</strong></dt>
+<dd>This is the list of headers that indicate the message should
+not be displayed if the value of this header is 'yes'. See the
+<a href="#delete_level">delete_level</a> option for more info about
+what happens to the message.<br>
+NOTE: This option has been <strong>deprecated</strong> if favor of
+<a href="#annotated">annotated</a>. However, it will still be
+parsed and honored to take into account legacy archives.<br>
+<br>
+<em>deleted = X-Hypermail-Deleted X-No-Archive</em></dd>
+<dd><a name="expires" id="expires"></a></dd>
+<dt><strong>expires = list of headers used to indicate
+expiration</strong></dt>
+<dd>This is the list of headers that indicate the message should
 not be displayed if the value of this header is a date in the past.
- See the <a href="#delete_level">delete_level</a> option for more info about
-what happens to the message.
+See the <a href="#delete_level">delete_level</a> option for more
+info about what happens to the message.<br>
 <br>
-<br><i>expires = Expires</i>
-</dd>
-<a name="delete_older"></a>
-<dt><strong>delete_older = date/time string</strong></dt><dd>
- Any message older than this date should not be displayed. See the
-<a href="#delete_level">delete_level</a> option for more info about
-what happens to the message. Any date format that works in the Date:
-header line of an email message should work here.
+<i>expires = Expires</i></dd>
+<dd><a name="delete_older" id="delete_older"></a></dd>
+<dt><strong>delete_older = date/time string</strong></dt>
+<dd>Any message older than this date should not be displayed. See
+the <a href="#delete_level">delete_level</a> option for more info
+about what happens to the message. Any date format that works in
+the Date: header line of an email message should work here.<br>
 <br>
-<br><i>delete_older = "Wed, 14 Mar 2001 12:59:51 +0200"</i> (off by default)
-</dd>
-<a name="delete_newer"></a>
-<dt><strong>delete_newer = date/time string</strong></dt><dd>
- Any message newer than this date should not be displayed. See the
-<a href="#delete_level">delete_level</a> option for more info about
-what happens to the message. Any date format that works in the Date:
-header line of an email message should work here.
+<i>delete_older = "Wed, 14 Mar 2001 12:59:51 +0200"</i> (off by
+default)</dd>
+<dd><a name="delete_newer" id="delete_newer"></a></dd>
+<dt><strong>delete_newer = date/time string</strong></dt>
+<dd>Any message newer than this date should not be displayed. See
+the <a href="#delete_level">delete_level</a> option for more info
+about what happens to the message. Any date format that works in
+the Date: header line of an email message should work here.<br>
 <br>
-<br><i>delete_newer = "Wed, 28 Mar 2001 12:59:51 +0200"</i> (off by default)
-</dd>
-<a name="delete_msgnum"></a>
-<dt><strong>delete_msgnum = list of message numbers</strong></dt><dd>
- This is the list of message numbers that should be deleted from the
-html archive. The mbox is not changed.
- See the <a href="#delete_level">delete_level</a> option for more info about
-what happens to the message.
+<i>delete_newer = "Wed, 28 Mar 2001 12:59:51 +0200"</i> (off by
+default)</dd>
+<dd><a name="delete_msgnum" id="delete_msgnum"></a></dd>
+<dt><strong>delete_msgnum = list of message numbers</strong></dt>
+<dd>This is the list of message numbers that should be deleted from
+the html archive. The mbox is not changed. See the <a href=
+"#delete_level">delete_level</a> option for more info about what
+happens to the message.<br>
 <br>
-<br><i>delete_msgnum = 42 666</i> (off by default)
-<a name="delete_level"></a>
-<dt><strong>delete_level = [ 0 | 1 | 2 | 3 ]</strong></dt><dd>
-<br> 0 - remove deleted and expired files. Note that with this choice
-     threading may be screwed up if there are replies to deleted or
-     expired options and the archive is updated incrementally
-<br> 1 - remove message body
-<br> 2 - remove message body for deleted messages, leave expired messages
-<br> 3 - leave all messages
-<br> Deleted and expired messages are removed from the index files
- regardless of the delete_level selection.
+<i>delete_msgnum = 42 666</i> (off by default) <a name=
+"delete_level" id="delete_level"></a></dd>
+<dt><strong>delete_level = [ 0 | 1 | 2 | 3 ]</strong></dt>
+<dd><br>
+0 - remove deleted and expired files. Note that with this choice
+threading may be screwed up if there are replies to deleted or
+expired options and the archive is updated incrementally<br>
+1 - remove message body<br>
+2 - remove message body for deleted messages, leave expired
+messages<br>
+3 - leave all messages<br>
+Deleted and expired messages are removed from the index files
+regardless of the delete_level selection.<br>
 <br>
-<br><i>delete_level = 1</i>
-</dd>
-<a name="delete_incremental"></a>
-<dt><strong>delete_incremental = [ 0 | 1 ]</strong></dt><dd>
-<br>If this option is enabled, hypermail will perform deletions on old
-messages when run in incremental mode (according to the other delete
-configuration options). Note that depending on your hypermail setup,
-the size of the archive, and the complexity of the markup,
-there may be memory and parsing issues, specifically when there are
-non-deleted replies to a deleted message.
-If this option is disabled, deleted messages will only be removed
-when rebuilding the whole archive.
-<br />
-<br><i>delete_incremental = 0</i> (enabled by default)
-</dd>
-<a name="htmlmessage_deleted"></a>
-<dt><strong>htmlmessage_deleted = [HTML markup string]</strong></dt><dd>
-<br> Custom markup to use in the body of deleted messages when <em>delete_level</em>
-is equal or superior to 2.
+<i>delete_level = 1</i></dd>
+<dd><a name="delete_incremental" id="delete_incremental"></a></dd>
+<dt><strong>delete_incremental = [ 0 | 1 ]</strong></dt>
+<dd><br>
+If this option is enabled, hypermail will perform deletions on old
+messages when run in incremental mode (according to the other
+delete configuration options). Note that depending on your
+hypermail setup, the size of the archive, and the complexity of the
+markup, there may be memory and parsing issues, specifically when
+there are non-deleted replies to a deleted message. If this option
+is disabled, deleted messages will only be removed when rebuilding
+the whole archive.<br>
 <br>
-<br><i>htmlmessage_deleted = &lt;div class="spam"&gt;&lt;img src="http://example.org/Mail/noUCE.png" alt="unsolicited bulk email removed" /&gt; &lt;p class="spammes"&gt;This message was determined to be unsolicited bulk email and has been removed from our archives.&lt;/p&gt;&lt;p class="spamfooter"&gt;The removal of this email is consistent with &lt;a href="http://example.org/Mail/"&gt;example.org's Mailing List and Archive Usage Policy.&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</i> (disabled by default)
-</dd>
-
-<a name="progress"></a>
-<dt><strong>progress = [ 0 | 1 | 2 ]</strong></dt><dd>
-Set to 1 or 2 to show progress as Hypermail works. Set to 0 for silent
-operation. Output goes to standard output.
-Set to 1, progress information relating to attachments creation is 
-overwritten for each new attachment. Set to 2, attachment creation 
-information is listed individually with the number of the message 
-the attachments relates to. 
+<i>delete_incremental = 0</i> (enabled by default)</dd>
+<dd><a name="htmlmessage_edited" id="htmlmessage_edited"></a></dd>
+<dt><strong>htmlmessage_edited = [HTML markup string]</strong></dt>
+<dd>Custom markup to use in the body of manually edited message
+when <em>delete_level</em> is equal or superior to 2.<br>
 <br>
-<br><i>progress = 0</i>
-</dd>
-<a name="warn_surpressions"></a>
-<dt><strong> warn_surpressions = [ 0 | 1 ]</strong></dt><dd>
-Set this to 1 to get warnings (on stdout) about messages that
+<i>htmlmessage_edited = &lt;div class="edited"&gt;&lt;img
+src="http://example.org/Mail/edited.png" alt="original message
+edited" /&gt; &lt;p class="editedmmes"&gt;The originally received
+message was edited by the archive maintainer.&lt;/p&gt;&lt;p
+class="spamfooter"&gt;The editing of this email is consistent with
+&lt;a href="http://example.org/Mail/"&gt;example.org's Mailing List
+and Archive Usage Policy.&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</i>
+(disabled by default)</dd>
+<dd><a name="htmlmessage_deleted_other" id=
+"htmlmessage_deleted_other"></a></dd>
+<dt><strong>htmlmessage_deleted_other = [HTML markup
+string]</strong></dt>
+<dd>Custom markup to use in the body of deleted messages (by
+reasons other than spam) when <em>delete_level</em> is equal or
+superior to 2.<br>
+<br>
+<i>htmlmessage_deleted_spam = &lt;div class="deleted"&gt;&lt;img
+src="http://example.org/Mail/deleted.png" alt="email removed" /&gt;
+&lt;p class="deletedmmes"&gt;This message was removed from our mail
+archives by the archive maintainer.&lt;/p&gt;&lt;p
+class="deletedfooter"&gt;The removal of this email is consistent
+with &lt;a href="http://example.org/Mail/"&gt;example.org's Mailing
+List and Archive Usage Policy.&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</i>
+(disabled by default)</dd>
+<dd><a name="htmlmessage_deleted_spam" id=
+"htmlmessage_deleted_spam"></a></dd>
+<dt><strong>htmlmessage_deleted_spam = [HTML markup
+string]</strong></dt>
+<dd>Custom markup to use in the body of deleted messages (by spam
+reasons) when <em>delete_level</em> is equal or superior to 2.<br>
+<br>
+<i>htmlmessage_deleted_spam = &lt;div class="spam"&gt;&lt;img
+src="http://example.org/Mail/noUCE.png" alt="unsolicited bulk email
+removed" /&gt; &lt;p class="spammes"&gt;This message was determined
+to be unsolicited bulk email and has been removed from our
+archives.&lt;/p&gt;&lt;p class="spamfooter"&gt;The removal of this
+email is consistent with &lt;a
+href="http://example.org/Mail/"&gt;example.org's Mailing List and
+Archive Usage Policy.&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</i> (disabled
+by default)</dd>
+<dd><a name="progress" id="progress"></a></dd>
+<dt><strong>progress = [ 0 | 1 | 2 ]</strong></dt>
+<dd>Set to 1 or 2 to show progress as Hypermail works. Set to 0 for
+silent operation. Output goes to standard output. Set to 1,
+progress information relating to attachments creation is
+overwritten for each new attachment. Set to 2, attachment creation
+information is listed individually with the number of the message
+the attachments relates to.<br>
+<br>
+<i>progress = 0</i></dd>
+<dd><a name="warn_surpressions" id="warn_surpressions"></a></dd>
+<dt><strong>warn_surpressions = [ 0 | 1 ]</strong></dt>
+<dd>Set this to 1 to get warnings (on stdout) about messages that
 are not converted because of they are missing a msgid (if
 require_msgids is On) or because one of the following options
 surpressed it: deleted expires delete_msgnum filter_out
-filter_require filter_out_full_body filter_require_full_body.
+filter_require filter_out_full_body filter_require_full_body.<br>
 <br>
-<br><i>warn_surpressions = 1</i>
-</dd>
-<a name="uselock"></a>
-<dt><strong> uselock = [ 0 | 1 ]</strong></dt><dd>
-Controls whether to use hypermail's built-in locking mechanism. 
-By default, this option is set to <strong>1</strong>. Set it to 
-<strong>0</strong> if you have an external locking mechanism,
-like, for example, when using procmail or smartlist.
+<i>warn_surpressions = 1</i></dd>
+<dd><a name="uselock" id="uselock"></a></dd>
+<dt><strong>uselock = [ 0 | 1 ]</strong></dt>
+<dd>Controls whether to use hypermail's built-in locking mechanism.
+By default, this option is set to <strong>1</strong>. Set it to
+<strong>0</strong> if you have an external locking mechanism, like,
+for example, when using procmail or smartlist.<br>
 <br>
-<br><i>uselock = 0</i>
-</dd>
-
-<a name="locktime"></a>
-<dt><strong>locktime = number-of-seconds</strong></dt><dd>
-The number of seconds that a lock should be honored when processing
-inbound messages before it is overridden.
+<i>uselock = 0</i></dd>
+<dd><a name="locktime" id="locktime"></a></dd>
+<dt><strong>locktime = number-of-seconds</strong></dt>
+<dd>The number of seconds that a lock should be honored when
+processing inbound messages before it is overridden.<br>
 <br>
-<br><i>locktime = 3600</i>
-</dd>
-
-<a name="base_url"></a>
-<dt><strong>base_url = url-of-main-archive-directory</strong></dt><dd>
- The url of the archive's main directory. This is needed when
+<i>locktime = 3600</i></dd>
+<dd><a name="base_url" id="base_url"></a></dd>
+<dt><strong>base_url = url-of-main-archive-directory</strong></dt>
+<dd>The url of the archive's main directory. This is needed when
 the latest_folder option is used and the folder_by_date makes
-directories more than one level deep (e.g. with '%y/%m').
+directories more than one level deep (e.g. with '%y/%m').<br>
 <br>
-<br><i>base_url = http://www.hypermail-project.org/archive/</i>
-</dd>
-<a name="report_new_folder"></a>
-<dt><strong>report_new_folder = [ 0 | 1 ]</strong></dt><dd>
-Set this to On to have it print (on stdout) the names of any
+<i>base_url = http://www.hypermail-project.org/archive/</i></dd>
+<dd><a name="report_new_folder" id="report_new_folder"></a></dd>
+<dt><strong>report_new_folder = [ 0 | 1 ]</strong></dt>
+<dd>Set this to On to have it print (on stdout) the names of any
 new directories created pursuant to the folder_by_date or
-msgsperfolder option, or the initial creation of the archive.
-It will print the full path if that is what you use to specify
-the archive directory. Does not print anything when attachment
-or metadata directories are created.<br>
-<br><i>report_new_folder = 0</i>
-</dd>
-<a name="report_new_file"></a>
-<dt><strong>report_new_file = [ 0 | 1 ]</strong></dt><dd>
-Set this to On to have it print (on stdout) the names of any
-new files created for new messages. It will print the full path
-if that is what you use to specify the archive directory.
-<br><i>report_new_file = 0</i>
-</dd>
-</dl>
-<p>
+msgsperfolder option, or the initial creation of the archive. It
+will print the full path if that is what you use to specify the
+archive directory. Does not print anything when attachment or
+metadata directories are created.<br>
+<br>
+<i>report_new_folder = 0</i></dd>
+<dd><a name="report_new_file" id="report_new_file"></a></dd>
+<dt><strong>report_new_file = [ 0 | 1 ]</strong></dt>
+<dd>Set this to On to have it print (on stdout) the names of any
+new files created for new messages. It will print the full path if
+that is what you use to specify the archive directory.<br>
+<i>report_new_file = 0</i></dd>
+<dd>
 <hr noshade>
 <big><strong>See Also</strong></big>
-<blockquote>
-<strong>hypermail(1)</strong>,
-&nbsp;
-<strong>hmrc(4)</strong>,
-&nbsp;
-<strong><a href="hypermail.html">Hypermail</a></strong> 
-&nbsp;
-and
-&nbsp;
-<strong><a href="customizing.html">Customizing Hypermail Pages</A></strong>
-and <STRONG><A HREF="archive_search.html">Adding a Search Engines to your Hypermail Archive</A></STRONG>
-
+<blockquote><strong>hypermail(1)</strong>, &nbsp;
+<strong>hmrc(4)</strong>, &nbsp; <strong><a href=
+"hypermail.html">Hypermail</a></strong> &nbsp; and &nbsp;
+<strong><a href="customizing.html">Customizing Hypermail
+Pages</a></strong> and <strong><a href="archive_search.html">Adding
+a Search Engines to your Hypermail
+Archive</a></strong></blockquote>
 <hr noshade>
-<small><em><strong>
-Last updated February 4, 2004
-</strong></em></small>
-
+<small><em><strong>Last updated February 6,
+2013</strong></em></small></dd>
+</dl>
 </body>
 </html>

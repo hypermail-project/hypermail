@@ -1,5 +1,25 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+============================
+HYPERMAIL VERSION 2.3.1:
+============================	
+ Jose Kahan (Jan 30, 2012)
+ - Migrated source code repository from cvs.hypermail.org to 
+   http://sourceforge.net/projects/hypermail/
+ - Added a mirror of the repository to github:
+   http://github.com/hypermail-project/hypermail
+ - Cleared up the markup errors in docs/hmrc.html by using tidy.
+ - New configuration directive "annotated" which allows a mailing
+   list archive editor to annotate a given message before converting
+   it into HTML. Associated additional new directives are 
+   "html_message_deleted_spam", "html_message_deleted_other", 
+   ""html_message_edited". Consult docs/hmrc.html for more info.
+ - "html_message_deleted" is deprecated in favor of "html_message_deleted_spam"	
+ - "deleted" is superseded by "annotated", although it will be supported
+   to take into account legacy archives.
+ - Regenerated the dependencies for the src/Makefile.in file.
+	
 ============================
 HYPERMAIL VERSION 2.3.0:
 ============================
@@ -12,9 +32,9 @@ HYPERMAIL VERSION 2.3.0:
     in thread, 'd' -> next message
 
  Jose Kahan (Oct 26, 2009)
-  - Updated hmrc.4 and hmrc.html to descrbie the new features.
+  - Updated hmrc.4 and hmrc.html to describe the new features.
 
- Jose Kahan (Oct 26, 2009)
+ Jose Kahan (Oct 23, 2009)
   Various fixes / enhancements developed at W3C by Fumihiro Kato,
   Daigo Matsubara and myself:
   - Markup changes for deleted messages that are kept.

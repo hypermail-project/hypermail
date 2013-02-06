@@ -653,6 +653,66 @@ char *getsubject(char *line)
 }
 
 /*
+** Grabs the annotation values given in the annotation user-defined header
+** 
+** annotation_content is set to the value of the content annotation
+** annotation_robot is set to the values of the robot annotations
+** Returns TRUE if an annotation was found, FALSE otherwise.
+*/
+
+static bool
+getannotation(char *line, annotation_content_t *annotation_content,
+	       annotation_robot_t *annotation_robot)
+{
+  char *c;
+
+  *annotation_content = ANNOTATION_CONTENT_NONE;;
+  *annotation_robot = ANNOTATION_ROBOT_NONE;
+  
+  c = strchr(line, ':');
+  if (!c)
+    return FALSE;
+  c++;
+
+  while (*c != '\n') {
+    int len;
+    char *startp;
+
+    while (isspace(*c))
+      c++;
+  
+    startp = c;
+    while (!isspace (*c) && *c != '\n' && *c != ',') {
+      c++;
+    }
+
+    len = (int) (c-startp);
+    if (len > 0) {
+      if (!strncasecmp (startp, "deleted", len)) {
+	*annotation_content = ANNOTATION_CONTENT_DELETED_OTHER;
+	break;
+      }
+      else if (!strncasecmp (startp, "spam", len)) {
+	*annotation_content = ANNOTATION_CONTENT_DELETED_SPAM;
+	break;
+      }
+      else if (!strncasecmp (startp, "edited", len))
+	*annotation_content = ANNOTATION_CONTENT_EDITED;
+      else if (!strncasecmp (startp, "noindex", len))
+	*annotation_robot |= ANNOTATION_ROBOT_NO_INDEX;
+      else if (!strncasecmp (startp, "nofollow", len))
+	*annotation_robot |= ANNOTATION_ROBOT_NO_FOLLOW;
+    }
+    if (*c == ',')
+      c++;
+  }
+
+  /* only return true if at least a valid annotation was found */
+  return (*annotation_content != ANNOTATION_CONTENT_NONE 
+	  || *annotation_robot != ANNOTATION_ROBOT_NONE);
+}
+
+/*
 ** Grabs the message ID, or date, from the In-reply-to: header.
 **
 ** Maybe I'm confused but....
@@ -1192,7 +1252,8 @@ static void write_txt_file(struct emailinfo *emp, struct Push *raw_text_buf)
     sprintf(tmp_buf, "%.4d", emp->msgnum);
     txt_filename = htmlfilename(tmp_buf, emp, set_txtsuffix);
     if ((!emp->is_deleted
-	 || ((emp->is_deleted & (FILTERED_DELETE | FILTERED_OLD | FILTERED_NEW))
+	 || ((emp->is_deleted & (FILTERED_DELETE | FILTERED_OLD | FILTERED_NEW 
+				 | FILTERED_DELETE_OTHER))
 	     && set_delete_level > 2)
 	 || (emp->is_deleted == FILTERED_EXPIRE && set_delete_level == 2))
 	&& (set_overwrite || !isfile(txt_filename))) {
@@ -1239,6 +1300,8 @@ int parsemail(char *mbox,	/* file name */
     long exp_time = -1;
     time_t delete_older_than = (set_delete_older ? convtoyearsecs(set_delete_older) : 0);
     time_t delete_newer_than = (set_delete_newer ? convtoyearsecs(set_delete_newer) : 0);
+    annotation_robot_t annotation_robot = ANNOTATION_ROBOT_NONE;
+    annotation_content_t annotation_content = ANNOTATION_CONTENT_NONE;
     int is_deleted = 0;
     int pos;
     bool *require_filter, *require_filter_full;
@@ -1490,6 +1553,16 @@ int parsemail(char *mbox,	/* file name */
 			if (exp_time != -1 && exp_time < time(NULL))
 			    is_deleted = FILTERED_EXPIRE;
 			free(val);
+		    }
+
+		    if (inlist(set_annotated, head_name)) {
+		      getannotation(head->line, &annotation_content,
+				    &annotation_robot);
+		      if (annotation_content == ANNOTATION_CONTENT_DELETED_OTHER)
+			is_deleted = FILTERED_DELETE_OTHER;
+		      else if (annotation_content == ANNOTATION_CONTENT_DELETED_SPAM)
+			is_deleted = FILTERED_DELETE;
+		      head->parsedheader = TRUE;
 		    }
 
 		    if (!is_deleted &&
@@ -2151,6 +2224,9 @@ msgid);
 		if (emp) {
 		    emp->exp_time = exp_time;
 		    emp->is_deleted = is_deleted;
+		    emp->annotation_robot = annotation_robot;
+		    emp->annotation_content = annotation_content;
+
 		    if (insert_in_lists(emp, require_filter,
 					require_filter_len + require_filter_full_len))
 		        ++num_added;
@@ -2220,6 +2296,9 @@ msgid);
 		/* by default we have none! */
 		hassubject = 0;
 		hasdate = 0;
+
+		annotation_robot = ANNOTATION_ROBOT_NONE;
+		annotation_content = ANNOTATION_CONTENT_NONE;
 
 		is_deleted = 0;
 		exp_time = -1;
@@ -2781,6 +2860,8 @@ msgid);
 	if (emp) {
 	    emp->exp_time = exp_time;
 	    emp->is_deleted = is_deleted;
+	    emp->annotation_robot = annotation_robot;
+	    emp->annotation_content = annotation_content;
 	    if (insert_in_lists(emp, require_filter,
 				require_filter_len + require_filter_full_len))
 	        ++num_added;
@@ -2852,6 +2933,9 @@ msgid);
 	/* by default we have none! */
 	hassubject = 0;
 	hasdate = 0;
+
+	annotation_robot = ANNOTATION_ROBOT_NONE;
+	annotation_content = ANNOTATION_CONTENT_NONE;
     }
     if (require_filter) free(require_filter);
 

@@ -222,7 +222,7 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 
 void print_main_header(FILE *fp, bool index_header, char *label, char *name,
 		       char *email, char *subject, char *charset,
-		       char *date, char *filename, int is_deleted)
+		       char *date, char *filename, int is_deleted, int annotation_robot)
 {
     char *title;
     char *rp;
@@ -304,9 +304,21 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
     if (use_mailto)
 	fprintf(fp, "<link rev=\"made\" href=\"mailto:%s\" />\n", set_mailto);
 
-    /* to avoid bots */
-    if (is_deleted){
-      fprintf(fp,"<meta name=\"ROBOTS\" content=\"noindex\" />\n");
+    /* robot handling */
+    if (is_deleted || annotation_robot) {
+      char *value;
+
+      /* if the message is deleted, avoid bots, else set the value
+	 of the robots robots meta tag according to the info supplied by the message */
+      if (is_deleted)
+	value = "noindex";
+      else if (annotation_robot == 1) 
+	value = "nofollow";
+      else if (annotation_robot == 2)
+	value = "noindex";
+      else if (annotation_robot == 3)
+	value = "nofollow, noindex";
+      fprintf(fp,"<meta name=\"robots\" content=\"%s\" />\n", value);
     }
 
     /* print the css url according to the type of header */
@@ -377,14 +389,16 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
 
 void print_msg_header(FILE *fp, char *label, char *subject,
 		      char *dir, char *name, char *email, char *msgid,
-		      char *charset, time_t date, char *filename,int is_deleted)
+		      char *charset, time_t date, char *filename,int is_deleted, 
+		      int annotation_robot)
 {
     if (mhtmlheaderfile)
 	printfile(fp, mhtmlheaderfile, set_label, subject, set_dir, name, 
 		  email, msgid, charset, secs_to_iso_meta(date), filename);
     else {
 	print_main_header(fp, FALSE, set_label, name, email, subject,
-			  charset, secs_to_iso_meta(date), filename, is_deleted);
+			  charset, secs_to_iso_meta(date), filename, is_deleted, 
+			  annotation_robot);
     }
 }
 
@@ -411,13 +425,13 @@ void print_index_header(FILE *fp, char *label, char *dir, char *subject,
     else {
 	/* print the navigation bar to upper levels */
 #ifdef HAVE_ICONV
-      if (set_i18n){
-	print_main_header(fp, TRUE, label, NULL, NULL, subject, "UTF-8", NULL, NULL, 0);
-      }else{
-		print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL, NULL, 0);
-      }
+        if (set_i18n){
+	  print_main_header(fp, TRUE, label, NULL, NULL, subject, "UTF-8", NULL, NULL, 0, 0);
+	} else{
+	  print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL, NULL, 0, 0);
+	}
 #else
-	print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL, NULL, 0);
+        print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL, NULL, 0, 0);
 #endif
 	fprintf (fp, "<div class=\"head\">\n");
 	if (ihtmlnavbar2upfile)

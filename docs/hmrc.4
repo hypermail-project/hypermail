@@ -1,4 +1,4 @@
-.TH hmrc 4 "February 04, 2004"
+.TH hmrc 4 "February 06, 2013"
 .SH NAME
 hmrc \- Hypermail configuration file 
 .SH DESCRIPTION
@@ -335,9 +335,21 @@ Option
 .B disabled
 by default.
 .TP
-.B htmlmessage_deleted = "string"
+.B htmlmessage_edited = "string"
+Set this to HTML markup you want to appear in the body of manually 
+edited messages. Option
+.B disabled
+by default.
+.TP
+.B htmlmessage_deleted_other = "string"
 Set this to HTML markup you want to appear in the body of deleted 
-messages. Option 
+messages (by reasons other than spam). Option
+.B disabled
+by default.
+.TP
+.B htmlmessage_deleted_spam = "string"
+Set this to HTML markup you want to appear in the body of deleted 
+messages (by spam reasons). Option 
 .B disabled
 by default.
 .TP
@@ -465,7 +477,89 @@ like, for example, when using procmail or smartlist.
 Set this to the number of seconds that a lock should be honored
 when processing inbound messages.  Defaults to 3600 seconds.
 .TP
+.B annotated = "list of headers"
+This is the list of headers that indicate that a message was annotated. Option
+.B disabled
+by default.
+
+In an annotated message, the values of the header specify the type of
+annotations. The header may have one or more comma-separated values. Order and
+case are not important. Hypermail recognizes two types of
+annotations:
+.B content
+and
+.B robot
+annotations. 
+
+.B "Content annotations"
+give information to the reader about how an archive maintainer has operated on
+an original received message. This operation typically happens as a belated
+action, for example, when removing spam from an existing archive.  Content
+annotations can have one, and only one, of the following values:
+
+.in 18
+.I spam
+message deleted because it is spam;
+.br
+.in 18
+.I deleted
+message deleted, other reasons;
+.br
+.in 18
+.I edited
+original received message was manually edited.
+.in 14
+
+If a message specifies more than one content annotation, only the first one
+will be taken into account. You can customize the markup that\'s shown for
+content annotations by means of the
+.I "html_message_deleted_other,"
+.I "html_message_deleted_spam,"
+and 
+.I "html_message_edited"
+directives.
+
+.B Robot annotations
+instruct a visiting web robot if the contents of a message should be indexed
+and/or if the outgoing links from the message should be followed, doing so thru
+a specific HTML meta tag.  (browse http://www.robotstxt.org/ for further
+details).
+
+.B Robot annotations
+can have either one or both of the following values:
+
+.in 18
+.I "nofollow"
+do not follow outgoing HTML links from this file;
+.br
+.in 18
+.I "noindex"
+do not index this file.
+.in 14
+
+You can use one or both values and combine them with the edited content annotation.
+Note that
+.I spam
+and
+.I deleted
+annotations have an implicit robot
+.I "noindex"
+annotation. 
+In such case, user supplied robot annotations values will be silently ignored.
+
+NOTE: The list maintainer must be careful on whether to accept incoming messages
+containing the 
+.B annotated
+header. If the policy is not to allow that header on incoming messages, it must
+be filtered out before the message is stored or acted upon by hypermail.
+
+.TP
 .B deleted = "list of headers"
+.B NOTE:
+this option has been deprecated by
+.B "annotated,"
+but it will continue being parsed and honored for legacy reasons.
+
 This is the list of headers that indicate the message should
 not be displayed if the value of this header is 'yes'.
 The default is "X-Hypermail-Deleted X-No-Archive".
