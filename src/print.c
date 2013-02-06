@@ -1246,8 +1246,8 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
     if (email->annotation_content == ANNOTATION_CONTENT_EDITED) {
       if (set_htmlmessage_edited)
 	fprintf(fp,"%s\n",set_htmlmessage_edited);
-      else /* @@ JK add proper markup */
-	fprintf(fp, "<p><em>%s</em></p>\n", lang[MSG_EDITED]);
+      else
+	fprintf(fp, "<p>%s</p>\n", lang[MSG_EDITED]);
     }
 
     if (!set_showhtml) {
