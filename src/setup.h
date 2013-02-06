@@ -35,7 +35,9 @@ void PreConfig(void);
 void PostConfig(void);
 
 extern char *set_antispam_at;
-extern char *set_htmlmessage_deleted;
+extern char *set_htmlmessage_edited;
+extern char *set_htmlmessage_deleted_other;
+extern char *set_htmlmessage_deleted_spam;
 extern char *set_fragment_prefix;
 extern char *set_language;
 extern char *set_htmlsuffix;
@@ -165,6 +167,7 @@ extern char *set_describe_folder;
 
 extern bool set_iso2022jp;
 
+extern struct hmlist *set_annotated;
 extern struct hmlist *set_deleted;
 extern struct hmlist *set_expires;
 extern struct hmlist *set_delete_msgnum;

@@ -1223,10 +1223,17 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
 	d_index = MSG_EXPIRED;
       if (email->is_deleted == 4 || email->is_deleted == 8)
 	d_index = MSG_FILTERED_OUT;
+      if (email->is_deleted == 64)
+	d_index = MSG_DELETED_OTHER;
       switch(d_index) {
       case MSG_DELETED:
-	if(set_htmlmessage_deleted){
-	  fprintf(fp,"%s\n",set_htmlmessage_deleted);
+	if(set_htmlmessage_deleted_spam){
+	  fprintf(fp,"%s\n",set_htmlmessage_deleted_spam);
+	  break;
+	}
+      case MSG_DELETED_OTHER:
+	if(set_htmlmessage_deleted_other){
+	  fprintf(fp,"%s\n",set_htmlmessage_deleted_other);
 	  break;
 	}
       default:
@@ -1236,6 +1243,13 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
       return;
     }
     
+    if (email->annotation_content == ANNOTATION_CONTENT_EDITED) {
+      if (set_htmlmessage_edited)
+	fprintf(fp,"%s\n",set_htmlmessage_edited);
+      else /* @@ JK add proper markup */
+	fprintf(fp, "<p><em>%s</em></p>\n", lang[MSG_EDITED]);
+    }
+
     if (!set_showhtml) {
 	fprintf(fp, "<pre id=\"body\">\n");
 	fprintf(fp, "<a name=\"start%d\" accesskey=\"j\" id=\"start%d\"></a>", email->msgnum,email->msgnum);
@@ -2181,10 +2195,10 @@ void writearticles(int startnum, int maxnum)
 	 */
 #ifdef HAVE_ICONV
 	print_msg_header(fp, set_label, localsubject, set_dir, localname, email->emailaddr, 
-			 email->msgid, email->charset, email->date, filename, email->is_deleted);
+			 email->msgid, email->charset, email->date, filename, email->is_deleted, email->annotation_robot);
 #else
 	print_msg_header(fp, set_label, email->subject, set_dir, email->name, email->emailaddr, 
-			 email->msgid, email->charset, email->date, filename, email->is_deleted);
+			 email->msgid, email->charset, email->date, filename, email->is_deleted, email->annotation_robot);
 #endif
 	fprintf (fp, "<div class=\"head\">\n");
 

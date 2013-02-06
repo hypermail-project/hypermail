@@ -1,23 +1,23 @@
-============================
-HYPERMAIL VERSION 2.3.1:
-============================
+Upgrade Notes
+==============
+
+From Hypermail 2.3.0 to Hypermail 2.3.1
+-----------------------------------------
 The configuration directive "htmlmessage_deleted" has been
-renamed to "htmlmessage_deleted_spam". 
+renamed "htmlmessage_deleted_spam".
 
-The configuration directive "deleted" has been deprecated in favor of
-"annotated". However, to keep backwards compatibility with legacy
-archives, it will still be honored; you don't have to update your
-legacy archives.
+The "deleted" configuration directive has been deprecated
+in favor of "annotated". However, for backwards compatibility
+with legacy archives, it will continue to be honored.
 
-=====================================
-HYPERMAIL VERSION 2.x.x Upgrade Notes
-=====================================
+From Hypermail 1.x to Hypermail 2.x 
+-----------------------------------
 !!!!WARNING!!!!
 
-Hypermail 2.x HTML output files, indexes, etc are not compatible with
-1.x files.  When installing 2.x, all existing HTML files in the
-specified output directory must be removed first.
+Hypermail 2.x HTML output files, indexes, etc are not compatible with 1.x 
+files.  When installing 2.x, all existing HTML files in the specified output 
+directory must be removed first.  
 
-Use the original 1.x mailbox files to regenerate the new 2.x archive.
-If the mailboxes are not available it should be possible to use the
+Use the original 1.x mailbox files to regenerate the new 2.x archive. 
+If the mailboxes are not available it should be possible to use the 
 script hypetombox.pl in the contrib/ directory.

@@ -227,6 +227,8 @@ struct language_entry {
 #define MSG_FROM_TITLE                           162
 #define MSG_ON_TITLE                             163
 #define MSG_UNKNOWN_IN_REPLY_TO                  164
+#define MSG_DELETED_OTHER                        165
+#define MSG_EDITED                               166
 #ifdef MAIN_FILE
 
 /*
@@ -415,6 +417,8 @@ char *de[] = {       /* German */
   "from", /* from - HTML */
   "on", /* on - HTML */
   "message archived in another list or period", /* unknown in reply to - HTML */
+  "Diese Nachricht wurde aus dem Archiv entfernt", /* MSG_DELETED_OTHER -HTML */
+  "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   NULL,                              /* End Of Message Table - NOWHERE*/
 };
 
@@ -590,6 +594,8 @@ char *pl[] = {                      /* English */
   "from", /* from - HTML */
   "on", /* on - HTML */
   "message archived in another list or period", /* unknown in reply to - HTML */
+  "Ta wiadomo∂Ê zosta≥a usuniÍta z archiwum", /* MSG_DELETED_OTHER  -HTML */
+  "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -766,6 +772,8 @@ char *en[] = {       /* English */
   "from", /* from - HTML */
   "on", /* on - HTML */
   "message archived in another list or period", /* unknown in reply to - HTML */
+  "This message has been deleted from the archive", /* MSG_DELETED_OTHER -HTML */
+  "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   NULL,                         /* End Of Message Table      - NOWHERE*/
 };
 
@@ -952,6 +960,9 @@ char *es[] = {       /* Espanol/Spanish */
   "from", /* from - HTML */
   "on", /* on - HTML */
   "message archived in another list or period", /* unknown in reply to - HTML */
+  "El mensaje ha sido borrado del archivo",
+  				      /* MSG_DELETED_OTHER - HTML  */
+  "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   NULL,                               /* End Of Message Table */
 };
 
@@ -1130,6 +1141,8 @@ char *pt[] = {                     /* Brazilian Portuguese */
   "perÌodo",                           /* period - HTML */
   " para ",                            /* to - HTML */
   "message archived in another list or period", /* unknown in reply to - HTML */
+  "Esta mensagem foi removida do arquivo", /* MSG_DELETE_OTHER -HTML */
+  "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   NULL,                                /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1304,6 +1317,8 @@ char *fi[] = {       /* Finnish */
   "from", /* from - HTML */
   "on", /* on - HTML */
   "message archived in another list or period", /* unknown in reply to - HTML */
+  "This message has been deleted from the archive", /* MSG_DELETED_OTHER -HTML */
+  "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1481,6 +1496,8 @@ char *it[] = {       /* Italian */
   "from", /* from - HTML */
   "on", /* on - HTML */
   "message archived in another list or period", /* unknown in reply to - HTML */
+  "Questo messaggio Ë stato cancellato dall'archivio", /* MSG_DELETED_OTHER -HTML */
+  "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1657,6 +1674,8 @@ char *fr[] = {       /* French */
   "from", /* from - HTML */
   "on", /* on - HTML */
   "message archived in another list or period", /* unknown in reply to - HTML */
+  "Ce message a &eacute;t&eacute; supprim&eacute; de l'archive", /* MSG_DELETED_OTHER -HTML */
+  "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   NULL,                                    /* End Of Message Table  - NOWHERE*/
 };
 
@@ -1835,6 +1854,8 @@ char *is[] = {       /* Icelandic */
   "from", /* from - HTML */
   "on", /* on - HTML */
   "message archived in another list or period", /* unknown in reply to - HTML */
+  "This message has been deleted from the archive", /* MSG_DELETED_OTHER -HTML */
+  "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   NULL,                               /* End Of Message Table      - NOWHERE*/
 };
 
@@ -2016,6 +2037,8 @@ char *sv[] = {
   "from", /* from - HTML */
   "on", /* on - HTML */
   "message archived in another list or period", /* unknown in reply to - HTML */
+  "Detta brev har tagits bort fr&aring;n arkivet", /* MSG_DELETED_OTHER -HTML */
+  "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 
@@ -2197,6 +2220,8 @@ char *no[] = {
   "from", /* from - HTML */
   "on", /* on - HTML */
   "message archived in another list or period", /* unknown in reply to - HTML */
+  "Denne meldingen er fjernet fra arkivet", /* MSG_DELETED_OTHER -HTML */
+  "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 
@@ -2379,6 +2404,8 @@ char *gr[] = {       /* Greek */
   "from", /* from - HTML */
   "on", /* on - HTML */
   "message archived in another list or period", /* unknown in reply to - HTML */
+  "¡ıÙ¸ ÙÔ ÏﬁÌıÏ· ›˜ÂÈ Û‚ÁÛÙÂﬂ ·Ô ÙÔ ·Ò˜ÂﬂÔ", /* MSG_DELETED_OTHER -HTML */
+  "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   NULL,                           	/* End Of Message Table - NOWHERE*/
 };
 
@@ -2553,6 +2580,8 @@ char *ru[] = {     /* Russian */
   "from", /* from - HTML */
   "on", /* on - HTML */
   "message archived in another list or period", /* unknown in reply to - HTML */
+  "¸‘œ ”œœ¬›≈Œ…≈ ¬ŸÃœ ’ƒ¡Ã≈Œœ …» ¡“»…◊¡", /* MSG_DELETED_OTHER -HTML */
+  "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 

@@ -164,13 +164,28 @@ typedef enum { DATE_INDEX, THREAD_INDEX, SUBJECT_INDEX, AUTHOR_INDEX,
 } mindex_t;
 
 typedef enum {
-  FILTERED_DELETE = 1,
+  FILTERED_DELETE = 1, /*spam */
   FILTERED_EXPIRE = 2,
   FILTERED_OUT = 4,
   FILTERED_REQUIRED = 8,
   FILTERED_OLD = 16,
-  FILTERED_NEW = 32
+  FILTERED_NEW = 32,
+  FILTERED_DELETE_OTHER = 64
 } filtered_reason_t;
+
+typedef enum {
+  ANNOTATION_ROBOT_NONE = 0,
+  ANNOTATION_ROBOT_NO_FOLLOW = 1,
+  ANNOTATION_ROBOT_NO_INDEX = 2
+} annotation_robot_t;
+
+typedef enum {
+  ANNOTATION_CONTENT_NONE = 0,
+  ANNOTATION_CONTENT_EDITED = 1,
+  ANNOTATION_CONTENT_DELETED_OTHER = 2,
+  ANNOTATION_CONTENT_DELETED_SPAM = 4
+} annotation_content_t;
+
 /* 
  * Path separator for attachment file path generation
  */
@@ -271,9 +286,13 @@ struct emailinfo {
     int isreply;
 #endif
     struct emailsubdir *subdir;	/* NULL unless set_msgsperfolder or set_folder_by_date */
+    annotation_robot_t annotation_robot;	/* special metada for controlling how robots
+						   index a message */
     long exp_time;
-    int is_deleted;	/* 1=deleted, 2=expired, 4=filtered out, */
-			/* 8=filtered (required line missing) */
+    annotation_content_t annotation_content;	/* annotations concerning the content of the
+						   message (edited, spam, deleted)  */
+    int is_deleted;	/* 1=deleted (spam), 2=expired, 4=filtered out, */
+			/* 8=filtered (required line missing), 16=deleted (other) */
     int deletion_completed; /* -1 or delete_level that reflects last time */
                             /* that file was rewritten to reflect is_deleted */
 };

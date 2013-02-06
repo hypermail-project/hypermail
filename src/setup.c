@@ -1,5 +1,5 @@
 /*
-** $Id$
+** $Id: setup.c,v 1.17 2009/10/26 22:37:24 kahan Exp $
 */
 
 #include "hypermail.h"
@@ -16,7 +16,9 @@
 
 char *set_fragment_prefix;
 char *set_antispam_at;
-char *set_htmlmessage_deleted;
+char *set_htmlmessage_edited;
+char *set_htmlmessage_deleted_other;
+char *set_htmlmessage_deleted_spam;
 char *set_language;
 char *set_htmlsuffix;
 char *set_mbox;
@@ -146,6 +148,7 @@ int set_msgsperfolder;
 
 bool set_iso2022jp;
 
+struct hmlist *set_annotated = NULL;
 struct hmlist *set_deleted = NULL;
 struct hmlist *set_expires = NULL;
 struct hmlist *set_delete_msgnum = NULL;
@@ -167,9 +170,17 @@ struct Config cfg[] = {
     {"i18n_body", &set_i18n_body, BFALSE, CFG_SWITCH,
      "# Translate message body into UTF-8. \"i18n\" must be enabled.\n",FALSE},
 
-    {"htmlmessage_deleted",  &set_htmlmessage_deleted, NULL, CFG_STRING,
+    {"htmlmessage_edited",  &set_htmlmessage_edited, NULL, CFG_STRING,
+     "# Set this to HTML markup you want to appear in the body of manually\n"
+     "edited messages.\n",FALSE},
+
+    {"htmlmessage_deleted_other",  &set_htmlmessage_deleted_other, NULL, CFG_STRING,
      "# Set this to HTML markup you want to appear in the body of deleted\n"
-     "# messages.\n",FALSE},
+     "# messages (by reasons other than spam).\n",FALSE},
+
+    {"htmlmessage_deleted_spam",  &set_htmlmessage_deleted_spam, NULL, CFG_STRING,
+     "# Set this to HTML markup you want to appear in the body of deleted\n"
+     "# messages (by spam reasons).\n",FALSE},
 
     {"antispam_at", &set_antispam_at, ANTISPAM_AT, CFG_STRING,
      "# replace any @ sign with this string, if spam flags enabled.\n", FALSE},
@@ -682,7 +693,33 @@ struct Config cfg[] = {
     {"iso2022jp", &set_iso2022jp, BFALSE, CFG_SWITCH,
      "# Set this to On to support ISO-2022-JP messages.\n", FALSE},
 
+    {"annotated", &set_annotated, "X-Hypermail-Annotated", CFG_LIST,
+     "# This is the list of headers that indicate that a message was annotated.\n"
+     "# When a message contains such a header, the header may have one more comma\n"
+     "# separated values indicatating the annotation type. Order and case are\n"
+     "# not important.\n"
+     "# The possible values of this header are: content and robot annotations.\n"
+     "# Content annotations can have only one of the following values:\n"
+     "#      spam : message deleted because it is spam;\n"
+     "#   deleted : message deleted, other reasons;\n"
+     "#    edited : original received message was manually edited.\n"
+     "# You can customize the markup that\'s shown for content annotations\n"
+     "# by means of the html_message_deleted_other, html_message_deleted_spam\n,"
+     "# html_message_edited directives.\n\n"
+     "# robot annotations can have either one or both of the following values:\n"
+     "#   no_follow : do not follow the HTML links pointing from this file;\n"
+     "#     no_link : do not add a link to this message.\n"
+     "# Robot annotations instruct a visiting web robot agent if a message contents\n"
+     "# should be indexed and/or if the outgoing links from the message\n"
+     "# should be followed, doing so thru a specific HTML meta tag. You can use one or\n"
+     "# both values and combine them with the edited content annotation.\n"
+     "# NOTE: Spam or deleted annotation values have an implicit robot \"noindex\"\n"
+     "# annotation In such case, user supplied robot annotations values will be silently\n"
+     "# ignored.\n", FALSE},
+
     {"deleted", &set_deleted, "X-Hypermail-Deleted X-No-Archive", CFG_LIST,
+     "# NOTE: this option has been deprecated by annotated, but it will continue\n"
+     "# being parsed and honored for legacy reasons.\n"
      "# This is the list of headers that indicate the message should\n"
      "# not be displayed if the value of this header is 'yes'.\n", FALSE},
 
@@ -1359,6 +1396,7 @@ void dump_config(void)
     print_list("set_show_headers", set_show_headers);
     print_list("set_avoid_top_indices", set_avoid_top_indices);
     print_list("set_avoid_indices", set_avoid_indices);
+    print_list("set_annotated", set_annotated);
     print_list("set_deleted", set_deleted);
     print_list("set_expires", set_expires);
     print_list("set_delete_msgnum", set_delete_msgnum);
