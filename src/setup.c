@@ -1,5 +1,5 @@
 /*
-** $Id: setup.c,v 1.17 2009/10/26 22:37:24 kahan Exp $
+** $Id: setup.c,v 1.18 2013-02-06 15:53:13 kahan Exp $
 */
 
 #include "hypermail.h"
@@ -707,9 +707,9 @@ struct Config cfg[] = {
      "# by means of the html_message_deleted_other, html_message_deleted_spam\n,"
      "# html_message_edited directives.\n\n"
      "# robot annotations can have either one or both of the following values:\n"
-     "#   no_follow : do not follow the HTML links pointing from this file;\n"
-     "#     no_link : do not add a link to this message.\n"
-     "# Robot annotations instruct a visiting web robot agent if a message contents\n"
+     "#  nofollow : do not follow the links on this page;\n"
+     "#   noindex : prevent search engines from indexing the contents of this message.\n"
+     "# Robot annotations instruct a visiting web  robot agent if a message contents\n"
      "# should be indexed and/or if the outgoing links from the message\n"
      "# should be followed, doing so thru a specific HTML meta tag. You can use one or\n"
      "# both values and combine them with the edited content annotation.\n"
