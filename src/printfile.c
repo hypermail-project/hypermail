@@ -290,7 +290,7 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
       *(title+64) = '\0';
       */
 
-    fprintf(fp, "<title>%s</title>\n", title);
+    fprintf(fp, "<title>%s</title>\n", (is_deleted) ? lang[MSG_SUBJECT_DELETED] : title);
     free(title);
 
     if (name && email){

@@ -229,6 +229,8 @@ struct language_entry {
 #define MSG_UNKNOWN_IN_REPLY_TO                  164
 #define MSG_DELETED_OTHER                        165
 #define MSG_EDITED                               166
+#define MSG_SENDER_DELETED                       167
+#define MSG_SUBJECT_DELETED                      168
 #ifdef MAIN_FILE
 
 /*
@@ -419,6 +421,8 @@ char *de[] = {       /* German */
   "message archived in another list or period", /* unknown in reply to - HTML */
   "Diese Nachricht wurde aus dem Archiv entfernt", /* MSG_DELETED_OTHER -HTML */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
+  "deleted", /* MSG_SENDER_DELETED -HTML */
+  "deleted", /* MSG_SUBJECT_DELETED -HTML */
   NULL,                              /* End Of Message Table - NOWHERE*/
 };
 
@@ -596,6 +600,8 @@ char *pl[] = {                      /* English */
   "message archived in another list or period", /* unknown in reply to - HTML */
   "Ta wiadomo∂Ê zosta≥a usuniÍta z archiwum", /* MSG_DELETED_OTHER  -HTML */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
+  "deleted", /* MSG_SENDER_DELETED -HTML */
+  "deleted", /* MSG_SUBJECT_DELETED -HTML */
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -774,6 +780,8 @@ char *en[] = {       /* English */
   "message archived in another list or period", /* unknown in reply to - HTML */
   "This message has been deleted from the archive", /* MSG_DELETED_OTHER -HTML */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
+  "deleted", /* MSG_SENDER_DELETED -HTML */
+  "deleted", /* MSG_SUBJECT_DELETED -HTML */
   NULL,                         /* End Of Message Table      - NOWHERE*/
 };
 
@@ -963,6 +971,8 @@ char *es[] = {       /* Espanol/Spanish */
   "El mensaje ha sido borrado del archivo",
   				      /* MSG_DELETED_OTHER - HTML  */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
+  "deleted", /* MSG_SENDER_DELETED -HTML */
+  "deleted", /* MSG_SUBJECT_DELETED -HTML */
   NULL,                               /* End Of Message Table */
 };
 
@@ -1143,6 +1153,8 @@ char *pt[] = {                     /* Brazilian Portuguese */
   "message archived in another list or period", /* unknown in reply to - HTML */
   "Esta mensagem foi removida do arquivo", /* MSG_DELETE_OTHER -HTML */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
+  "deleted", /* MSG_SENDER_DELETED -HTML */
+  "deleted", /* MSG_SUBJECT_DELETED -HTML */
   NULL,                                /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1319,6 +1331,8 @@ char *fi[] = {       /* Finnish */
   "message archived in another list or period", /* unknown in reply to - HTML */
   "This message has been deleted from the archive", /* MSG_DELETED_OTHER -HTML */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
+  "deleted", /* MSG_SENDER_DELETED -HTML */
+  "deleted", /* MSG_SUBJECT_DELETED -HTML */
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1498,6 +1512,8 @@ char *it[] = {       /* Italian */
   "message archived in another list or period", /* unknown in reply to - HTML */
   "Questo messaggio Ë stato cancellato dall'archivio", /* MSG_DELETED_OTHER -HTML */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
+  "deleted", /* MSG_SENDER_DELETED -HTML */
+  "deleted", /* MSG_SUBJECT_DELETED -HTML */
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1676,6 +1692,8 @@ char *fr[] = {       /* French */
   "message archived in another list or period", /* unknown in reply to - HTML */
   "Ce message a &eacute;t&eacute; supprim&eacute; de l'archive", /* MSG_DELETED_OTHER -HTML */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
+  "deleted", /* MSG_SENDER_DELETED -HTML */
+  "deleted", /* MSG_SUBJECT_DELETED -HTML */
   NULL,                                    /* End Of Message Table  - NOWHERE*/
 };
 
@@ -1856,6 +1874,8 @@ char *is[] = {       /* Icelandic */
   "message archived in another list or period", /* unknown in reply to - HTML */
   "This message has been deleted from the archive", /* MSG_DELETED_OTHER -HTML */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
+  "deleted", /* MSG_SENDER_DELETED -HTML */
+  "deleted", /* MSG_SUBJECT_DELETED -HTML */
   NULL,                               /* End Of Message Table      - NOWHERE*/
 };
 
@@ -2039,6 +2059,8 @@ char *sv[] = {
   "message archived in another list or period", /* unknown in reply to - HTML */
   "Detta brev har tagits bort fr&aring;n arkivet", /* MSG_DELETED_OTHER -HTML */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
+  "deleted", /* MSG_SENDER_DELETED -HTML */
+  "deleted", /* MSG_SUBJECT_DELETED -HTML */
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 
@@ -2222,6 +2244,8 @@ char *no[] = {
   "message archived in another list or period", /* unknown in reply to - HTML */
   "Denne meldingen er fjernet fra arkivet", /* MSG_DELETED_OTHER -HTML */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
+  "deleted", /* MSG_SENDER_DELETED -HTML */
+  "deleted", /* MSG_SUBJECT_DELETED -HTML */
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 
@@ -2406,6 +2430,8 @@ char *gr[] = {       /* Greek */
   "message archived in another list or period", /* unknown in reply to - HTML */
   "¡ıÙ¸ ÙÔ ÏﬁÌıÏ· ›˜ÂÈ Û‚ÁÛÙÂﬂ ·Ô ÙÔ ·Ò˜ÂﬂÔ", /* MSG_DELETED_OTHER -HTML */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
+  "deleted", /* MSG_SENDER_DELETED -HTML */
+  "deleted", /* MSG_SUBJECT_DELETED -HTML */
   NULL,                           	/* End Of Message Table - NOWHERE*/
 };
 
@@ -2582,6 +2608,8 @@ char *ru[] = {     /* Russian */
   "message archived in another list or period", /* unknown in reply to - HTML */
   "¸‘œ ”œœ¬›≈Œ…≈ ¬ŸÃœ ’ƒ¡Ã≈Œœ …» ¡“»…◊¡", /* MSG_DELETED_OTHER -HTML */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
+  "deleted", /* MSG_SENDER_DELETED -HTML */
+  "deleted", /* MSG_SUBJECT_DELETED -HTML */
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 
