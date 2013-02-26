@@ -1,5 +1,5 @@
 /*
-** $Id: setup.c,v 1.18 2013-02-06 15:53:13 kahan Exp $
+** $Id: setup.c,v 1.20 2013-02-26 18:34:26 kahan Exp $
 */
 
 #include "hypermail.h"
@@ -56,6 +56,7 @@ bool set_isodate;
 bool set_require_msgids;
 bool set_discard_dup_msgids;
 bool set_usemeta;
+bool set_userobotmeta;
 bool set_uselock;
 bool set_ietf_mbox;
 bool set_linkquotes;
@@ -376,6 +377,10 @@ struct Config cfg[] = {
     {"usemeta", &set_usemeta, BFALSE, CFG_SWITCH,
      "# Set this to On to store the content type of a MIME attachment in\n"
      "# a metadata file.\n", FALSE},
+
+    {"userobotmeta", &set_userobotmeta, BFALSE, CFG_SWITCH,
+     "# Set this to On to apply a robot annotation to a MIME attachment in\n"
+     "# a metadata file, using the experimental X-Robots-Tag HTTP header.\n", FALSE},
 
     {"uselock", &set_uselock, BTRUE, CFG_SWITCH,
      "# Set this to On to use hypermail's internal locking mechanism.\n", FALSE},
@@ -1297,6 +1302,7 @@ void dump_config(void)
     printf("set_require_msgids = %d\n",set_require_msgids);
     printf("set_discard_dup_msgids = %d\n",set_discard_dup_msgids);
     printf("set_usemeta = %d\n",set_usemeta);
+    printf("set_userobotmeta = %d\n",set_userobotmeta);
     printf("set_uselock = %d\n",set_uselock);
     printf("set_locktime = %d\n",set_locktime);
     printf("set_ietf_mbox = %d\n",set_ietf_mbox);

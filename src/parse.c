@@ -2653,6 +2653,19 @@ msgid);
 							    "Content-Type: %s\n",
 							    type);
 					    }
+					    if (annotation_robot && set_userobotmeta) {
+					      /* annotate the attachments using the experimental
+						 google X-Robots-Tag HTTP header.
+						 See https://developers.google.com/webmasters/control-crawl-index/docs/robots_meta_tag */
+					      char *value;
+					      if (annotation_robot == 1) 
+						value = "nofollow";
+					      else if (annotation_robot == 2)
+						value = "noindex";
+					      else if (annotation_robot == 3)
+						value = "nofollow, noindex";
+					      fprintf(file_ptr,"X-Robots-Tag: %s\n", value);
+					    }
 					    fclose(file_ptr);
 					    chmod(meta_file, set_filemode);
 					    free(meta_file);

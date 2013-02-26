@@ -225,6 +225,17 @@ its metadata will be stored in file
 This convention is directly compatible with the Apache server handling of
 metada.
 .TP
+.B userobotmeta = boolean_number
+If a message has annotations for robots and
+.B usemeta
+is enabled, 
+setting this option to
+.B 1
+will associate the value of the annotations to each attachment using the
+experimental
+.B X-Robots-Tag
+HTTP header. For more information, browse https://developers.google.com/webmasters/control-crawl-index/docs/robots_meta_tag
+.TP
 .B indextable = boolean_number
 Setting this variable to 
 .B 1
@@ -534,7 +545,7 @@ do not follow outgoing HTML links from this file;
 .br
 .in 18
 .I "noindex"
-do not index the content of this file.
+do not index the contents of this file.
 .in 14
 
 You can use one or both values and combine them with the edited content annotation.
@@ -546,6 +557,10 @@ annotations have an implicit robot
 .I "noindex"
 annotation. 
 In such case, user supplied robot annotations values will be silently ignored.
+
+Use 
+.B userobotmeta
+for associating attachments with annotations for robots.
 
 NOTE: The list maintainer must be careful on whether to accept incoming messages
 containing the 

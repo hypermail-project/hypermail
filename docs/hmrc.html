@@ -189,6 +189,8 @@ these may affect security</b>
 text/html</li>
 <li><a href="#usemeta">usemeta</a> save Content-Type in meta
 file</li>
+<li><a href="#userobotmeta">userobotmeta</a> use X-Robots-Tag in meta files to associate attachments
+with annotations for robots</li>
 <li><a href="#text_types">text_types</a> what types are like
 text/plain?</li>
 <li><a href="#inline_types">inline_types</a> list what should go on
@@ -965,6 +967,15 @@ file <strong>att-file</strong>, its metadata will be stored in file
 compatible with the Apache server handling of metadata.<br>
 <br>
 <i>usemeta = 0</i></dd>
+<dd><a name="userobotmeta" id="userobotmeta"></a></dd>
+<dt><strong>userobotmeta [ 0 | 1 ]</strong></dt>
+<dd>If a message has annotations for robots and <a href="#usemeta">usemeta</a> 
+is enabled, setting this option to <strong>1</strong> will associate
+the value of the annotations to each attachment using the experimental
+<strong>X-Robots-Tag</strong> HTTP header. For more information, browse Google's <a href="https://developers.google.com/webmasters/control-crawl-index/docs/robots_meta_tag">Robots Meta Tag documentation</a>.<br />
+<br />
+<em>userobotmeta = 0</em>
+</dd>
 <dd><a name="text_types" id="text_types"></a></dd>
 <dt><strong>text_types = list of types to be the same as
 text/plain</strong></dt>
@@ -1340,9 +1351,9 @@ Robot annotations can have either one or both of the following
 values:
 <dl>
 <dt>nofollow</dt>
-<dd>do not follow outgoing HTML links from this file;</dd>
+<dd>don't follow outgoing HTML links from this file;</dd>
 <dt>noindex</dt>
-<dd>do not index the content of this file.</dd>
+<dd>don't index this message.</dd>
 </dl>
 <br>
 You can use one or both robot annotation values and combine them
@@ -1351,6 +1362,8 @@ with the <strong>edited</strong> content annotation. Note that
 an implicit robot <strong>noindex</strong> annotation. In such
 case, user supplied robot annotations values will be silently
 ignored.<br>
+<br>Use <a href="#userobotmeta">userobotmeta</a>
+for associating attachments with annotations for robots.<br>
 <br>
 Note that the list maintainer must be careful on whether to accept
 incoming messages containing the <strong>annotated</strong> header.
