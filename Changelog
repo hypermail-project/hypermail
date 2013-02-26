@@ -4,6 +4,16 @@ Version Changes for Hypermail
 ============================
 HYPERMAIL VERSION 2.3.1:
 ============================	
+ Jose Kahan (Feb 26, 2012)
+- New configuration option: userobotmeta for Associatating robot
+  annotations with attachments, using the experimental X-Robots-Tag HTTP
+  header
+- If a message is marked as "deleted" and we're not keeping the
+  content, substitute the value of the From: and Subject: headers with
+  "deleted".
+- Make sure the delete stubs are added only when the delete_level option
+  says we're not to preserve the original message body.
+
  Jose Kahan (Jan 30, 2012)
  - Migrated source code repository from cvs.hypermail.org to 
    http://sourceforge.net/projects/hypermail/

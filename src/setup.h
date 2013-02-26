@@ -75,6 +75,7 @@ extern bool set_isodate;
 extern bool set_require_msgids;
 extern bool set_discard_dup_msgids;
 extern bool set_usemeta;
+extern bool set_userobotmeta;
 extern bool set_uselock;
 extern bool set_ietf_mbox;
 extern bool set_linkquotes;
