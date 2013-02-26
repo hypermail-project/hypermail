@@ -53,6 +53,10 @@
 #include <string.h>
 #endif
 
+/* conditions that say when a message's body may be removed */
+#define REMOVE_MESSAGE(email) (email->is_deleted && set_delete_level != DELETE_LEAVES_TEXT \
+			       && !(email->is_deleted == 2 && set_delete_level == DELETE_LEAVES_EXPIRED_TEXT))
+
 static char *indextypename[NO_INDEX];
 
 #ifdef GDBM
@@ -1113,8 +1117,7 @@ void printheaders (FILE *fp, struct emailinfo *email)
     char head_lower[128];
     char *header_content;
 
-    if (email->is_deleted && set_delete_level != DELETE_LEAVES_TEXT 
-	&& !(email->is_deleted == 2 && set_delete_level == DELETE_LEAVES_EXPIRED_TEXT)) {
+    if (REMOVE_MESSAGE(email)) {
       int d_index = MSG_DELETED;
       if (email->is_deleted == 2)
 	d_index = MSG_EXPIRED;
@@ -1468,7 +1471,11 @@ void print_headers(FILE *fp, struct emailinfo *email, int in_thread_file)
   /* the from header */
   fprintf (fp, "<span id=\"from\">\n");
   fprintf (fp, "<dfn>%s</dfn>: ", lang[MSG_FROM]);
-  if (!strcmp(email->name, email->emailaddr)) {
+  if (REMOVE_MESSAGE(email)) {
+    /* don't show the email address and name if we have deleted the message */
+    fprintf(fp, "&lt;%s&gt;", lang[MSG_SENDER_DELETED]);
+  } 
+  else if (!strcmp(email->name, email->emailaddr)) {
     if (use_mailcommand) {
       char *ptr = makemailcommand(set_mailcommand,
 				  email->emailaddr,
@@ -2108,7 +2115,7 @@ void writearticles(int startnum, int maxnum)
     struct body *bp;
     struct reply *rp;
     FILE *fp;
-    char *ptr;
+    char *ptr = NULL;
 #ifdef HAVE_ICONV
     char *localsubject=NULL,*localname=NULL;
     size_t convlen=0;
@@ -2195,10 +2202,12 @@ void writearticles(int startnum, int maxnum)
 	 */
 #ifdef HAVE_ICONV
 	print_msg_header(fp, set_label, localsubject, set_dir, localname, email->emailaddr, 
-			 email->msgid, email->charset, email->date, filename, email->is_deleted, email->annotation_robot);
+			 email->msgid, email->charset, email->date, filename, 
+			 REMOVE_MESSAGE(email), email->annotation_robot);
 #else
 	print_msg_header(fp, set_label, email->subject, set_dir, email->name, email->emailaddr, 
-			 email->msgid, email->charset, email->date, filename, email->is_deleted, email->annotation_robot);
+			 email->msgid, email->charset, email->date, filename, 
+			 REMOVE_MESSAGE(email), email->annotation_robot);
 #endif
 	fprintf (fp, "<div class=\"head\">\n");
 
@@ -2209,11 +2218,11 @@ void writearticles(int startnum, int maxnum)
 
 	/* write the title */
 #ifdef HAVE_ICONV
-	fprintf(fp, "<h1>%s</h1>\n",
-		ptr = convchars(localsubject, email->charset));
+	fprintf(fp, "<h1>%s</h1>\n", (REMOVE_MESSAGE(email)) ? lang[MSG_SUBJECT_DELETED] :
+		(ptr = convchars(localsubject, email->charset)));
 #else
-	fprintf(fp, "<h1>%s</h1>\n",
-		ptr = convchars(email->subject, email->charset));
+	fprintf(fp, "<h1>%s</h1>\n", (REMOVE_MESSAGE(email)) ? lang[MSG_SUBJECT_DELETED] :
+		(ptr = convchars(email->subject, email->charset)));
 #endif
 	if (ptr)
 	  free(ptr);
