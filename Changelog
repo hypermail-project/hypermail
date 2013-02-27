@@ -4,35 +4,36 @@ Version Changes for Hypermail
 ============================
 HYPERMAIL VERSION 2.3.1:
 ============================	
-Jose Kahan (Feb 26, 2012)
-- New configuration option, noindex_onindexes, for associating a
-  "noindex" robot metadata value with hypermail generated indexes.
+Jose Kahan (Feb 27, 2012)
+  - New configuration option, noindex_onindexes, for associating a
+    "noindex" robot metadata value with hypermail generated indexes.
 
 Jose Kahan (Feb 26, 2012)
-- New configuration option, userobotmeta, for Associatating robot
-  annotations with attachments, using the experimental X-Robots-Tag HTTP
-  header
-- If a message is marked as "deleted" and we're not keeping the
-  content, substitute the value of the From: and Subject: headers with
-  "deleted".
-- Make sure the delete stubs are added only when the delete_level option
-  says we're not to preserve the original message body.
+  - New configuration option, userobotmeta, for Associatating robot
+    annotations with attachments, using the experimental X-Robots-Tag HTTP
+    header
+  - If a message is marked as "deleted" and we're not keeping the
+    content, substitute the value of the From: and Subject: headers with
+    "deleted".
+  - Make sure the delete stubs are added only when the delete_level option
+    says we're not to preserve the original message body.
 
  Jose Kahan (Jan 30, 2012)
- - Migrated source code repository from cvs.hypermail.org to 
+  - Migrated source code repository from cvs.hypermail.org to 
    http://sourceforge.net/projects/hypermail/
- - Added a mirror of the repository to github:
-   http://github.com/hypermail-project/hypermail
- - Cleared up the markup errors in docs/hmrc.html by using tidy.
- - New configuration directive "annotated" which allows a mailing
-   list archive editor to annotate a given message before converting
-   it into HTML. Associated additional new directives are 
-   "html_message_deleted_spam", "html_message_deleted_other", 
-   ""html_message_edited". Consult docs/hmrc.html for more info.
- - "html_message_deleted" is deprecated in favor of "html_message_deleted_spam"	
- - "deleted" is superseded by "annotated", although it will be supported
-   to take into account legacy archives.
- - Regenerated the dependencies for the src/Makefile.in file.
+  - Added a mirror of the repository to github:
+    http://github.com/hypermail-project/hypermail
+  - Cleared up the markup errors in docs/hmrc.html by using tidy.
+  - New configuration directive "annotated" which allows a mailing
+    list archive editor to annotate a given message before converting
+    it into HTML. Associated additional new directives are 
+    "html_message_deleted_spam", "html_message_deleted_other", 
+    ""html_message_edited". Consult docs/hmrc.html for more info.
+  - "html_message_deleted" is deprecated in favor of 
+    "html_message_deleted_spam"	
+  - "deleted" is superseded by "annotated", although it will be supported
+    to take into account legacy archives.
+  - Regenerated the dependencies for the src/Makefile.in file.
 	
 ============================
 HYPERMAIL VERSION 2.3.0:
