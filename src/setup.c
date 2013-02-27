@@ -149,6 +149,7 @@ int set_msgsperfolder;
 
 bool set_iso2022jp;
 
+bool set_noindex_onindexes;
 struct hmlist *set_annotated = NULL;
 struct hmlist *set_deleted = NULL;
 struct hmlist *set_expires = NULL;
@@ -697,6 +698,11 @@ struct Config cfg[] = {
 
     {"iso2022jp", &set_iso2022jp, BFALSE, CFG_SWITCH,
      "# Set this to On to support ISO-2022-JP messages.\n", FALSE},
+
+    {"noindex_onindexes", &set_noindex_onindexes, BFALSE, CFG_SWITCH,
+     "# Set to On to inform search engines that you don't want to index\n"
+     "# the hypermail generated indexes. See the \"annotated\" configuration"
+     "# option for a more detailed description.\n", FALSE},
 
     {"annotated", &set_annotated, "X-Hypermail-Annotated", CFG_LIST,
      "# This is the list of headers that indicate that a message was annotated.\n"
@@ -1327,6 +1333,7 @@ void dump_config(void)
     printf("set_delete_level = %d\n",set_delete_level);
     printf("set_delete_older = %d\n",set_delete_older);
     printf("set_delete_newer = %d\n",set_delete_newer);
+    printf("set_noindex_onindexes = %d\n",set_noindex_onindexes);
 
     if (!set_ihtmlheader)
         printf("set_ihtmlheader = Not set\n");

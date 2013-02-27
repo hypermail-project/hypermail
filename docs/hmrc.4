@@ -467,6 +467,16 @@ subdirectory. Note that many web servers are configured to
 not follow symbolic links for security reasons. The link will
 be created in the directory specified by the "dir" or "-d" option.
 .TP
+.B noindex_onindex = boolean_number
+Tells hypermail to add a
+.B noindex
+metadata to its generated message indexes (by author, etc.), to instruct robots
+to not index the indexes. See
+.B anontated
+for further discussion on the
+.B noindex
+metadata value.
+.TP
 .B base_url = "url"
 The url of the archive's main directory. This is needed when
 the latest_folder option is used and the folder_by_date makes

@@ -305,7 +305,10 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
 	fprintf(fp, "<link rev=\"made\" href=\"mailto:%s\" />\n", set_mailto);
 
     /* robot handling */
-    if (is_deleted || annotation_robot) {
+    if (index_header && set_noindex_onindexes) {
+      fprintf(fp,"<meta name=\"robots\" content=\"noindex\" />\n");
+
+    } else if (is_deleted || annotation_robot) {
       char *value;
 
       /* if the message is deleted, avoid bots, else set the value

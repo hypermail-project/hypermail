@@ -168,6 +168,7 @@ extern char *set_describe_folder;
 
 extern bool set_iso2022jp;
 
+extern bool set_noindex_onindexes;
 extern struct hmlist *set_annotated;
 extern struct hmlist *set_deleted;
 extern struct hmlist *set_expires;
