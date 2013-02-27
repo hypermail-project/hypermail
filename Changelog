@@ -4,8 +4,12 @@ Version Changes for Hypermail
 ============================
 HYPERMAIL VERSION 2.3.1:
 ============================	
- Jose Kahan (Feb 26, 2012)
-- New configuration option: userobotmeta for Associatating robot
+Jose Kahan (Feb 26, 2012)
+- New configuration option, noindex_onindexes, for associating a
+  "noindex" robot metadata value with hypermail generated indexes.
+
+Jose Kahan (Feb 26, 2012)
+- New configuration option, userobotmeta, for Associatating robot
   annotations with attachments, using the experimental X-Robots-Tag HTTP
   header
 - If a message is marked as "deleted" and we're not keeping the

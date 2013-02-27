@@ -98,6 +98,7 @@ generate these files</li>
 files</li>
 <li><a href="#latest_folder">latest_folder</a> symlink to recent
 subdir</li>
+<li><a href="#noindex_onindexes">noindex_onindexes</a> instruct robots to not index hypermail generated indexes</li>
 </ul>
 </li>
 <li><a href="#index_body">Body style</a>
@@ -262,7 +263,7 @@ file</li>
 <li><a href="#append_filename">append_filename</a> name of mbox
 output</li>
 <li><a href="#txtsuffix">txtsuffix</a> save each raw message</li>
-<li><a href="#annotated">deleted</a> what headers indicate message
+<li><a href="#annotated">annotated</a> what headers indicate message
 annotations</li>
 <li><a href="#deleted">deleted</a> what headers indicate deletion
 <strong>deprecated</strong></li>
@@ -608,6 +609,14 @@ for security reasons. The link will be created in the directory
 specified by the "dir" or "-d" option.<br>
 <br>
 <i>latest_folder = current</i> (disabled by default)</dd>
+<dd><a name="noindex_onindexes" id="noindex_onindexes"></a></dd>
+<dt><strong>noindex_onindexes = [ 0 | 1 ]</strong></dt>
+<dd>Tells hypermail to add a <strong>noindex</strong> metadata to its
+generated message indexes (by author, etc.), to instruct robots
+to not index the indexes. See <a href="#annotated">anontated</a>
+for further discussion on <strong>noindex</strong>.<br />
+<br />
+<em>noindex_onindexes = 0</em></dd>
 </dl>
 <h3><a name="index_body" id="index_body">Index body style</a></h3>
 <a name="indextable" id="indextable"></a>
