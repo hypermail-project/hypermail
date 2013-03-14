@@ -1054,6 +1054,144 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
     }
 }
 
+/* 
+** RFC 3676 format=flowed parsing routines
+*/
+
+/* get_quote_level returns the number of quotes in a line, 
+   following the RFC 3676 section 4.5 criteria.
+*/
+static int get_quotelevel (const char *line)
+{
+  int quoted = 0;
+  char *p = (char *) line;
+
+  while (p && *p == '>')
+  {
+    quoted++;
+    p++;
+  }
+
+  return quoted;
+}
+
+/*
+** rfc3676_handler parses lines according to RFC 3676.  Its inputs are
+** the current line to parse, the delsp value (from the message
+** headers), the previous line quotelevel, and a flag saying if the
+** previous line was marked as a continuing one.
+**
+** The function returns true if the current line should be merged with
+** the next line to be parsed. 
+**
+** The function updates the quotelevel to
+** that of the current parsed line. The function will update the
+** continue_prev_flow_flag to say if the current line should be joined
+** to the previous one, and, if positive, the padding offset that
+** should be applied to the current line when merging it (for skipping
+** quotes or space-padding).
+*/
+static bool rfc3676_handler (const char *line, bool delsp, int *quotelevel, 
+			     bool *continue_prev_flow_flag, int *padding)
+{
+  int new_quotelevel = 0;
+  int tmp_padding = 0;
+  bool sig_sep = FALSE;
+  bool flowed = FALSE;
+
+  /* rules for evaluation if the flow should stop:
+     1. new quote level is different from previous one
+     2. The line ends with a signature "(quotes)(stuffing)-- \n"
+  */
+
+  /* If this is line is part of the flow and begins with quotes,
+     remove the quote level and stuffed space if found */
+  new_quotelevel = get_quotelevel (line);
+
+#if DEBUG_PARSE
+  printf("RFC3676: Previous quote level: %d\n", quotelevel);
+  printf("RFC3676: Previous line flow flag: %d\n", continue_prev_flow_flag);
+  printf("RFC3676: New quote level: %d\n", new_quotelevel);
+#endif
+
+  /* remove the multi-line quotes padding */
+  tmp_padding = new_quotelevel;
+
+  if (*continue_prev_flow_flag 
+      && (new_quotelevel != *quotelevel 
+	  || (new_quotelevel == *quotelevel 
+	      && new_quotelevel > 0 
+	      && set_format_flowed_disable_quoted))) {
+    /* don't join */
+    *continue_prev_flow_flag = FALSE;
+  }
+
+  /* remove space stuffing if any */
+  if (line[tmp_padding] == ' ') {
+    tmp_padding++;
+  }
+
+  /* Is it a signature separator? */
+  if (!strcmp (line + tmp_padding, "-- \n") || !strcmp (line + tmp_padding, "-- \r\n")) {
+    /* don't join */
+    *continue_prev_flow_flag = FALSE;
+    sig_sep = TRUE;
+#if DEBUG_PARSE
+    printf("RFC3676: Current line is signature\n", sig_sep);
+#endif
+  }
+
+  if (*continue_prev_flow_flag == FALSE)
+    tmp_padding = 0;
+
+  *padding = tmp_padding;
+
+  /* is this line part of a flowed sequence (beginning or continuation)?  */
+  if (!sig_sep) {
+    char *eold;
+    eold = strrchr (line, '\n');
+    if (line != eold) {
+      if (*(eold - 1) == '\r')
+	eold--;
+    }
+    if (line != eold) {
+      if (*(eold - 1) == ' ') {
+	flowed = TRUE;
+	if (delsp) {
+	  /* remove the space stuffing and copy the end of line */
+	  char *ptr = eold - 1;
+#if DEBUG_PARSE
+	  printf("deleting delsp separator\n");
+#endif
+	  while (*ptr != '\0') {
+	    *ptr = *(ptr + 1);
+	    ptr++;
+	  }
+	}
+      }
+    }
+  }
+
+  if (flowed) {
+    *quotelevel = new_quotelevel;
+  } else {
+    *quotelevel = 0;
+  }
+
+#if DEBUG_PARSE
+  if (continue_prev_flow_flag)
+    printf("RFC3676: Continuing previous flow\n");
+  else
+    printf("RFC3676: Stopping previous flow\n");
+  if (flowed) {
+    printf("RFC3676: Current line is flowed\n");
+    printf("RFC3676: New quote level: %d\n", new_quotelevel);
+  }
+#endif
+
+  return flowed;
+}
+
 /*
 ** Decode this [virtual] Quoted-Printable line as defined by RFC2045.
 ** Written by Daniel.Stenberg@haxx.nu
@@ -1361,6 +1499,13 @@ int parsemail(char *mbox,	/* file name */
 
     int bodyflags = 0;		/* This variable is set to extra flags that the 
 				   addbody() calls should OR in the flag parameter */
+
+    /* RFC 3676 related variables, set while parsing the headers and body content */
+    textplain_format_t textplain_format = FORMAT_FIXED;   
+    bool flowed_line = FALSE;
+    int quotelevel = 0;
+    bool continue_previous_flow_flag = FALSE;
+    bool delsp = FALSE; 
 
     int binfile = -1;
 
@@ -1769,6 +1914,34 @@ int parsemail(char *mbox,	/* file name */
 			    charset = strsav(charbuffer);
 			}
 
+			/* now check if there's a format indicator */
+			if (set_format_flowed) {
+			  cp = strcasestr(ptr, "format=");
+			  if (cp) {
+			    cp += 7;	/* pass charset= */
+			    if ('\"' == *cp)
+			      cp++;	/* pass a quote too if one is there */
+			    
+			    sscanf(cp, "%128[^;\"\n]", charbuffer);
+			    /* save the format info */
+			    if (!strcasecmp (charbuffer, "flowed"))
+			      textplain_format = FORMAT_FLOWED;
+			  }
+			  
+			  /* now check if there's a delsp indicator */			
+			  cp = strcasestr(ptr, "delsp=");
+			  if (cp) {
+			    cp += 6;	/* pass charset= */
+			    if ('\"' == *cp)
+			      cp++;	/* pass a quote too if one is there */
+			    
+			    sscanf(cp, "%128[^;\"\n]", charbuffer);
+			    /* save the delsp info */
+			    if (!strcasecmp (charbuffer, "yes"))
+			      delsp = TRUE;
+			  }
+			}
+
 			if (alternativeparser) {
 			    struct body *next;
 			    struct body *temp_bp = NULL;
@@ -2170,6 +2343,19 @@ int parsemail(char *mbox,	/* file name */
 		if (!inreply)
 		    inreply = oneunre(subject);
 
+		/* control the use of format and delsp according to RFC 3676 */
+		if (textplain_format == FORMAT_FLOWED 
+		    && content != CONTENT_TEXT
+		    || (content == CONTENT_TEXT && strcasecmp (type, "text/plain"))) {
+		  /* format flowed only allowed on text/plain */
+		  textplain_format = FORMAT_FIXED;
+		}
+
+		if (textplain_format == FORMAT_FIXED && delsp) {
+		  /* delsp only accepted for format=flowed */
+		  delsp = FALSE;
+		}
+
 		if (append_bp && append_bp != bp) {
 		   /* if we had attachments, close the structure */
 		    append_bp = 
@@ -2273,6 +2459,13 @@ msgid);
 
 		bp = NULL;
 		bodyflags = 0;	/* reset state flags */
+
+		/* reset related RFC 3676 state flags */
+		textplain_format = FORMAT_FIXED;
+		delsp = FALSE;
+		flowed_line = FALSE;
+		quotelevel = 0;
+		continue_previous_flow_flag = FALSE;
 
 		/* go back to default mode: */
 		content = CONTENT_TEXT;
@@ -2417,6 +2610,13 @@ msgid);
 			decode = ENCODE_NORMAL;
 			multilinenoend = FALSE;
 
+			/* reset related RFC 3676 state flags */
+			textplain_format = FORMAT_FIXED;
+			delsp = FALSE;
+			flowed_line = FALSE;
+			quotelevel = 0;
+			continue_previous_flow_flag = FALSE;
+
 			if (-1 != binfile) {
 			    close(binfile);
 			    binfile = -1;
@@ -2514,9 +2714,23 @@ msgid);
 			    }
 			}
 			else {
-			    bp = addbody(bp, &lp, data,
-					 (content == CONTENT_HTML ?
-					  BODY_HTMLIZED : 0) | bodyflags);
+			  int padding; /* used for skipping padding detected by rfc3676_handler,
+					  which seems smarter than moving all the bytes in data
+					  before injecting it into addbody */
+			  if (!isinheader && textplain_format == FORMAT_FLOWED) {
+			    flowed_line = rfc3676_handler (data, delsp, &quotelevel, 
+							   &continue_previous_flow_flag, &padding);
+			    if (continue_previous_flow_flag)
+			      bodyflags |= BODY_CONTINUE;
+			    else
+			      bodyflags &= ~BODY_CONTINUE;
+			    continue_previous_flow_flag = flowed_line;
+			  } else {
+			    padding = 0;
+			  }
+			  bp = addbody(bp, &lp, data + padding,
+				       (content == CONTENT_HTML ?
+					BODY_HTMLIZED : 0) | bodyflags);
 			}
 #if DEBUG_PARSE
 			printf("ALIVE?\n");
@@ -2856,6 +3070,19 @@ msgid);
 	if (!inreply)
 	    inreply = oneunre(subject);
 
+	/* control the use of format and delsp according to RFC2646 */
+	if (textplain_format == FORMAT_FLOWED 
+	    && content != CONTENT_TEXT
+	    || (content == CONTENT_TEXT && strcasecmp (type, "text/plain"))) {
+	  /* format flowed only allowed on text/plain */
+	  textplain_format = FORMAT_FIXED;
+	}
+
+	if (textplain_format == FORMAT_FIXED && delsp) {
+	  /* delsp only accepted for format=flowed */
+	  delsp = FALSE;
+	}
+
 	if (append_bp && append_bp != bp) {
 	  /* close the DIV */
 	  append_bp = 
@@ -2919,6 +3146,13 @@ msgid);
 	/* @@ verify we're doing it everywhere */
 	bodyflags = 0;		/* reset state flags */
 
+	/* reset related RFC 3676 state flags */
+	textplain_format = FORMAT_FIXED;
+	delsp = FALSE;
+	flowed_line = FALSE;
+	quotelevel = 0;
+	continue_previous_flow_flag = FALSE;
+	
 	/* go back to default mode: */
 	content = CONTENT_TEXT;
 	decode = ENCODE_NORMAL;
@@ -4234,3 +4468,4 @@ int count_deleted(int limit)
     }
     return total;
 }
+

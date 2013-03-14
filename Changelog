@@ -3,12 +3,16 @@ Version Changes for Hypermail
 
 ============================
 HYPERMAIL VERSION 2.3.1:
-============================	
+============================
+Jose Kahan (Mar 12, 2013)
+- New experimental support for RFC 3676 format=flowed. There are
+  two new related configuration options: format_flowed to enable
+  it and format_flowed_disable_quotes to disable it in specific cases.
+  See the documentation and the RFC for further info.
 
 Jose Kahan (Mar 08, 2013)
-
 - Error: string.c:parseurl() assumes that all URL motifs  it can match
-  end with a :// string. However, the URL match table it uses 
+  end with a :// string. However, the URL match table it uses
   included some URL motifs that didn't have that string. These have
   been commented as they may cause parseulr to SIGSEVs  in some cases.
 
@@ -27,21 +31,21 @@ Jose Kahan (Feb 26, 2013)
   says we're not to preserve the original message body.
 
  Jose Kahan (Jan 30, 2013)
- - Migrated source code repository from cvs.hypermail.org to 
+ - Migrated source code repository from cvs.hypermail.org to
    http://sourceforge.net/projects/hypermail/
  - Added a mirror of the repository to github:
    http://github.com/hypermail-project/hypermail
  - Cleared up the markup errors in docs/hmrc.html by using tidy.
  - New configuration directive "annotated" which allows a mailing
    list archive editor to annotate a given message before converting
-   it into HTML. Associated additional new directives are 
-   "html_message_deleted_spam", "html_message_deleted_other", 
+   it into HTML. Associated additional new directives are
+   "html_message_deleted_spam", "html_message_deleted_other",
    ""html_message_edited". Consult docs/hmrc.html for more info.
- - "html_message_deleted" is deprecated in favor of "html_message_deleted_spam"	
+ - "html_message_deleted" is deprecated in favor of "html_message_deleted_spam"
  - "deleted" is superseded by "annotated", although it will be supported
    to take into account legacy archives.
  - Regenerated the dependencies for the src/Makefile.in file.
-	
+
 ============================
 HYPERMAIL VERSION 2.3.0:
 ============================

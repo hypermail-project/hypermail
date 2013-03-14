@@ -1,5 +1,5 @@
 /*
-** $Id: setup.c,v 1.20 2013-02-26 18:34:26 kahan Exp $
+** $Id: setup.c,v 1.21 2013-02-27 15:45:02 kahan Exp $
 */
 
 #include "hypermail.h"
@@ -128,6 +128,9 @@ struct hmlist *set_filter_out = NULL;
 struct hmlist *set_filter_require = NULL;
 struct hmlist *set_filter_out_full_body = NULL;
 struct hmlist *set_filter_require_full_body = NULL;
+
+bool set_format_flowed;
+bool set_format_flowed_disable_quoted;
 
 char *set_ihtmlheader;
 char *set_ihtmlfooter;
@@ -504,6 +507,13 @@ struct Config cfg[] = {
      "# This is the list of headers to be displayed if 'showheaders'\n"
      "# is set to On). They can be listed comma or space separated\n"
      "# all on a single line.\n", FALSE},
+
+    {"format_flowed", &set_format_flowed, BFALSE, CFG_SWITCH,
+     "# Enable support for RFC3676 format=flowed (EXPERIMENTAL)\n", FALSE},
+
+    {"format_flowed_disable_quoted", &set_format_flowed_disable_quoted, BFALSE, CFG_SWITCH,
+     "# If format_flowed is enabled, this option allows you to disable\n"
+     "# format=flowed inside quoted text\n", FALSE},
 
     {"ihtmlheaderfile", &set_ihtmlheader, NULL, CFG_STRING,
      "# Define path as the path to a template  file  containing\n"
@@ -1334,6 +1344,8 @@ void dump_config(void)
     printf("set_delete_older = %d\n",set_delete_older);
     printf("set_delete_newer = %d\n",set_delete_newer);
     printf("set_noindex_onindexes = %d\n",set_noindex_onindexes);
+    printf("set_format_flowed= %d\n",set_format_flowed);
+    printf("set_format_flowed_disable_quoted= %d\n",set_format_flowed_disable_quoted);
 
     if (!set_ihtmlheader)
         printf("set_ihtmlheader = Not set\n");

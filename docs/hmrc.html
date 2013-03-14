@@ -177,6 +177,8 @@ to index pages</li>
 Subject:</li>
 <li><a href="#show_headers">show_headers</a> others (Message-ID,
 etc)</li>
+<li><a href="#format_flowed">format_flowed</a> support RFC 3676 format=flowed</li>
+<li><a href="#format_flowed_disable_quoted">format_flowed_disable_quoted</a> disable support for RFC 3676 format=flowed in quoted text</li>
 <li><a href="#mhtmlheaderfile">mhtmlheaderfile</a> template</li>
 <li><a href="#mhtmlfooterfile">mhtmlfooterfile</a> template</li>
 </ul>
@@ -930,6 +932,22 @@ headers.<br>
 <br>
 <i>show_headers = From,Subject,Date,Message-ID</i> (disabled by
 default)</dd>
+<dd><a name="format_flowed" id="format_flowed"></a></dd>
+<dt><strong>format_flowed [ 0 | 1 ] (EXPERIMENTAL)</strong></dt>
+<dd>Enable this option to support RFC 3676 format=flowed. When this
+option is enabled and a message says it is supporting format=flowed, hypermail
+will recreate a long-line that has been split into multiple lines as a single one.<br />
+<br />
+<em>format_flowed = 1</em> (disabled by default)
+</dd>
+<dd><a name="format_flowed_disable_quoted" id="format_flowed_disable_quoted"></a></dd>
+<dt><strong>format_flowed_disable_quoted [ 0 | 1 ]</strong></dt>
+<dd>Use this option if you want to disable support for format=flowed inside quoted
+text (the lines starting with one or more  '&gt;' characters). This option is always disabled 
+if <strong>format_flowed</strong> is not enabled.<br />
+<br />
+<em>format_flowed_disable_quoted = 1</em> (disabled by default)
+</dd>
 <dd><a name="mhtmlheaderfile" id="mhtmlheaderfile"></a></dd>
 <dt><strong>mhtmlheaderfile = [ path to message header template
 file | NONE ]</strong></dt>
