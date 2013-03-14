@@ -186,6 +186,10 @@ typedef enum {
   ANNOTATION_CONTENT_DELETED_SPAM = 4
 } annotation_content_t;
 
+typedef enum {
+  FORMAT_FIXED = 0,
+  FORMAT_FLOWED = 1,
+} textplain_format_t;
 /* 
  * Path separator for attachment file path generation
  */

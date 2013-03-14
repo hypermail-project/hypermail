@@ -144,6 +144,9 @@ extern struct hmlist *set_filter_require;
 extern struct hmlist *set_filter_out_full_body;
 extern struct hmlist *set_filter_require_full_body;
 
+extern bool set_format_flowed;
+extern bool set_format_flowed_disable_quoted;
+
 extern char *set_ihtmlheader;
 extern char *set_ihtmlfooter;
 extern char *set_ihtmlhead;

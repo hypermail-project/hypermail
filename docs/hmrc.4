@@ -885,6 +885,18 @@ line.  If it contains the special character ``*''
 .B hypermail
 will display all header lines.
 .TP
+.B format_flowed = boolean_number
+Set this option to 1 (TRUE) to support RFC 3676 format=flowed. When this
+option is enabled and a message says it is supporting format=flowed, hypermail
+will recreate a long-line that has been split into multiple lines as a single one.
+.TP
+.B format_flowed_disable_quoted = boolean_number
+Set this option to 1 (TRUE) if you want to disable RFC 3676 format=flowed
+processing on quoted line texts (the ones that begin with one or more '>' characters).
+This option is always disabled if
+.B format_flowed
+is not enabled.
+.TP
 .B readone = boolean_number
 Set this to
 .B 1
