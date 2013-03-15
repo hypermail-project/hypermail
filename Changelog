@@ -4,6 +4,12 @@ Version Changes for Hypermail
 ============================
 HYPERMAIL VERSION 2.3.1:
 ============================
+Jose Kahan (Mar 15, 2013)
+- Updated trio code to trio version 1.14. Moved all the trio code to
+  src/trio. Now compiling trio as a static library and linking against
+  it, which makes binary a bit smaller. See src/trio/README.hypermail
+  for details.
+
 Jose Kahan (Mar 12, 2013)
 - New experimental support for RFC 3676 format=flowed. There are
   two new related configuration options: format_flowed to enable
