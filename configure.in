@@ -11,7 +11,7 @@ INCLUDES=""
 GDBM_INCLUDE=""
 GDBM_LIB=""
 FNV_DEP=""
-SUBDIRS="src/pcre"
+SUBDIRS="src/pcre src/trio"
 
 dnl ===========================================================================
 dnl Get host, target and build variables filled with appropriate info.
