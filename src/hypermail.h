@@ -102,7 +102,7 @@
 */
 #define TRIO_REPLACE_STDIO
 #define HAVE_SSCANF  /* avoid problems in setup.c with trio_sscanf */
-#include "trio.h"
+#include <trio.h>
 
 #ifndef NO_FASTREPLYCODE
 #define FASTREPLYCODE
