@@ -2216,6 +2216,11 @@ void writearticles(int startnum, int maxnum)
 	  fprintf(fp, "<map title=\"%s\" id=\"upper\">\n%s</map>\n", 
 		  lang[MSG_NAVBAR2UPPERLEVELS], ihtmlnavbar2upfile);
 
+	/* reset the value of ptr before we actually start using it,
+	   just in case one of the ternary operations here below
+	   doesn't allocate any memory */
+	ptr = NULL;
+
 	/* write the title */
 #ifdef HAVE_ICONV
 	fprintf(fp, "<h1>%s</h1>\n", (REMOVE_MESSAGE(email)) ? lang[MSG_SUBJECT_DELETED] :
@@ -2248,6 +2253,8 @@ void writearticles(int startnum, int maxnum)
 	printcomment(fp, "id", email->msgid);
 	printcomment(fp, "charset", email->charset);
  	printcomment(fp, "inreplyto", ptr = convcharsnospamprotect(email->inreplyto, email->charset));
+	if (ptr)
+	    free(ptr);
 	if (email->is_deleted) {
 	    char num_buf[32];
 	    sprintf(num_buf, "%d", email->is_deleted);
@@ -2259,9 +2266,6 @@ void writearticles(int startnum, int maxnum)
 		togdbm((void *)gp, email);
 	}
 #endif
-	if (ptr)
-	    free(ptr);
-
 	/*
 	 * This is here because it looks better here. The table looks
 	 * better before the Author info. This stuff should be in 
