@@ -4,6 +4,9 @@ Version Changes for Hypermail
 ============================
 HYPERMAIL VERSION 2.3.1:
 ============================
+Jose Kahan (Mar 20, 2013)
+- Updated pcre to pcre-8.32 from pcre-4.3
+
 Jose Kahan (Mar 15, 2013)
 - Updated trio code to trio version 1.14. Moved all the trio code to
   src/trio. Now compiling trio as a static library and linking against
