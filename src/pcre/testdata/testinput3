@@ -1,8 +1,12 @@
+/-- This set of tests checks local-specific features, using the fr_FR locale. 
+    It is not Perl-compatible. There is different version called wintestinput3
+  f  or use on Windows, where the locale is called "french". --/
+
 /^[\w]+/
     *** Failers
     École
 
-/^[\w]+/Lfr
+/^[\w]+/Lfr_FR
     École
 
 /^[\w]+/
@@ -12,7 +16,7 @@
 /^[\W]+/
     École
 
-/^[\W]+/Lfr
+/^[\W]+/Lfr_FR
     *** Failers
     École
 
@@ -21,7 +25,7 @@
     *** Failers
     a
 
-/[\b]/Lfr
+/[\b]/Lfr_FR
     \b
     *** Failers
     a
@@ -30,13 +34,13 @@
     *** Failers
     École
 
-/^\w+/Lfr
+/^\w+/Lfr_FR
     École
 
 /(.+)\b(.+)/
     École
 
-/(.+)\b(.+)/Lfr
+/(.+)\b(.+)/Lfr_FR
     *** Failers
     École
 
@@ -45,21 +49,47 @@
     *** Failers
     école
 
-/École/iLfr
+/École/iLfr_FR
     École
     école
 
 /\w/IS
 
-/\w/ISLfr
+/\w/ISLfr_FR
 
-/^[\xc8-\xc9]/iLfr
+/^[\xc8-\xc9]/iLfr_FR
     École
     école
 
-/^[\xc8-\xc9]/Lfr
+/^[\xc8-\xc9]/Lfr_FR
     École
     *** Failers 
     école
 
-/ End of testinput3 /
+/\W+/Lfr_FR
+    >>>\xaa<<<
+    >>>\xba<<< 
+
+/[\W]+/Lfr_FR
+    >>>\xaa<<<
+    >>>\xba<<< 
+
+/[^[:alpha:]]+/Lfr_FR
+    >>>\xaa<<<
+    >>>\xba<<< 
+
+/\w+/Lfr_FR
+    >>>\xaa<<<
+    >>>\xba<<< 
+
+/[\w]+/Lfr_FR
+    >>>\xaa<<<
+    >>>\xba<<< 
+
+/[[:alpha:]]+/Lfr_FR
+    >>>\xaa<<<
+    >>>\xba<<< 
+    
+/[[:alpha:]][[:lower:]][[:upper:]]/DZLfr_FR 
+
+/-- End of testinput3 --/
