@@ -1,4 +1,4 @@
-.TH PCRE 3
+.TH PCRE_COPY_NAMED_SUBSTRING 3 "24 June 2012" "PCRE 8.30"
 .SH NAME
 PCRE - Perl-compatible regular expressions
 .SH SYNOPSIS
@@ -7,34 +7,53 @@ PCRE - Perl-compatible regular expressions
 .B #include <pcre.h>
 .PP
 .SM
-.br
-.B int pcre_copy_named_substring(const pcre *\fIcode\fR,
+.B int pcre_copy_named_substring(const pcre *\fIcode\fP,
 .ti +5n
-.B const char *\fIsubject\fR, int *\fIovector\fR,
+.B const char *\fIsubject\fP, int *\fIovector\fP,
 .ti +5n
-.B int \fIstringcount\fR, const char *\fIstringname\fR,
+.B int \fIstringcount\fP, const char *\fIstringname\fP,
 .ti +5n
-.B char *\fIbuffer\fR, int \fIbuffersize\fR);
-
+.B char *\fIbuffer\fP, int \fIbuffersize\fP);
+.PP
+.B int pcre16_copy_named_substring(const pcre16 *\fIcode\fP,
+.ti +5n
+.B PCRE_SPTR16 \fIsubject\fP, int *\fIovector\fP,
+.ti +5n
+.B int \fIstringcount\fP, PCRE_SPTR16 \fIstringname\fP,
+.ti +5n
+.B PCRE_UCHAR16 *\fIbuffer\fP, int \fIbuffersize\fP);
+.PP
+.B int pcre32_copy_named_substring(const pcre32 *\fIcode\fP,
+.ti +5n
+.B PCRE_SPTR32 \fIsubject\fP, int *\fIovector\fP,
+.ti +5n
+.B int \fIstringcount\fP, PCRE_SPTR32 \fIstringname\fP,
+.ti +5n
+.B PCRE_UCHAR32 *\fIbuffer\fP, int \fIbuffersize\fP);
+.
 .SH DESCRIPTION
 .rs
 .sp
 This is a convenience function for extracting a captured substring, identified
 by name, into a given buffer. The arguments are:
-
-  \fIcode\fR          Pattern that was successfully matched
-  \fIsubject\fR       Subject that has been successfully matched
-  \fIovector\fR       Offset vector that \fBpcre_exec()\fR used
-  \fIstringcount\fR   Value returned by \fBpcre_exec()\fR
-  \fIstringname\fR    Name of the required substring
-  \fIbuffer\fR        Buffer to receive the string
-  \fIbuffersize\fR    Size of buffer
-
+.sp
+  \fIcode\fP          Pattern that was successfully matched
+  \fIsubject\fP       Subject that has been successfully matched
+  \fIovector\fP       Offset vector that \fBpcre[16|32]_exec()\fP used
+  \fIstringcount\fP   Value returned by \fBpcre[16|32]_exec()\fP
+  \fIstringname\fP    Name of the required substring
+  \fIbuffer\fP        Buffer to receive the string
+  \fIbuffersize\fP    Size of buffer
+.sp
 The yield is the length of the substring, PCRE_ERROR_NOMEMORY if the buffer was
 too small, or PCRE_ERROR_NOSUBSTRING if the string name is invalid.
-
-There is a complete description of the PCRE API in the
+.P
+There is a complete description of the PCRE native API in the
 .\" HREF
-\fBpcreapi\fR
+\fBpcreapi\fP
+.\"
+page and a description of the POSIX API in the
+.\" HREF
+\fBpcreposix\fP
 .\"
 page.
