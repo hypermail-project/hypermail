@@ -88,6 +88,7 @@ docs/stars.png
 lcc/README.txt
 lcc/chartables.c
 lcc/config.h
+lcc/pcre_config.h
 lcc/defaults.h
 lcc/dirent.c
 lcc/dirent.h
