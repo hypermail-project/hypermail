@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# From configure.in Revision: 1.15 # Guess values for system-dependent variables and create Makefiles.
+# From configure.in Revision: 1.7 # Guess values for system-dependent variables and create Makefiles.
 # Generated automatically using autoconf version 2.13 
 # Copyright (C) 1992, 93, 94, 95, 96 Free Software Foundation, Inc.
 #
@@ -553,7 +553,7 @@ INCLUDES=""
 GDBM_INCLUDE=""
 GDBM_LIB=""
 FNV_DEP=""
-SUBDIRS="src/pcre"
+SUBDIRS="src/pcre src/trio"
 
 
 ac_aux_dir=
