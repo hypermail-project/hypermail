@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Revision: 1.6 $)dnl
+AC_REVISION($Revision: 1.7 $)dnl
 AC_INIT(src/hypermail.c)
 AC_CONFIG_HEADER(config.h)
 AC_PREFIX_DEFAULT(/usr/local)
@@ -11,7 +11,7 @@ INCLUDES=""
 GDBM_INCLUDE=""
 GDBM_LIB=""
 FNV_DEP=""
-SUBDIRS="src/pcre src/trio"
+SUBDIRS="[src/pcre] [src/trio]"
 
 dnl ===========================================================================
 dnl Get host, target and build variables filled with appropriate info.
@@ -149,7 +149,7 @@ AC_SUBST(domainaddr)
 dnl ===========================================================================
 dnl Configure the subdirectories
 dnl ===========================================================================
-AC_CONFIG_SUBDIRS($SUBDIRS)
+AC_CONFIG_SUBDIRS([$SUBDIRS])
 
 dnl ===========================================================================
 dnl Checks headers
@@ -186,7 +186,7 @@ fi
 
 dnl gdbm checks
 
-AC_DEFUN(AC_TEMP_LDFLAGS,[
+AC_DEFUN([AC_TEMP_LDFLAGS],[
   old_LDFLAGS="$LDFLAGS"
   LDFLAGS="$1 $LDFLAGS"
   $2
@@ -198,7 +198,7 @@ dnl AC_HMAIL_ONCE(namespace, variable, code)
 dnl
 dnl execute code, if variable is not set in namespace
 dnl
-AC_DEFUN(AC_HMAIL_ONCE,[
+AC_DEFUN([AC_HMAIL_ONCE],[
   changequote({,})
   unique=`echo $2|sed 's/[^a-zA-Z0-9]/_/g'`
   changequote([,])
@@ -214,7 +214,7 @@ dnl AC_EXPAND_PATH(path, variable)
 dnl
 dnl expands path to an absolute path and assigns it to variable
 dnl
-AC_DEFUN(AC_EXPAND_PATH,[
+AC_DEFUN([AC_EXPAND_PATH],[
   if test -z "$1" || echo "$1" | grep '^/' >/dev/null ; then
     $2="$1"
   else
@@ -226,7 +226,7 @@ AC_DEFUN(AC_EXPAND_PATH,[
   fi
 ])
 
-AC_DEFUN(AC_ADD_INCLUDE,[
+AC_DEFUN([AC_ADD_INCLUDE],[
   if test "$1" != "/usr/include"; then
     AC_EXPAND_PATH($1, ai_p)
     AC_HMAIL_ONCE(INCLUDEPATH, $ai_p, [
@@ -240,7 +240,7 @@ dnl AC_ADD_LIBPATH(path[, shared-libadd])
 dnl
 dnl add a library to linkpath
 dnl
-AC_DEFUN(AC_ADD_LIBPATH,[
+AC_DEFUN([AC_ADD_LIBPATH],[
   if test "$1" != "/usr/lib"; then
     AC_EXPAND_PATH($1, ai_p)
     AC_HMAIL_ONCE(LIBPATH, $ai_p, [
@@ -256,7 +256,7 @@ dnl add a library to the link line and path to linkpath/runpath.
 dnl if shared-libadd is not empty and $ext_shared is yes,
 dnl shared-libadd will be assigned the library information
 dnl
-AC_DEFUN(AC_ADD_LIBRARY_WITH_PATH,[
+AC_DEFUN([AC_ADD_LIBRARY_WITH_PATH],[
 ifelse($3,,[
   if test -n "$2"; then
     AC_ADD_LIBPATH($2)
