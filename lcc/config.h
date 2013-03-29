@@ -158,3 +158,5 @@ found. If HAVE_MEMMOVE is set to 1, the value of HAVE_BCOPY is not relevant. */
 #define HAVE_STRERROR 1
 #define HAVE_MEMMOVE  1
 #define HAVE_BCOPY    0
+
+#include "pcre_config.h"

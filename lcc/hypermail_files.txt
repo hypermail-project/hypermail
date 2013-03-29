@@ -3,9 +3,9 @@ getdate.c
 dirent.c
 ..\src\uudecode.c
 ..\src\txt2html.c
-..\src\triostr.c
-..\src\trionan.c
-..\src\trio.c
+..\src\trio\triostr.c
+..\src\trio\trionan.c
+..\src\trio\trio.c
 ..\src\threadprint.c
 ..\src\struct.c
 ..\src\string.c
@@ -14,11 +14,11 @@ dirent.c
 ..\src\quotes.c
 ..\src\printfile.c
 ..\src\print.c
-..\src\pcre\study.c
+..\src\pcre\pcre_study.c
 ..\src\pcre\pcreposix.c
 ..\src\pcre\pcre.c
-..\src\pcre\maketables.c
-..\src\pcre\get.c
+..\src\pcre\pcre_maketables.c
+..\src\pcre\pcre_get.c
 ..\src\parse.c
 ..\src\mem.c
 ..\src\lock.c
