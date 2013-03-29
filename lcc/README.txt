@@ -63,6 +63,16 @@ B.  TIPS, BUGS, AND LIMITATIONS ON HYPERMAIL FOR WINDOWS
 
 4.  The "latest_folder" configuration option is turned off in Windows.
 
+5.  By default, we're building PCRE as an 8-bit library. If you want
+    to build it instead as an 16-bit or 32-bit library, change the
+    pcre file names in hypermail_files.txt to use the pcre16
+    or pcre32 prefix for the following files: pcrenn_maketables.c,
+    pcrenn_study.c, pcrenn_get.c, where nn should be 16 or 32.
+
+6.  If you have problems comping the newer pcre library, check
+    the NON-AUTOTOOLS-BUILD file for more info and send feedback
+    so that we can updat these instructions.
+
 Bob Crispen
 revbob@crispen.org
 
