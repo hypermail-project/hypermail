@@ -86,7 +86,7 @@ docs/stars.png
 #  - LCC-Win32 Build Support
 # 
 lcc/README.txt
-lcc/chartables.c
+lcc/pcre_chartables.c
 lcc/config.h
 lcc/pcre_config.h
 lcc/defaults.h
