@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.67])
-AC_REVISION($Revision: 1.1 $)dnl
+AC_REVISION($Revision: 1.2 $)dnl
 AC_INIT
 AC_CONFIG_SRCDIR([src/hypermail.c])
 AC_CONFIG_HEADER(config.h)
@@ -14,11 +14,6 @@ GDBM_INCLUDE=""
 GDBM_LIB=""
 PCRE_DEP=""
 FNV_DEP=""
-
-dnl These are the subdirs that are compiled systematically
-dnl For subdirs that can be disabled thru configure options,
-dnl we configure them in a dedicated section near the test
-SUBDIRS="src/trio"
 
 dnl ===========================================================================
 dnl Get host, target and build variables filled with appropriate info.
@@ -152,9 +147,15 @@ AC_SUBST(domainaddr)
 
 dnl ===========================================================================
 dnl Configure the subdirectories
+dnl
+dnl These are the subdirs that are compiled systematically
+dnl For subdirs that can be disabled thru configure options,
+dnl we configure them in a dedicated section near the test
 dnl ===========================================================================
 AC_DISABLE_OPTION_CHECKING
-AC_CONFIG_SUBDIRS([SUBDIRS])
+APR_SUBDIR_CONFIG([src/trio], 
+                    [CFLAGS=[-DTRIO_MINIMAL]],
+  		    [--with-pcre=*|\'--with-pcre=*])
 
 dnl ===========================================================================
 dnl Checks headers
