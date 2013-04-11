@@ -8,9 +8,9 @@
 #  Original comments
 #  ------------------------------------------------------------
 #
-# @(#) $Revision$
-# @(#) $Id$
-# @(#) $Source$
+# @(#) $Revision: 1.2 $
+# @(#) $Id: Makefile.in,v 1.2 2013-04-11 13:48:18 kahan Exp $
+# @(#) $Source: /sources/public/hypermess/hypermail/src/fnv/Makefile.in,v $
 #
 # See:
 #	http://www.isthe.com/chongo/tech/comp/fnv/index.html
@@ -263,6 +263,7 @@ clean:
 	-rm -f ${LIBOBJ}
 	-rm -f ${OTHEROBJ}
 	-rm -rf *.lo *.la .libs
+	-rm -f *.a
 	-rm -f fnv_hash.tar.gz Makefile.ship	# WWW
 
 clobber: clean
