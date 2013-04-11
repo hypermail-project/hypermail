@@ -4,6 +4,8 @@
 @SET_MAKE@
 
 prefix=@prefix@
+datarootdir = @datarootdir@
+datadir = @datadir@
 exec_prefix=@exec_prefix@
  
 # This is where you want hypermail to be installed
@@ -24,15 +26,19 @@ CC=@CC@
 # Installation program to use
 INSTALL_PROG=@INSTALL@ 
 
-SPLINTFLAGS=-Ipcre -Itrio
- 
+SPLINTFLAGS=@INCLUDES@ -Itrio
+
+PCRE_DEP=@PCRE_DEP@
+FNV_DEP=@FNV_DEP@
+
 #WNOERROR=-Werror
 #WARNINGS=$(WNOERROR) -ansi -pedantic -Wall -Wtraditional -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Dlint
 
-CFLAGS=@CFLAGS@ @INCLUDES@ -Ipcre -Itrio -DTRIO_MINIMAL $(WARNINGS)
+CFLAGS=@CFLAGS@ $(WARNINGS)
+CPPFLAGS=@CPPFLAGS@ @INCLUDES@ -Itrio -DTRIO_MINIMAL
 YACC=@YACC@
 NETLIBS=@LIBS@
-LDFLAGS=@LDFLAGS@ -Lpcre/.libs -Ltrio
+LDFLAGS=@LDFLAGS@ -Ltrio
 MISC_LIBS= -lm -lpcre -ltrio
 OPT_LIBS=@EXTRA_LIBS@
 
@@ -53,18 +59,18 @@ OBJS=		base64.o date.o domains.o file.o hypermail.o lang.o lock.o \
 MAILOBJS=	mail.o ../libcgi/libcgi.a
 
 .c.o:
-	$(CC) -c $(CFLAGS) $<
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) $<
 
-all:    pcre/.libs/libpcre.a trio/libtrio.a @FNV_DEP@ hypermail$(SUFFIX) mail$(SUFFIX) lang$(SUFFIX)
+all:    @PCRE_DEP@ trio/libtrio.a @FNV_DEP@ hypermail$(SUFFIX) mail$(SUFFIX) lang$(SUFFIX)
 
 pcre/.libs/libpcre.a:
-	@cd pcre; $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)" ; rm -f .libs/lib*.so*
+	@cd pcre; $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" ; rm -f .libs/lib*.so*
 
 trio/libtrio.a:
-	@cd trio; $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)"
+	@cd trio; $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)"
 
 fnv/libfnv.a:
-	@cd fnv; $(MAKE) libfnv.a CC="$(CC)" CFLAGS="$(CFLAGS)"
+	@cd fnv; $(MAKE) libfnv.a CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)"
 
 hypermail$(SUFFIX): $(OBJS) 
 	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(OBJS) $(OPT_LIBS) $(MISC_LIBS)
@@ -75,10 +81,10 @@ mail$(SUFFIX):	$(MAILOBJS)
 	chmod 0755 $@
 
 lang$(SUFFIX): lang.c lang.h
-	$(CC) -DLANG_PROG $(CFLAGS) $(LDFLAGS) -o $@ lang.c $(MISC_LIBS)
+	$(CC) -DLANG_PROG $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) -o $@ lang.c $(MISC_LIBS)
 
 ../libcgi/libcgi.a:
-	@cd ../libcgi; $(MAKE) all CC="$(CC)" CFLAGS="$(CFLAGS)"
+	@cd ../libcgi; $(MAKE) all CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)"
 
 getdate.c: getdate.y getdate.h
 	@echo "Expect 13 shift/reduce conflicts."
@@ -102,11 +108,11 @@ insight:
 
 pure:
 	$(MAKE) CFLAGS="-g" $(OBJS)  
-	purify $(CC) -o hypermail -g $(CFLAGS) $(OBJS) 
+	purify $(CC) -o hypermail -g $(CFLAGS) $(CPPFLAGS) $(OBJS) 
 
 quant:
 	$(MAKE) CFLAGS="-g" $(OBJS)
-	quantify $(CC) -o hypermail -g $(CFLAGS) $(OBJS)
+	quantify $(CC) -o hypermail -g $(CFLAGS) $(CPPFLAGS) $(OBJS)
 
 
 splint: 
@@ -124,19 +130,19 @@ clean:
 	rm -f *.o .pure *qx *qv *.ln core
 	rm -f .inslog tca.map lint.out splint.out
 	rm -f getdate.c
-	@cd pcre; $(MAKE) clean
+	@(if test "$(PCRE_DEP)" != "" ; then cd pcre; $(MAKE) clean; fi)
 	@cd trio; $(MAKE) clean
 	@(if test "$(FNV_DEP)" != "" ; then cd fnv; $(MAKE) clean; fi)
 	@cd ../libcgi; $(MAKE) clean
 
 clobber: clean
-	@cd pcre; rm -f *.lock
+	@(if test "$(PCRE_DEP)" != "" ; then cd pcre; rm -f *.lock; fi)
 	@cd trio; rm -f *.lock
 	@(if test "$(FNV_DEP)" != "" ; then cd fnv; $(MAKE) clobber; fi)
 	@cd ../libcgi; $(MAKE) clobber
 
 distclean: clobber
-	@cd pcre; $(MAKE) distclean
+	@(if test "$(PCRE_DEP)" != "" ; then cd pcre; $(MAKE) distclean; fi)
 	@cd trio; $(MAKE) clean
 	@(if test "$(FNV_DEP)" != "" ; then cd fnv; $(MAKE) distclean; fi)
 	@cd ../libcgi; $(MAKE) distclean

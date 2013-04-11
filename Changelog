@@ -4,8 +4,19 @@ Version Changes for Hypermail
 ============================
 HYPERMAIL VERSION 2.3.1:
 ============================
+Jose Kahan (Apr 11, 2013)
+- Extended the configure options  so that a user can decide if hypermail
+  should be compiled and statically linked against the bundled pcre lib or
+  if it should be dynamically linked with an external (or system) pcre 
+  library (if available). 
+  The new configure option is --with-external-pcre[=dir].
+  The default value for dir is /usr and the include and libraries directories
+  will be searched from that starting path. This option is disabled by default.
+- the make clean in libfnv wasn't removing the libfnv.a file
+
 Jose Kahan (Mar 29, 2013)
-- Updated configure to latest autoconf syntax conventions
+- Updated configure to latest autoconf syntax conventions. 
+  Renamed configure.in to configure.ac and cleaned it up partially.
 
 Jose Kahan (Mar 20, 2013)
 - Updated pcre to pcre-8.32 from pcre-4.3. This may have

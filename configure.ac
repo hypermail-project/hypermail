@@ -1,7 +1,9 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Revision: 1.7 $)dnl
-AC_INIT(src/hypermail.c)
+AC_PREREQ([2.67])
+AC_REVISION($Revision: 1.1 $)dnl
+AC_INIT
+AC_CONFIG_SRCDIR([src/hypermail.c])
 AC_CONFIG_HEADER(config.h)
 AC_PREFIX_DEFAULT(/usr/local)
 LDFLAGS=""
@@ -10,14 +12,19 @@ EXTRA_LIBS=""
 INCLUDES=""
 GDBM_INCLUDE=""
 GDBM_LIB=""
+PCRE_DEP=""
 FNV_DEP=""
-SUBDIRS="[src/pcre] [src/trio]"
+
+dnl These are the subdirs that are compiled systematically
+dnl For subdirs that can be disabled thru configure options,
+dnl we configure them in a dedicated section near the test
+SUBDIRS="src/trio"
 
 dnl ===========================================================================
 dnl Get host, target and build variables filled with appropriate info.
 dnl ===========================================================================
 
-AC_CANONICAL_SYSTEM
+AC_CANONICAL_TARGET
 
 dnl ===========================================================================
 dnl Check to assure the cached information is valid.
@@ -81,11 +88,8 @@ export CFLAGS CC
 AC_SUBST(INSTALL)
 
 AC_MSG_CHECKING([that the compiler works])
-AC_TRY_RUN([ main(int ac, char **av) { return 0; } ],
-    AC_MSG_RESULT(yes),
-    AC_MSG_RESULT(no)
-    AC_MSG_ERROR(Could not compile and run even a trivial ANSI C program - check CC.),
-    AC_MSG_ERROR(Could not compile and run even a trivial ANSI C program - check CC.))
+AC_RUN_IFELSE([AC_LANG_SOURCE([[ main(int ac, char **av) { return 0; } ]])],[AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)
+    AC_MSG_ERROR(Could not compile and run even a trivial ANSI C program - check CC.)],[AC_MSG_ERROR(Could not compile and run even a trivial ANSI C program - check CC.)])
 
 dnl ===========================================================================
 dnl Determine if building on a Cygwin system so that 
@@ -149,7 +153,8 @@ AC_SUBST(domainaddr)
 dnl ===========================================================================
 dnl Configure the subdirectories
 dnl ===========================================================================
-AC_CONFIG_SUBDIRS([$SUBDIRS])
+AC_DISABLE_OPTION_CHECKING
+AC_CONFIG_SUBDIRS([SUBDIRS])
 
 dnl ===========================================================================
 dnl Checks headers
@@ -267,8 +272,9 @@ ifelse($3,,[
 ])
 
 AC_ARG_WITH(gdbm,
-[  --with-gdbm[=DIR]       Include GDBM support],
-[ given_gdbm=$withval])
+   AS_HELP_STRING([--with-gdbm=[DIR]],
+                  [Include GDBM support]),
+   [ given_gdbm=$withval])
 
 if test "$given_gdbm" != "no"; then
     for i in /usr/local /usr $withval; do
@@ -341,19 +347,74 @@ else
 fi
 
 dnl
+dnl PCRE: select whether to use an external or the bundled PCRE lib
+dnl borrowed from Apache's configure.in.
+dnl
+
+AC_MSG_NOTICE(Checking use of an external PCRE)
+AC_ARG_WITH(external_pcre, 
+	    AS_HELP_STRING([--with-external_pcre[=DIR]],
+                           [Use an external PCRE library instead of the bundled one (default /usr)])
+)
+
+case $with_external_pcre in
+yes) AC_PATH_PROG([PCRE_CONFIG], [pcre-config], [false]) ;;
+ /*) if test -d "$with_external_pcre" && test -x "$with_external_pcre/bin/pcre-config"; then
+       PCRE_CONFIG=$with_external_pcre/bin/pcre-config
+     elif test -x "$with_external_pcre"; then
+       PCRE_CONFIG=$with_external_pcre
+     fi
+
+     if $PCRE_CONFIG --version >/dev/null 2>&1; then :; 
+     else
+        PCRE_CONFIG=false
+     fi
+     ;;
+*) PCRE_CONFIG=false ;;
+esac
+
+if test "$PCRE_CONFIG" != "false"; then
+  PCRE_PATH=`$PCRE_CONFIG --prefix`
+  AC_CHECK_HEADER(["$PCRE_PATH/include/pcre.h"], [ ],[PCRE_CONFIG=false])
+fi
+
+if test "$PCRE_CONFIG" != "false"; then
+  AC_MSG_NOTICE([using external PCRE library])
+  APR_ADDTO(CFLAGS, [`$PCRE_CONFIG --cflags`])
+  APR_ADDTO(LIBS, [`$PCRE_CONFIG --libs`])
+else
+  AC_MSG_NOTICE([using bundled PCRE regular expression library])
+  APR_ADDTO(INCLUDES, [-Ipcre])
+  APR_ADDTO(LDFLAGS, "[-Lpcre/.libs]")
+  PCRE_DEP="pcre/.libs/libpcre.a"
+  APR_SUBDIR_CONFIG([src/pcre], 
+                    [],
+  		    [--with-pcre=*|\'--with-pcre=*])
+fi
+AC_SUBST([PCRE_DEP])
+
+dnl
 dnl The FNV hash library used for the nonsequential filenames
 dnl
 
-AC_MSG_CHECKING(whether the fnv hash library exists)
-AC_ARG_ENABLE(libfnv,
-[  --enable-libfnv	fnv hash library (used for the nonsequential file names) [no] ],
-[ AC_MSG_RESULT(yes)
-  SUBDIRS="$SUBDIRS src/fnv"
-  AC_DEFINE(HAVE_LIBFNV)
-  AC_ADD_INCLUDE(src/fnv)
-  AC_ADD_LIBRARY_WITH_PATH(-lfnv,src/fnv)
+AC_MSG_CHECKING([whether to use fnv hash library for non-sequential filenames])
+AC_ARG_ENABLE(libfnv, 
+     [	    AS_HELP_STRING([--enable-libfnv],
+                           [use the fnv hash library for generating non-sequential filenames [no]])
+     ],
+     [ given_libfnv=$enableval ])
+     
+if test "$given_libfnv" != "yes"; then
+  AC_MSG_RESULT([no])
+else
+  AC_MSG_RESULT([yes])
+  AC_DEFINE([HAVE_LIBFNV])
+  APR_ADDTO(INCLUDES, [-Ifnv])
+  dnl APR_ADDTO(LDFLAGS, "[-Lfnv]")
+  AC_ADD_LIBRARY_WITH_PATH([-lfnv],[src/fnv])
   FNV_DEP="fnv/libfnv.a"
-],AC_MSG_RESULT(no))
+  APR_SUBDIR_CONFIG([src/fnv])
+fi
 AC_SUBST(FNV_DEP)
 
 
@@ -402,5 +463,6 @@ AC_SUBST(LIBS)
 AC_SUBST(EXTRA_LIBS)
 AC_SUBST(INCLUDES)
 
-AC_OUTPUT(Makefile archive/Makefile docs/Makefile libcgi/Makefile src/Makefile tests/testhm src/defaults.h)
+AC_CONFIG_FILES([Makefile archive/Makefile docs/Makefile libcgi/Makefile src/Makefile tests/testhm src/defaults.h])
+AC_OUTPUT
 
