@@ -48,13 +48,3 @@
  # endif
  #endif
    
---- /tmp/trio-1.14/Makefile.in	2009-10-31 16:51:57.000000000 +0100
-+++ ./Makefile.in	2013-03-15 19:38:59.000000000 +0100
-@@ -1,6 +1,6 @@
- SHELL = @SHELL@
- CC	= @CC@
--CFLAGS	= @CFLAGS@ -I. -DDEBUG
-+CFLAGS	= @CFLAGS@ -I. -DDEBUG -DTRIO_MINIMAL
- OBJS	= triostr.o trio.o trionan.o
- TARGETLIB	= libtrio.a
- TARGETINCS	= trio.h triop.h triodef.h trionan.h triostr.h

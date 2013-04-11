@@ -1,6 +1,5 @@
 This is the ctrio 1.14 [1] release, stripped of its documentation and with
-some patches to fix compilation problems [2] and make sure it is compiled
-using DTRIO_MINIMAL.
+some patches to fix compilation problems [2].
 
 See the hypermail-patches.diff file for the exact changes.
 

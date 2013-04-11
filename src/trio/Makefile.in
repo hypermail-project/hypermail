@@ -1,6 +1,6 @@
 SHELL = @SHELL@
 CC	= @CC@
-CFLAGS	= @CFLAGS@ -I. -DDEBUG -DTRIO_MINIMAL
+CFLAGS	= @CFLAGS@ -I. -DDEBUG
 OBJS	= triostr.o trio.o trionan.o
 TARGETLIB	= libtrio.a
 TARGETINCS	= trio.h triop.h triodef.h trionan.h triostr.h
