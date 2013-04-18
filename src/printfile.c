@@ -337,26 +337,12 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
       /*
        * if style sheets are not specified, emit a default one.
        */
-      /* @@ JK: the old css */
-#if 0
-      fprintf(fp, "<style type=\"text/css\">\n");
-      fprintf(fp, "body {color: black; background: #ffffff}\n");
-      fprintf(fp, "h1.center {text-align: center}\n");
-      fprintf(fp, "div.center {text-align: center}\n");
-      fprintf(fp, ".quotelev1 {color : #990099}\n");
-      fprintf(fp, ".quotelev2 {color : #ff7700}\n");
-      fprintf(fp, ".quotelev3 {color : #007799}\n");
-      fprintf(fp, ".quotelev4 {color : #95c500}\n");
-      fprintf(fp, ".headers {background : #e0e0d0}\n");
-      fprintf(fp, ".links {background : #f8f8e0}\n");
-      fprintf(fp, "</style>\n");
-#endif
-      /* @@ JK: the new css */
+       /* @@ JK: the new css */
       fprintf (fp, "<style type=\"text/css\">\n");
       
       fprintf (fp,"/*<![CDATA[*/\n");
       fprintf (fp, "/* To be incorporated in the main stylesheet, don't code it in hypermail! */\n");
-      fprintf (fp, "body {color: black; background: #ffffff}\n");
+      fprintf (fp, "body {color: black; background: #ffffff;}\n");
       fprintf (fp, "dfn {font-weight: bold;}\n");
       fprintf (fp, "pre { background-color:inherit;}\n");
       fprintf (fp, ".head { border-bottom:1px solid black;}\n");
@@ -369,13 +355,13 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
       fprintf (fp, "map ul {list-style:none;}\n");
       fprintf (fp, "#mid { font-size:0.9em;}\n");
       fprintf (fp, "#received { float:right;}\n");
-      fprintf (fp, "address { font-style:inherit ;}\n");
+      fprintf (fp, "address { font-style:inherit;}\n");
       fprintf (fp, "/*]]>*/\n");
-      fprintf(fp, ".quotelev1 {color : #990099}\n");
-      fprintf(fp, ".quotelev2 {color : #ff7700}\n");
-      fprintf(fp, ".quotelev3 {color : #007799}\n");
-      fprintf(fp, ".quotelev4 {color : #95c500}\n");
-      fprintf (fp, ".period {font-weight: bold}\n");
+      fprintf(fp, ".quotelev1 {color : #990099;}\n");
+      fprintf(fp, ".quotelev2 {color : #ff7700;}\n");
+      fprintf(fp, ".quotelev3 {color : #007799;}\n");
+      fprintf(fp, ".quotelev4 {color : #95c500;}\n");
+      fprintf (fp, ".period {font-weight: bold;}\n");
       fprintf (fp, "</style>\n");
     }
 
