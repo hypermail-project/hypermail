@@ -4,6 +4,10 @@ Version Changes for Hypermail
 ============================
 HYPERMAIL VERSION 2.3.1:
 ============================
+Jose Kahan (Apr 18, 2013)
+- Removed commented out code in printfile.c.
+- Added missing ';' in generated css rules in the same file
+
 Jose Kahan (Apr 11, 2013)
 - Extended the configure options  so that a user can decide if hypermail
   should be compiled and statically linked against the bundled pcre lib or
