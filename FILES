@@ -15,6 +15,7 @@ README
 TODO
 UPGRADE
 acconfig.h
+aclocal.m4
 config.guess
 config.h.in
 config.sub
