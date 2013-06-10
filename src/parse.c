@@ -2738,6 +2738,13 @@ msgid);
 		    }
 		    else if (content == CONTENT_BINARY) {
 
+		        /* don't create the attachments of deleted files */
+		        /* (JK: this seems like a good place to call emptydir() to remove
+			   existing attachments) from deleted messages */
+		        if (is_deleted && file_created == MAKE_FILE) {
+			  file_created = MADE_FILE;
+			}
+
 #ifndef REMOVED_990310
 			/* If there is no file created, we create and init one */
 			if (file_created == MAKE_FILE) {
