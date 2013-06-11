@@ -73,9 +73,9 @@ Jose Kahan (Feb 26, 2013)
  - New configuration directive "annotated" which allows a mailing
    list archive editor to annotate a given message before converting
    it into HTML. Associated additional new directives are
-   "html_message_deleted_spam", "html_message_deleted_other",
-   ""html_message_edited". Consult docs/hmrc.html for more info.
- - "html_message_deleted" is deprecated in favor of "html_message_deleted_spam"
+   "htmlmessage_deleted_spam", "htmlmessage_deleted_other",
+   "htmlmessage_edited". Consult docs/hmrc.html for more info.
+ - "htmlmessage_deleted" is deprecated in favor of "htmlmessage_deleted_spam"
  - "deleted" is superseded by "annotated", although it will be supported
    to take into account legacy archives.
  - Regenerated the dependencies for the src/Makefile.in file.

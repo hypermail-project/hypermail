@@ -1,5 +1,5 @@
 /*
-** $Id: setup.c,v 1.21 2013-02-27 15:45:02 kahan Exp $
+** $Id: setup.c,v 1.23 2013-06-11 18:55:44 kahan Exp $
 */
 
 #include "hypermail.h"
@@ -725,8 +725,8 @@ struct Config cfg[] = {
      "#   deleted : message deleted, other reasons;\n"
      "#    edited : original received message was manually edited.\n"
      "# You can customize the markup that\'s shown for content annotations\n"
-     "# by means of the html_message_deleted_other, html_message_deleted_spam\n,"
-     "# html_message_edited directives.\n\n"
+     "# by means of the htmlmessage_deleted_other, htmlmessage_deleted_spam\n,"
+     "# htmlmessage_edited directives.\n\n"
      "# robot annotations can have either one or both of the following values:\n"
      "#  nofollow : do not follow the links on this page;\n"
      "#   noindex : prevent search engines from indexing the contents of this message.\n"
