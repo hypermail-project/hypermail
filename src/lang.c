@@ -2,6 +2,8 @@
 #define MAIN_FILE
 #endif
 
+#include <getopt.h>
+
 #include "hypermail.h"
 
 char **valid_language(char *lg, char **locale_code)
