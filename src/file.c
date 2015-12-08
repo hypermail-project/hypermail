@@ -19,10 +19,14 @@
 ** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA 
 */
 
+#include <errno.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <pwd.h>
+
 #include "hypermail.h"
 #include "setup.h"
 #include "struct.h"
-#include <errno.h>
 #ifdef HAVE_DIRENT_H
 #ifdef __LCC__
 #include "../lcc/dirent.h"

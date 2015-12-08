@@ -23,6 +23,10 @@
 ** All the nasty string functions live here.
 */
 
+#include <iconv.h>
+#include <errno.h>
+#include <sys/stat.h>
+
 #include "hypermail.h"
 #include "setup.h"
 #include "parse.h"
