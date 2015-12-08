@@ -2,12 +2,15 @@ Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ============================
 HYPERMAIL VERSION 2.3.0:
-============================	
+============================
+
+ Ivan Kuraj (Apr 3, 2015)
+  - Correct includes for new glibc
+
  Jose Kahan (Oct 27, 2009)
-	
   - Added two new accesskeys in messages: 't' ->  next message
-    in thread, 'd' -> next message 
-	
+    in thread, 'd' -> next message
+
  Jose Kahan (Oct 26, 2009)
   - Updated hmrc.4 and hmrc.html to descrbie the new features.
 
@@ -37,7 +40,7 @@ HYPERMAIL VERSION 2.3.0:
   - New directive: inreplyto_command, gives a URI template to a script
     that hypermail will link to if it's unable to find a corresponding
     Message-Id in the archive's messages.
-	            
+
  Peter McCluskey (May 13, 2008)
   Change from Fumihiro Kato to fix bug that sometimes caused a charset
    problem when Content-Type is us-ascii but message headers
