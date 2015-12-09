@@ -115,27 +115,37 @@ Warning:
 Take the time to read the KNOWN_BUGS file so that you are aware of 
 things that might affect your use of hypermail.
 
+GIT Repository:
+===============
+
+Hypermail's code base has migrated from CVS to git and after a
+residence at sourceforge, now resides at github:
+
+  https://github.com/hypermail-project/hypermail/
+
 CVS Server:
 ===========
 
-Thanks to Ashley M. Kirchner <ashley@pcraft.com>, we have a CVS 
-server with the most recent sources at all times. Study the file
-README.CVS for details in how to use it.
+The hypermail CVS repository has been retired. Hypermail's code base
+now resides at github (see above).
+
+Thanks to Ashley M. Kirchner <ashley@pcraft.com> for having
+hosted and keep alive the CVS repository during the years.
 
 Getting Help:
 =============
 
-    Please send all bug reports, feature requests, patches, and other 
-    program-related things to 
+    There is no active dedicated mailing list for hypermail support or
+    development.
 
-		hypermail@hypermail-project.org.
+    Please use hypermail's github repository issue tracker for all bug
+    reports, feature requests, patches, and other program-related
+    things. This project is under low-maintenance priority.
 
-    The Hypermail Development mailing list (hypermail@hypermail-project.org)
-    is a good place to ask questions about usage, potential bugs, or to talk 
-    about features you'd like to see.  The list is a Smartlist-based list. To
-    subscribe send a message with the word "subscribe" in the Subject: field
-    to hypermail-request@hypermail-project.org.
-    The list's submission address is hypermail@hypermail-project.org.
+    You can browse the old hypermail development mailing list archives
+    from the historical hypermail project homepage:
+
+       http://hypermail-project.org/
 
 Additionally:
 =============
