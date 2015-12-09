@@ -79,7 +79,10 @@ good things with it.  April 17, 1998 Kevin passed hypermail development
 to Kent Landfield (http://www.hypermail.org/). Kent had been 
 supporting an enhanced version of hypermail he had been using for the 
 last few years. It has gradually become a group effort, with Peter McCluskey
-<pcm@rahul.net> often acting as the leader.
+<pcm@rahul.net> often acting as the leader during its heydays. 
+Since a couple of years, it is stable and mostly unmaintained although 
+W3C still contributes some bug fixes, maintenance, and enhancements 
+arising from its use on its online mailing list archives.
 
 General:
 ========
