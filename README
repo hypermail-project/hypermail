@@ -80,9 +80,10 @@ to Kent Landfield (http://www.hypermail.org/). Kent had been
 supporting an enhanced version of hypermail he had been using for the 
 last few years. It has gradually become a group effort, with Peter McCluskey
 <pcm@rahul.net> often acting as the leader during its heydays. 
-Since a couple of years, it is stable and mostly unmaintained although 
-W3C still contributes some bug fixes, maintenance, and enhancements 
-arising from its use on its online mailing list archives.
+Since a couple of years, it is stable and mostly unmaintained. W3C continues
+to contribute to this repository, although infrequently, sharing with the
+community enhancements and bug fixes originating from its use of
+hypermail.
 
 General:
 ========
