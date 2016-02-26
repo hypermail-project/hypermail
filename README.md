@@ -1,4 +1,17 @@
-# Hypermail version `2.3.x`
+# Hypermail
+
+Version `2.3.x`
+
+* [Hypermail background](#hypermail-background)
+  * [License evolution](#license-evolution)
+  * [EIT's net.disappearance](#eits-netdisappearance)
+  * [Kevin and ongoing Hypermail development](#kevin-and-ongoing-hypermail-development)
+* [General](#general)
+* [Warning](#warning-warning)
+* [Git repository](#git-repository)
+* [CVS server](#cvs-server)
+* [Getting help](#getting-help)
+* [Additionally](#additionally)
 
 This is a release of the `2.3.x` version of hypermail.
 
@@ -49,7 +62,6 @@ more open methods of development and distribution. So now Hypermail
 is under GPL.
 
 ### EIT's net.disappearance
-
 A very old and established government contractor company called
 Electronic Instrumentation and Technology Inc. made legal moves to
 obtain the eit.com domain. Since VeriFone/HP had no interest in keeping
@@ -61,7 +73,7 @@ he wished to put it.
 ### Kevin and ongoing Hypermail development
 
 Kevin left Hewlett-Packard in 1997 and helped form a new company
-called Veo Systems (www.veosystems.com) with his old boss Marty
+called [Veo Systems](http://www.veosystems.com/) with his old boss Marty
 Tenenbaum, who founded EIT. Kevin did not have the time to maintain
 any of his old software, so he was looking for different parties to
 help maintain it and take over different pieces. For instance, Getstats
@@ -71,8 +83,8 @@ and many people have been doing
 good things with it. April 17, 1998 Kevin passed hypermail development
 to [Kent Landfield](http://www.hypermail.org/). Kent had been
 supporting an enhanced version of hypermail he had been using for the
-last few years. It has gradually become a group effort, with Peter McCluskey
-<pcm@rahul.net> often acting as the leader during its heydays.
+last few years. It has gradually become a group effort, with [Peter McCluskey](mailto:pcm@rahul.net)
+often acting as the leader during its heydays.
 Since a couple of years, it is stable and mostly unmaintained. W3C continues
 to contribute to this repository, although infrequently, sharing with the
 community enhancements and bug fixes originating from its use of
@@ -107,7 +119,7 @@ accordingly.
 
 ## :warning: Warning
 
-Take the time to read the KNOWN_BUGS file so that you are aware of
+Take the time to read the [`KNOWN_BUGS`](KNOWN_BUGS) file so that you are aware of
 things that might affect your use of hypermail.
 
 ## GIT repository
