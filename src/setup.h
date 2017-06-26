@@ -62,6 +62,7 @@ extern bool set_showheaders;
 extern bool set_showbr;
 extern bool set_showhr;
 extern bool set_showreplies;
+extern bool set_show_received_date;
 extern int set_show_msg_links;
 extern int set_show_index_links;
 extern bool set_usetable;
