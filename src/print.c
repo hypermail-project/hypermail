@@ -3214,7 +3214,8 @@ void write_toplevel_indices(int amountmsgs)
     char *index_title;
     char *filename;
     char *saved_set_dateformat;
-    char *abbr_dateformat = "%d %b %Y";
+    char *abbr_dateformat = set_describe_folder != NULL ?
+					set_describe_folder : "%d %b %Y";
     char *verbose_dateformat = "%A, %e %B %Y";
 
     char *tmpstr;
