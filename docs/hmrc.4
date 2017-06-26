@@ -1,4 +1,4 @@
-.TH hmrc 4 "February 04, 2004"
+.TH hmrc 4 "July 10, 2017"
 .SH NAME
 hmrc \- Hypermail configuration file 
 .SH DESCRIPTION
@@ -749,7 +749,7 @@ the index files. This will happen thru a
 .B LINK
 element in the index document's
 .B HEAD.
-By default this option is desactivated.
+By default this option is disabled.
 .TP
 .B mcss_url = "URL"
 This will link an external stylesheet found at the given URL to
@@ -757,7 +757,7 @@ the message files. This will happen thru a
 .B LINK
 element in the message document's
 .B HEAD.
-By default this option is desactivated.
+By default this option is disabled.
 .TP
 .B show_headers = list_of_RFC_Headers_to_display
 This is the list of headers to be displayed if showheaders is set to 
@@ -765,6 +765,15 @@ This is the list of headers to be displayed if showheaders is set to
 line.  If it contains the special character ``*''
 .B hypermail
 will display all header lines.
+.TP
+.B show_received_date = boolean_number
+This controls whether the date the message was received is displayed
+at the end of the message text.  If set to
+.B 0
+the received date is not displayed.
+This option is
+.B enabled
+by default.
 .TP
 .B readone = boolean_number
 Set this to
