@@ -249,11 +249,14 @@ void getname(char *line, char **namep, char **emailp)
         }
         else if (*c == '<') {    /* Comment may be on the end */
             /* From: <bill@celestial.com> Bill Campbell */
-            c = strchr(line, '>') + 1;
-            for (i = 0, len = NAMESTRLEN - 1; *c && *c != '\n' && i < len; c++)
-                name[i++] = *c;
+            char *c2 = strchr(line, '>');
+            if (c2 != NULL) {
+                c = c2 + 1;
+                for (i = 0, len = NAMESTRLEN - 1; *c && *c != '\n' && i < len; c++)
+                    name[i++] = *c;
 
-            comment_fnd = 1;
+                comment_fnd = 1;
+            }
         }
     }
     else if (strchr(line, '(')) {
