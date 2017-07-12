@@ -1485,7 +1485,7 @@ char *parseemail(char *input,	/* string to parse */
       at="@";
 
     if (strchr(input, '@') == NULL && strstr(input, "&#64;") == NULL)
-    	return input;	// nothing to do here
+    	return strsav(input);	// nothing to do here
 
     INIT_PUSH(buff);
 
