@@ -1590,6 +1590,9 @@ char *parseemail(char *input,	/* string to parse */
 }
 
 /*
+** Convert stuff that looks like a URL in a plain text string into a
+** corresponding html reference to the URL.
+**
 ** Returns the allocated and converted string.
 **
 ** This function is run on each and every body line, so it pays to make it
@@ -1599,7 +1602,7 @@ char *parseemail(char *input,	/* string to parse */
 static char *url[] = {
     "http://",
     "https://",
-    "news:",
+/*  "news:", */ /* code below assumes all URLs include a :// prefix */
     "ftp://",
 #if 0
     "file://",/* can expose private files outside the archive in some cases? */
@@ -1610,16 +1613,16 @@ static char *url[] = {
     "telnet://",
     "prospero://", /* deprecated */
 /* "mailto:", *//* Can't have mailto: as it will be converted twice */
-    "tel:",
-    "fax:",
+/*  "tel:", */ /* code below assumes all URLs include a :// prefix */
+/*  "fax:", */ /* code below assumes all URLs include a :// prefix */
     "rtsp://",
-    "im:",
+/*  "im:", */ /* code below assumes all URLs include a :// prefix */
     /* some non RFC or experimental or de-facto ones */
     "cap://",
     "feed://",
     "webcal://",
     "irc://",
-    "callto:",
+/*  "callto:", */ /* code below assumes all URLs include a :// prefix */
     NULL
 };
 
@@ -1637,7 +1640,7 @@ char *parseurl(char *input, char *charset)
 
     if (!strstr(input, "://")) {
 	/*
-	 * All our protocol prefixes have this "//:" substring in them. Most
+	 * All our protocol prefixes have this "://" substring in them. Most
 	 * of the lines we process don't have any URL. Let's not spend any
 	 * time looking for URLs in lines that we can prove cheaply don't
 	 * have any; it will be a big win for average input if we follow
@@ -1706,6 +1709,10 @@ char *parseurl(char *input, char *charset)
 		    endp = strstr(p, "://");
 		    if (endp) {
 			len = endp - p + 3;
+			// really means something else is wrong,
+			// but prevent buffer overflow
+			if (len >= sizeof(thisprotocol))
+			    len = sizeof(thisprotocol) - 1;
 			strncpy(thisprotocol, p, len);
 			thisprotocol[len] = '\0';
 		    }
