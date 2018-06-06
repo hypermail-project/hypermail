@@ -217,6 +217,12 @@ struct i18n_alt_charset_table i18n_charsettable[] = {
   {"KS_C_5601-1987","CP949"},
   {"KS_C_5601-1989","CP949"},
 
+  /* Thai */
+  {"windows-874","CP874"},
+
+  /* Chinese */
+  {"x-gbk","GB18030"},
+
   /* Cyrillic */
   {"x-mac-cyrillic","MacCyrillic"},
   {"ibm866","CP866"}
@@ -280,7 +286,6 @@ char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *
   }
   errno=0;
   ret=iconv(iconvfd, &string, &strleft, &convbuf, &bufleft);
-  iconv_close(iconvfd);
 
   if (ret==(size_t)-1){
     error = 1;
@@ -308,24 +313,16 @@ char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *
       break;
     }
   } else {
+    iconv(iconvfd, NULL, NULL, &convbuf, &bufleft); // return to initial state
     error = 0;
   }
+  iconv_close(iconvfd);
 
   if (error) {
     origconvbuf[origlen]=0x0;
     *len=origlen;
   } else {
-    /* hmm... do we really need to do this? (daigo) */
-    if (strncasecmp(tocharset,"ISO-2022-JP",11)==0){
-      *len=origlen*7-bufleft;
-      *(origconvbuf+*len)=0x1b;
-      *(origconvbuf+*len+1)=0x28;
-      *(origconvbuf+*len+2)=0x42;
-      *len+=3;
-    }else{
-      *len=origlen*7-bufleft;
-    }
-    
+    *len=origlen*7-bufleft;
     *(origconvbuf+*len)=0x0;
   }
 
@@ -1474,6 +1471,7 @@ char *parseemail(char *input,	/* string to parse */
     char tempbuff[MAXLINE];
     char *ptr;
     char *lastpos = input;
+    char *start = NULL;
     struct Push buff;
     
     char *at;
@@ -1486,31 +1484,42 @@ char *parseemail(char *input,	/* string to parse */
     else
       at="@";
 
+    if (strchr(input, '@') == NULL && strstr(input, "&#64;") == NULL)
+    	return strsav(input);	// nothing to do here
+
     INIT_PUSH(buff);
 
     while (*input) {
-      if ((ptr = strchr (input, '@')))
+      if (set_iso2022jp) {
+	iso2022_state(input, &in_ascii, &esclen);
+	if (esclen != 0) {
+	  input += esclen;
+	  continue;
+	}
+	if (in_ascii == FALSE) {
+	  input++;
+	  start = NULL;
+	  continue;
+	}
+      }
+      if (start == NULL)
+      	start = input;
+      ptr = NULL;
+      if (*input == '@') {
+      	ptr = input;
 	at_len = 1;
-      else if ((ptr = strstr (input, "&#64;")))
+      } else if (strncmp(input, "&#64;", 5) == 0) {
+      	ptr = input;
 	at_len = 5;
+      }
       if (ptr) {
 	    /* found a @ */
 	    char *email = ptr - 1;
 	    char content[2];
-	    int backoff = ptr - input;	/* max */
+	    int backoff = ptr - start;	/* max */
 
 #define VALID_IN_EMAIL_USERNAME   "a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~"
 #define VALID_IN_EMAIL_DOMAINNAME "a-zA-Z0-9.-"
-
-	    if (set_iso2022jp) {
-		    for (; ptr > input; input++) {
-			    iso2022_state(input, &in_ascii, &esclen);
-			    if (!esclen) continue;
-			    input += esclen;
-			    if (in_ascii == TRUE)
-				    backoff = ptr - input;
-		    }
-	    }
 
 	    /* check left side */
 	    while (backoff) {
@@ -1553,23 +1562,26 @@ char *parseemail(char *input,	/* string to parse */
 			PushString(&buff, tempbuff);
 
 			input = ptr + strlen(mailbuff) + at_len;
+			start = input;
 			lastpos = input;
 			continue;
 		    }
 		    else {	/* bad address */
 			PushString(&buff, mailaddr);
 			input = ptr + strlen(mailbuff) + at_len;
+			start = input;
 			lastpos = input;
 			continue;
 		    }
 		}
 	    }
 	    /* no address, continue from here */
-	    input = ptr + 1;
+	    input = ptr + at_len;
+	    start = input;
 	    continue;
       }
       else
-	input = strchr(input, '\0');
+	input++;
     }
     if (lastpos < input) {
 	PushNString(&buff, lastpos, input - lastpos);
@@ -1578,6 +1590,9 @@ char *parseemail(char *input,	/* string to parse */
 }
 
 /*
+** Convert stuff that looks like a URL in a plain text string into a
+** corresponding html reference to the URL.
+**
 ** Returns the allocated and converted string.
 **
 ** This function is run on each and every body line, so it pays to make it
@@ -1587,7 +1602,7 @@ char *parseemail(char *input,	/* string to parse */
 static char *url[] = {
     "http://",
     "https://",
-    "news:",
+/*  "news:", */ /* code below assumes all URLs include a :// prefix */
     "ftp://",
 #if 0
     "file://",/* can expose private files outside the archive in some cases? */
@@ -1598,16 +1613,16 @@ static char *url[] = {
     "telnet://",
     "prospero://", /* deprecated */
 /* "mailto:", *//* Can't have mailto: as it will be converted twice */
-    "tel:",
-    "fax:",
+/*  "tel:", */ /* code below assumes all URLs include a :// prefix */
+/*  "fax:", */ /* code below assumes all URLs include a :// prefix */
     "rtsp://",
-    "im:",
+/*  "im:", */ /* code below assumes all URLs include a :// prefix */
     /* some non RFC or experimental or de-facto ones */
     "cap://",
     "feed://",
     "webcal://",
     "irc://",
-    "callto:",
+/*  "callto:", */ /* code below assumes all URLs include a :// prefix */
     NULL
 };
 
@@ -1625,7 +1640,7 @@ char *parseurl(char *input, char *charset)
 
     if (!strstr(input, "://")) {
 	/*
-	 * All our protocol prefixes have this "//:" substring in them. Most
+	 * All our protocol prefixes have this "://" substring in them. Most
 	 * of the lines we process don't have any URL. Let's not spend any
 	 * time looking for URLs in lines that we can prove cheaply don't
 	 * have any; it will be a big win for average input if we follow
@@ -1694,6 +1709,10 @@ char *parseurl(char *input, char *charset)
 		    endp = strstr(p, "://");
 		    if (endp) {
 			len = endp - p + 3;
+			// really means something else is wrong,
+			// but prevent buffer overflow
+			if (len >= sizeof(thisprotocol))
+			    len = sizeof(thisprotocol) - 1;
 			strncpy(thisprotocol, p, len);
 			thisprotocol[len] = '\0';
 		    }

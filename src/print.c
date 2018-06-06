@@ -1238,9 +1238,11 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
     
     if (!set_showhtml) {
 	fprintf(fp, "<pre id=\"body\">\n");
-	fprintf(fp, "<a name=\"start%d\" accesskey=\"j\" id=\"start%d\"></a>", email->msgnum,email->msgnum);
 	pre = TRUE;
     }
+
+    /* tag the start of the message body */
+    fprintf(fp, "<a name=\"start%d\" accesskey=\"j\" id=\"start%d\"></a>", email->msgnum,email->msgnum);
 
     if (set_showhtml == 2)
       init_txt2html();
@@ -2263,8 +2265,9 @@ void writearticles(int startnum, int maxnum)
 	fprintf (fp, "<div class=\"mail\">\n");
 	print_headers(fp, email, FALSE);
 	printbody(fp, email, maybe_reply, is_reply);
-	fprintf (fp, "<span id=\"received\"><dfn>%s</dfn> %s</span>\n", 
-		 lang[MSG_RECEIVED_ON],  getdatestr(email->fromdate));
+	if (set_show_received_date)
+	    fprintf (fp, "<span id=\"received\"><dfn>%s</dfn> %s</span>\n", 
+		     lang[MSG_RECEIVED_ON],  getdatestr(email->fromdate));
 	fprintf (fp, "</div>\n");
 	printcomment(fp, "body", "end");
 
@@ -3214,7 +3217,8 @@ void write_toplevel_indices(int amountmsgs)
     char *index_title;
     char *filename;
     char *saved_set_dateformat;
-    char *abbr_dateformat = "%d %b %Y";
+    char *abbr_dateformat = set_describe_folder != NULL ?
+					set_describe_folder : "%d %b %Y";
     char *verbose_dateformat = "%A, %e %B %Y";
 
     char *tmpstr;

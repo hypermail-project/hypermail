@@ -43,6 +43,7 @@ bool set_showheaders;
 bool set_showbr;
 bool set_showhr;
 bool set_showreplies;
+bool set_show_received_date;
 int set_show_msg_links;
 int set_show_index_links;
 bool set_usetable;
@@ -308,6 +309,10 @@ struct Config cfg[] = {
     {"showreplies", &set_showreplies, BTRUE, CFG_SWITCH,
      "# Set this to On to show all replies to a message as links\n"
      "# in article files.\n", FALSE},
+
+    {"show_received_date", &set_show_received_date, BTRUE, CFG_SWITCH,
+     "# Set this to On to show the Received date at the end of the message\n"
+     "# body.\n", FALSE},
 
     {"show_msg_links", &set_show_msg_links, INT(1), CFG_INTEGER,
      "# Set this to 1 to put the individual message links at the top\n"
@@ -1250,6 +1255,7 @@ void dump_config(void)
     printf("set_showbr = %d\n",set_showbr);
     printf("set_showhr = %d\n",set_showhr);
     printf("set_showreplies = %d\n",set_showreplies);
+    printf("set_show_received_date = %d\n",set_show_received_date);
     printf("set_show_msg_links = %d\n",set_show_msg_links);
     printf("set_usetable = %d\n",set_usetable);
     printf("set_indextable = %d\n",set_indextable);

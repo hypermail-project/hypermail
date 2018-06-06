@@ -109,6 +109,21 @@ char *setindex(char *dfltindex, char *indextype, char *suffix)
     return (rp);
 }
 
+/*
+** Convert locale name to a UTF_8 locale name.
+**
+** Returns an ALLOCATED string!
+*/
+static char *utf8locale(char *locale)
+{
+    struct Push buff;
+
+    INIT_PUSH(buff);		/* init macro */
+    PushString(&buff, locale);
+    PushString(&buff, ".UTF-8");
+    RETURN_PUSH(buff);
+} /* end utf8locale() */
+
 
 /* Print out the version number and die. */
 
@@ -365,9 +380,13 @@ int main(int argc, char **argv)
     }
 
 #ifdef HAVE_LOCALE_H
-	if (!setlocale(LC_ALL, locale_code)) {
+    if (!setlocale(LC_ALL, locale_code)) {
+	char *locale_code_utf8 = utf8locale(locale_code);
+	if (!setlocale(LC_ALL, locale_code_utf8)) {
 	    snprintf(errmsg, sizeof(errmsg), "WARNING: locale \"%s\", not supported.\n", locale_code);
 	    fprintf(stderr, "%s", errmsg);/* AUDIT biege: avoid format-bug warning */
+	}
+	free(locale_code_utf8);
     }
 #endif
 	
@@ -604,6 +623,7 @@ int main(int argc, char **argv)
     }
     if (set_increment) {
 	int num_displayable;
+	int num_added;
 	if (set_linkquotes)
 	    replylist = NULL;
 	/* we have to start with the msgnum - 1 so that the rest of the
@@ -613,29 +633,32 @@ int main(int argc, char **argv)
 	amount_old = max_msgnum + 1; /* counts gaps as messages */
 
 	/* start numbering at this number */
-	amount_new = num_displayable + parsemail(set_mbox, use_stdin, set_readone, set_increment, set_dir, set_inlinehtml, amount_old);
-	if (set_linkquotes)
-	    analyze_headers(max_msgnum + 1);
+	num_added = parsemail(set_mbox, use_stdin, set_readone, set_increment, set_dir, set_inlinehtml, amount_old);
+	if (num_added > 0) {
+	    amount_new = num_displayable + num_added;
+	    if (set_linkquotes)
+		analyze_headers(max_msgnum + 1);
 
-	/* write the index of msgno/msgid_hash filenames */
-	if (set_nonsequential)
-		write_messageindex(0, max_msgnum + 1);
+	    /* write the index of msgno/msgid_hash filenames */
+	    if (set_nonsequential)
+		    write_messageindex(0, max_msgnum + 1);
 
-	writearticles(amount_old, max_msgnum + 1);
+	    writearticles(amount_old, max_msgnum + 1);
 
-	/* JK: in function of other hypermail configuration options, 
-	   delete_incremental will continuous escape and add more markup
-	   to non-deleted messages that are replies to deleted messages.
-	   Thus, a setup option to disable it */
-	if (set_delete_incremental && deletedlist)
-	    update_deletions(amount_old);
+	    /* JK: in function of other hypermail configuration options, 
+	       delete_incremental will continuous escape and add more markup
+	       to non-deleted messages that are replies to deleted messages.
+	       Thus, a setup option to disable it */
+	    if (set_delete_incremental && deletedlist)
+		update_deletions(amount_old);
 
-	if (set_show_msg_links) {
-	    fixnextheader(set_dir, amount_old, -1);
-	    for (i = amount_old; i <= max_msgnum; ++i) {
-		if (set_showreplies)
-		    fixreplyheader(set_dir, i, 0, amount_old);
-		fixthreadheader(set_dir, i, amount_old);
+	    if (set_show_msg_links) {
+		fixnextheader(set_dir, amount_old, -1);
+		for (i = amount_old; i <= max_msgnum; ++i) {
+		    if (set_showreplies)
+			fixreplyheader(set_dir, i, 0, amount_old);
+		    fixthreadheader(set_dir, i, amount_old);
+		}
 	    }
 	}
     }

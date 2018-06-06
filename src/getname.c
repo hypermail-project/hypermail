@@ -26,25 +26,12 @@ char *spamify(char *input)
 
 char *spamify_small(char *input)
 {
-    int insertlen = strlen(set_antispam_at);
     /* we should replace the @-letter in the email address */
-    int newlen = strlen(input) + insertlen;
 
     char *atptr = strchr(input, '@');
 
     if (atptr) {
-        char *newbuf = malloc(newlen);
-        int index = atptr - input;
-        /* copy the part before the @ */
-        memcpy(newbuf, input, index);
-        memcpy(newbuf + index, set_antispam_at, insertlen);
-
-        /* append the part after the @ */
-        strcpy(newbuf + index + insertlen, input + index + 1);
-
-        /* correct the pointer and free the old */
-        free(input);
-        return newbuf;
+	return replacechar(input, '@', set_antispam_at);
     }
     /* weird email, bail out */
     return input;
@@ -52,34 +39,30 @@ char *spamify_small(char *input)
 
 char *spamify_replacedomain(char *input, char *antispamdomain)
 {
-    /* replace everything after the @-letter in the email address */
-    int newlen = strlen(input) + strlen(set_antispam_at);
-    int domainlen = strlen(antispamdomain);
-
     char *atptr = strchr(input, '@');
-
-    if (domainlen > 0) {
-        newlen = newlen + domainlen;
-    }
-
     if (atptr) {
-        char *newbuf = malloc(newlen);
-        int index    = atptr - input;
-        /* copy the part before the @ */
-        memcpy(newbuf, input, index);
-        /* append _at_ */
-        memcpy(newbuf + index, set_antispam_at, strlen(set_antispam_at));
-        if (domainlen > 0) {
-            /* append the new domain */
-            strcpy(newbuf + index + strlen(set_antispam_at), antispamdomain);
-        }
-        else {
-            /* append the part after the @ */
-            strcpy(newbuf + index + strlen(set_antispam_at), input + index + 1);
-        }
-        /* correct the pointer and free the old */
-        free(input);
-        return newbuf;
+	/* replace everything after the @-letter in the email address */
+	int domainlen = strlen(antispamdomain);
+	struct Push buff;
+	int in_ascii = TRUE, esclen = 0;
+
+	INIT_PUSH(buff);
+
+	for (; *input; input++) {
+	    if (set_iso2022jp) iso2022_state(input, &in_ascii, &esclen);
+	    if (in_ascii == TRUE && *input == '@') {
+		PushString(&buff, set_antispam_at);
+		if (domainlen > 0) {
+		    /* append the new domain */
+		    PushString(&buff, antispamdomain);
+		    break;
+		}
+	    }
+	    else
+		PushByte(&buff, *input);
+	}
+
+	RETURN_PUSH(buff);
     }
     /* weird email, bail out */
     return input;
@@ -249,11 +232,14 @@ void getname(char *line, char **namep, char **emailp)
         }
         else if (*c == '<') {    /* Comment may be on the end */
             /* From: <bill@celestial.com> Bill Campbell */
-            c = strchr(line, '>') + 1;
-            for (i = 0, len = NAMESTRLEN - 1; *c && *c != '\n' && i < len; c++)
-                name[i++] = *c;
+            char *c2 = strchr(line, '>');
+            if (c2 != NULL) {
+                c = c2 + 1;
+                for (i = 0, len = NAMESTRLEN - 1; *c && *c != '\n' && i < len; c++)
+                    name[i++] = *c;
 
-            comment_fnd = 1;
+                comment_fnd = 1;
+            }
         }
     }
     else if (strchr(line, '(')) {
