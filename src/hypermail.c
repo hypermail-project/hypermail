@@ -604,6 +604,7 @@ int main(int argc, char **argv)
     }
     if (set_increment) {
 	int num_displayable;
+	int num_added;
 	if (set_linkquotes)
 	    replylist = NULL;
 	/* we have to start with the msgnum - 1 so that the rest of the
@@ -613,29 +614,32 @@ int main(int argc, char **argv)
 	amount_old = max_msgnum + 1; /* counts gaps as messages */
 
 	/* start numbering at this number */
-	amount_new = num_displayable + parsemail(set_mbox, use_stdin, set_readone, set_increment, set_dir, set_inlinehtml, amount_old);
-	if (set_linkquotes)
-	    analyze_headers(max_msgnum + 1);
+	num_added = parsemail(set_mbox, use_stdin, set_readone, set_increment, set_dir, set_inlinehtml, amount_old);
+	if (num_added > 0) {
+	    amount_new = num_displayable + num_added;
+	    if (set_linkquotes)
+		analyze_headers(max_msgnum + 1);
 
-	/* write the index of msgno/msgid_hash filenames */
-	if (set_nonsequential)
-		write_messageindex(0, max_msgnum + 1);
+	    /* write the index of msgno/msgid_hash filenames */
+	    if (set_nonsequential)
+		    write_messageindex(0, max_msgnum + 1);
 
-	writearticles(amount_old, max_msgnum + 1);
+	    writearticles(amount_old, max_msgnum + 1);
 
-	/* JK: in function of other hypermail configuration options, 
-	   delete_incremental will continuous escape and add more markup
-	   to non-deleted messages that are replies to deleted messages.
-	   Thus, a setup option to disable it */
-	if (set_delete_incremental && deletedlist)
-	    update_deletions(amount_old);
+	    /* JK: in function of other hypermail configuration options, 
+	       delete_incremental will continuous escape and add more markup
+	       to non-deleted messages that are replies to deleted messages.
+	       Thus, a setup option to disable it */
+	    if (set_delete_incremental && deletedlist)
+		update_deletions(amount_old);
 
-	if (set_show_msg_links) {
-	    fixnextheader(set_dir, amount_old, -1);
-	    for (i = amount_old; i <= max_msgnum; ++i) {
-		if (set_showreplies)
-		    fixreplyheader(set_dir, i, 0, amount_old);
-		fixthreadheader(set_dir, i, amount_old);
+	    if (set_show_msg_links) {
+		fixnextheader(set_dir, amount_old, -1);
+		for (i = amount_old; i <= max_msgnum; ++i) {
+		    if (set_showreplies)
+			fixreplyheader(set_dir, i, 0, amount_old);
+		    fixthreadheader(set_dir, i, amount_old);
+		}
 	    }
 	}
     }
