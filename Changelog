@@ -3,8 +3,13 @@ Version Changes for Hypermail
 ============================
 HYPERMAIL VERSION 2.3.1:
 ============================
+
  Bill Shannon (June 7, 2018)
   - Add charset alias for Thai and Chinese
+  - The markup for access key "j" to jump to the start of a message
+    was only being added when the showhtml configuration option
+    was disabled.
+
 
 ============================
 HYPERMAIL VERSION 2.3.0:
