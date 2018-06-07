@@ -1,6 +1,12 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ============================
+HYPERMAIL VERSION 2.3.1:
+============================
+ Bill Shannon (June 7, 2018)
+  - Add charset alias for Thai and Chinese
+
+============================
 HYPERMAIL VERSION 2.3.0:
 ============================
 
