@@ -13,6 +13,7 @@ HYPERMAIL VERSION 2.3.1:
     display of the folder index page
   - In some cases hypermail failed to null terminate the charset name
     when copying it, resulting in bogus charset names
+  - Hypermail would segfault if given the bogus From line "From: <a@b.com"
 
 ============================
 HYPERMAIL VERSION 2.3.0:
