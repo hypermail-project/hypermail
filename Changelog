@@ -14,6 +14,8 @@ HYPERMAIL VERSION 2.3.1:
   - In some cases hypermail failed to null terminate the charset name
     when copying it, resulting in bogus charset names
   - Hypermail would segfault if given the bogus From line "From: <a@b.com"
+  - In some cases, when no new message was added to the archive,
+    would segfault because of a null pointer
 
 ============================
 HYPERMAIL VERSION 2.3.0:
