@@ -918,6 +918,7 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 	    else if (!strcasecmp("b", encoding)) {
 		/* base64 decoding */
 		int len;
+	        size_t charsetlen;
 #ifdef HAVE_ICONV
                 size_t tmplen;
 		char *output2;
@@ -926,7 +927,9 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 		memcpy(output,output2,tmplen);
 		output += tmplen;
 		free(output2);
-		memcpy(charsetsave,charset,strlen(charset)<255 ? strlen(charset) : 255 );
+		charsetlen = strlen(charset) < 255 ? strlen(charset) : 255;
+		memcpy(charsetsave,charset,charsetlen);
+		charsetsave[charsetlen] = '\0';
 #else
 		base64Decode(ptr, output, &len);
 		output += len;
