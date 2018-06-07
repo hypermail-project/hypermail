@@ -217,6 +217,12 @@ struct i18n_alt_charset_table i18n_charsettable[] = {
   {"KS_C_5601-1987","CP949"},
   {"KS_C_5601-1989","CP949"},
 
+  /* Thai */
+  {"windows-874","CP874"},
+
+  /* Chinese */
+  {"x-gbk","GB18030"},
+
   /* Cyrillic */
   {"x-mac-cyrillic","MacCyrillic"},
   {"ibm866","CP866"}
