@@ -1238,9 +1238,11 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
     
     if (!set_showhtml) {
 	fprintf(fp, "<pre id=\"body\">\n");
-	fprintf(fp, "<a name=\"start%d\" accesskey=\"j\" id=\"start%d\"></a>", email->msgnum,email->msgnum);
 	pre = TRUE;
     }
+
+    /* tag the start of the message body */
+    fprintf(fp, "<a name=\"start%d\" accesskey=\"j\" id=\"start%d\"></a>", email->msgnum,email->msgnum);
 
     if (set_showhtml == 2)
       init_txt2html();
