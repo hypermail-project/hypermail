@@ -8,8 +8,11 @@ HYPERMAIL VERSION 2.3.1:
   - Add charset alias for Thai and Chinese
   - The markup for access key "j" to jump to the start of a message
     was only being added when the showhtml configuration option
-    was disabled.
-
+    was disabled
+  - Setting the describe_folder configuration option has no effect on the
+    display of the folder index page
+  - In some cases hypermail failed to null terminate the charset name
+    when copying it, resulting in bogus charset names
 
 ============================
 HYPERMAIL VERSION 2.3.0:
