@@ -354,10 +354,21 @@ void crossindex(void)
 				    &maybereply);
 	if (status != -1) {
 	    struct emailinfo *email2;
+            
 	    if (!hashnumlookup(status, &email2)) {
 		++num;
 		continue;
 	    }
+	    /*  make sure there is no recursion between the message
+                and reply lookup if a message and its reply-to were
+                archived in reverse, both messages share the same
+                subject (regardless of Re), and the message itself was
+                a reply to a non-archived message. */
+	    if (maybereply && !strcmp (email2->inreplyto, email->msgid)) {
+                ++num;
+                continue;
+            }
+            
 	    if (set_linkquotes) {
 	        struct reply *rp;
 		int found_num = 0;

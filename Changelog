@@ -4,6 +4,13 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.3.1:
 ============================
 
+ Jose Kahan (June 14, 2018)
+  - Hypermail would segfault or have an incorrect thread view if it was
+    handling an archive with a message (msg1) that was a reply to a message not
+    in the archive, if msg1 had a reply to it in the archive (msg2), msg2 was
+    archived before msg1 and both msg1 and msg2 shared the same subject
+    (regardless of Re: prefixes).
+
  Bill Shannon (June 7, 2018)
   - Add charset alias for Thai and Chinese
   - The markup for access key "j" to jump to the start of a message
