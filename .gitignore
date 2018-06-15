@@ -26,3 +26,5 @@ src/pcre/libtool
 src/pcre/pcregrep
 src/pcre/pcretest
 tests/testhm
+archive/msg2archive
+archive/rdmsg
