@@ -168,7 +168,7 @@ struct emailinfo *addhash(int num, char *date, char *name, char *email, char *ms
     if (!msgid) {
 	/* SEVERE ERROR, all mails MUST have a Message-ID, ignore it! */
 	if (set_require_msgids) {
-	    if (set_warn_surpressions)
+	    if (set_warn_suppressions)
 				printf("Message-ID is missing, ignoring message with subject '%s'.\n", subject ? subject : "<unknown>");
 	    return NULL;
 	}
@@ -339,7 +339,7 @@ int insert_in_lists(struct emailinfo *emp, const bool * require_filter, int rlen
 	h->data = emp;
 	h->next = deletedlist;
 	deletedlist = h;
-	if (set_warn_surpressions && require_filter) {
+	if (set_warn_suppressions && require_filter) {
 	    const char *option = "??";
 			switch (emp->is_deleted) {
 			case FILTERED_DELETE:

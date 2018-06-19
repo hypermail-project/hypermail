@@ -182,7 +182,7 @@ on or off.
     <li><a href="#delete_incremental">delete_incremental</a> remove previous deleted messages on-the-fly
     <li><a href="#htmlmessage_deleted">htmlmessage_deleted</a> custom markup body for deleted messages
     <li><a href="#progress">progress</a> verbosity
-    <li><a href="#warn_surpressions">warn_surpressions</a> warn about ignored messages
+    <li><a href="#warn_suppressions">warn_suppressions</a> warn about ignored messages
     <li><a href="#uselock">uselock</a> serialize
     <li><a href="#locktime">locktime</a> timeouts
     <li><a href="#base_url">base_url</a>
@@ -1313,15 +1313,15 @@ the attachments relates to.
 <br>
 <br><i>progress = 0</i>
 </dd>
-<a name="warn_surpressions"></a>
-<dt><strong> warn_surpressions = [ 0 | 1 ]</strong></dt><dd>
+<a name="warn_suppressions"></a>
+<dt><strong> warn_suppressions = [ 0 | 1 ]</strong></dt><dd>
 Set this to 1 to get warnings (on stdout) about messages that
 are not converted because of they are missing a msgid (if
 require_msgids is On) or because one of the following options
-surpressed it: deleted expires delete_msgnum filter_out
+suppressed it: deleted expires delete_msgnum filter_out
 filter_require filter_out_full_body filter_require_full_body.
 <br>
-<br><i>warn_surpressions = 1</i>
+<br><i>warn_suppressions = 1</i>
 </dd>
 <a name="uselock"></a>
 <dt><strong> uselock = [ 0 | 1 ]</strong></dt><dd>

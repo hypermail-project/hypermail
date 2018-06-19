@@ -202,7 +202,7 @@ static int add_anchor(int msgnum, int quoting_msgnum, int quote_num, const char 
 		    break;
 		}
 		fputs(buffer, fp2);
-		/* surpress decrement for lines inserted by html conversion: */
+		/* suppress decrement for lines inserted by html conversion: */
 		if (!strcasecmp(buffer, "<p>\n"))
 		    ++count_quoted_lines;
 		else {
@@ -593,17 +593,17 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
 		    MSG_PREVIOUS_MESSAGE
 		};
 		int i;
-		int surpress = 0;
+		int suppress = 0;
 		for (i = 0; patts[i]; ++i) {
 		    char temp[256];
 		    snprintf(temp,sizeof(temp), patts[i], lang[indices[i]]);
 		    if ((ptr = strcasestr(buffer, temp))
 			&& (i < 4 || new_reply_to == atoi(ptr + strlen(temp)))) {
-			surpress = 1;
+			suppress = 1;
 			break;
 		    }
 		}
-		if (surpress)
+		if (suppress)
 		    continue;
 	    }
 	    /* check for old critmail format */

@@ -580,9 +580,9 @@ alts_text = "alternate version of message"
 # Set this to On to get warnings (on stdout) about messages that
 # are not converted because of they are missing a msgid (if
 # require_msgids is On) or because one of the following options
-# surpressed it: deleted expires delete_msgnum filter_out
+# suppressed it: deleted expires delete_msgnum filter_out
 # filter_require filter_out_full_body filter_require_full_body.
-warn_surpressions = On
+warn_suppressions = On
 
 # Any characters listed in this string are removed from user-specified
 # attachment filenames. Those characters will be replaced by a "_"

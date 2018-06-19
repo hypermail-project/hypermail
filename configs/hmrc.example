@@ -798,15 +798,15 @@ show_index_links = 1
 # the default if save_alts = 1:
 #alts_text = <hr>
 
-# warn_surpressions = [ 0 | 1 ]
+# warn_suppressions = [ 0 | 1 ]
 #
 #  Set this to 1 to get warnings (on stdout) about messages that
 # are not converted because of they are missing a msgid (if
 # require_msgids is On) or because one of the following options
-# surpressed it: deleted expires delete_msgnum filter_out
+# suppressed it: deleted expires delete_msgnum filter_out
 # filter_require filter_out_full_body filter_require_full_body.
 
-# warn_surpressions = 1
+# warn_suppressions = 1
 
 # unsafe_chars = list of chars to prohibit
 #  Any characters listed in this string are removed from user-specified
