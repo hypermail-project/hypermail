@@ -1,4 +1,4 @@
-.TH hmrc 4 "February 06, 2013"
+.TH hmrc 4 "July 19, 2018"
 .SH NAME
 hmrc \- Hypermail configuration file 
 .SH DESCRIPTION
@@ -868,7 +868,7 @@ the index files. This will happen thru a
 .B LINK
 element in the index document's
 .B HEAD.
-By default this option is desactivated.
+By default this option is disabled.
 .TP
 .B mcss_url = "URL"
 This will link an external stylesheet found at the given URL to
@@ -876,7 +876,7 @@ the message files. This will happen thru a
 .B LINK
 element in the message document's
 .B HEAD.
-By default this option is desactivated.
+By default this option is disabled.
 .TP
 .B show_headers = list_of_RFC_Headers_to_display
 This is the list of headers to be displayed if showheaders is set to 
@@ -938,6 +938,15 @@ This is the list of MIME attachment types that you do not want to
 do anything with.  They are quietly ignored.  They can be listed 
 individually on multiple lines or comma or space separated on a 
 single line.
+.TP
+.B applemail_mimehack = [ 0 | 1]
+Set this to On to interpret Apple Mail mime multipart/alternative
+messages as multipart/mixed. As of June 2018, Apple Mail is only
+adding attachments to the text/html alternative. If you're using
+text/plain as your prefered type, you won't see them unless
+you enable this option.
+.B Disabled
+by default.
 .TP
 .B searchbackmsgnum = postive integer
 If the linkquotes option is on and an incremental update is being
