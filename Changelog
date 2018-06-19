@@ -4,6 +4,10 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.3.1:
 ============================
 
+ Jose Kahan (June 19, 2018)
+  - Changed mispelled configuration option warn_surpressions to the
+    correct spelling warn_suppressions.
+
  Jose Kahan (June 14, 2018)
   - Hypermail would segfault or have an incorrect thread view if it was
     handling an archive with a message (msg1) that was a reply to a message not

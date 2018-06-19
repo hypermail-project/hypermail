@@ -87,7 +87,7 @@ delete_level = 1
 
 #save_alts = 2
 alts_text = "alternate version of message" 
-warn_surpressions = 1
+warn_suppressions = 1
 unsafe_chars = "."
 
 #spamprotect = 1

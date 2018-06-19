@@ -67,7 +67,7 @@ bool set_writehaof;
 bool set_append;
 char *set_append_filename;
 bool set_nonsequential;
-bool set_warn_surpressions;
+bool set_warn_suppressions;
 bool set_files_by_thread;
 bool set_href_detection;
 bool set_mbox_shortened;
@@ -761,11 +761,11 @@ struct Config cfg[] = {
      "# If save_alts is 2, this text is used to describe the link to each\n"
      "# alternative file.\n", FALSE},
 
-    {"warn_surpressions", &set_warn_surpressions, BTRUE, CFG_SWITCH,
+    {"warn_suppressions", &set_warn_suppressions, BTRUE, CFG_SWITCH,
      "# Set this to On to get warnings (on stdout) about messages that\n"
      "# are not converted because of they are missing a msgid (if\n"
      "# require_msgids is On) or because one of the following options\n"
-     "# surpressed it: deleted expires delete_msgnum filter_out\n"
+     "# suppressed it: deleted expires delete_msgnum filter_out\n"
      "# filter_require filter_out_full_body filter_require_full_body.\n", FALSE},
 
     {"unsafe_chars", &set_unsafe_chars, NULL, CFG_STRING,

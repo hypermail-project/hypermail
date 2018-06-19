@@ -3978,7 +3978,7 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 		    || strcasestr(bp->line, old2_next_pattern)
 		    || strstr(bp->line, old_next_pattern))) {
 	        bp = bp->next;
-		continue; /* line duplicates next in thread; surpress */
+		continue; /* line duplicates next in thread; suppress */
 	    }
 
 	    if (!remove_maybes
