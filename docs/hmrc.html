@@ -212,6 +212,7 @@ multipart/mixed</li>
 etc</li>
 <li><a href="#attachmentlink">attachmentlink</a> control
 filenames</li>
+  <li><a href="#applemail_mimehack">applemail_mimehack</a> process multipart/alternative as multipart/mixed	  
 <li><a href="#unsafe_chars">unsafe_chars</a> restrict filename
 chars</li>
 <li><a href="#save_alts">save_alts</a> multipart/alternative
@@ -1068,6 +1069,17 @@ configured to enable server side includes on filenames ending in
 something other than .shtml), but that will prevent browsers from
 recognizing many file types.<br>
 <br>
+
+<a name="applemail_mimehack" ></a>
+<dt><strong>applemail_mimehack [ 0 | 1 ]</strong></dt><dd>
+    Define to On to interpret Apple Mail mime multipart/alternative
+    messages as multipart/mixed. As of June 2018, Apple Mail is only
+    adding attachments to the text/html alternative. If you're using
+    text/plain as your prefered type, you won't see them unless you enable
+    this option.
+    <br><i>usemeta = 0</i> (disabled by default)
+</dd>
+
 <i>unsafe_chars = "."</i> (disabled by default)</dd>
 <dd><a name="save_alts" id="save_alts"></a></dd>
 <dt><strong>save_alts = [ 0 | 1 | 2 ]</strong></dt>

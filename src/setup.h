@@ -97,6 +97,9 @@ extern bool set_report_new_file;
 extern bool set_report_new_folder;
 extern bool set_use_sender_date;
 extern bool set_inline_addlink;
+extern bool set_applemail_mimehack;
+extern char *set_applemail_ua_header;
+extern char *set_applemail_ua_value;
 
 extern int set_showhtml;
 extern int set_thrdlevels;
