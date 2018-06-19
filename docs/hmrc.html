@@ -117,6 +117,7 @@ on or off.
     <li><a href="#show_index_links">show_index_links</a> control links to index pages
     <li><a href="#showheaders">showheaders</a> To:, From:, Subject:
     <li><a href="#show_headers">show_headers</a> others (Message-ID, etc)
+    <li><a href="#show_received_date">show_received_date</a> show date message was received
     <li><a href="#mhtmlheaderfile">mhtmlheaderfile</a> template
     <li><a href="#mhtmlfooterfile">mhtmlfooterfile</a> template
     </ul>
@@ -831,6 +832,14 @@ hypermail will display all header lines.
 <strong>NOTE:</strong> Do not put the ':' at the end of the headers.
 <br>
 <br><i>show_headers = From,Subject,Date,Message-ID</i> (disabled by default)
+</dd>
+
+<a name="show_received_date"></a>
+<dt><strong>show_received_date = [ 0 | 1 ]</strong></dt><dd>
+Set this to 0 to disable displaying the date the message was received
+at the end of the message body.
+<br>
+<br><i>show_received_date = 0</i> (enabled by default)
 </dd>
 
 <a name="mhtmlheaderfile"></a>
