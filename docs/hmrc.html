@@ -1048,14 +1048,23 @@ ignore_types = application/x-msdownload</i></p>
 <dd><a name="attachmentlink" id="attachmentlink"></a></dd>
 <dt><strong>attachmentlink = attachment-link-format</strong></dt>
 <dd>Format of the attachment links.<br>
-<br>
-%p for the full path to the attachment<br>
-%f for the file name part only<br>
-%d for the directory name only<br>
-%n for the message number<br>
-%c for the content type string<br>
-<br>
-<i>attachmentlink = "%p"</i></dd>
+    <br>
+    %p for the full path to the attachment<br>
+    %f for the file name part only<br>
+    %d for the directory name only<br>
+    %n for the message number<br>
+    %c for the content type string<br>
+    <br>
+    <i>attchmentlink = "%p"</i></dd>
+<a name="applemail_mimehack" ></a>
+<dt><strong>applemail_mimehack [ 0 | 1 ]</strong></dt><dd>
+    Define to On to interpret Apple Mail mime multipart/alternative
+    messages as multipart/mixed. As of June 2018, Apple Mail is only
+    adding attachments to the text/html alternative. If you're using
+    text/plain as your prefered type, you won't see them unless you enable
+    this option.
+    <br><i>usemeta = 0</i> (disabled by default)
+</dd>
 <dd><a name="unsafe_chars" id="unsafe_chars"></a></dd>
 <dt><strong>unsafe_chars = list of chars to prohibit</strong></dt>
 <dd>Any characters listed in this string are removed from
@@ -1069,17 +1078,6 @@ configured to enable server side includes on filenames ending in
 something other than .shtml), but that will prevent browsers from
 recognizing many file types.<br>
 <br>
-
-<a name="applemail_mimehack" ></a>
-<dt><strong>applemail_mimehack [ 0 | 1 ]</strong></dt><dd>
-    Define to On to interpret Apple Mail mime multipart/alternative
-    messages as multipart/mixed. As of June 2018, Apple Mail is only
-    adding attachments to the text/html alternative. If you're using
-    text/plain as your prefered type, you won't see them unless you enable
-    this option.
-    <br><i>usemeta = 0</i> (disabled by default)
-</dd>
-
 <i>unsafe_chars = "."</i> (disabled by default)</dd>
 <dd><a name="save_alts" id="save_alts"></a></dd>
 <dt><strong>save_alts = [ 0 | 1 | 2 ]</strong></dt>
