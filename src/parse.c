@@ -1395,6 +1395,23 @@ static int do_uudecode(FILE *fp, char *line, char *line_buf,
     return 1;
 }
 
+/* 
+ *  If we have a multipart/alternative header,
+ *  return a new header that uses multipart/mixed. This will allow to see the
+ *  the attachments that are only added to the text/html alternative.
+ */
+static char *mpa_as_mpm (char *content_type)
+{
+    char *new_header;
+    
+    if (!strncasecmp(content_type + 14, "multipart/alternative", 21)) {
+        new_header = replace(content_type, "/alternative", "/mixed");
+    } else {
+        new_header = NULL;
+    }
+
+    return new_header;
+}
 
 static void write_txt_file(struct emailinfo *emp, struct Push *raw_text_buf)
 {
@@ -1455,6 +1472,8 @@ int parsemail(char *mbox,	/* file name */
     annotation_robot_t annotation_robot = ANNOTATION_ROBOT_NONE;
     annotation_content_t annotation_content = ANNOTATION_CONTENT_NONE;
     int is_deleted = 0;
+    int parse_multipart_alternative_as_mixed = 0; /* the hack needed for applemail */
+    int applemail_ua_header_len = (set_applemail_mimehack) ? strlen (set_applemail_ua_header) : 0;
     int pos;
     bool *require_filter, *require_filter_full;
     int require_filter_len, require_filter_full_len;
@@ -1498,7 +1517,8 @@ int parsemail(char *mbox,	/* file name */
 
     struct body *headp = NULL;	/* stored pointer to the point where we last
 				   scanned the headers of this mail. */
-
+    struct body *content_type_p = NULL;  /* pointer to the Content-Type header */
+        
     char Mime_B = FALSE;
     char boundbuffer[256] = "";
 
@@ -1777,8 +1797,23 @@ int parsemail(char *mbox,	/* file name */
 			    bp = addbody(bp, &lp, line, 0);
 			}
 		    }
-		}
-
+                    else if (!strncasecmp (head->line, "Content-Type:", 13)) {
+                        content_type_p = head;
+                    }
+		    else if (set_applemail_mimehack
+                             && Mime_B
+                             && !alternativeparser
+                             && !strncasecmp(head_name,
+                                             set_applemail_ua_header,
+                                             applemail_ua_header_len)
+                             && !strncasecmp(head->line + applemail_ua_header_len + 2,
+                                             set_applemail_ua_value,
+                                             strlen(set_applemail_ua_value))) {
+                        /* If we need the applemail hack, set a flag if we detected the UA */
+                        parse_multipart_alternative_as_mixed = 1;
+                    }
+                }
+                
 		if (!is_deleted && set_delete_older && (date || fromdate)) {
 		    time_t email_time = convtoyearsecs(date);
 		    if (email_time == -1)
@@ -1793,6 +1828,17 @@ int parsemail(char *mbox,	/* file name */
 		    if (email_time != -1 && email_time > delete_newer_than)
 		        is_deleted = FILTERED_NEW;
 		}
+                if (set_applemail_mimehack && parse_multipart_alternative_as_mixed) {
+                    char *new_header;
+                    
+                    new_header = mpa_as_mpm (content_type_p->line);
+                    if (new_header) {
+                        free(content_type_p->line);
+                        content_type_p->line = new_header;
+                    }
+                    /* turn off the flag to avoid redoing this check again */
+                    parse_multipart_alternative_as_mixed = 0;
+                }
 		if (!headp)
 		    headp = bp;
 
@@ -2486,6 +2532,7 @@ msgid);
 		decode = ENCODE_NORMAL;
 		Mime_B = FALSE;
 		headp = NULL;
+                content_type_p = NULL;
 		multilinenoend = FALSE;
 		if (att_dir) {
 		    free(att_dir);
@@ -2512,6 +2559,8 @@ msgid);
 
                 alternativeparser = FALSE; /* there is none anymore */
 
+                parse_multipart_alternative_as_mixed = 0;
+                
 		if (!(num % 10) && set_showprogress && !readone) {
 		    print_progress(num - startnum, NULL, NULL);
 		}
