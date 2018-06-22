@@ -31,6 +31,4 @@
 
 #define ANTISPAM_AT   "_at_"
 
-#define APPLE_MAIL_UA "Apple iPhone"
-
 #endif
