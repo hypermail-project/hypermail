@@ -174,6 +174,28 @@ int textcontent(char *type)
     return 0;
 }
 
+static int applemail_ua(char *ua_string)
+{
+    /* returns TRUE if the ua_string is one of the declared applemail
+     * clients */
+
+    int res = FALSE;
+
+    if (ua_string && *ua_string != '\0') {
+        char *buff;
+        char *ptr;
+
+        buff = strsav(ua_string);
+        ptr = strstr(buff, " Mail (");
+        if (ptr) {
+            *ptr = '\0';
+            res = inlist(set_applemail_ua_value, buff);
+        }
+        free(buff);
+    }
+
+    return res;
+}
 
 /*
  * Should return TRUE if the input is a Re: start. The end pointer should
@@ -1395,24 +1417,6 @@ static int do_uudecode(FILE *fp, char *line, char *line_buf,
     return 1;
 }
 
-/* 
- *  If we have a multipart/alternative header,
- *  return a new header that uses multipart/mixed. This will allow to see the
- *  the attachments that are only added to the text/html alternative.
- */
-static char *mpa_as_mpm (char *content_type)
-{
-    char *new_header;
-    
-    if (!strncasecmp(content_type + 14, "multipart/alternative", 21)) {
-        new_header = replace(content_type, "/alternative", "/mixed");
-    } else {
-        new_header = NULL;
-    }
-
-    return new_header;
-}
-
 static void write_txt_file(struct emailinfo *emp, struct Push *raw_text_buf)
 {
     char *txt_filename;
@@ -1473,6 +1477,7 @@ int parsemail(char *mbox,	/* file name */
     annotation_content_t annotation_content = ANNOTATION_CONTENT_NONE;
     int is_deleted = 0;
     int parse_multipart_alternative_as_mixed = 0; /* the hack needed for applemail */
+    int old_set_save_alts = 0;
     int applemail_ua_header_len = (set_applemail_mimehack) ? strlen (set_applemail_ua_header) : 0;
     int pos;
     bool *require_filter, *require_filter_full;
@@ -1607,6 +1612,9 @@ int parsemail(char *mbox,	/* file name */
     bp = NULL;
     subject = NOSUBJECT;
 
+    parse_multipart_alternative_as_mixed = 0;
+    old_set_save_alts = 0;
+    
     require_filter_len = require_filter_full_len = 0;
     for (tlist = set_filter_require; tlist != NULL; require_filter_len++, tlist = tlist->next)
 	;
@@ -1800,17 +1808,20 @@ int parsemail(char *mbox,	/* file name */
                     else if (!strncasecmp (head->line, "Content-Type:", 13)) {
                         content_type_p = head;
                     }
-		    else if (set_applemail_mimehack
+		    else if (!set_save_alts
+			     && set_applemail_mimehack
+                             && set_applemail_ua_header && *set_applemail_ua_header
                              && Mime_B
                              && !alternativeparser
                              && !strncasecmp(head_name,
                                              set_applemail_ua_header,
-                                             applemail_ua_header_len)
-                             && !strncasecmp(head->line + applemail_ua_header_len + 2,
-                                             set_applemail_ua_value,
-                                             strlen(set_applemail_ua_value))) {
-                        /* If we need the applemail hack, set a flag if we detected the UA */
-                        parse_multipart_alternative_as_mixed = 1;
+                                             applemail_ua_header_len)) {
+                        /* If we need the applemail hack, set a flag
+                         * if we detected the UA */
+                        head->parsedheader = TRUE;
+                        if (applemail_ua (head->line + applemail_ua_header_len + 2)) {
+                            parse_multipart_alternative_as_mixed = 1;
+                        }
                     }
                 }
                 
@@ -1828,16 +1839,14 @@ int parsemail(char *mbox,	/* file name */
 		    if (email_time != -1 && email_time > delete_newer_than)
 		        is_deleted = FILTERED_NEW;
 		}
-                if (set_applemail_mimehack && parse_multipart_alternative_as_mixed) {
-                    char *new_header;
-                    
-                    new_header = mpa_as_mpm (content_type_p->line);
-                    if (new_header) {
-                        free(content_type_p->line);
-                        content_type_p->line = new_header;
+                if (parse_multipart_alternative_as_mixed == 1) {
+                    if (!strncasecmp(content_type_p->line + 14, "multipart/alternative", 21)) {
+                        old_set_save_alts = set_save_alts;
+                        set_save_alts = 1;                        
                     }
+
                     /* turn off the flag to avoid redoing this check again */
-                    parse_multipart_alternative_as_mixed = 0;
+                    parse_multipart_alternative_as_mixed = 2;
                 }
 		if (!headp)
 		    headp = bp;
@@ -2559,7 +2568,11 @@ msgid);
 
                 alternativeparser = FALSE; /* there is none anymore */
 
-                parse_multipart_alternative_as_mixed = 0;
+		if (parse_multipart_alternative_as_mixed) {
+		  set_save_alts = old_set_save_alts;
+		  old_set_save_alts = 0;
+		  parse_multipart_alternative_as_mixed = 0;
+		}
                 
 		if (!(num % 10) && set_showprogress && !readone) {
 		    print_progress(num - startnum, NULL, NULL);
