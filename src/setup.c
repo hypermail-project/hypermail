@@ -80,6 +80,7 @@ bool set_use_sender_date;
 bool set_inline_addlink;
 bool set_applemail_mimehack;
 char *set_applemail_ua_header;
+char *set_applemail_ua_value;
 
 int set_showhtml;
 int set_thrdlevels;
@@ -130,7 +131,6 @@ struct hmlist *set_filter_out = NULL;
 struct hmlist *set_filter_require = NULL;
 struct hmlist *set_filter_out_full_body = NULL;
 struct hmlist *set_filter_require_full_body = NULL;
-struct hmlist *set_applemail_ua_value;
 
 bool set_format_flowed;
 bool set_format_flowed_disable_quoted;
@@ -517,8 +517,8 @@ struct Config cfg[] = {
      "# This option is only useful if you enabled the applemail_mimehack configuration\n"
      "# option.\n", FALSE},
 
-    {"applemail_ua_value", &set_applemail_ua_value, APPLE_MAIL_UA, CFG_LIST,
-     "# Set to the list of the header value that Apple Mail uses to identify\n"
+    {"applemail_ua_value", &set_applemail_ua_value, "Apple Mail (", CFG_STRING,
+     "# Set to the beginning of the header value that Apple Mail uses to identify\n"
      " its mail agent. Do not add the version number unless you know what you're doing.\n"
      "# This option is only useful if you enabled the applemail_mimehack configuration\n"
      "# option.\n", FALSE},
@@ -1315,6 +1315,8 @@ void dump_config(void)
     printf("set_latest_folder = %s\n",set_latest_folder ? set_latest_folder : "Not set");
     printf("set_antispamdomain = %s\n",set_antispamdomain ? set_antispamdomain : "Not set");
     printf("set_applemail_ua_header = %s\n",set_applemail_ua_header ? set_applemail_ua_header : "Not set");
+    printf("set_applemail_ua_value = %s\n",set_applemail_ua_value ? set_applemail_ua_value : "Not set");    
+    
     
     /* Boolean or integer */
 
@@ -1447,9 +1449,7 @@ void dump_config(void)
     print_list("set_deleted", set_deleted);
     print_list("set_expires", set_expires);
     print_list("set_delete_msgnum", set_delete_msgnum);
-    print_list("set_applemail_ua_value", set_applemail_ua_value);
-    
-    
+
 }
 
 #endif
