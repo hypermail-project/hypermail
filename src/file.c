@@ -27,6 +27,7 @@
 #include "hypermail.h"
 #include "setup.h"
 #include "struct.h"
+#include "parse.h"
 #ifdef HAVE_DIRENT_H
 #ifdef __LCC__
 #include "../lcc/dirent.h"
