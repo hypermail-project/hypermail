@@ -186,7 +186,7 @@ static int applemail_ua(char *ua_string)
         char *ptr;
 
         buff = strsav(ua_string);
-        ptr = strstr(buff, " Mail (");
+        ptr = strcasestr(buff, " Mail (");
         if (ptr) {
             *ptr = '\0';
             res = inlist(set_applemail_ua_value, buff);
