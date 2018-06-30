@@ -715,6 +715,20 @@ struct boundary *bound(struct boundary *bnd, char *line)
     return bnd;		/* the new "active" boundary */
 }
 
+/*
+** Add a line to a linked list that makes up a multipart stack. This new one 
+** should be the new "active" multipart.
+**
+** "Adding" a NULL will retrieve the formerly used multipart pointer.
+** 
+** We reuse the boundary function as we don't have any different
+** procedure to distinguish from it.
+*/
+
+struct boundary *multipart(struct boundary *bnd, char *line)
+{
+    return bound(bnd, line);
+}
 
 /*
 ** Add a line to a linked list that makes up an article's body.
