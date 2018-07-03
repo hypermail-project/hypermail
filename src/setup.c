@@ -507,10 +507,17 @@ struct Config cfg[] = {
      "# Note: the behavior of these may be affected by the inlinehtml option.\n", FALSE},
 
     {"applemail_mimehack", &set_applemail_mimehack, BFALSE, CFG_SWITCH,
-     "# Set to On to process Apple Mail MIME multipart/alternative messages as\n"
-     "# multipart/mixed. Use this option if you're using text/plain\n"
-     "# as a prefered type due to Apple Mail adding attachments only\n"
-     "# to the text/html alternative (as of 06/2018).\n", FALSE},
+     "# Set to On to process Apple Mail MIME multipart/alternative\n"
+     "# as if the save_alts was enabled. If the message contains only\n"
+     "# a text/plain and a text/html alternatives, the text/plain one will\n"
+     "# be kept and the text/html alternative will be discared. If the\n"
+     "# message contains text/plain and another kind of alternative, such as\n"
+     "# multipart/mixed or multipart/related, all the alternative elements\n"
+     "# be displayed. This is to take into account Apple Mail's MIME format\n"
+     "# where attachments are associated by default with the text/html alternative.\n"
+     "# Use this option if you're using text/plain as a prefered type.\n"
+     "# This option is ignored if save_alts is enabled or if text/html is\n"
+     "# the prefered type.", FALSE},
 
     {"applemail_ua_header", &set_applemail_ua_header, "X-Mailer", CFG_STRING,
      "# Set to the header name that Apple Mail uses to identify its mail agent.\n"
@@ -519,7 +526,7 @@ struct Config cfg[] = {
 
     {"applemail_ua_value", &set_applemail_ua_value, APPLE_MAIL_UA, CFG_LIST,
      "# Set to the list of the header value that Apple Mail uses to identify\n"
-     " its mail agent. Do not add the version number unless you know what you're doing.\n"
+     "# its mail agent. Do not add the version number unless you know what you're doing.\n"
      "# This option is only useful if you enabled the applemail_mimehack configuration\n"
      "# option.\n", FALSE},
 
@@ -1100,6 +1107,18 @@ void PostConfig(void)
     if (set_htmlbody != NULL)
 	printf("Warning: the body option has been disabled. See the\n"
 	       "INSTALL file for instructions on replacing it with a style sheet.\n");
+    
+    if (set_applemail_mimehack && set_save_alts) {
+        printf("Warning: the applemail_mimehack option will be ignored as\n"
+	       "the save_alts options is enabled.");
+        set_applemail_mimehack = 0;
+    }
+    if (set_applemail_mimehack && set_prefered_types
+        &&  !strcasecmp(set_prefered_types->val, "text/html")) {
+        printf("Warning: the applemail_mimehack option will be ignored as\n"
+	       "text/html is the prefered type.\n");
+        set_applemail_mimehack = 0;
+    }
 }
 
 int ConfigAddItem(char *cfg_line)

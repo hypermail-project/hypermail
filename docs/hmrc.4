@@ -940,11 +940,20 @@ individually on multiple lines or comma or space separated on a
 single line.
 .TP
 .B applemail_mimehack = [ 0 | 1]
-Set this to On to interpret Apple Mail mime multipart/alternative
-messages as multipart/mixed. As of June 2018, Apple Mail is only
-adding attachments to the text/html alternative. If you're using
-text/plain as your prefered type, you won't see them unless
-you enable this option.
+In a multipart/alternative message, Apple Mail (as of June/2018)
+is only adding attachments to the text/html related part. Set this
+option to
+.B On
+to force the display of all alternate parts when
+processing an Apple Mail message.  If the message has only a
+text/plain and a text/html alternatives and the preference is for
+text/plain, the text/html alternative won't be displayed.
+This option won't be taken into account if your
+.B prefered type
+is text/html
+or if you enabled the
+.B save_alts
+option.
 .B Disabled
 by default.
 .TP
