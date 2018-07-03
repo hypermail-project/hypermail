@@ -1058,12 +1058,15 @@ ignore_types = application/x-msdownload</i></p>
     <i>attchmentlink = "%p"</i></dd>
 <a name="applemail_mimehack" ></a>
 <dt><strong>applemail_mimehack [ 0 | 1 ]</strong></dt><dd>
-    Define to On to interpret Apple Mail mime multipart/alternative
-    messages as multipart/mixed. As of June 2018, Apple Mail is only
-    adding attachments to the text/html alternative. If you're using
-    text/plain as your prefered type, you won't see them unless you enable
-    this option.
-    <br><i>usemeta = 0</i> (disabled by default)
+    In a multipart/alternative message, Apple Mail (as of June/2018)
+    is only adding attachments to the text/html related part. Set this
+    option to On to force the display of all alternate parts when
+    processing an Apple Mail message.  If the message has only a
+    text/plain and a text/html alternatives and the preference is for
+    text/plain, the text/html alternative won't be displayed.  This option
+    won't be taken into account if your prefered type is text/html
+    or if you enabled the save_alts option.
+    <br><i>applemail_mimehack = 0</i> (disabled by default)
 </dd>
 <dd><a name="unsafe_chars" id="unsafe_chars"></a></dd>
 <dt><strong>unsafe_chars = list of chars to prohibit</strong></dt>

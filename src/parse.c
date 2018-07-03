@@ -174,13 +174,11 @@ int textcontent(char *type)
     return 0;
 }
 
-static int applemail_ua(char *ua_string)
+static int is_applemail_ua(char *ua_string)
 {
     /* returns TRUE if the ua_string is one of the declared applemail
      * clients */
 
-    /* @@ JK: Add test for inline HTML and prefered type text/html over text/plain,
-       probably in the setup checks */
     int res = FALSE;
 
     if (ua_string && *ua_string != '\0') {
@@ -1825,7 +1823,7 @@ int parsemail(char *mbox,	/* file name */
                         /* If the UA is an apple mail client and we're configured to do the
                          * applemail hack, set a flag */
                         head->parsedheader = TRUE;
-                        if (applemail_ua(head->line + applemail_ua_header_len + 2)) {
+                        if (is_applemail_ua(head->line + applemail_ua_header_len + 2)) {
                             parse_multipart_alternative_as_mixed = 1;
                         }
                     }
