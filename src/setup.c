@@ -1107,10 +1107,15 @@ void PostConfig(void)
     if (set_htmlbody != NULL)
 	printf("Warning: the body option has been disabled. See the\n"
 	       "INSTALL file for instructions on replacing it with a style sheet.\n");
+
+    if (set_save_alts < 0 || set_save_alts > 2) {
+        printf("Error: save_alts option value must be between 0 and 2.\n");
+        exit(0);
+    }
     
     if (set_applemail_mimehack && set_save_alts) {
         printf("Warning: the applemail_mimehack option will be ignored as\n"
-	       "the save_alts options is enabled.");
+	       "the save_alts options is enabled.\n");
         set_applemail_mimehack = 0;
     }
     if (set_applemail_mimehack && set_prefered_types
