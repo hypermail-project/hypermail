@@ -1505,8 +1505,8 @@ int parsemail(char *mbox,	/* file name */
     char alternative_lastfile[129];	/* last file name where we store the non-inline alternatives */
     char alternative_type[129];      /* the alternative Content-Type value */
     int att_counter = 0;	/* used to generate a unique name for attachments */
-    int parse_multipart_alternative_as_mixed = 0; /* used to control if we are parsing alternative as multipart */
-    int old_set_save_alts = 0;  /* used to store the set_save_alts when overriding it for apple mail */
+    int parse_multipart_alternative_forcing_save_alts = 0; /* used to control if we are parsing alternative as multipart */
+    int old_set_save_alts = -1;  /* used to store the set_save_alts when overriding it for apple mail */
     int applemail_ua_header_len = (set_applemail_mimehack) ? strlen (set_applemail_ua_header) : 0; /* code optimization to avoid computing it each time */
     /* 
     ** keeps track of attachment file name used so far for this message 
@@ -1616,8 +1616,8 @@ int parsemail(char *mbox,	/* file name */
     bp = NULL;
     subject = NOSUBJECT;
 
-    parse_multipart_alternative_as_mixed = 0;
-    old_set_save_alts = 0;
+    parse_multipart_alternative_forcing_save_alts = 0;
+    old_set_save_alts = -1;
     
     require_filter_len = require_filter_full_len = 0;
     for (tlist = set_filter_require; tlist != NULL; require_filter_len++, tlist = tlist->next)
@@ -1824,7 +1824,7 @@ int parsemail(char *mbox,	/* file name */
                          * applemail hack, set a flag */
                         head->parsedheader = TRUE;
                         if (is_applemail_ua(head->line + applemail_ua_header_len + 2)) {
-                            parse_multipart_alternative_as_mixed = 1;
+                            parse_multipart_alternative_forcing_save_alts = 1;
                         }
                     }
                 }
@@ -1843,7 +1843,7 @@ int parsemail(char *mbox,	/* file name */
 		    if (email_time != -1 && email_time > delete_newer_than)
 		        is_deleted = FILTERED_NEW;
 		}
-                if (parse_multipart_alternative_as_mixed == 1) {
+                if (parse_multipart_alternative_forcing_save_alts == 1) {
                     if (!strncasecmp(content_type_p->line + 14, "multipart/alternative", 21)) {
                         old_set_save_alts = set_save_alts;
                         /* to avoid confusion and quoting out of
@@ -1854,7 +1854,7 @@ int parsemail(char *mbox,	/* file name */
                     }
 
                     /* update the flag to avoid redoing this check again */
-                    parse_multipart_alternative_as_mixed = 2;
+                    parse_multipart_alternative_forcing_save_alts = 2;
                 }
 		if (!headp)
 		    headp = bp;
@@ -2131,7 +2131,7 @@ int parsemail(char *mbox,	/* file name */
 			     */
 			    char *fname = NULL;	/* attachment filename */
 
-                            if (parse_multipart_alternative_as_mixed
+                            if (parse_multipart_alternative_forcing_save_alts
                                 && !strcasecmp(multipartp->line, "multipart/alternative")
                                 && (!strcasecmp(type, "text/html")
                                     && *alternative_type
@@ -2587,10 +2587,12 @@ msgid);
 
                 alternativeparser = FALSE; /* there is none anymore */
 
-		if (parse_multipart_alternative_as_mixed) {
-		  set_save_alts = old_set_save_alts;
-		  old_set_save_alts = 0;
-		  parse_multipart_alternative_as_mixed = 0;
+		if (parse_multipart_alternative_forcing_save_alts) {
+		  if (old_set_save_alts != -1) {
+		    set_save_alts = old_set_save_alts;
+		    old_set_save_alts = -1;
+		  }
+		  parse_multipart_alternative_forcing_save_alts = 0;
 		}
                 
 		if (!(num % 10) && set_showprogress && !readone) {
@@ -2694,7 +2696,7 @@ msgid);
 				alternative_file[0] = '\0';
 #if 0
                                 /* @@ JK: review if att_counter is updated even with content ignore */
-                                if (set_save_alts && parse_multipart_alternative_as_mixed) {
+                                if (set_save_alts && parse_multipart_alternative_forcing_save_alts) {
                                     att_counter++;
                                 }
 #endif
