@@ -2137,7 +2137,6 @@ int parsemail(char *mbox,	/* file name */
                                     && *alternative_type
                                     && !strcasecmp(alternative_type, "text/plain"))) {          
                                 content = CONTENT_IGNORE;
-                                /* @@ JK: we could do this early on and just do continue */
                             }
 
 			    /* 
