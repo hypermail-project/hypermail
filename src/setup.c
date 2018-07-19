@@ -1124,6 +1124,18 @@ void PostConfig(void)
 	       "text/html is the prefered type.\n");
         set_applemail_mimehack = 0;
     }
+    if (set_applemail_mimehack) {
+        if (!set_applemail_ua_header || !*set_applemail_ua_header) {
+            printf("Error: the applemail_mimehack option is enabled\n"
+                   "but the applemail_ua_header configuration variable is empty.\n");
+            exit(0);
+        }
+        else if (!set_applemail_ua_value) {
+        printf("Error: the applemail_mimehack option is enabled\n"
+               "but the applemail_ua_value configuration variable is empty.\n");
+        exit(0);
+        }
+    }
 }
 
 int ConfigAddItem(char *cfg_line)
