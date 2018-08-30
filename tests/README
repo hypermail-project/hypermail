@@ -12,7 +12,7 @@ You will find the following files in this directory:
     test-msg.hyp    - Message pages template file
     test.rc         - Test configuration file
     testhm          - Script to run test command lines
-    diff_hypermail.pl - Script to show diffs between two archives
+    diff_hypermail_archives.pl - Script to show diffs between two archives
 
 To test hypermail:
 
