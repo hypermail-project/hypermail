@@ -119,7 +119,7 @@ sub filter_filenames {
     foreach my $regex (@ignore_regex) {
 	if ($filename =~ m/$regex/) {
 	    $res = -1;
-	    print "$filename is ignored per regex: " . $regex . "\n" unless $quiet;
+	    print "\n$filename is ignored per regex: " . $regex . "\n" if $show_progress;
 	}
     }
 
