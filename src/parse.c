@@ -1071,7 +1071,7 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 	printf("NEW: %s\n", storage);
 
 	{
-	    unsigned char *f;
+	    char *f;
 	    puts("NEW:");
 	    for (f = storage; f < output; f++) {
 		if (isgraph(*f))
@@ -1505,7 +1505,7 @@ int parsemail(char *mbox,	/* file name */
     char alternative_lastfile[129];	/* last file name where we store the non-inline alternatives */
     char alternative_type[129];      /* the alternative Content-Type value */
     int att_counter = 0;	/* used to generate a unique name for attachments */
-    int parse_multipart_alternative_forcing_save_alts = 0; /* used to control if we are parsing alternative as multipart */
+    int parse_multipart_alternative_force_save_alts = 0; /* used to control if we are parsing alternative as multipart */
     int old_set_save_alts = -1;  /* used to store the set_save_alts when overriding it for apple mail */
     int applemail_ua_header_len = (set_applemail_mimehack) ? strlen (set_applemail_ua_header) : 0; /* code optimization to avoid computing it each time */
     /* 
@@ -1534,6 +1534,8 @@ int parsemail(char *mbox,	/* file name */
 
     struct boundary *multipartp = NULL; /* This variable is used to store a stack of
                                            mimetypes in cases with mulitpart mails */
+    bool waiting_for_boundary = FALSE;  /* This variable is used to help skip multipart/foo
+                                           epilogues */
     
     char multilinenoend = FALSE;	/* This variable is set TRUE if we have read 
 					   a partial line off a multiline-encoded line, 
@@ -1616,7 +1618,7 @@ int parsemail(char *mbox,	/* file name */
     bp = NULL;
     subject = NOSUBJECT;
 
-    parse_multipart_alternative_forcing_save_alts = 0;
+    parse_multipart_alternative_force_save_alts = 0;
     old_set_save_alts = -1;
     
     require_filter_len = require_filter_full_len = 0;
@@ -1812,19 +1814,37 @@ int parsemail(char *mbox,	/* file name */
                     else if (!strncasecmp(head->line, "Content-Type:", 13)) {
                         content_type_p = head;
                     }
-		    else if (!set_save_alts
-			     && set_applemail_mimehack
-                             && set_applemail_ua_header && *set_applemail_ua_header
-                             && Mime_B
-                             && !alternativeparser
-                             && !strncasecmp(head_name,
-                                             set_applemail_ua_header,
-                                             applemail_ua_header_len)) {
-                        /* If the UA is an apple mail client and we're configured to do the
-                         * applemail hack, set a flag */
+		    else if (!strncasecmp(head_name, set_applemail_ua_header,
+					  applemail_ua_header_len)) {
+                        /* we only need to set this one up once per message*/
                         head->parsedheader = TRUE;
-                        if (is_applemail_ua(head->line + applemail_ua_header_len + 2)) {
-                            parse_multipart_alternative_forcing_save_alts = 1;
+                        if (alternativeparser
+                            || !Mime_B
+                            || set_save_alts
+                            || !set_applemail_mimehack) {
+                            continue;
+                        }
+                        
+                        /* If the UA is an apple mail client and we're configured to do the
+                         * applemail hack and we're not already configured to
+                         * save the alternatives, memorize the old setting and force
+                         * the alternatives save
+                         */
+                        if (!parse_multipart_alternative_force_save_alts
+                            && is_applemail_ua(head->line + applemail_ua_header_len + 2)) {
+                            
+                            parse_multipart_alternative_force_save_alts = 1;
+                            old_set_save_alts = set_save_alts;
+                            /* to avoid confusion and quoting out of
+                            ** context, we won't show the alternatives
+                            ** in-line.
+                            */
+                            set_save_alts = 2;
+#if DEBUG_PARSE
+                            printf("Applemail_hack force save_alts: yes\n");
+                            printf("Applemail_hack set_save_alts changed from %d to %d\n",
+                                   old_set_save_alts, set_save_alts);
+#endif                                                                    
                         }
                     }
                 }
@@ -1843,19 +1863,7 @@ int parsemail(char *mbox,	/* file name */
 		    if (email_time != -1 && email_time > delete_newer_than)
 		        is_deleted = FILTERED_NEW;
 		}
-                if (parse_multipart_alternative_forcing_save_alts == 1) {
-                    if (!strncasecmp(content_type_p->line + 14, "multipart/alternative", 21)) {
-                        old_set_save_alts = set_save_alts;
-                        /* to avoid confusion and quoting out of
-                        ** context, we won't show the alternatives
-                        ** in-line.
-                        */
-                        set_save_alts = 2;                        
-                    }
 
-                    /* update the flag to avoid redoing this check again */
-                    parse_multipart_alternative_forcing_save_alts = 2;
-                }
 		if (!headp)
 		    headp = bp;
 
@@ -1888,7 +1896,7 @@ int parsemail(char *mbox,	/* file name */
 			       attachment */
 			    if (inlist(set_ignore_types, "$NONPLAIN")
 				|| inlist(set_ignore_types, "$BINARY"))
-			        content = CONTENT_IGNORE;
+                                content = CONTENT_IGNORE;
 			    else {
 				attach_force = TRUE;
 
@@ -1948,8 +1956,8 @@ int parsemail(char *mbox,	/* file name */
 				attachname[0] = '\0';	/* just clear it */
 			    }
 			    file_created = MAKE_FILE;	/* please make one */
-			}
-		    }
+			} /* inline */
+                        } /* Content-Disposition: */
 		    else if (!strncasecmp(head->line, "Content-Base:", 13)) {
 #ifdef NOTUSED
 			char *ptr = head->line + 13;
@@ -2073,7 +2081,29 @@ int parsemail(char *mbox,	/* file name */
 				/* end the header parsing... we already know what we want */
 				break;
 			}
-                      
+
+			if (content == CONTENT_BINARY
+			    && set_save_alts && alternativeparser
+                            && parse_multipart_alternative_force_save_alts
+			    && multipartp
+			    && !strcasecmp(multipartp->line, "multipart/alternative")
+			    && (!strcasecmp(type, "text/html")
+				&& *alternative_type
+				&& !strcasecmp(alternative_type, "text/plain"))) {
+                            /* if the UA is Apple mail and if the only
+                            ** alternatives are text/plain and
+                            ** text/html and if the preference is
+                            ** text/plain, skip the text/html version
+                            ** if the applemail_hack is enabled
+			    */
+                                content = CONTENT_IGNORE;
+				
+#if DEBUG_PARSE
+                                printf("Discarding apparently equivalent text//html alternative\n");
+#endif
+                                continue;
+                        }
+			  
 			if (content == CONTENT_IGNORE)
 			    continue;
 			else if (ignorecontent(type))
@@ -2130,14 +2160,6 @@ int parsemail(char *mbox,	/* file name */
 			     * This is not a multipart and not text 
 			     */
 			    char *fname = NULL;	/* attachment filename */
-
-                            if (parse_multipart_alternative_forcing_save_alts
-                                && !strcasecmp(multipartp->line, "multipart/alternative")
-                                && (!strcasecmp(type, "text/html")
-                                    && *alternative_type
-                                    && !strcasecmp(alternative_type, "text/plain"))) {          
-                                content = CONTENT_IGNORE;
-                            }
 
 			    /* 
                              * only do anything here if we're not 
@@ -2206,10 +2228,10 @@ int parsemail(char *mbox,	/* file name */
 					break;
 				    }
 				    if (!strncasecmp(line_buf, "From ", 5)) {
-				        isinheader = 0;
 #if DEBUG_PARSE
 					printf("Error, new message found instead of boundary!\n");
 #endif
+				        isinheader = 0;
 					if (bp != origbp)
 					  origbp = append_body(origbp, &origlp, bp);
 					bp = origbp;
@@ -2222,6 +2244,9 @@ int parsemail(char *mbox,	/* file name */
 				}
 				if (!strncmp(line_buf + set_ietf_mbox + 2 + strlen(boundary_id), "--", 2)
 				    && bp != origbp) {
+#if DEBUG_PARSE
+				    printf("Error, end of mime found before mime start!\n");
+#endif
 				    /* end of mime found before mime start */
 				    origbp = append_body(origbp, &origlp, bp);
 				    bp = origbp;
@@ -2239,6 +2264,7 @@ int parsemail(char *mbox,	/* file name */
 				 */
 				boundp = bound(boundp, boundbuffer);
                                 multipartp = multipart(multipartp, type);
+                                waiting_for_boundary = FALSE;
                                 
 				/* printf("set new boundary: %s\n", boundp->line); */
 
@@ -2286,8 +2312,7 @@ int parsemail(char *mbox,	/* file name */
 #if DEBUG_PARSE
 				    printf("SAVEALTERNATIVE: yes\n");
 #endif
-
-				}
+                                }
 
 			    }
 			    else
@@ -2405,7 +2430,7 @@ int parsemail(char *mbox,	/* file name */
 		    }
 		    **/
 		  }
-		}else{
+		} else {
 		  /* if body is us-ascii but subject is not,
 		     try to use subject's charset. */
 		  if (strncasecmp(charset,"us-ascii",8)==0){
@@ -2559,6 +2584,7 @@ msgid);
 		content = CONTENT_TEXT;
 		decode = ENCODE_NORMAL;
 		Mime_B = FALSE;
+                waiting_for_boundary = FALSE;
 		headp = NULL;
                 content_type_p = NULL;
 		multilinenoend = FALSE;
@@ -2585,14 +2611,27 @@ msgid);
 		is_deleted = 0;
 		exp_time = -1;
 
+		free_bound (boundp);
+		boundp = NULL;
+		
+		free_multipart (multipartp);
+		multipartp = NULL;
+		
                 alternativeparser = FALSE; /* there is none anymore */
 
-		if (parse_multipart_alternative_forcing_save_alts) {
-		  if (old_set_save_alts != -1) {
-		    set_save_alts = old_set_save_alts;
-		    old_set_save_alts = -1;
-		  }
-		  parse_multipart_alternative_forcing_save_alts = 0;
+		if (parse_multipart_alternative_force_save_alts) {
+                    parse_multipart_alternative_force_save_alts = 0;
+                    
+#if DEBUG_PARSE
+                    printf("Applemail_hack resetting parse_multipart_alternative_force_save_alts\n");
+#endif
+                    if (old_set_save_alts != -1) {
+                        set_save_alts = old_set_save_alts;
+                        old_set_save_alts = -1;
+#if DEBUG_PARSE                        
+                        printf("Applemail_hack resetting save_alts to %d\n", old_set_save_alts);
+#endif                        
+                    }
 		}
                 
 		if (!(num % 10) && set_showprogress && !readone) {
@@ -2623,7 +2662,7 @@ msgid);
 			printf("hit %s\n", line);
 #endif
 			if (!strncmp(line + 2 + strlen(boundp->line), "--", 2)) {
-			    /* @@@ don't know why we had this line here. Doesn't hurt to take
+			  /* @@@ don't know why we had this line here. Doesn't hurt to take
 			       it out, though */
 #if 0
 			    bp = addbody(bp, &lp, "\n",
@@ -2635,16 +2674,27 @@ msgid);
 
 #if DEBUG_PARSE
 			    printf("End boundary %s\n", line);
+                            printf("alternativeparser %d\n", alternativeparser);
+                            printf("has_more_alternatives %d\n", has_multipart(multipartp, "multipart/alternative"));
 #endif
 			    boundp = bound(boundp, NULL);
 			    if (!boundp) {
 				bodyflags &= ~BODY_ATTACHED;
 			    }
-                            multipartp = multipart(multipartp, NULL);
-			    if (alternativeparser) {
+			    multipartp = multipart(multipartp, NULL);
+                            if (multipartp) {
+                                waiting_for_boundary = TRUE;
+                            }
+			    if (alternativeparser
+				&& !has_multipart(multipartp, "multipart/alternative")) {
 #ifdef NOTUSED
 				struct body *next;
 #endif
+				
+#if DEBUG_PARSE
+				printf("We no longer have alternatives\n");
+#endif
+
 				/* we no longer have alternatives */
 				alternativeparser = FALSE;
 				/* reset the alternative variables (I think we can skip
@@ -2678,6 +2728,9 @@ msgid);
 #endif
 			}
 			else {
+			    /* we found the beginning of a new section */
+			    waiting_for_boundary = FALSE;
+			    
 			    if (alternativeparser && !set_save_alts) {
 				/*
 				 * parsing another alternative, so we save the
@@ -2696,7 +2749,7 @@ msgid);
 				alternative_file[0] = '\0';
 #if 0
                                 /* @@ JK: review if att_counter is updated even with content ignore */
-                                if (set_save_alts && parse_multipart_alternative_forcing_save_alts) {
+                                if (set_save_alts && parse_multipart_alternative_force_save_alts) {
                                     att_counter++;
                                 }
 #endif
@@ -2735,7 +2788,11 @@ msgid);
 			}
 			continue;
 		    }
-		}
+                    else if (waiting_for_boundary) {
+                        /* waiting for the next '--foo' */
+                        continue;
+                    }
+                }
 
 		switch (decode) {
 		case ENCODE_QP:
@@ -3286,6 +3343,7 @@ msgid);
 	content = CONTENT_TEXT;
 	decode = ENCODE_NORMAL;
 	Mime_B = FALSE;
+        waiting_for_boundary = FALSE;
 	headp = NULL;
 	multilinenoend = FALSE;
 	if (att_dir) {
@@ -3365,17 +3423,8 @@ msgid);
 
     /* can we clean up a bit please... */
 
-    if (boundp != NULL) {
-	if (boundp->line)
-	    free(boundp->line);
-	free(boundp);
-    }
-
-    if (multipartp != NULL) {
-	if (multipartp->line)
-	    free(multipartp->line);
-	free(multipartp);
-    }
+    free_bound (boundp);
+    free_multipart (multipartp);
 
     if(charsetsave){
       free(charsetsave);
