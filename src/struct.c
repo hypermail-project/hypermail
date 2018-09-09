@@ -731,6 +731,83 @@ struct boundary *multipart(struct boundary *bnd, char *line)
 }
 
 /*
+** Frees the memory allocated to a boundary structure/
+** Returns the number of elements freed.
+*/
+static int free_boundary(struct boundary *bnd)
+{
+    struct boundary *cursor = bnd;
+      
+    struct boundary *tmp;
+  
+    int counter = 0;
+    
+    if (bnd && bnd->next) {
+        fprintf (stderr, "free_boundary(): Error: boundary has a non-empty next element.\nLINE : %s\n",
+                 bnd->line);
+    }
+    
+    cursor = bnd;
+    while (cursor) {
+        tmp = cursor->prev;
+        if (cursor->line) {
+#ifdef DEBUG_PARSE
+            fprintf (stderr, "free_boundary(): freeing %s\n", cursor->line);
+#endif
+            free (cursor->line);
+        }
+        free (cursor);
+        cursor = tmp;
+    }
+  
+    return counter;
+}
+
+int free_bound (struct boundary *bnd)
+{
+    int t;
+
+    t = free_boundary (bnd);
+
+#if DEBUG_PARSE
+    fprintf (stderr, "free_bound: freed %d elements\n", t);
+#endif
+    return t;
+}
+
+int free_multipart (struct boundary *mp)
+{
+    int t;
+    
+    t = free_boundary (mp);
+    
+#if DEBUG_PARSE
+    fprintf (stderr, "free_multipart: freed %d elements\n", t);
+#endif
+    return t;
+}
+
+/*
+** Returns TRUE if a given boundary stack has an element of the given mime_type 
+*/
+bool has_multipart (const struct boundary *multipartp, char *mime_type)
+{
+    const struct boundary *tempnode;
+    bool res = FALSE;
+    
+    if (mime_type != NULL && *mime_type != '\0') {
+        for (tempnode = multipartp; tempnode; tempnode = tempnode->prev) {
+            if (!strcasecmp (tempnode->line, mime_type)) {
+                res = TRUE;
+                break;
+            }
+        }
+    }
+  
+    return res;
+}
+
+/*
 ** Add a line to a linked list that makes up an article's body.
 */
 

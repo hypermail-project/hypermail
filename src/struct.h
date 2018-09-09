@@ -38,7 +38,10 @@ int wasprinted(struct printed *, int);
 
 struct header *addheader(struct header *, struct emailinfo *, int, int);
 struct boundary *bound(struct boundary *, char *);
+int free_bound(struct boundary *);
 struct boundary *multipart(struct boundary *, char *);
+int free_multipart(struct boundary *);
+bool has_multipart(const struct boundary *, char *);
 
 void print_list(char *, struct hmlist *);
 int inlist(struct hmlist *, char *);
