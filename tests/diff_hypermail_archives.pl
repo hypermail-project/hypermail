@@ -17,7 +17,7 @@ use warnings;
 
 use File::Find;
 use FindBin '$Script';
-use Cwd 'abs_path';
+use Cwd qw( abs_path );
 
 use Getopt::Std;
 
@@ -46,8 +46,10 @@ our $show_progress;
 our $debug;
 # ignore all content below the footer trailer
 our $ignore_footer;
-# hash with filenames, dirnames that must be ignored
-our @ignore_regex;
+# hash with filenames|dirnames that must be ignored
+our @ignore_files_regex;
+# hash with text that must be ignored in the diff output
+our @ignore_text_regex;
 # thw two dirs that need to be compared
 our $dir1;
 our $dir2;
@@ -116,16 +118,32 @@ sub filter_filenames {
     my $filename = shift;
     my $res = 0;
     
-    foreach my $regex (@ignore_regex) {
+    foreach my $regex (@ignore_files_regex) {
 	if ($filename =~ m/$regex/) {
-	    $res = -1;
-	    print "\n$filename is ignored per regex: " . $regex . "\n" if $show_progress;
+	    $res = 1;
+	    print "$filename is ignored per regex: " . $regex . "\n" unless $quiet;
 	}
     }
 
     return $res;
     
 } # filter_filenames
+
+# filter out text lines we're not interested in
+sub filter_text {
+    my ($text1, $text2) = @_;
+    my $res = 0;
+    
+    foreach my $regex (@ignore_text_regex) {
+	if ($text1 =~ m/$regex/ && $text2 =~ m/$regex/) {
+	    $res = 1;
+	    print "$text1 is ignored per regex: " . $regex . "\n" unless $quiet;
+	}
+    }
+
+    return $res;
+    
+} # filter_text
 
 # does a diff on existing directories, files, and file content
 sub diff_files_complete {
@@ -145,7 +163,7 @@ sub diff_files_complete {
 	return;
     }
 
-    my $is_attachment_dir =  $filename1 =~ m/\/$attachment_dir_prefix/;
+    my $is_attachment_dir =  $filename1 =~ m#/$attachment_dir_prefix#;
     
     if (!$is_attachment_dir) {
 	if ($filename1 =~ m/\.html$/) {
@@ -162,6 +180,8 @@ sub diff_files_complete {
     open (my $fh, "-|", @diff_args) || die("cannot diff $filename1 $filename2\n");
     
     while (my $line = <$fh>) {
+
+	chomp $line;
 	
 	if ($line eq "") {
 	    next;
@@ -188,7 +208,7 @@ sub diff_files_complete {
 	    }
 	    $local_errors++;
 	}
-	$diffs .= $line;
+	$diffs .= $line . "\n";
     }
     close ($fh);
 
@@ -219,7 +239,7 @@ sub diff_files_dir {
 sub process_options {
     my %options=();
 
-    getopts("qhfpdi:", \%options);
+    getopts("qhfpdi:v:", \%options);
 
     $dir1 = $ARGV[0];
     $dir2 = $ARGV[1];
@@ -246,31 +266,28 @@ sub process_options {
 	     . "\t-h help prints this message\n"
 	     . "\t-f ignore all content below the footer trailer comment\n"
 	     . "\t-i list of colon separated regex corresponding to directories/filenames to ignore\n"
+	     . "\t-v list of colon separated regex corresponding to text that should be ignored in diff reports\n"
 	     . "\tdir1, dir2 paths to the two directories to compare\n\n");
     }
     
     # remove trailing / if given
-    $dir1 =~ s/\/+$//;
-    $dir2 =~ s/\/+$//;
+    $dir1 = abs_path ($dir1);
+    $dir2 = abs_path ($dir2);
 
-    if (-l $dir1) {
-	$dir1 = abs_path ($dir1);
-    }
-
-    if (-l $dir2) {
-	$dir2 = abs_path ($dir2);
-    }
-    
     if (!-d $dir1) {
-	die ("directory $dir1 doesn't exist\n");
+	die ("$dir1 is not a directory\n");
     }
 
     if (!-d $dir2) {
-	die ("directory $dir2 doesn't exist\n");
+	die ("$dir2 is not a directory\n");
     }    
 
     if (defined $options{i}) {
-	@ignore_regex = split (/:/, $options{i});
+	@ignore_files_regex = split (/:/, $options{i});
+    }
+
+    if (defined $options{v}) {
+	@ignore_text_regex = split (/:/, $options{v});
     }
 
 } # process_options
