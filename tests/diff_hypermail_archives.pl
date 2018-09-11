@@ -121,7 +121,7 @@ sub filter_filenames {
     foreach my $regex (@ignore_files_regex) {
 	if ($filename =~ m/$regex/) {
 	    $res = 1;
-	    print "$filename is ignored per regex: " . $regex . "\n" unless $quiet;
+	    print "$filename is ignored per regex: " . $regex . "\n" if $debug && !$quiet;
 	}
     }
 
@@ -192,17 +192,32 @@ sub diff_files_complete {
 	# things that changed are the version number and/or the
 	# generation date. We ignore the rest of the diff output at
 	# this point.
-	if ($line =~ /\d+c\d+/) {
-	    if (!$is_attachment_dir) {
-		my ($ln_1, $ln_2) = split /c/, $line, 2;
-		
-		if ($ln_1 eq $ln_2 && %{ $generated_by_lines }) {
-		    if ($ignore_footer) {
-			if ($ln_1 >= $footer_line) {
+	if ($line =~ /^\d/) {
+	    if ($line =~ /\d+c\d+/) {
+		if (!$is_attachment_dir) {
+		    my ($ln_1, $ln_2) = split /c/, $line;
+		    
+		    # if we have diffs in a series of sequential lines
+		    my ($ln_1_1, $ln_1_2) = split /,/, $ln_1;
+		    my ($ln_2_1, $ln_2_2) = split /,/, $ln_2;
+		    
+		    if (%{ $generated_by_lines }
+			&& (defined $ln_1_2 && defined $ln_2_2
+			    && ($ln_1_2 - $ln_1_1) == ($ln_2_1 - $ln_1_1))
+			|| (defined $ln_1_1 && defined $ln_2_1
+			    && !defined $ln_1_2 && !defined $ln_2_2)) {
+
+			if ($ignore_footer) {
+			    if ($ln_1_1 >= $footer_line) {
+				last;
+			    }
+			} elsif ((!defined $ln_1_2 
+				  && $$generated_by_lines{$ln_1_1})
+				 || (defined $ln_1_2 
+				     && $$generated_by_lines{$ln_1_1}
+				     && $$generated_by_lines{$ln_1_2})) {
 			    last;
 			}
-		    } elsif ($$generated_by_lines{$ln_1}) {
-			last;
 		    }
 		}
 	    }
@@ -215,7 +230,7 @@ sub diff_files_complete {
     if ($diffs ne "" && !$quiet) {
 	$errors++;
 	print "\n" if $show_progress;
-	print "[$errors] $filename1\n[$errors] $filename2: found $local_errors difference" . ($errors == 1 ? "" : "s") . "\n";
+	print "[$errors] $filename1\n[$errors] $filename2: found $local_errors difference" . ($local_errors == 1 ? "" : "s") . "\n";
 	print "$diffs\n";
     }
     
@@ -274,12 +289,12 @@ sub process_options {
     $dir1 = abs_path ($dir1);
     $dir2 = abs_path ($dir2);
 
-    if (!-d $dir1) {
-	die ("$dir1 is not a directory\n");
+    if (!defined $dir1 || !-d $dir1) {
+	die ("$ARGV[0] is not a directory\n");
     }
 
-    if (!-d $dir2) {
-	die ("$dir2 is not a directory\n");
+    if (!defined $dir2 || !-d $dir2) {
+	die ("$ARGV[1] is not a directory\n");
     }    
 
     if (defined $options{i}) {
@@ -321,7 +336,7 @@ sub process_options {
     print "\n" unless $quiet;
     
     if ($errors) {
-	print "=> $dir1 and $dir2 differ ($errors difference", $errors > 1 ? "s" : "", ")\n\n" unless $quiet;
+	print "=> $dir1 and $dir2 dirs differ: $errors file", $errors > 1 ? "s are" : " is", " different\n\n" unless $quiet;
     } else {
 	print "=> Archives are identical\n\n" unless $quiet;
     }
