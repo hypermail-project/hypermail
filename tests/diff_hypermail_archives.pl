@@ -145,6 +145,28 @@ sub filter_text {
     
 } # filter_text
 
+sub store_diffs {
+
+    my ($header, $diff_file1, $diff_file2) = @_;
+    my $diff = "";
+    
+    # also compare files and regex text, add + 1 to error if added
+    # do the same at the end of the while if not yet done
+    if (defined $header && $header ne "") {
+
+	$diff = $diff . $header . "\n";
+	if (defined $diff_file1 && $diff_file1  ne "") {
+	    $diff = $diff . $diff_file1;
+	}
+	if (defined $diff_file2  && $diff_file2 ne "") {
+	    $diff = $diff . "---\n" . $diff_file2;
+	}
+    }
+    
+    return $diff;
+    
+} # store_diffs
+
 # does a diff on existing directories, files, and file content
 sub diff_files_complete {
     my $file = $_;
@@ -179,8 +201,12 @@ sub diff_files_complete {
     my @diff_args = ($diff_cmd, $filename1, $filename2);
     open (my $fh, "-|", @diff_args) || die("cannot diff $filename1 $filename2\n");
     
+    my $header;
+    my $diff_file1;
+    my $diff_file2;
+    my $skip = 1;
+    
     while (my $line = <$fh>) {
-
 	chomp $line;
 	
 	if ($line eq "") {
@@ -193,6 +219,20 @@ sub diff_files_complete {
 	# generation date. We ignore the rest of the diff output at
 	# this point.
 	if ($line =~ /^\d/) {
+
+	    # store previous diff.
+	    # also compare files and regex text, add + 1 to error if added
+	    # do the same at the end of the while if not yet done
+
+	    unless ($skip) {
+		$diffs .= store_diffs ($header, $diff_file1, $diff_file2);
+		$local_errors++;
+	    }
+	    
+	    $skip = 0;
+	    $header = $line;
+	    $diff_file1 = $diff_file2 = "";
+	    
 	    if ($line =~ /\d+c\d+/) {
 		if (!$is_attachment_dir) {
 		    my ($ln_1, $ln_2) = split /c/, $line;
@@ -202,13 +242,14 @@ sub diff_files_complete {
 		    my ($ln_2_1, $ln_2_2) = split /,/, $ln_2;
 		    
 		    if (%{ $generated_by_lines }
-			&& (defined $ln_1_2 && defined $ln_2_2
-			    && ($ln_1_2 - $ln_1_1) == ($ln_2_1 - $ln_1_1))
-			|| (defined $ln_1_1 && defined $ln_2_1
-			    && !defined $ln_1_2 && !defined $ln_2_2)) {
+			&& (defined $ln_1_2 && defined $ln_2_2 
+			    && ($ln_1_2 - $ln_1_1) == ($ln_2_2 - $ln_2_1))
+			|| (defined $ln_1_1 && !defined $ln_1_2
+			    && defined $ln_2_1 && !defined $ln_2_2)) {
 
 			if ($ignore_footer) {
 			    if ($ln_1_1 >= $footer_line) {
+				$skip = 1;
 				last;
 			    }
 			} elsif ((!defined $ln_1_2 
@@ -216,18 +257,31 @@ sub diff_files_complete {
 				 || (defined $ln_1_2 
 				     && $$generated_by_lines{$ln_1_1}
 				     && $$generated_by_lines{$ln_1_2})) {
+			    $skip = 1;
 			    last;
 			}
 		    }
 		}
 	    }
-	    $local_errors++;
-	}
-	$diffs .= $line . "\n";
-    }
-    close ($fh);
 
-    if ($diffs ne "" && !$quiet) {
+	} else {
+	    if ($line =~ /^</) {
+		$diff_file1 = $line . "\n";
+	    } elsif ($line =~ /^>/) {
+		$diff_file2 = $line . "\n";
+	    }
+	}
+    }
+
+    close ($fh);
+    
+    # store last diff.
+    unless ($skip) {
+	$diffs .= store_diffs ($header, $diff_file1, $diff_file2);
+	$local_errors++;
+    }
+
+    if ($local_errors > 0 && !$quiet) {
 	$errors++;
 	print "\n" if $show_progress;
 	print "[$errors] $filename1\n[$errors] $filename2: found $local_errors difference" . ($local_errors == 1 ? "" : "s") . "\n";
