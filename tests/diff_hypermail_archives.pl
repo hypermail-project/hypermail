@@ -130,20 +130,21 @@ sub filter_filenames {
 } # filter_filenames
 
 # filter out text lines we're not interested in
-sub filter_text {
+# returns true if both strings match the same regex
+sub filter_regex {
     my ($text1, $text2) = @_;
     my $res = 0;
-    
+
     foreach my $regex (@ignore_text_regex) {
 	if ($text1 =~ m/$regex/ && $text2 =~ m/$regex/) {
 	    $res = 1;
-	    print "$text1 is ignored per regex: " . $regex . "\n" unless $quiet;
+	    print "$text1 is ignored per regex: " . $regex . "\n" if $debug && !$quiet;
 	}
     }
-
+    
     return $res;
     
-} # filter_text
+} # filter_regex
 
 sub store_diffs {
 
@@ -180,8 +181,8 @@ sub diff_files_complete {
     
     print "." if $show_progress;
 
-    if (compare_filenames ($filename1, $filename2)
-	|| filter_filenames ($filename1)) {
+    if (filter_filenames ($filename1)
+	|| compare_filenames ($filename1, $filename2)) {
 	return;
     }
 
@@ -205,7 +206,8 @@ sub diff_files_complete {
     my $diff_file1;
     my $diff_file2;
     my $skip = 1;
-    
+    my $filter_diff_content = 0;
+	
     while (my $line = <$fh>) {
 	chomp $line;
 	
@@ -224,12 +226,14 @@ sub diff_files_complete {
 	    # also compare files and regex text, add + 1 to error if added
 	    # do the same at the end of the while if not yet done
 
-	    unless ($skip) {
-		$diffs .= store_diffs ($header, $diff_file1, $diff_file2);
-		$local_errors++;
+	    if (!$skip) {
+		if (!$filter_diff_content || !filter_regex ($diff_file1, $diff_file2)) {
+		    $diffs .= store_diffs ($header, $diff_file1, $diff_file2);
+		    $local_errors++;
+		}
 	    }
 	    
-	    $skip = 0;
+	    $skip = $filter_diff_content = 0;
 	    $header = $line;
 	    $diff_file1 = $diff_file2 = "";
 	    
@@ -241,7 +245,7 @@ sub diff_files_complete {
 		    my ($ln_1_1, $ln_1_2) = split /,/, $ln_1;
 		    my ($ln_2_1, $ln_2_2) = split /,/, $ln_2;
 		    
-		    if (%{ $generated_by_lines }
+		    if (defined $generated_by_lines && %{ $generated_by_lines }
 			&& (defined $ln_1_2 && defined $ln_2_2 
 			    && ($ln_1_2 - $ln_1_1) == ($ln_2_2 - $ln_2_1))
 			|| (defined $ln_1_1 && !defined $ln_1_2
@@ -252,6 +256,7 @@ sub diff_files_complete {
 				$skip = 1;
 				last;
 			    }
+			    
 			} elsif ((!defined $ln_1_2 
 				  && $$generated_by_lines{$ln_1_1})
 				 || (defined $ln_1_2 
@@ -259,7 +264,11 @@ sub diff_files_complete {
 				     && $$generated_by_lines{$ln_1_2})) {
 			    $skip = 1;
 			    last;
+			    
+			} else {
+			    $filter_diff_content = 1;
 			}
+			
 		    }
 		}
 	    }
@@ -276,9 +285,11 @@ sub diff_files_complete {
     close ($fh);
     
     # store last diff.
-    unless ($skip) {
-	$diffs .= store_diffs ($header, $diff_file1, $diff_file2);
-	$local_errors++;
+    if (!$skip) {
+	if (!$filter_diff_content || !filter_regex ($diff_file1, $diff_file2)) {
+	    $diffs .= store_diffs ($header, $diff_file1, $diff_file2);
+	    $local_errors++;
+	}
     }
 
     if ($local_errors > 0 && !$quiet) {
@@ -298,17 +309,19 @@ sub diff_files_dir {
     $filename2 =~ s/$dir1/$dir2/;
 
     print "." if $show_progress;
-    
-    compare_filenames ($filename1, $filename2);
+
+    if (!filter_filenames ($filename1)) {
+	compare_filenames ($filename1, $filename2);
+    }
 
     return;
     
-} # diff_files
+} # diff_files_dir
 
 sub process_options {
     my %options=();
 
-    getopts("qhfpdi:v:", \%options);
+    getopts("qhfpdi:r:", \%options);
 
     $dir1 = $ARGV[0];
     $dir2 = $ARGV[1];
@@ -335,7 +348,7 @@ sub process_options {
 	     . "\t-h help prints this message\n"
 	     . "\t-f ignore all content below the footer trailer comment\n"
 	     . "\t-i list of colon separated regex corresponding to directories/filenames to ignore\n"
-	     . "\t-v list of colon separated regex corresponding to text that should be ignored in diff reports\n"
+	     . "\t-r list of colon separated regex corresponding to text that should be ignored in diff reports\n"
 	     . "\tdir1, dir2 paths to the two directories to compare\n\n");
     }
     
@@ -355,8 +368,8 @@ sub process_options {
 	@ignore_files_regex = split (/:/, $options{i});
     }
 
-    if (defined $options{v}) {
-	@ignore_text_regex = split (/:/, $options{v});
+    if (defined $options{r}) {
+	@ignore_text_regex = split (/:/, $options{r});
     }
 
 } # process_options
