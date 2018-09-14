@@ -212,7 +212,8 @@ multipart/mixed</li>
 etc</li>
 <li><a href="#attachmentlink">attachmentlink</a> control
 filenames</li>
-  <li><a href="#applemail_mimehack">applemail_mimehack</a> process multipart/alternative as multipart/mixed	  
+<li><a href="#applemail_mimehack">applemail_mimehack</a> process
+multipart/alternative as multipart/mixed</li>
 <li><a href="#unsafe_chars">unsafe_chars</a> restrict filename
 chars</li>
 <li><a href="#save_alts">save_alts</a> multipart/alternative
@@ -1048,26 +1049,25 @@ ignore_types = application/x-msdownload</i></p>
 <dd><a name="attachmentlink" id="attachmentlink"></a></dd>
 <dt><strong>attachmentlink = attachment-link-format</strong></dt>
 <dd>Format of the attachment links.<br>
-    <br>
-    %p for the full path to the attachment<br>
-    %f for the file name part only<br>
-    %d for the directory name only<br>
-    %n for the message number<br>
-    %c for the content type string<br>
-    <br>
-    <i>attchmentlink = "%p"</i></dd>
-<a name="applemail_mimehack" ></a>
-<dt><strong>applemail_mimehack [ 0 | 1 ]</strong></dt><dd>
-    In a multipart/alternative message, Apple Mail (as of June/2018)
-    is only adding attachments to the text/html related part. Set this
-    option to On to force the display of all alternate parts when
-    processing an Apple Mail message.  If the message has only a
-    text/plain and a text/html alternatives and the preference is for
-    text/plain, the text/html alternative won't be displayed.  This option
-    won't be taken into account if your prefered type is text/html
-    or if you enabled the save_alts option.
-    <br><i>applemail_mimehack = 0</i> (disabled by default)
-</dd>
+<br>
+%p for the full path to the attachment<br>
+%f for the file name part only<br>
+%d for the directory name only<br>
+%n for the message number<br>
+%c for the content type string<br>
+<br>
+<i>attachmentlink = "%p"</i></dd>
+<dd><a name="applemail_mimehack" id="applemail_mimehack"></a></dd>
+<dt><strong>applemail_mimehack [ 0 | 1 ]</strong></dt>
+<dd>In a multipart/alternative message, Apple Mail (as of
+June/2018) is only adding attachments to the text/html related
+part. Set this option to On to force the display of all alternate
+parts when processing an Apple Mail message. If the message has
+only a text/plain and a text/html alternatives and the preference
+is for text/plain, the text/html alternative won't be displayed.
+This option won't be taken into account if your prefered type is
+text/html or if you enabled the save_alts option.<br>
+<i>applemail_mimehack = 0</i> (disabled by default)</dd>
 <dd><a name="unsafe_chars" id="unsafe_chars"></a></dd>
 <dt><strong>unsafe_chars = list of chars to prohibit</strong></dt>
 <dd>Any characters listed in this string are removed from
