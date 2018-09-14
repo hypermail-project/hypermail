@@ -295,7 +295,7 @@ markup body for deleted messages (by reasons other than spam)</li>
 "#htmlmessage_deleted_spam">htmlmessage_deleted_spam</a> custom
 markup body for deleted messages (by spam reasons)</li>
 <li><a href="#progress">progress</a> verbosity</li>
-<li><a href="#warn_surpressions">warn_surpressions</a> warn about
+<li><a href="#warn_suppressions">warn_suppressions</a> warn about
 ignored messages</li>
 <li><a href="#uselock">uselock</a> serialize</li>
 <li><a href="#locktime">locktime</a> timeouts</li>
@@ -312,8 +312,8 @@ creating new message files</li>
 <h2><a name="allpages" id="allpages">Options affecting both
 messages and index pages</a></h2>
 <h3><a name="locale" id="locale">Locale</a></h3>
-<a id="language" name="language"></a>
 <dl>
+<dd><a id="language" name="language"></a></dd>
 <dt><strong>language = [ two-or-more-letter-language-id
 ]</strong></dt>
 <dd>This is a two-letter string specifying the default language to
@@ -342,24 +342,18 @@ The directory /usr/share/i18n/locales on many systems has the
 locale codes that are available on that system.<br>
 <br>
 <i>language = en</i></dd>
-</dl>
-<a name="iso2022jp" id="iso2022jp"></a>
-<dl>
+<dd><a name="iso2022jp" id="iso2022jp"></a></dd>
 <dt><strong>iso2022jp = [ 0 | 1 ]</strong></dt>
 <dd>Set this to On to support ISO-2022-JP messages.<br>
 <br>
 <i>iso2022jp = 0</i></dd>
-</dl>
-<a name="i18n" id="i18n"></a>
-<dl>
+<dd><a name="i18n" id="i18n"></a></dd>
 <dt><strong>i18n = [ 0 | 1 ]</strong></dt>
 <dd>Enable I18N features, hypermail must be linked with <a href=
 "http://www.gnu.org/software/libiconv/">libiconv</a>.<br>
 <br>
 <i>i18n = 1</i> (disabled by default)</dd>
-</dl>
-<a name="eurodate" id="eurodate"></a>
-<dl>
+<dd><a name="eurodate" id="eurodate"></a></dd>
 <dt><strong>eurodate = [ 0 | 1 ]</strong></dt>
 <dd>Set this to reflect how you want dates displayed in the index
 files.<br>
@@ -367,26 +361,20 @@ Set as 1 to to use European date format "DD MM YYYY".<br>
 Define as 0 to to use American date format "MM DD YYYY".<br>
 <br>
 <i>eurodate = 0</i></dd>
-</dl>
-<a name="dateformat" id="dateformat"></a>
-<dl>
+<dd><a name="dateformat" id="dateformat"></a></dd>
 <dt><strong>dateformat = strftime-date-format</strong></dt>
 <dd>Format used in strftime(3) call for displaying dates.<br>
 See strftime(3) for the valid conversion specifications.<br>
 <br>
 <i>dateformat = "%D-%r Z"</i> (disabled by default)</dd>
-</dl>
-<a name="isodate" id="isodate"></a>
-<dl>
+<dd><a name="isodate" id="isodate"></a></dd>
 <dt><strong>isodate = [ 0 | 1 ]</strong></dt>
 <dd>Set this to On to display article received dates in YYYY-MM-DD
 HH:MM:SS format. If used with the gmtime option, a Z will be
 inserted between the DD and HH.<br>
 <br>
 <i>isodate = 0</i></dd>
-</dl>
-<a name="gmtime" id="gmtime"></a>
-<dl>
+<dd><a name="gmtime" id="gmtime"></a></dd>
 <dt><strong>gmtime = [ 0 | 1 ]</strong></dt>
 <dd>Set this to On to display article received dates using
 Greenwich Mean Time (UTC) rather than local time.<br>
@@ -401,9 +389,7 @@ Set this to NONE to use the name of the input mailbox.<br>
 <br>
 <i>label = Hypermail Development List</i> (default value is
 filename?????)</dd>
-</dl>
-<a name="hmail" id="hmail"></a>
-<dl>
+<dd><a name="hmail" id="hmail"></a></dd>
 <dt><strong>hmail = [ Mailing List Submission Address | NONE
 ]</strong></dt>
 <dd>Set this to the list's submission address. When enabled, this
@@ -411,18 +397,14 @@ can be used to submit a new message to the list served by the
 hypermail archive. "NONE" means don't use it.<br>
 <br>
 <i>hmail = hypermail@hypermail.org</i> (disabled by default)</dd>
-</dl>
-<a name="newmsg_command" id="newmsg_command"></a>
-<dl>
+<dd><a name="newmsg_command" id="newmsg_command"></a></dd>
 <dt><strong>newmsg_command = [ string ]</strong></dt>
 <dd>This specifies the mail command to use when converting the
 set_hmail address to links in replies. The variables $TO, $SUBJECT,
 and $ID can be used in constructing the command string.<br>
 <br>
 <i>newmsg_command=mailto:$TO</i></dd>
-</dl>
-<a name="replymsg_command" id="replymsg_command"></a>
-<dl>
+<dd><a name="replymsg_command" id="replymsg_command"></a></dd>
 <dt><strong>replymsg_command = [ string ]</strong></dt>
 <dd>This specifies the mail command to use when converting the
 set_hmail address to links in replies. The variables $TO, $SUBJECT,
@@ -435,9 +417,7 @@ to the command, but I've heard no reports of this actually
 working.<br>
 <br>
 <i>replymsg_command=mailto:$TO?Subject=$SUBJECT</i></dd>
-</dl>
-<a name="inreplyto_command" id="inreplyto_command"></a>
-<dl>
+<dd><a name="inreplyto_command" id="inreplyto_command"></a></dd>
 <dt><strong>inreplyto_command = [ string ]</strong></dt>
 <dd>This specifies a URI template to a script that hypermail will
 link to if it's unable to find in the archive's messages the MID
@@ -447,18 +427,15 @@ value</em> will appear in the link.<br>
 <br>
 <em>inreplyto_command = http://example.org/mid-resolver/$ID.</em>
 (disabled by default)</dd>
-</dl>
+<dd>
 <h3><a name="misc_pages" id="misc_pages">Miscellaneous</a></h3>
-<a name="stripsubject" id="stripsubject"></a>
-<dl>
+<a name="stripsubject" id="stripsubject"></a></dd>
 <dt><strong>stripsubject = [ string | NONE ]</strong></dt>
 <dd>A string to be stripped from all subject lines. Helps unclutter
 mailing lists which add tags to subject lines.<br>
 <br>
 <i>stripsubject = NONE</i></dd>
-</dl>
-<a name="mailcommand" id="mailcommand"></a>
-<dl>
+<dd><a name="mailcommand" id="mailcommand"></a></dd>
 <dt><strong>mailcommand = [ direct mailto | cgi-bin script path |
 NONE ]</strong></dt>
 <dd>This is the mail command that email links go to, for instance
@@ -471,15 +448,12 @@ $ID : the ID of the message you're replying to.<br>
 $SUBJECT: the subject you're replying to.<br>
 <br>
 NONE disables mailcommand usage.<br>
-There may be browsers that will benefit from adding something
-like</dd>
-</dl>
+There may be browsers that will benefit from adding something like
 <blockquote>%26In-Reply-To=&amp;lt;$ID&amp;gt;</blockquote>
 to the command, but I've heard no reports of this actually
 working.<br>
 <br>
-<i>mailcommand = mailto:$TO?Subject=$SUBJECT</i>
-<dl>
+<i>mailcommand = mailto:$TO?Subject=$SUBJECT</i></dd>
 <dd><a name="mailto" id="mailto"></a></dd>
 <dt><strong>mailto = [ email-address | NONE ]</strong></dt>
 <dd>The address of the contact point that is put in the HTML header
@@ -521,12 +495,11 @@ fragment.<br>
 character references.<br>
 <br>
 <i>mail_address_obfuscationx = 1</i> (disabled by default)</dd>
-</dl>
+<dd>
 <h2><a name="index" id="index">Index page options</a></h2>
 <h3><a name="index_avail" id="index_avail">Index
 availability</a></h3>
-<a name="folder_by_date" id="folder_by_date"></a>
-<dl>
+<a name="folder_by_date" id="folder_by_date"></a></dd>
 <dt><strong>folder_by_date = [ strftime-date-format ]</strong></dt>
 <dd>This string causes the messages to be put in subdirectories by
 date. The string will be passed to strftime(3) to generate
@@ -624,10 +597,9 @@ to not index the indexes. See <a href="#annotated">anontated</a>
 for further discussion on <strong>noindex</strong>.<br>
 <br>
 <em>noindex_onindexes = 0</em></dd>
-</dl>
+<dd>
 <h3><a name="index_body" id="index_body">Index body style</a></h3>
-<a name="indextable" id="indextable"></a>
-<dl>
+<a name="indextable" id="indextable"></a></dd>
 <dt><strong>indextable = [ 0 | 1 ]</strong></dt>
 <dd>Setting this variable to 1 will tell Hypermail to generate a
 message index Subject/Author/Date listings using a table format.
@@ -701,10 +673,9 @@ The default is the value of folder_by_date if that is selected,
 "%d" for msgsperfolder.<br>
 <br>
 <i>describe_folder = "%b %Y"</i></dd>
-</dl>
+<dd>
 <h3><a name="footers" id="footers">Index headers/footers</a></h3>
-<a name="archives" id="archives"></a>
-<dl>
+<a name="archives" id="archives"></a></dd>
 <dt><strong>archives = [ URL | NONE ]</strong></dt>
 <dd>This creates a link in the archived index pages labeled "Other
 mail archives". Set this to NONE to omit such a link.<br>
@@ -742,11 +713,10 @@ runtime expansion.<br>
 <br>
 <i>ihtmlfooterfile = /lists/hypermail-idxfooter.hyp</i> (disabled
 by default)</dd>
-</dl>
+<dd>
 <h2><a name="messages" id="messages">Message page options</a></h2>
 <h3><a name="msg_body" id="msg_body">Body style</a></h3>
-<a name="showhtml" id="showhtml"></a>
-<dl>
+<a name="showhtml" id="showhtml"></a></dd>
 <dt><strong>showhtml = [ 0 | 1 | 2 ]</strong></dt>
 <dd>Set this to 1 to show the articles in a proportionally-spaced
 font rather than a fixed-width (monospace) font. Setting this
@@ -813,10 +783,9 @@ The first line in each thread of the thread index page links to
 this file instead of to a single message.<br>
 <br>
 <i>files_by_thread = 0</i></dd>
-</dl>
+<dd>
 <h3><a name="links" id="links">Message page links</a></h3>
-<a name="linkquotes" id="linkquotes"></a>
-<dl>
+<a name="linkquotes" id="linkquotes"></a></dd>
 <dt><strong>linkquotes = [ 0 | 1 ]</strong></dt>
 <dd>Set this to On to create fine-grained links from quoted text to
 the text where the quote originated. It also improves the threads
@@ -880,11 +849,10 @@ instead it will obfuscate them a little so they don't look like
 email addresses to spammers.<br>
 <br>
 <i>spamprotect_id = On</i></dd>
-</dl>
+<dd>
 <h3><a name="msg_head" id="msg_head">Message page
 headers/footers</a></h3>
-<a name="showreplies" id="showreplies"></a>
-<dl>
+<a name="showreplies" id="showreplies"></a></dd>
 <dt><strong>showreplies = [ 0 | 1 ]</strong></dt>
 <dd>Set to 1 to show all replies to a message as links in article
 files. If this is set to 0 no reply links are generated.<br>
@@ -973,10 +941,9 @@ runtime expansion.<br>
 <br>
 <i>mhtmlfooterfile = /lists/hypermail-msgfooter.hyp</i> (disabled
 by default)</dd>
-</dl>
+<dd>
 <h2><a name="attachments" id="attachments">Attachments</a></h2>
-<a name="inlinehtml" id="inlinehtml"></a>
-<dl>
+<a name="inlinehtml" id="inlinehtml"></a></dd>
 <dt><strong>inlinehtml [ 0 | 1 ]</strong></dt>
 <dd>Define to On to make text/html parts to get inlined with the
 mails. If set to Off, HTML-parts will be stored as separate files.
@@ -1057,8 +1024,7 @@ ignore</strong></dt>
 <dd>This is the list of MIME attachment types that you do not want
 to do anything with. They are quietly ignored and are not
 processed. They can be listed individually on multiple lines or
-comma or space separated on a single line.</dd>
-</dl>
+comma or space separated on a single line.
 <p>Two special types may be used here:<br>
 $BINARY - ignore all types that would be stored as separate
 files.<br>
@@ -1075,9 +1041,9 @@ or<br>
 application/x-msdownload<br>
 <br>
 <i>ignore_types = text/x-vcard<br>
-ignore_types = application/x-msdownload</i> <a name=
-"attachmentlink" id="attachmentlink"></a></p>
-<dl>
+ignore_types = application/x-msdownload</i></p>
+</dd>
+<dd><a name="attachmentlink" id="attachmentlink"></a></dd>
 <dt><strong>attachmentlink = attachment-link-format</strong></dt>
 <dd>Format of the attachment links.<br>
 <br>
@@ -1121,11 +1087,10 @@ alternative file.<br>
 <i>alts_text = "alternate version of message"</i> (the default if
 save_alts = 2)<br>
 <i>alts_text = "&lt;hr&gt;"</i> (the default if save_alts = 1)</dd>
-</dl>
+<dd>
 <h2><a name="sysadmin" id="sysadmin">System administration</a></h2>
 <h3><a name="input" id="input">Message input</a></h3>
-<a name="increment" id="increment"></a>
-<dl>
+<a name="increment" id="increment"></a></dd>
 <dt><strong>increment = [ -1 | 0 | 1 ]</strong></dt>
 <dd><br>
 Define as 1 to append all input messages to the end of existing
@@ -1150,8 +1115,6 @@ input.<br>
 <br>
 <i>readone = 0</i></dd>
 <dd><a name="mbox" id="mbox"></a></dd>
-</dl>
-<dl>
 <dt><strong>mbox = [ filename | NONE ]</strong></dt>
 <dd>This is the default mailbox to read messages in from. Set this
 with a value of NONE to read from standard input as the
@@ -1159,8 +1122,6 @@ default.<br>
 <br>
 <i>mbox = NONE</i></dd>
 <dd><a name="mbox_shortened" id="mbox_shortened"></a></dd>
-</dl>
-<dl>
 <dt><strong>mbox_shortened = [ 0 | 1 ]</strong></dt>
 <dd>Set this to 1 to enable use of mbox that has had some of its
 initial messages deleted. Requires usegdbm = 1 and increment = 0.
@@ -1195,7 +1156,7 @@ Set this to 1 to discard messages without a Message-ID header.<br>
 By default such messages are discarded.<br>
 <br>
 <i>require_msgids = 1</i></dd>
-</dl>
+<dd>
 <h3><a name="filters" id="filters">Message Filtering</a></h3>
 Regular expression support is provided by the <a href=
 "http://www.pcre.org/">PCRE</a>&nbsp; library package, which is
@@ -1205,21 +1166,20 @@ University of Cambridge, England.
 strings in message bodies. A string that spans multiple lines of a
 header can be matched.</p>
 <p><a name="filter_out" id="filter_out"></a></p>
-<dl>
+</dd>
 <dt><strong>filter_out = expression</strong></dt>
 <dd>Delete from the html archives any message having a header line
 which matches any of these expressions. Uses the same rules for
 deletion as the expires option. The expressions use the same syntax
-as Perl regular expressions.</dd>
-</dl>
+as Perl regular expressions.
 <p>The following examples should reject messages Cc'd to more than
 3 addresses or from any address at spammers.com. This option is
 disabled by default.<br>
 <br>
 <i>filter_out=Cc:([^,]*,){3}</i><br>
-<i>filter_out=From:.+@spammers.com</i> <a name="filter_require" id=
-"filter_require"></a></p>
-<dl>
+<i>filter_out=From:.+@spammers.com</i></p>
+</dd>
+<dd><a name="filter_require" id="filter_require"></a></dd>
 <dt><strong>filter_require = expression</strong></dt>
 <dd>Delete from the html archives any message not having header
 lines which match each of these expressions. Uses the same rules
@@ -1245,10 +1205,9 @@ deletion as the expires option. The expressions use the same syntax
 as Perl regular expressions.<br>
 <br>
 <i>filter_require_full_body =</i></dd>
-</dl>
+<dd>
 <h3><a name="files" id="files">Filesystem output</a></h3>
-<a name="dir" id="dir"></a>
-<dl>
+<a name="dir" id="dir"></a></dd>
 <dt><strong>dir = [ directory path | NONE ]</strong></dt>
 <dd>This is the default directory that Hypermail uses when creating
 and updating archives. If set to NONE, the directory will have the
@@ -1304,10 +1263,9 @@ name supplied by the message. This option is mainly for languages
 that use different character sets from English.<br>
 <br>
 <i>filename_base = attachment</i> (disabled by default)</dd>
-</dl>
+<dd>
 <h3><a name="sysmisc" id="sysmisc">System miscellaneous</a></h3>
-<a name="usegdbm" id="usegdbm"></a>
-<dl>
+<a name="usegdbm" id="usegdbm"></a></dd>
 <dt><strong>usegdbm = [ 0 | 1 ]</strong></dt>
 <dd>Set this to 1 to use gdbm to implement a header cache. This
 will speed up hypermail, especially if your filesystem is slow. It
@@ -1424,7 +1382,7 @@ NOTE: This option has been <strong>deprecated</strong> if favor of
 <a href="#annotated">annotated</a>. However, it will still be
 parsed and honored to take into account legacy archives.<br>
 <br>
-<em>deleted = X-Hypermail-Deleted X-No-Archive</em></dd>
+<i>deleted = X-Hypermail-Deleted X-No-Archive</i></dd>
 <dd><a name="expires" id="expires"></a></dd>
 <dt><strong>expires = list of headers used to indicate
 expiration</strong></dt>
@@ -1489,7 +1447,8 @@ the whole archive.<br>
 <i>delete_incremental = 0</i> (enabled by default)</dd>
 <dd><a name="htmlmessage_edited" id="htmlmessage_edited"></a></dd>
 <dt><strong>htmlmessage_edited = [HTML markup string]</strong></dt>
-<dd>Custom markup to use in the body of manually edited message
+<dd><br>
+Custom markup to use in the body of manually edited message
 when <em>delete_level</em> is equal or superior to 2.<br>
 <br>
 <i>htmlmessage_edited = &lt;div class="edited"&gt;&lt;img
@@ -1504,7 +1463,8 @@ and Archive Usage Policy.&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</i>
 "htmlmessage_deleted_other"></a></dd>
 <dt><strong>htmlmessage_deleted_other = [HTML markup
 string]</strong></dt>
-<dd>Custom markup to use in the body of deleted messages (by
+<dd><br>
+Custom markup to use in the body of deleted messages (by
 reasons other than spam) when <em>delete_level</em> is equal or
 superior to 2.<br>
 <br>
@@ -1520,7 +1480,8 @@ List and Archive Usage Policy.&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</i>
 "htmlmessage_deleted_spam"></a></dd>
 <dt><strong>htmlmessage_deleted_spam = [HTML markup
 string]</strong></dt>
-<dd>Custom markup to use in the body of deleted messages (by spam
+<dd><br>
+Custom markup to use in the body of deleted messages (by spam
 reasons) when <em>delete_level</em> is equal or superior to 2.<br>
 <br>
 <i>htmlmessage_deleted_spam = &lt;div class="spam"&gt;&lt;img
@@ -1542,15 +1503,15 @@ information is listed individually with the number of the message
 the attachments relates to.<br>
 <br>
 <i>progress = 0</i></dd>
-<dd><a name="warn_surpressions" id="warn_surpressions"></a></dd>
-<dt><strong>warn_surpressions = [ 0 | 1 ]</strong></dt>
+<dd><a name="warn_suppressions" id="warn_suppressions"></a></dd>
+<dt><strong>warn_suppressions = [ 0 | 1 ]</strong></dt>
 <dd>Set this to 1 to get warnings (on stdout) about messages that
 are not converted because of they are missing a msgid (if
 require_msgids is On) or because one of the following options
-surpressed it: deleted expires delete_msgnum filter_out
+suppressed it: deleted expires delete_msgnum filter_out
 filter_require filter_out_full_body filter_require_full_body.<br>
 <br>
-<i>warn_surpressions = 1</i></dd>
+<i>warn_suppressions = 1</i></dd>
 <dd><a name="uselock" id="uselock"></a></dd>
 <dt><strong>uselock = [ 0 | 1 ]</strong></dt>
 <dd>Controls whether to use hypermail's built-in locking mechanism.
@@ -1588,7 +1549,7 @@ metadata directories are created.<br>
 new files created for new messages. It will print the full path if
 that is what you use to specify the archive directory.<br>
 <i>report_new_file = 0</i></dd>
-<dd>
+</dl>
 <hr noshade>
 <big><strong>See Also</strong></big>
 <blockquote><strong>hypermail(1)</strong>, &nbsp;
@@ -1596,11 +1557,9 @@ that is what you use to specify the archive directory.<br>
 "hypermail.html">Hypermail</a></strong> &nbsp; and &nbsp;
 <strong><a href="customizing.html">Customizing Hypermail
 Pages</a></strong> and <strong><a href="archive_search.html">Adding
-a Search Engines to your Hypermail
-Archive</a></strong></blockquote>
+a Search Engines to your Hypermail Archive</a></strong>
 <hr noshade>
 <small><em><strong>Last updated February 6,
-2013</strong></em></small></dd>
-</dl>
+2013</strong></em></small></blockquote>
 </body>
 </html>
