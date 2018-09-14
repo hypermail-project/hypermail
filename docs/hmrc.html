@@ -1,11 +1,11 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
-"http://www.w3.org/TR/REC-html40/loose.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta name="generator" content=
-"HTML Tidy for Linux/x86 (vers 25 March 2009), see www.w3.org">
+"HTML Tidy for HTML5 for Linux/x86 version 5.2.0">
 <title>Hypermail - hmrc list configuration</title>
-<link rev="made" href="mailto:hypermail@hypermail-project.org">
+<link rel="author" href="https://github.com/hypermail-project">
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
 <h1 align="center"><img src="hypermail.png" width="60" align=
@@ -98,7 +98,8 @@ generate these files</li>
 files</li>
 <li><a href="#latest_folder">latest_folder</a> symlink to recent
 subdir</li>
-<li><a href="#noindex_onindexes">noindex_onindexes</a> instruct robots to not index hypermail generated indexes</li>
+<li><a href="#noindex_onindexes">noindex_onindexes</a> instruct
+robots to not index hypermail generated indexes</li>
 </ul>
 </li>
 <li><a href="#index_body">Body style</a>
@@ -177,8 +178,11 @@ to index pages</li>
 Subject:</li>
 <li><a href="#show_headers">show_headers</a> others (Message-ID,
 etc)</li>
-<li><a href="#format_flowed">format_flowed</a> support RFC 3676 format=flowed</li>
-<li><a href="#format_flowed_disable_quoted">format_flowed_disable_quoted</a> disable support for RFC 3676 format=flowed in quoted text</li>
+<li><a href="#format_flowed">format_flowed</a> support RFC 3676
+format=flowed</li>
+<li><a href=
+"#format_flowed_disable_quoted">format_flowed_disable_quoted</a>
+disable support for RFC 3676 format=flowed in quoted text</li>
 <li><a href="#mhtmlheaderfile">mhtmlheaderfile</a> template</li>
 <li><a href="#mhtmlfooterfile">mhtmlfooterfile</a> template</li>
 </ul>
@@ -192,8 +196,9 @@ these may affect security</b>
 text/html</li>
 <li><a href="#usemeta">usemeta</a> save Content-Type in meta
 file</li>
-<li><a href="#userobotmeta">userobotmeta</a> use X-Robots-Tag in meta files to associate attachments
-with annotations for robots</li>
+<li><a href="#userobotmeta">userobotmeta</a> use X-Robots-Tag in
+meta files to associate attachments with annotations for
+robots</li>
 <li><a href="#text_types">text_types</a> what types are like
 text/plain?</li>
 <li><a href="#inline_types">inline_types</a> list what should go on
@@ -265,8 +270,8 @@ file</li>
 <li><a href="#append_filename">append_filename</a> name of mbox
 output</li>
 <li><a href="#txtsuffix">txtsuffix</a> save each raw message</li>
-<li><a href="#annotated">annotated</a> what headers indicate message
-annotations</li>
+<li><a href="#annotated">annotated</a> what headers indicate
+message annotations</li>
 <li><a href="#deleted">deleted</a> what headers indicate deletion
 <strong>deprecated</strong></li>
 <li><a href="#expires">expires</a> what headers indicate expire
@@ -613,11 +618,11 @@ specified by the "dir" or "-d" option.<br>
 <i>latest_folder = current</i> (disabled by default)</dd>
 <dd><a name="noindex_onindexes" id="noindex_onindexes"></a></dd>
 <dt><strong>noindex_onindexes = [ 0 | 1 ]</strong></dt>
-<dd>Tells hypermail to add a <strong>noindex</strong> metadata to its
-generated message indexes (by author, etc.), to instruct robots
+<dd>Tells hypermail to add a <strong>noindex</strong> metadata to
+its generated message indexes (by author, etc.), to instruct robots
 to not index the indexes. See <a href="#annotated">anontated</a>
-for further discussion on <strong>noindex</strong>.<br />
-<br />
+for further discussion on <strong>noindex</strong>.<br>
+<br>
 <em>noindex_onindexes = 0</em></dd>
 </dl>
 <h3><a name="index_body" id="index_body">Index body style</a></h3>
@@ -935,19 +940,21 @@ default)</dd>
 <dd><a name="format_flowed" id="format_flowed"></a></dd>
 <dt><strong>format_flowed [ 0 | 1 ] (EXPERIMENTAL)</strong></dt>
 <dd>Enable this option to support RFC 3676 format=flowed. When this
-option is enabled and a message says it is supporting format=flowed, hypermail
-will recreate a long-line that has been split into multiple lines as a single one.<br />
-<br />
-<em>format_flowed = 1</em> (disabled by default)
-</dd>
-<dd><a name="format_flowed_disable_quoted" id="format_flowed_disable_quoted"></a></dd>
+option is enabled and a message says it is supporting
+format=flowed, hypermail will recreate a long-line that has been
+split into multiple lines as a single one.<br>
+<br>
+<em>format_flowed = 1</em> (disabled by default)</dd>
+<dd><a name="format_flowed_disable_quoted" id=
+"format_flowed_disable_quoted"></a></dd>
 <dt><strong>format_flowed_disable_quoted [ 0 | 1 ]</strong></dt>
-<dd>Use this option if you want to disable support for format=flowed inside quoted
-text (the lines starting with one or more  '&gt;' characters). This option is always disabled 
-if <strong>format_flowed</strong> is not enabled.<br />
-<br />
-<em>format_flowed_disable_quoted = 1</em> (disabled by default)
-</dd>
+<dd>Use this option if you want to disable support for
+format=flowed inside quoted text (the lines starting with one or
+more '&gt;' characters). This option is always disabled if
+<strong>format_flowed</strong> is not enabled.<br>
+<br>
+<em>format_flowed_disable_quoted = 1</em> (disabled by
+default)</dd>
 <dd><a name="mhtmlheaderfile" id="mhtmlheaderfile"></a></dd>
 <dt><strong>mhtmlheaderfile = [ path to message header template
 file | NONE ]</strong></dt>
@@ -996,13 +1003,16 @@ compatible with the Apache server handling of metadata.<br>
 <i>usemeta = 0</i></dd>
 <dd><a name="userobotmeta" id="userobotmeta"></a></dd>
 <dt><strong>userobotmeta [ 0 | 1 ]</strong></dt>
-<dd>If a message has annotations for robots and <a href="#usemeta">usemeta</a> 
-is enabled, setting this option to <strong>1</strong> will associate
-the value of the annotations to each attachment using the experimental
-<strong>X-Robots-Tag</strong> HTTP header. For more information, browse Google's <a href="https://developers.google.com/webmasters/control-crawl-index/docs/robots_meta_tag">Robots Meta Tag documentation</a>.<br />
-<br />
-<em>userobotmeta = 0</em>
-</dd>
+<dd>If a message has annotations for robots and <a href=
+"#usemeta">usemeta</a> is enabled, setting this option to
+<strong>1</strong> will associate the value of the annotations to
+each attachment using the experimental
+<strong>X-Robots-Tag</strong> HTTP header. For more information,
+browse Google's <a href=
+"https://developers.google.com/webmasters/control-crawl-index/docs/robots_meta_tag">
+Robots Meta Tag documentation</a>.<br>
+<br>
+<em>userobotmeta = 0</em></dd>
 <dd><a name="text_types" id="text_types"></a></dd>
 <dt><strong>text_types = list of types to be the same as
 text/plain</strong></dt>
@@ -1389,8 +1399,9 @@ with the <strong>edited</strong> content annotation. Note that
 an implicit robot <strong>noindex</strong> annotation. In such
 case, user supplied robot annotations values will be silently
 ignored.<br>
-<br>Use <a href="#userobotmeta">userobotmeta</a>
-for associating attachments with annotations for robots.<br>
+<br>
+Use <a href="#userobotmeta">userobotmeta</a> for associating
+attachments with annotations for robots.<br>
 <br>
 Note that the list maintainer must be careful on whether to accept
 incoming messages containing the <strong>annotated</strong> header.
