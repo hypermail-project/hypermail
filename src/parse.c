@@ -1656,8 +1656,17 @@ int parsemail(char *mbox,	/* file name */
 
     for ( ; fgets(line_buf, MAXLINE, fp) != NULL; 
 	  set_txtsuffix ? PushString(&raw_text_buf, line_buf) : 0) {
-#if DEBUG_PARSE
-	printf("IN: %s", line);
+#if DEBUG_PARSE1
+        fprintf(stderr,"^IN: %s", line_buf);
+        fprintf(stderr, "^  BP %.0s: %.40s|\n^  LP %.0s: %.40s|\n^ ABP %.0s: %.40s|\n^ ALP %.0s: %.40s|\n^ OBP %.0s: %.40s|\n^ "
+                "OLP %.0s: %.40s|\n^HEAD %.0s: %.40s|\n",
+                "bp", (bp) ? bp->line : "",
+                "lp", (lp) ? lp->line : "",
+                "alternative_bp", (alternative_bp) ? alternative_bp->line : "",
+                "alternative_lp", (alternative_lp) ? alternative_lp->line : "",
+                "origbp", (origbp) ? origbp->line : "",
+                "origlp", (origlp) ? origlp->line : "",
+                "headp", (headp) ? headp->line : "");	
 #endif 
 	if(set_append) {
 	    if(fputs(line_buf, fpo) < 0) {
@@ -1839,7 +1848,7 @@ int parsemail(char *mbox,	/* file name */
                             ** context, we won't show the alternatives
                             ** in-line.
                             */
-                            set_save_alts = 2;
+			    set_save_alts = 2;
 #if DEBUG_PARSE
                             printf("Applemail_hack force save_alts: yes\n");
                             printf("Applemail_hack set_save_alts changed from %d to %d\n",
@@ -2103,7 +2112,7 @@ int parsemail(char *mbox,	/* file name */
 #endif
                                 continue;
                         }
-			  
+
 			if (content == CONTENT_IGNORE)
 			    continue;
 			else if (ignorecontent(type))
@@ -2190,6 +2199,9 @@ int parsemail(char *mbox,	/* file name */
 			     * Find the first boundary separator 
 			     */
 
+			    struct body *tmpbp = NULL;	/* store the original bp */
+			    struct body *tmplp = NULL;
+			    
 			    boundary_id = strcasestr(ptr, "boundary=");
 #if DEBUG_PARSE
 			    printf("boundary found in %s\n", ptr);
@@ -2210,12 +2222,6 @@ int parsemail(char *mbox,	/* file name */
 				    boundary_id = boundbuffer;
 				}
 
-				/* let's remember 'bp' and 'lp' */
-				origbp = bp;
-				origlp = lp;
-				/* restart on a new list: */
-				lp = bp = NULL;
-
 				while (fgets(line_buf, MAXLINE, fp)) {
 				    if(set_append) {
 				        if(fputs(line_buf, fpo) < 0) {
@@ -2232,31 +2238,25 @@ int parsemail(char *mbox,	/* file name */
 					printf("Error, new message found instead of boundary!\n");
 #endif
 				        isinheader = 0;
-					if (bp != origbp)
-					  origbp = append_body(origbp, &origlp, bp);
-					bp = origbp;
-					lp = origlp;
+					if (tmpbp)
+					  bp = append_body(bp, &lp, tmpbp);
 					boundary_id = NULL;
 					goto leave_header;
 				    }
 				    /* save lines in case no boundary found */
-				    bp = addbody(bp, &lp, line_buf, bodyflags);
+				    tmpbp = addbody(tmpbp, &tmplp, line_buf, bodyflags);
 				}
 				if (!strncmp(line_buf + set_ietf_mbox + 2 + strlen(boundary_id), "--", 2)
-				    && bp != origbp) {
+				    && tmpbp) {
 #if DEBUG_PARSE
 				    printf("Error, end of mime found before mime start!\n");
 #endif
 				    /* end of mime found before mime start */
-				    origbp = append_body(origbp, &origlp, bp);
-				    bp = origbp;
-				    lp = origlp;
+				    bp = append_body(bp, &lp, tmpbp);
 				    boundary_id = NULL;
 				    goto leave_header;
 				}
-				free_body(bp);
-				bp = origbp;
-				lp = origlp;
+				free_body(tmpbp);
 
 				/* 
 				 * This stores the boundary string in a stack 
