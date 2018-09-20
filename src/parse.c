@@ -2199,8 +2199,8 @@ int parsemail(char *mbox,	/* file name */
 			     * Find the first boundary separator 
 			     */
 
-			    struct body *tmpbp = NULL;	/* store the original bp */
-			    struct body *tmplp = NULL;
+			    struct body *tmpbp;
+			    struct body *tmplp;
 			    
 			    boundary_id = strcasestr(ptr, "boundary=");
 #if DEBUG_PARSE
@@ -2222,6 +2222,9 @@ int parsemail(char *mbox,	/* file name */
 				    boundary_id = boundbuffer;
 				}
 
+				/* restart on a new list: */
+				tmpbp = tmplp = NULL;
+			
 				while (fgets(line_buf, MAXLINE, fp)) {
 				    if(set_append) {
 				        if(fputs(line_buf, fpo) < 0) {
