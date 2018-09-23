@@ -704,6 +704,7 @@ struct boundary *bound(struct boundary *bnd, char *line)
 	    /* free the latest one */
 	    free(bnd->next->line);
 	    free(bnd->next);
+	    bnd->next = NULL;
 	}
 	else {
 	    /* this is the last node */
