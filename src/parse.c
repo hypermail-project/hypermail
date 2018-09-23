@@ -1823,8 +1823,9 @@ int parsemail(char *mbox,	/* file name */
                     else if (!strncasecmp(head->line, "Content-Type:", 13)) {
                         content_type_p = head;
                     }
-		    else if (!strncasecmp(head_name, set_applemail_ua_header,
-					  applemail_ua_header_len)) {
+		    else if (applemail_ua_header_len > 0
+			     && !strncasecmp(head_name, set_applemail_ua_header,
+					     applemail_ua_header_len)) {
                         /* we only need to set this one up once per message*/
                         head->parsedheader = TRUE;
                         if (alternativeparser
