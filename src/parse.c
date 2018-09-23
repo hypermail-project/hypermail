@@ -1656,8 +1656,8 @@ int parsemail(char *mbox,	/* file name */
 
     for ( ; fgets(line_buf, MAXLINE, fp) != NULL; 
 	  set_txtsuffix ? PushString(&raw_text_buf, line_buf) : 0) {
-#if DEBUG_PARSE1
-        fprintf(stderr,"^IN: %s", line_buf);
+#if DEBUG_PARSE
+        fprintf(stderr,"\n^IN: %s", line_buf);
         fprintf(stderr, "^  BP %.0s: %.40s|\n^  LP %.0s: %.40s|\n^ ABP %.0s: %.40s|\n^ ALP %.0s: %.40s|\n^ OBP %.0s: %.40s|\n^ "
                 "OLP %.0s: %.40s|\n^HEAD %.0s: %.40s|\n",
                 "bp", (bp) ? bp->line : "",
@@ -2684,11 +2684,12 @@ msgid);
 			    boundp = bound(boundp, NULL);
 			    if (!boundp) {
 				bodyflags &= ~BODY_ATTACHED;
-			    }
-			    multipartp = multipart(multipartp, NULL);
-                            if (multipartp) {
+                                waiting_for_boundary = FALSE;
+			    } else {
+                                /* skip the MIME epilogue until the next section */
                                 waiting_for_boundary = TRUE;
                             }
+			    multipartp = multipart(multipartp, NULL);
 			    if (alternativeparser
 				&& !has_multipart(multipartp, "multipart/alternative")) {
 #ifdef NOTUSED
@@ -2716,7 +2717,8 @@ msgid);
 				    origbp = append_body(origbp, &origlp, bp);
 				bp = origbp;
 				lp = origlp;
-
+                                origbp = origlp = NULL;
+                                
 				headp = NULL;
 			    }
 #if DEBUG_PARSE
