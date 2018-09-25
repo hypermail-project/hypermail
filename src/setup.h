@@ -35,7 +35,9 @@ void PreConfig(void);
 void PostConfig(void);
 
 extern char *set_antispam_at;
-extern char *set_htmlmessage_deleted;
+extern char *set_htmlmessage_edited;
+extern char *set_htmlmessage_deleted_other;
+extern char *set_htmlmessage_deleted_spam;
 extern char *set_fragment_prefix;
 extern char *set_language;
 extern char *set_htmlsuffix;
@@ -73,6 +75,7 @@ extern bool set_isodate;
 extern bool set_require_msgids;
 extern bool set_discard_dup_msgids;
 extern bool set_usemeta;
+extern bool set_userobotmeta;
 extern bool set_uselock;
 extern bool set_ietf_mbox;
 extern bool set_linkquotes;
@@ -141,6 +144,9 @@ extern struct hmlist *set_filter_require;
 extern struct hmlist *set_filter_out_full_body;
 extern struct hmlist *set_filter_require_full_body;
 
+extern bool set_format_flowed;
+extern bool set_format_flowed_disable_quoted;
+
 extern char *set_ihtmlheader;
 extern char *set_ihtmlfooter;
 extern char *set_ihtmlhead;
@@ -165,6 +171,8 @@ extern char *set_describe_folder;
 
 extern bool set_iso2022jp;
 
+extern bool set_noindex_onindexes;
+extern struct hmlist *set_annotated;
 extern struct hmlist *set_deleted;
 extern struct hmlist *set_expires;
 extern struct hmlist *set_delete_msgnum;

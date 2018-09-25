@@ -1590,6 +1590,9 @@ char *parseemail(char *input,	/* string to parse */
 ** run quickly.
 **/
 
+/* jk 8/03/2013: commented all the URLs that don't end with :// as the
+   current hypermail convurl code doesn't know how to handle them,
+   which results in sigsevs in some cases */
 static char *url[] = {
     "http://",
     "https://",
@@ -1604,16 +1607,16 @@ static char *url[] = {
     "telnet://",
     "prospero://", /* deprecated */
 /* "mailto:", *//* Can't have mailto: as it will be converted twice */
-    "tel:",
-    "fax:",
+    /*"tel:", */
+    /* "fax:", */
     "rtsp://",
-    "im:",
+    /* "im:", */
     /* some non RFC or experimental or de-facto ones */
     "cap://",
     "feed://",
     "webcal://",
     "irc://",
-    "callto:",
+    /* "callto:", */
     NULL
 };
 

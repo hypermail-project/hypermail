@@ -1,5 +1,5 @@
 /*
-** $Id$
+** $Id: setup.c,v 1.23 2013-06-11 18:55:44 kahan Exp $
 */
 
 #include "hypermail.h"
@@ -16,7 +16,9 @@
 
 char *set_fragment_prefix;
 char *set_antispam_at;
-char *set_htmlmessage_deleted;
+char *set_htmlmessage_edited;
+char *set_htmlmessage_deleted_other;
+char *set_htmlmessage_deleted_spam;
 char *set_language;
 char *set_htmlsuffix;
 char *set_mbox;
@@ -54,6 +56,7 @@ bool set_isodate;
 bool set_require_msgids;
 bool set_discard_dup_msgids;
 bool set_usemeta;
+bool set_userobotmeta;
 bool set_uselock;
 bool set_ietf_mbox;
 bool set_linkquotes;
@@ -126,6 +129,9 @@ struct hmlist *set_filter_require = NULL;
 struct hmlist *set_filter_out_full_body = NULL;
 struct hmlist *set_filter_require_full_body = NULL;
 
+bool set_format_flowed;
+bool set_format_flowed_disable_quoted;
+
 char *set_ihtmlheader;
 char *set_ihtmlfooter;
 char *set_ihtmlhead;
@@ -146,6 +152,8 @@ int set_msgsperfolder;
 
 bool set_iso2022jp;
 
+bool set_noindex_onindexes;
+struct hmlist *set_annotated = NULL;
 struct hmlist *set_deleted = NULL;
 struct hmlist *set_expires = NULL;
 struct hmlist *set_delete_msgnum = NULL;
@@ -167,9 +175,17 @@ struct Config cfg[] = {
     {"i18n_body", &set_i18n_body, BFALSE, CFG_SWITCH,
      "# Translate message body into UTF-8. \"i18n\" must be enabled.\n",FALSE},
 
-    {"htmlmessage_deleted",  &set_htmlmessage_deleted, NULL, CFG_STRING,
+    {"htmlmessage_edited",  &set_htmlmessage_edited, NULL, CFG_STRING,
+     "# Set this to HTML markup you want to appear in the body of manually\n"
+     "edited messages.\n",FALSE},
+
+    {"htmlmessage_deleted_other",  &set_htmlmessage_deleted_other, NULL, CFG_STRING,
      "# Set this to HTML markup you want to appear in the body of deleted\n"
-     "# messages.\n",FALSE},
+     "# messages (by reasons other than spam).\n",FALSE},
+
+    {"htmlmessage_deleted_spam",  &set_htmlmessage_deleted_spam, NULL, CFG_STRING,
+     "# Set this to HTML markup you want to appear in the body of deleted\n"
+     "# messages (by spam reasons).\n",FALSE},
 
     {"antispam_at", &set_antispam_at, ANTISPAM_AT, CFG_STRING,
      "# replace any @ sign with this string, if spam flags enabled.\n", FALSE},
@@ -366,6 +382,10 @@ struct Config cfg[] = {
      "# Set this to On to store the content type of a MIME attachment in\n"
      "# a metadata file.\n", FALSE},
 
+    {"userobotmeta", &set_userobotmeta, BFALSE, CFG_SWITCH,
+     "# Set this to On to apply a robot annotation to a MIME attachment in\n"
+     "# a metadata file, using the experimental X-Robots-Tag HTTP header.\n", FALSE},
+
     {"uselock", &set_uselock, BTRUE, CFG_SWITCH,
      "# Set this to On to use hypermail's internal locking mechanism.\n", FALSE},
 
@@ -487,6 +507,13 @@ struct Config cfg[] = {
      "# This is the list of headers to be displayed if 'showheaders'\n"
      "# is set to On). They can be listed comma or space separated\n"
      "# all on a single line.\n", FALSE},
+
+    {"format_flowed", &set_format_flowed, BFALSE, CFG_SWITCH,
+     "# Enable support for RFC3676 format=flowed (EXPERIMENTAL)\n", FALSE},
+
+    {"format_flowed_disable_quoted", &set_format_flowed_disable_quoted, BFALSE, CFG_SWITCH,
+     "# If format_flowed is enabled, this option allows you to disable\n"
+     "# format=flowed inside quoted text\n", FALSE},
 
     {"ihtmlheaderfile", &set_ihtmlheader, NULL, CFG_STRING,
      "# Define path as the path to a template  file  containing\n"
@@ -682,7 +709,38 @@ struct Config cfg[] = {
     {"iso2022jp", &set_iso2022jp, BFALSE, CFG_SWITCH,
      "# Set this to On to support ISO-2022-JP messages.\n", FALSE},
 
+    {"noindex_onindexes", &set_noindex_onindexes, BFALSE, CFG_SWITCH,
+     "# Set to On to inform search engines that you don't want to index\n"
+     "# the hypermail generated indexes. See the \"annotated\" configuration"
+     "# option for a more detailed description.\n", FALSE},
+
+    {"annotated", &set_annotated, "X-Hypermail-Annotated", CFG_LIST,
+     "# This is the list of headers that indicate that a message was annotated.\n"
+     "# When a message contains such a header, the header may have one more comma\n"
+     "# separated values indicatating the annotation type. Order and case are\n"
+     "# not important.\n"
+     "# The possible values of this header are: content and robot annotations.\n"
+     "# Content annotations can have only one of the following values:\n"
+     "#      spam : message deleted because it is spam;\n"
+     "#   deleted : message deleted, other reasons;\n"
+     "#    edited : original received message was manually edited.\n"
+     "# You can customize the markup that\'s shown for content annotations\n"
+     "# by means of the htmlmessage_deleted_other, htmlmessage_deleted_spam\n,"
+     "# htmlmessage_edited directives.\n\n"
+     "# robot annotations can have either one or both of the following values:\n"
+     "#  nofollow : do not follow the links on this page;\n"
+     "#   noindex : prevent search engines from indexing the contents of this message.\n"
+     "# Robot annotations instruct a visiting web  robot agent if a message contents\n"
+     "# should be indexed and/or if the outgoing links from the message\n"
+     "# should be followed, doing so thru a specific HTML meta tag. You can use one or\n"
+     "# both values and combine them with the edited content annotation.\n"
+     "# NOTE: Spam or deleted annotation values have an implicit robot \"noindex\"\n"
+     "# annotation In such case, user supplied robot annotations values will be silently\n"
+     "# ignored.\n", FALSE},
+
     {"deleted", &set_deleted, "X-Hypermail-Deleted X-No-Archive", CFG_LIST,
+     "# NOTE: this option has been deprecated by annotated, but it will continue\n"
+     "# being parsed and honored for legacy reasons.\n"
      "# This is the list of headers that indicate the message should\n"
      "# not be displayed if the value of this header is 'yes'.\n", FALSE},
 
@@ -1260,6 +1318,7 @@ void dump_config(void)
     printf("set_require_msgids = %d\n",set_require_msgids);
     printf("set_discard_dup_msgids = %d\n",set_discard_dup_msgids);
     printf("set_usemeta = %d\n",set_usemeta);
+    printf("set_userobotmeta = %d\n",set_userobotmeta);
     printf("set_uselock = %d\n",set_uselock);
     printf("set_locktime = %d\n",set_locktime);
     printf("set_ietf_mbox = %d\n",set_ietf_mbox);
@@ -1284,6 +1343,9 @@ void dump_config(void)
     printf("set_delete_level = %d\n",set_delete_level);
     printf("set_delete_older = %d\n",set_delete_older);
     printf("set_delete_newer = %d\n",set_delete_newer);
+    printf("set_noindex_onindexes = %d\n",set_noindex_onindexes);
+    printf("set_format_flowed= %d\n",set_format_flowed);
+    printf("set_format_flowed_disable_quoted= %d\n",set_format_flowed_disable_quoted);
 
     if (!set_ihtmlheader)
         printf("set_ihtmlheader = Not set\n");
@@ -1359,6 +1421,7 @@ void dump_config(void)
     print_list("set_show_headers", set_show_headers);
     print_list("set_avoid_top_indices", set_avoid_top_indices);
     print_list("set_avoid_indices", set_avoid_indices);
+    print_list("set_annotated", set_annotated);
     print_list("set_deleted", set_deleted);
     print_list("set_expires", set_expires);
     print_list("set_delete_msgnum", set_delete_msgnum);

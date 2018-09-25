@@ -1,0 +1,32 @@
+                        Hypermail GIT Server Access
+
+                                    ----
+   Hypermail  Development  has  a  GIT server, where we (try to) keep the
+   latest  changes (usually hot out of the oven) and anyone is welcome to
+   use  it.
+  
+------------------------------------
+General information on accessing the Hypermail CVS repository:
+  
+   Hypermail git repository address:
+
+       http://sourceforge.net/scm/?type=git&group_id=18117&source=navbar
+       git://hypermail.git.sourceforge.net/gitroot/hypermail/hypermail (read-only)
+
+   A mirror is also availabe on github:
+
+      https://github.com/hypermail-project/hypermail
+
+See the sourceforge documentation for more information about
+git and how to checkout the hypermail repository:
+
+      http://sourceforge.net/scm/?type=git&group_id=18117&source=navbar
+     
+------------------------------------
+Browsing the Hypermail git repository:
+
+    You can also browse the repository at: 
+
+	http://hypermail.git.sourceforge.net/git/gitweb-index.cgi
+
+                                    ----

@@ -222,7 +222,7 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 
 void print_main_header(FILE *fp, bool index_header, char *label, char *name,
 		       char *email, char *subject, char *charset,
-		       char *date, char *filename, int is_deleted)
+		       char *date, char *filename, int is_deleted, int annotation_robot)
 {
     char *title;
     char *rp;
@@ -290,7 +290,7 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
       *(title+64) = '\0';
       */
 
-    fprintf(fp, "<title>%s</title>\n", title);
+    fprintf(fp, "<title>%s</title>\n", (is_deleted) ? lang[MSG_SUBJECT_DELETED] : title);
     free(title);
 
     if (name && email){
@@ -304,9 +304,24 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
     if (use_mailto)
 	fprintf(fp, "<link rev=\"made\" href=\"mailto:%s\" />\n", set_mailto);
 
-    /* to avoid bots */
-    if (is_deleted){
-      fprintf(fp,"<meta name=\"ROBOTS\" content=\"noindex\" />\n");
+    /* robot handling */
+    if (index_header && set_noindex_onindexes) {
+      fprintf(fp,"<meta name=\"robots\" content=\"noindex\" />\n");
+
+    } else if (is_deleted || annotation_robot) {
+      char *value;
+
+      /* if the message is deleted, avoid bots, else set the value
+	 of the robots robots meta tag according to the info supplied by the message */
+      if (is_deleted)
+	value = "noindex";
+      else if (annotation_robot == 1) 
+	value = "nofollow";
+      else if (annotation_robot == 2)
+	value = "noindex";
+      else if (annotation_robot == 3)
+	value = "nofollow, noindex";
+      fprintf(fp,"<meta name=\"robots\" content=\"%s\" />\n", value);
     }
 
     /* print the css url according to the type of header */
@@ -322,26 +337,12 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
       /*
        * if style sheets are not specified, emit a default one.
        */
-      /* @@ JK: the old css */
-#if 0
-      fprintf(fp, "<style type=\"text/css\">\n");
-      fprintf(fp, "body {color: black; background: #ffffff}\n");
-      fprintf(fp, "h1.center {text-align: center}\n");
-      fprintf(fp, "div.center {text-align: center}\n");
-      fprintf(fp, ".quotelev1 {color : #990099}\n");
-      fprintf(fp, ".quotelev2 {color : #ff7700}\n");
-      fprintf(fp, ".quotelev3 {color : #007799}\n");
-      fprintf(fp, ".quotelev4 {color : #95c500}\n");
-      fprintf(fp, ".headers {background : #e0e0d0}\n");
-      fprintf(fp, ".links {background : #f8f8e0}\n");
-      fprintf(fp, "</style>\n");
-#endif
-      /* @@ JK: the new css */
+       /* @@ JK: the new css */
       fprintf (fp, "<style type=\"text/css\">\n");
       
       fprintf (fp,"/*<![CDATA[*/\n");
       fprintf (fp, "/* To be incorporated in the main stylesheet, don't code it in hypermail! */\n");
-      fprintf (fp, "body {color: black; background: #ffffff}\n");
+      fprintf (fp, "body {color: black; background: #ffffff;}\n");
       fprintf (fp, "dfn {font-weight: bold;}\n");
       fprintf (fp, "pre { background-color:inherit;}\n");
       fprintf (fp, ".head { border-bottom:1px solid black;}\n");
@@ -354,13 +355,13 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
       fprintf (fp, "map ul {list-style:none;}\n");
       fprintf (fp, "#mid { font-size:0.9em;}\n");
       fprintf (fp, "#received { float:right;}\n");
-      fprintf (fp, "address { font-style:inherit ;}\n");
+      fprintf (fp, "address { font-style:inherit;}\n");
       fprintf (fp, "/*]]>*/\n");
-      fprintf(fp, ".quotelev1 {color : #990099}\n");
-      fprintf(fp, ".quotelev2 {color : #ff7700}\n");
-      fprintf(fp, ".quotelev3 {color : #007799}\n");
-      fprintf(fp, ".quotelev4 {color : #95c500}\n");
-      fprintf (fp, ".period {font-weight: bold}\n");
+      fprintf(fp, ".quotelev1 {color : #990099;}\n");
+      fprintf(fp, ".quotelev2 {color : #ff7700;}\n");
+      fprintf(fp, ".quotelev3 {color : #007799;}\n");
+      fprintf(fp, ".quotelev4 {color : #95c500;}\n");
+      fprintf (fp, ".period {font-weight: bold;}\n");
       fprintf (fp, "</style>\n");
     }
 
@@ -377,14 +378,16 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
 
 void print_msg_header(FILE *fp, char *label, char *subject,
 		      char *dir, char *name, char *email, char *msgid,
-		      char *charset, time_t date, char *filename,int is_deleted)
+		      char *charset, time_t date, char *filename,int is_deleted, 
+		      int annotation_robot)
 {
     if (mhtmlheaderfile)
 	printfile(fp, mhtmlheaderfile, set_label, subject, set_dir, name, 
 		  email, msgid, charset, secs_to_iso_meta(date), filename);
     else {
 	print_main_header(fp, FALSE, set_label, name, email, subject,
-			  charset, secs_to_iso_meta(date), filename, is_deleted);
+			  charset, secs_to_iso_meta(date), filename, is_deleted, 
+			  annotation_robot);
     }
 }
 
@@ -411,13 +414,13 @@ void print_index_header(FILE *fp, char *label, char *dir, char *subject,
     else {
 	/* print the navigation bar to upper levels */
 #ifdef HAVE_ICONV
-      if (set_i18n){
-	print_main_header(fp, TRUE, label, NULL, NULL, subject, "UTF-8", NULL, NULL, 0);
-      }else{
-		print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL, NULL, 0);
-      }
+        if (set_i18n){
+	  print_main_header(fp, TRUE, label, NULL, NULL, subject, "UTF-8", NULL, NULL, 0, 0);
+	} else{
+	  print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL, NULL, 0, 0);
+	}
 #else
-	print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL, NULL, 0);
+        print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL, NULL, 0, 0);
 #endif
 	fprintf (fp, "<div class=\"head\">\n");
 	if (ihtmlnavbar2upfile)

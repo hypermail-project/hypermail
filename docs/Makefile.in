@@ -4,6 +4,8 @@
 # This is where the man page goes
 
 prefix=@prefix@
+datarootdir = @datarootdir@
+datadir = @datadir@
 
 # Man page base directory
 mandir=@mandir@

@@ -1,7 +1,18 @@
+Upgrade Notes
+==============
 
+From Hypermail 2.3.0 to Hypermail 2.3.1
+-----------------------------------------
+The configuration directive "htmlmessage_deleted" has been
+renamed "htmlmessage_deleted_spam".
+
+The "deleted" configuration directive has been deprecated
+in favor of "annotated". However, for backwards compatibility
+with legacy archives, it will continue to be honored.
+
+From Hypermail 1.x to Hypermail 2.x 
+-----------------------------------
 !!!!WARNING!!!!
-
-Hypermail 2.x Upgrade Notes
 
 Hypermail 2.x HTML output files, indexes, etc are not compatible with 1.x 
 files.  When installing 2.x, all existing HTML files in the specified output 

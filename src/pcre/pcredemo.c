@@ -4,17 +4,37 @@
 
 /* This is a demonstration program to illustrate the most straightforward ways
 of calling the PCRE regular expression library from a C program. See the
-pcresample documentation for a short discussion.
+pcresample documentation for a short discussion ("man pcresample" if you have
+the PCRE man pages installed).
 
-Compile thuswise:
-  gcc -Wall pcredemo.c -I/opt/local/include -L/opt/local/lib \
-    -R/opt/local/lib -lpcre
+In Unix-like environments, if PCRE is installed in your standard system
+libraries, you should be able to compile this program using this command:
 
-Replace "/opt/local/include" and "/opt/local/lib" with wherever the include and
+gcc -Wall pcredemo.c -lpcre -o pcredemo
+
+If PCRE is not installed in a standard place, it is likely to be installed with
+support for the pkg-config mechanism. If you have pkg-config, you can compile
+this program using this command:
+
+gcc -Wall pcredemo.c `pkg-config --cflags --libs libpcre` -o pcredemo
+
+If you do not have pkg-config, you may have to use this:
+
+gcc -Wall pcredemo.c -I/usr/local/include -L/usr/local/lib \
+  -R/usr/local/lib -lpcre -o pcredemo
+
+Replace "/usr/local/include" and "/usr/local/lib" with wherever the include and
 library files for PCRE are installed on your system. Only some operating
 systems (e.g. Solaris) use the -R option.
-*/
 
+Building under Windows:
+
+If you want to statically link this program against a non-dll .a file, you must
+define PCRE_STATIC before including pcre.h, otherwise the pcre_malloc() and
+pcre_free() exported functions will be declared __declspec(dllimport), with
+unwanted results. So in this environment, uncomment the following line. */
+
+/* #define PCRE_STATIC */
 
 #include <stdio.h>
 #include <string.h>
@@ -30,21 +50,25 @@ const char *error;
 char *pattern;
 char *subject;
 unsigned char *name_table;
+unsigned int option_bits;
 int erroffset;
 int find_all;
+int crlf_is_newline;
 int namecount;
 int name_entry_size;
 int ovector[OVECCOUNT];
 int subject_length;
 int rc, i;
+int utf8;
 
 
-/*************************************************************************
-* First, sort out the command line. There is only one possible option at *
-* the moment, "-g" to request repeated matching to find all occurrences, *
-* like Perl's /g option. We set the variable find_all non-zero if it is  *
-* present. Apart from that, there must be exactly two arguments.         *
-*************************************************************************/
+/**************************************************************************
+* First, sort out the command line. There is only one possible option at  *
+* the moment, "-g" to request repeated matching to find all occurrences,  *
+* like Perl's /g option. We set the variable find_all to a non-zero value *
+* if the -g option is present. Apart from that, there must be exactly two *
+* arguments.                                                              *
+**************************************************************************/
 
 find_all = 0;
 for (i = 1; i < argc; i++)
@@ -90,7 +114,7 @@ if (re == NULL)
 
 /*************************************************************************
 * If the compilation succeeded, we call PCRE again, in order to do a     *
-* pattern match against the subject string. This just does ONE match. If *
+* pattern match against the subject string. This does just ONE match. If *
 * further matching is needed, it will be done below.                     *
 *************************************************************************/
 
@@ -116,6 +140,7 @@ if (rc < 0)
     */
     default: printf("Matching error %d\n", rc); break;
     }
+  pcre_free(re);     /* Release memory used for the compiled pattern */
   return 1;
   }
 
@@ -126,8 +151,8 @@ printf("\nMatch succeeded at offset %d\n", ovector[0]);
 
 /*************************************************************************
 * We have found the first match within the subject string. If the output *
-* vector wasn't big enough, set its size to the maximum. Then output any *
-* substrings that were captured.                                         *
+* vector wasn't big enough, say so. Then output any substrings that were *
+* captured.                                                              *
 *************************************************************************/
 
 /* The output vector wasn't big enough */
@@ -149,12 +174,12 @@ for (i = 0; i < rc; i++)
   }
 
 
-/*************************************************************************
-* That concludes the basic part of this demonstration program. We have   *
-* compiled a pattern, and performed a single match. The code that follows*
-* first shows how to access named substrings, and then how to code for   *
-* repeated matches on the same subject.                                  *
-*************************************************************************/
+/**************************************************************************
+* That concludes the basic part of this demonstration program. We have    *
+* compiled a pattern, and performed a single match. The code that follows *
+* shows first how to access named substrings, and then how to code for    *
+* repeated matches on the same subject.                                   *
+**************************************************************************/
 
 /* See if there are any named substrings, and if so, show them by name. First
 we have to extract the count of named parentheses from the pattern. */
@@ -211,15 +236,60 @@ if (namecount <= 0) printf("No named substrings\n"); else
 *                                                                        *
 * If the previous match WAS for an empty string, we can't do that, as it *
 * would lead to an infinite loop. Instead, a special call of pcre_exec() *
-* is made with the PCRE_NOTEMPTY and PCRE_ANCHORED flags set. The first  *
-* of these tells PCRE that an empty string is not a valid match; other   *
-* possibilities must be tried. The second flag restricts PCRE to one     *
-* match attempt at the initial string position. If this match succeeds,  *
-* an alternative to the empty string match has been found, and we can    *
-* proceed round the loop.                                                *
+* is made with the PCRE_NOTEMPTY_ATSTART and PCRE_ANCHORED flags set.    *
+* The first of these tells PCRE that an empty string at the start of the *
+* subject is not a valid match; other possibilities must be tried. The   *
+* second flag restricts PCRE to one match attempt at the initial string  *
+* position. If this match succeeds, an alternative to the empty string   *
+* match has been found, and we can print it and proceed round the loop,  *
+* advancing by the length of whatever was found. If this match does not  *
+* succeed, we still stay in the loop, advancing by just one character.   *
+* In UTF-8 mode, which can be set by (*UTF8) in the pattern, this may be *
+* more than one byte.                                                    *
+*                                                                        *
+* However, there is a complication concerned with newlines. When the     *
+* newline convention is such that CRLF is a valid newline, we must       *
+* advance by two characters rather than one. The newline convention can  *
+* be set in the regex by (*CR), etc.; if not, we must find the default.  *
 *************************************************************************/
 
-if (!find_all) return 0;   /* Finish unless -g was given */
+if (!find_all)     /* Check for -g */
+  {
+  pcre_free(re);   /* Release the memory used for the compiled pattern */
+  return 0;        /* Finish unless -g was given */
+  }
+
+/* Before running the loop, check for UTF-8 and whether CRLF is a valid newline
+sequence. First, find the options with which the regex was compiled; extract
+the UTF-8 state, and mask off all but the newline options. */
+
+(void)pcre_fullinfo(re, NULL, PCRE_INFO_OPTIONS, &option_bits);
+utf8 = option_bits & PCRE_UTF8;
+option_bits &= PCRE_NEWLINE_CR|PCRE_NEWLINE_LF|PCRE_NEWLINE_CRLF|
+               PCRE_NEWLINE_ANY|PCRE_NEWLINE_ANYCRLF;
+
+/* If no newline options were set, find the default newline convention from the
+build configuration. */
+
+if (option_bits == 0)
+  {
+  int d;
+  (void)pcre_config(PCRE_CONFIG_NEWLINE, &d);
+  /* Note that these values are always the ASCII ones, even in
+  EBCDIC environments. CR = 13, NL = 10. */
+  option_bits = (d == 13)? PCRE_NEWLINE_CR :
+          (d == 10)? PCRE_NEWLINE_LF :
+          (d == (13<<8 | 10))? PCRE_NEWLINE_CRLF :
+          (d == -2)? PCRE_NEWLINE_ANYCRLF :
+          (d == -1)? PCRE_NEWLINE_ANY : 0;
+  }
+
+/* See if CRLF is a valid newline sequence. */
+
+crlf_is_newline =
+     option_bits == PCRE_NEWLINE_ANY ||
+     option_bits == PCRE_NEWLINE_CRLF ||
+     option_bits == PCRE_NEWLINE_ANYCRLF;
 
 /* Loop for second and subsequent matches */
 
@@ -235,7 +305,7 @@ for (;;)
   if (ovector[0] == ovector[1])
     {
     if (ovector[0] == subject_length) break;
-    options = PCRE_NOTEMPTY | PCRE_ANCHORED;
+    options = PCRE_NOTEMPTY_ATSTART | PCRE_ANCHORED;
     }
 
   /* Run the next matching operation */
@@ -254,14 +324,32 @@ for (;;)
   is zero, it just means we have found all possible matches, so the loop ends.
   Otherwise, it means we have failed to find a non-empty-string match at a
   point where there was a previous empty-string match. In this case, we do what
-  Perl does: advance the matching position by one, and continue. We do this by
-  setting the "end of previous match" offset, because that is picked up at the
-  top of the loop as the point at which to start again. */
+  Perl does: advance the matching position by one character, and continue. We
+  do this by setting the "end of previous match" offset, because that is picked
+  up at the top of the loop as the point at which to start again.
+
+  There are two complications: (a) When CRLF is a valid newline sequence, and
+  the current position is just before it, advance by an extra byte. (b)
+  Otherwise we must ensure that we skip an entire UTF-8 character if we are in
+  UTF-8 mode. */
 
   if (rc == PCRE_ERROR_NOMATCH)
     {
-    if (options == 0) break;
-    ovector[1] = start_offset + 1;
+    if (options == 0) break;                    /* All matches found */
+    ovector[1] = start_offset + 1;              /* Advance one byte */
+    if (crlf_is_newline &&                      /* If CRLF is newline & */
+        start_offset < subject_length - 1 &&    /* we are at CRLF, */
+        subject[start_offset] == '\r' &&
+        subject[start_offset + 1] == '\n')
+      ovector[1] += 1;                          /* Advance by one more. */
+    else if (utf8)                              /* Otherwise, ensure we */
+      {                                         /* advance a whole UTF-8 */
+      while (ovector[1] < subject_length)       /* character. */
+        {
+        if ((subject[ovector[1]] & 0xc0) != 0x80) break;
+        ovector[1] += 1;
+        }
+      }
     continue;    /* Go round the loop again */
     }
 
@@ -270,6 +358,7 @@ for (;;)
   if (rc < 0)
     {
     printf("Matching error %d\n", rc);
+    pcre_free(re);    /* Release memory used for the compiled pattern */
     return 1;
     }
 
@@ -310,6 +399,7 @@ for (;;)
   }      /* End of loop to find second and subsequent matches */
 
 printf("\n");
+pcre_free(re);       /* Release memory used for the compiled pattern */
 return 0;
 }
 
