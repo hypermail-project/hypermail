@@ -28,3 +28,11 @@ src/pcre/pcretest
 tests/testhm
 archive/msg2archive
 archive/rdmsg
+
+# vi or emacs edited ones
+*.~
+\#.*
+
+# swap files
+.swp
+

@@ -32,19 +32,116 @@ HYPERMAIL VERSION 2.3.1:
 HYPERMAIL VERSION 2.3.0:
 ============================
 
- Ivan Kuraj (Apr 3, 2015)
-  - Correct includes for new glibc
+Ivan Kuraj (Apr 3, 2015)
+	* Correct includes for new glibc
+
+Jose Kahan (Jun 10, 2013)
+	* Even if a message was annotated as spam/deleted, its Attachments were
+	still being created
+
+Jose Kahan (Apr 18, 2013)
+	* Removed commented out code in printfile.c.
+	* Added missing ';' in generated css rules in the same file
+
+Jose Kahan (Apr 11, 2013)
+	* Extended the configure options so that a user can decide if hypermail
+	should be compiled and statically linked against the bundled pcre lib
+	or if it should be dynamically linked with an external (or system) pcre
+	library (if available).
+	* The new configure option is --with-external-pcre[=dir].
+	* The default value for dir is /usr and the include and libraries
+	directories will be searched from that starting path. This option is
+	disabled by default.
+	* The make clean in libfnv wasn't removing the libfnv.a file
+
+Jose Kahan (Mar 29, 2013)
+
+	* Updated configure to latest autoconf syntax conventions.
+
+	* Renamed configure.in to configure.ac and cleaned it up partially.
+
+Jose Kahan (Mar 20, 2013)
+	
+	* Updated pcre to pcre-8.32 from pcre-4.3. This may have broken the
+	Windows lcc compilation but I don't have the means to verify it.
+
+Jose Kahan (Mar 15, 2013)
+	
+	* Updated trio code to trio version 1.14. Moved all the trio code to
+	src/trio. Now compiling trio as a static library and linking against
+	it, which makes binary a bit smaller. See src/trio/README.hypermail for
+	details.
+
+Jose Kahan (Mar 12, 2013)
+	
+	* New experimental support for RFC 3676 format=flowed. There are two
+	new related configuration options: format_flowed to enable it and
+	format_flowed_disable_quotes to disable it in specific cases.  See the
+	documentation and the RFC for further info.
+
+Jose Kahan (Mar 08, 2013)
+	
+	* Error: string.c:parseurl() assumes that all URL motifs it can match
+	end with a :// string. However, the URL match table it uses included
+	some URL motifs that didn't have that string. These have been commented
+	as they may cause parseulr to SIGSEVs in some cases.
+
+Jose Kahan (Feb 26, 2013)
+	
+	* New configuration option, noindex_onindexes, for associating a
+	"noindex" robot metadata value with hypermail generated indexes.
+
+Jose Kahan (Feb 26, 2013)
+	
+	* New configuration option, userobotmeta, for Associatating robot
+	annotations with attachments, using the experimental X-Robots-Tag HTTP
+	header
+
+	* If a message is marked as "deleted" and we're not keeping the
+	content, substitute the value of the From: and Subject: headers with
+	"deleted".
+
+	* Make sure the delete stubs are added only when the delete_level
+	option says we're not to preserve the original message body.
+
+Jose Kahan (Jan 30, 2013)
+	
+	* Migrated source code repository from cvs.hypermail.org to
+	http://sourceforge.net/projects/hypermail/
+	
+	* Added a mirror of the repository to github:
+	http://github.com/hypermail-project/hypermail
+	
+	* Cleared up the markup errors in docs/hmrc.html by using tidy.
+	
+	* New configuration directive "annotated" which allows a mailing list
+	archive editor to annotate a given message before converting it into
+	HTML. Associated additional new directives are
+	"htmlmessage_deleted_spam", "htmlmessage_deleted_other",
+	"htmlmessage_edited". Consult docs/hmrc.html for more info.
+	
+	* "htmlmessage_deleted" is deprecated in favor of
+	"htmlmessage_deleted_spam"
+	
+	* "deleted" is superseded by "annotated", although it will be supported
+	to take into account legacy archives.
+	
+	* Regenerated the dependencies for the src/Makefile.in file.
+
+============================
+HYPERMAIL VERSION 2.3.0:
+============================
 
  Jose Kahan (Oct 27, 2009)
-  - Added two new accesskeys in messages: 't' ->  next message
-    in thread, 'd' -> next message
+  Added two new accesskeys in messages: 't' ->  next message
+   in thread, 'd' -> next message
 
  Jose Kahan (Oct 26, 2009)
-  - Updated hmrc.4 and hmrc.html to descrbie the new features.
+  Updated hmrc.4 and hmrc.html to describe the new features.
 
- Jose Kahan (Oct 26, 2009)
+ Jose Kahan (Oct 23, 2009)
   Various fixes / enhancements developed at W3C by Fumihiro Kato,
-  Daigo Matsubara and myself:
+   Daigo Matsubara and myself:
   - Markup changes for deleted messages that are kept.
   - New directive: htmlmessage_deleted for setting a custom HTML
     message for the body of deleted messages.

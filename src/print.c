@@ -53,6 +53,10 @@
 #include <string.h>
 #endif
 
+/* conditions that say when a message's body may be removed */
+#define REMOVE_MESSAGE(email) (email->is_deleted && set_delete_level != DELETE_LEAVES_TEXT \
+			       && !(email->is_deleted == 2 && set_delete_level == DELETE_LEAVES_EXPIRED_TEXT))
+
 static char *indextypename[NO_INDEX];
 
 #ifdef GDBM
@@ -1113,8 +1117,7 @@ void printheaders (FILE *fp, struct emailinfo *email)
     char head_lower[128];
     char *header_content;
 
-    if (email->is_deleted && set_delete_level != DELETE_LEAVES_TEXT 
-	&& !(email->is_deleted == 2 && set_delete_level == DELETE_LEAVES_EXPIRED_TEXT)) {
+    if (REMOVE_MESSAGE(email)) {
       int d_index = MSG_DELETED;
       if (email->is_deleted == 2)
 	d_index = MSG_EXPIRED;
@@ -1223,10 +1226,17 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
 	d_index = MSG_EXPIRED;
       if (email->is_deleted == 4 || email->is_deleted == 8)
 	d_index = MSG_FILTERED_OUT;
+      if (email->is_deleted == 64)
+	d_index = MSG_DELETED_OTHER;
       switch(d_index) {
       case MSG_DELETED:
-	if(set_htmlmessage_deleted){
-	  fprintf(fp,"%s\n",set_htmlmessage_deleted);
+	if(set_htmlmessage_deleted_spam){
+	  fprintf(fp,"%s\n",set_htmlmessage_deleted_spam);
+	  break;
+	}
+      case MSG_DELETED_OTHER:
+	if(set_htmlmessage_deleted_other){
+	  fprintf(fp,"%s\n",set_htmlmessage_deleted_other);
 	  break;
 	}
       default:
@@ -1236,6 +1246,13 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
       return;
     }
     
+    if (email->annotation_content == ANNOTATION_CONTENT_EDITED) {
+      if (set_htmlmessage_edited)
+	fprintf(fp,"%s\n",set_htmlmessage_edited);
+      else
+	fprintf(fp, "<p>%s</p>\n", lang[MSG_EDITED]);
+    }
+
     if (!set_showhtml) {
 	fprintf(fp, "<pre id=\"body\">\n");
 	pre = TRUE;
@@ -1456,7 +1473,11 @@ void print_headers(FILE *fp, struct emailinfo *email, int in_thread_file)
   /* the from header */
   fprintf (fp, "<span id=\"from\">\n");
   fprintf (fp, "<dfn>%s</dfn>: ", lang[MSG_FROM]);
-  if (!strcmp(email->name, email->emailaddr)) {
+  if (REMOVE_MESSAGE(email)) {
+    /* don't show the email address and name if we have deleted the message */
+    fprintf(fp, "&lt;%s&gt;", lang[MSG_SENDER_DELETED]);
+  } 
+  else if (!strcmp(email->name, email->emailaddr)) {
     if (use_mailcommand) {
       char *ptr = makemailcommand(set_mailcommand,
 				  email->emailaddr,
@@ -2096,7 +2117,7 @@ void writearticles(int startnum, int maxnum)
     struct body *bp;
     struct reply *rp;
     FILE *fp;
-    char *ptr;
+    char *ptr = NULL;
 #ifdef HAVE_ICONV
     char *localsubject=NULL,*localname=NULL;
     size_t convlen=0;
@@ -2183,10 +2204,12 @@ void writearticles(int startnum, int maxnum)
 	 */
 #ifdef HAVE_ICONV
 	print_msg_header(fp, set_label, localsubject, set_dir, localname, email->emailaddr, 
-			 email->msgid, email->charset, email->date, filename, email->is_deleted);
+			 email->msgid, email->charset, email->date, filename, 
+			 REMOVE_MESSAGE(email), email->annotation_robot);
 #else
 	print_msg_header(fp, set_label, email->subject, set_dir, email->name, email->emailaddr, 
-			 email->msgid, email->charset, email->date, filename, email->is_deleted);
+			 email->msgid, email->charset, email->date, filename, 
+			 REMOVE_MESSAGE(email), email->annotation_robot);
 #endif
 	fprintf (fp, "<div class=\"head\">\n");
 
@@ -2195,13 +2218,18 @@ void writearticles(int startnum, int maxnum)
 	  fprintf(fp, "<map title=\"%s\" id=\"upper\">\n%s</map>\n", 
 		  lang[MSG_NAVBAR2UPPERLEVELS], ihtmlnavbar2upfile);
 
+	/* reset the value of ptr before we actually start using it,
+	   just in case one of the ternary operations here below
+	   doesn't allocate any memory */
+	ptr = NULL;
+
 	/* write the title */
 #ifdef HAVE_ICONV
-	fprintf(fp, "<h1>%s</h1>\n",
-		ptr = convchars(localsubject, email->charset));
+	fprintf(fp, "<h1>%s</h1>\n", (REMOVE_MESSAGE(email)) ? lang[MSG_SUBJECT_DELETED] :
+		(ptr = convchars(localsubject, email->charset)));
 #else
-	fprintf(fp, "<h1>%s</h1>\n",
-		ptr = convchars(email->subject, email->charset));
+	fprintf(fp, "<h1>%s</h1>\n", (REMOVE_MESSAGE(email)) ? lang[MSG_SUBJECT_DELETED] :
+		(ptr = convchars(email->subject, email->charset)));
 #endif
 	if (ptr)
 	  free(ptr);
@@ -2227,6 +2255,8 @@ void writearticles(int startnum, int maxnum)
 	printcomment(fp, "id", email->msgid);
 	printcomment(fp, "charset", email->charset);
  	printcomment(fp, "inreplyto", ptr = convcharsnospamprotect(email->inreplyto, email->charset));
+	if (ptr)
+	    free(ptr);
 	if (email->is_deleted) {
 	    char num_buf[32];
 	    sprintf(num_buf, "%d", email->is_deleted);
@@ -2238,9 +2268,6 @@ void writearticles(int startnum, int maxnum)
 		togdbm((void *)gp, email);
 	}
 #endif
-	if (ptr)
-	    free(ptr);
-
 	/*
 	 * This is here because it looks better here. The table looks
 	 * better before the Author info. This stuff should be in 
