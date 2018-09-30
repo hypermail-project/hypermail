@@ -109,6 +109,21 @@ char *setindex(char *dfltindex, char *indextype, char *suffix)
     return (rp);
 }
 
+/*
+** Convert locale name to a UTF_8 locale name.
+**
+** Returns an ALLOCATED string!
+*/
+static char *utf8locale(char *locale)
+{
+    struct Push buff;
+
+    INIT_PUSH(buff);		/* init macro */
+    PushString(&buff, locale);
+    PushString(&buff, ".UTF-8");
+    RETURN_PUSH(buff);
+} /* end utf8locale() */
+
 
 /* Print out the version number and die. */
 
@@ -365,9 +380,13 @@ int main(int argc, char **argv)
     }
 
 #ifdef HAVE_LOCALE_H
-	if (!setlocale(LC_ALL, locale_code)) {
+    if (!setlocale(LC_ALL, locale_code)) {
+	char *locale_code_utf8 = utf8locale(locale_code);
+	if (!setlocale(LC_ALL, locale_code_utf8)) {
 	    snprintf(errmsg, sizeof(errmsg), "WARNING: locale \"%s\", not supported.\n", locale_code);
 	    fprintf(stderr, "%s", errmsg);/* AUDIT biege: avoid format-bug warning */
+	}
+	free(locale_code_utf8);
     }
 #endif
 	
