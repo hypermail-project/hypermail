@@ -8,6 +8,19 @@ HYPERMAIL VERSION 2.4.0:
 
 	* Updated Changelog format for entries newer than version 2.3.0
 
+	* hypermail.h, parse.c, struct.c, struct.h
+	Charset handling for multipart messages was being handled wrong, giving
+	priority to the headers charset (if found) over that of the displayed body.
+	Sometimes the last found charset was the one being used throughout in the
+	generated body.
+	The metafile for attachments was sometimes inheriting the charset of the whole
+	body, even when not necessary or wrong. Now the meta doesn't include a charset
+	if the attachment doesn't explicitly give one.
+
+	* parse.c
+	References header was processed multiple times as it was not being marked as parsed
+	after being processed.
+
 2018-06-19 Jose Kahan
 
 	* Changed mispelled configuration option warn_surpressions to the
