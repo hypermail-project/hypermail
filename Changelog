@@ -1,98 +1,114 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ============================
-HYPERMAIL VERSION 2.3.1:
+HYPERMAIL VERSION 2.4.0:
 ============================
 
- Jose Kahan (June 19, 2018)
-  - Changed mispelled configuration option warn_surpressions to the
-    correct spelling warn_suppressions.
+2018-10-04 Jose Kahan
 
- Jose Kahan (June 14, 2018)
-  - Hypermail would segfault or have an incorrect thread view if it was
-    handling an archive with a message (msg1) that was a reply to a message not
-    in the archive, if msg1 had a reply to it in the archive (msg2), msg2 was
-    archived before msg1 and both msg1 and msg2 shared the same subject
-    (regardless of Re: prefixes).
+	* Updated Changelog format for entries newer than version 2.3.0
 
- Bill Shannon (June 7, 2018)
-  - Add charset alias for Thai and Chinese
-  - The markup for access key "j" to jump to the start of a message
-    was only being added when the showhtml configuration option
-    was disabled
-  - Setting the describe_folder configuration option has no effect on the
-    display of the folder index page
-  - In some cases hypermail failed to null terminate the charset name
-    when copying it, resulting in bogus charset names
-  - Hypermail would segfault if given the bogus From line "From: <a@b.com"
-  - In some cases, when no new message was added to the archive,
-    would segfault because of a null pointer
+2018-06-19 Jose Kahan
 
-============================
-HYPERMAIL VERSION 2.3.0:
-============================
+	* Changed mispelled configuration option warn_surpressions to the
+	correct spelling warn_suppressions.
 
-Ivan Kuraj (Apr 3, 2015)
+2018-06-14 Jose Kahan
+
+	* Hypermail would segfault or have an incorrect thread view if it was
+	handling an archive with a message (msg1) that was a reply to a message
+	not in the archive, if msg1 had a reply to it in the archive (msg2),
+	msg2 was archived before msg1 and both msg1 and msg2 shared the same
+	subject (regardless of Re: prefixes).
+
+2018-06-07 Bill Shannon
+
+	* Add charset alias for Thai and Chinese
+
+	* The markup for access key "j" to jump to the start of a message was
+	only being added when the showhtml configuration option was disabled
+
+	* Setting the describe_folder configuration option has no effect on the
+	display of the folder index page
+
+	* In some cases hypermail failed to null terminate the charset name
+	when copying it, resulting in bogus charset names
+
+	* Hypermail would segfault if given the bogus From line "From:
+	<a@b.com"
+
+	* In some cases, when no new message was added to the archive, would
+	segfault because of a null pointer
+
+2015-04-03 Ivan Kuraj
+
 	* Correct includes for new glibc
 
-Jose Kahan (Jun 10, 2013)
+2013-06-10 Jose Kahan
+
 	* Even if a message was annotated as spam/deleted, its Attachments were
 	still being created
 
-Jose Kahan (Apr 18, 2013)
+2013-04-18 Jose Kahan
+
 	* Removed commented out code in printfile.c.
+
 	* Added missing ';' in generated css rules in the same file
 
-Jose Kahan (Apr 11, 2013)
+2013-04-11 Jose Kahan
+
 	* Extended the configure options so that a user can decide if hypermail
 	should be compiled and statically linked against the bundled pcre lib
 	or if it should be dynamically linked with an external (or system) pcre
 	library (if available).
+
 	* The new configure option is --with-external-pcre[=dir].
+
 	* The default value for dir is /usr and the include and libraries
 	directories will be searched from that starting path. This option is
 	disabled by default.
+
 	* The make clean in libfnv wasn't removing the libfnv.a file
 
-Jose Kahan (Mar 29, 2013)
+2013-03-29 Jose Kahan
 
 	* Updated configure to latest autoconf syntax conventions.
 
 	* Renamed configure.in to configure.ac and cleaned it up partially.
 
-Jose Kahan (Mar 20, 2013)
-	
+2013-03-20 Jose Kahan
+
 	* Updated pcre to pcre-8.32 from pcre-4.3. This may have broken the
 	Windows lcc compilation but I don't have the means to verify it.
 
-Jose Kahan (Mar 15, 2013)
-	
+2013-03-15 Jose Kahan
+
 	* Updated trio code to trio version 1.14. Moved all the trio code to
 	src/trio. Now compiling trio as a static library and linking against
 	it, which makes binary a bit smaller. See src/trio/README.hypermail for
 	details.
 
-Jose Kahan (Mar 12, 2013)
-	
+2013-03-12 Jose Kahan
+
 	* New experimental support for RFC 3676 format=flowed. There are two
 	new related configuration options: format_flowed to enable it and
 	format_flowed_disable_quotes to disable it in specific cases.  See the
 	documentation and the RFC for further info.
 
-Jose Kahan (Mar 08, 2013)
-	
+2013-03-08 Jose Kahan
+
 	* Error: string.c:parseurl() assumes that all URL motifs it can match
 	end with a :// string. However, the URL match table it uses included
 	some URL motifs that didn't have that string. These have been commented
 	as they may cause parseulr to SIGSEVs in some cases.
 
-Jose Kahan (Feb 26, 2013)
-	
+2013-02-26 Jose Kahan
+
 	* New configuration option, noindex_onindexes, for associating a
 	"noindex" robot metadata value with hypermail generated indexes.
 
-Jose Kahan (Feb 26, 2013)
-	
+2013-02-26 Jose Kahan
+
 	* New configuration option, userobotmeta, for Associatating robot
 	annotations with attachments, using the experimental X-Robots-Tag HTTP
 	header
@@ -104,28 +120,28 @@ Jose Kahan (Feb 26, 2013)
 	* Make sure the delete stubs are added only when the delete_level
 	option says we're not to preserve the original message body.
 
-Jose Kahan (Jan 30, 2013)
-	
+2013-01-30 Jose Kahan
+
 	* Migrated source code repository from cvs.hypermail.org to
 	http://sourceforge.net/projects/hypermail/
-	
+
 	* Added a mirror of the repository to github:
 	http://github.com/hypermail-project/hypermail
-	
+
 	* Cleared up the markup errors in docs/hmrc.html by using tidy.
-	
+
 	* New configuration directive "annotated" which allows a mailing list
 	archive editor to annotate a given message before converting it into
 	HTML. Associated additional new directives are
 	"htmlmessage_deleted_spam", "htmlmessage_deleted_other",
 	"htmlmessage_edited". Consult docs/hmrc.html for more info.
-	
+
 	* "htmlmessage_deleted" is deprecated in favor of
 	"htmlmessage_deleted_spam"
-	
+
 	* "deleted" is superseded by "annotated", although it will be supported
 	to take into account legacy archives.
-	
+
 	* Regenerated the dependencies for the src/Makefile.in file.
 
 ============================
