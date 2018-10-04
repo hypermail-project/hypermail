@@ -1496,6 +1496,7 @@ int parsemail(char *mbox,	/* file name */
     struct body *origlp = NULL;	/* ... and the original lp */
     char alternativeparser = FALSE;	/* set when inside alternative parser mode */
     int alternative_weight = -1;	/* the current weight of the prefered alternative content */
+    char *prefered_content_charset = NULL;  /* the current charset of the alternative */
     struct body *alternative_lp = NULL;	/* the previous alternative lp */
     struct body *alternative_bp = NULL;	/* the previous alternative bp */
     struct body *append_bp = NULL; /* text to append to body after parse done*/
@@ -1533,7 +1534,14 @@ int parsemail(char *mbox,	/* file name */
 					   mails inside mimed mails */
 
     struct boundary *multipartp = NULL; /* This variable is used to store a stack of
-                                           mimetypes in cases with mulitpart mails */
+                                           mimetypes when dealing with multipart mails */
+
+    struct charset_stack *charsetsp = NULL; /* This variable is used
+                                               to store a stack of
+                                               charset/charset_save
+                                               values when dealing
+                                               with multipart mails */
+
     bool skip_mime_epilogue = FALSE;  /* This variable is used to help skip multipart/foo
                                            epilogues */
     
@@ -1828,6 +1836,7 @@ int parsemail(char *mbox,	/* file name */
 			if (set_linkquotes) {
 			    bp = addbody(bp, &lp, line, 0);
 			}
+                        head->parsedheader = TRUE;
 		    }
                     else if (!strncasecmp(head->line, "Content-Type:", 13)) {
                         content_type_p = head;
@@ -2081,8 +2090,16 @@ int parsemail(char *mbox,	/* file name */
 				/* erase the previous alternative info */
 				temp_bp = alternative_bp;	/* remember the value of bp for GC */
 				alternative_bp = alternative_lp = NULL;
+                                if (prefered_content_charset) {
+                                    free(prefered_content_charset);
+                                }
+                                prefered_content_charset = strsav (charset);                                
                                 strncpy(last_alternative_type, type,
                                         sizeof(last_alternative_type) - 1);
+#ifdef DEBUG_PARSE
+                                fprintf(stderr, "setting new prefered alternative charset to %s\n", charset);
+#endif
+
 				alternative_lastfile_created = NO_FILE;
 				content = CONTENT_UNKNOWN;
 				if (alternative_lastfile[0] != '\0') {
@@ -2152,6 +2169,15 @@ int parsemail(char *mbox,	/* file name */
 				content = CONTENT_HTML;
 			    else
 				content = CONTENT_TEXT;
+                            
+			    if (!alternativeparser && !prefered_content_charset) {
+                                /* there are apparently no
+                                   alternatives in this message, let's
+                                   use the first text/* charset we
+                                   found as the prefered one */
+                                prefered_content_charset = strsav (charset);
+                            }
+                            
 			    continue;
 			}
 			else if (!strncasecmp(type, "message/rfc822", 14)) {
@@ -2285,6 +2311,33 @@ int parsemail(char *mbox,	/* file name */
                                 
 				/* printf("set new boundary: %s\n", boundp->line); */
 
+                                /* @@JK Take into account errors when we abort, malformed mime, etc,
+                                 probably put this call up, before detecting errors? */
+                                charsetsp = charsets(charsetsp, charset, charsetsave);
+#ifdef DEBUG_PARSE                                
+                                fprintf(stderr, "pushing charset %s and charsetsave %s\n", charset, charsetsave);
+#endif
+                                {
+                                    struct charset_stack *tmp = charsets_head(charsetsp);
+                                    /* @@JK Do we need to restore
+                                     * charset to the parents or to
+                                     * NULL? */
+
+                                    if (charset) {
+                                        free(charset);
+                                    }
+
+                                    if (tmp->charset) {
+                                        charset = strsav(tmp->charset);
+                                    } else {
+                                        charset = NULL;
+                                    }
+                                    strcpy(charsetsave, tmp->charsetsave);
+#ifdef DEBUG_PARSE
+                                    fprintf(stderr, "restoring parents charset %s and charsetsave %s\n", charset, charsetsave); 
+#endif
+                                }
+                                
 				/*
 				 * We set ourselves, "back in header" since there is
 				 * gonna come MIME headers now after the separator
@@ -2428,37 +2481,47 @@ int parsemail(char *mbox,	/* file name */
 		    binfile = -1;
 		}
 
+                /* as long as we don't handle UTF-8 throughout), use the prefered
+                   content charset if we got one  */
+                if (prefered_content_charset) {
+                    if (charset) {
+                        free(charset);
+                    }
+                    charset = prefered_content_charset;
+                    prefered_content_charset = NULL;
+                }
+
 #ifdef HAVE_ICONV
-		if (!charset){
-		  if (*charsetsave!=0){
-		    /**
-		    if(set_showprogress){
-		      printf("\nput charset from subject header..\n");
-		    }
-		    **/
-		    charset=strsav(charsetsave);
-		  }else{
-		    /* default charset is US-ASCII */
-		    /* ISO-8859-1 is modern, however (DM) */
-		    charset=strsav("US-ASCII");
-		    /**
-		    if(set_showprogress){
-		      printf("\nfound no charset for body, set ISO-8859-1.\n");
-		    }
-		    **/
-		  }
+		if (!charset) {
+                    if (*charsetsave!=0){
+#ifdef DEBUG_PARSE
+                        printf("put charset from subject header..\n");
+#endif
+                        charset=strsav(charsetsave);
+                    } else{
+                        /* default charset for plain/text is US-ASCII */
+                        /* ISO-8859-1 is modern, however (DM) */
+                        charset=strsav("US-ASCII");
+#ifdef DEBUG_PARSE
+                        fprintf(stderr, "found no charset for body, set ISO-8859-1.\n");
+#endif
+                    }
 		} else {
-		  /* if body is us-ascii but subject is not,
-		     try to use subject's charset. */
-		  if (strncasecmp(charset,"us-ascii",8)==0){
-		    if (*charsetsave!=0 && strcasecmp(charsetsave,"us-ascii")!=0){
-		      free(charset);
-		      charset=strsav(charsetsave);
-		    }
-		  }
+                    /* if body is us-ascii but subject is not,
+                       try to use subject's charset. */
+                    if (strncasecmp(charset,"us-ascii",8)==0){
+                        if (*charsetsave!=0 && strcasecmp(charsetsave,"us-ascii")!=0){
+                            free(charset);
+                            charset=strsav(charsetsave);
+                        }
+                    }
 		}
 #endif
 
+#ifdef DEBUG_PARSE
+                fprintf(stderr, "Message will be stored using charset %s\n", charset);
+#endif
+                
 		isinheader = 1;
 		if (!hassubject)
 		    subject = NOSUBJECT;
@@ -2574,6 +2637,10 @@ msgid);
 		if (charsetsave){
 		  *charsetsave = 0;
 		}
+                if (prefered_content_charset) {
+                    free(prefered_content_charset);
+                    prefered_content_charset = NULL;
+                }
 		if (msgid) {
 		    free(msgid);
 		    msgid = NULL;
@@ -2633,7 +2700,10 @@ msgid);
 		
 		free_multipart (multipartp);
 		multipartp = NULL;
-		
+
+                free_charsets (charsetsp);
+                charsetsp = NULL;
+                
                 alternativeparser = FALSE; /* there is none anymore */
 
 		if (parse_multipart_alternative_force_save_alts) {
@@ -2702,6 +2772,33 @@ msgid);
                             /* skip the MIME epilogue until the next section (or next message!) */
                             skip_mime_epilogue = TRUE;
 			    multipartp = multipart(multipartp, NULL);
+
+                            /* retrieve the parent's charset and charsetsave  */
+                            if (charsetsp->prev != NULL) {
+                                charsetsp = charsets(charsetsp, NULL, NULL);
+                            }
+                            if (charsetsp) {
+                                if (charset) {
+                                    free(charset);
+                                    if (charsetsp) {
+                                        charset = (charsetsp->charset) ? strsav (charsetsp->charset) : NULL;			    }
+                                } else {
+                                    charsetsave[0]='\0';
+                                }
+                                strcpy (charsetsave, charsetsp->charsetsave);
+                            }
+#ifdef DEBUG_PARSE
+                            fprintf(stderr, "Pulling charset %s and charsetsave %s\n", charset, charsetsave);
+#endif                            
+                            if (!boundp && charsetsp->prev == NULL) {
+#ifdef DEBUG_PARSE
+                                fprintf(stderr, "No more MIME parts, freeing charsetsp\n");
+#endif
+                                free_charsets(charsetsp);
+
+                                charsetsp = NULL;
+                            }
+                            
 			    if (alternativeparser
 				&& !has_multipart(multipartp, "multipart/alternative")) {
 #ifdef NOTUSED
@@ -2795,10 +2892,27 @@ msgid);
 			quotelevel = 0;
 			continue_previous_flow_flag = FALSE;
 
+			/* restore the parent's charset/charsetsave values */
+                        if (charsetsp) {
+                            if (charset) {
+                                free(charset);
+                            }
+                            if (charsetsp->charset) {
+                                charset = strsav(charsetsp->charset);
+                            } else {
+                                charset = NULL;
+                            }
+                            strcpy(charsetsave, charsetsp->charsetsave);
+
+#ifdef DEBUG_PARSE
+                            printf("New section: restoring charset %s and charsetsave %s\n", charset, charsetsave);
+#endif
+                        }
 			if (-1 != binfile) {
 			    close(binfile);
 			    binfile = -1;
 			}
+                        
 			continue;
 		    }
                 }
@@ -2834,7 +2948,7 @@ msgid);
 		    break;
 		}
 #if DEBUG_PARSE
-		printf("LINE %s\n", data);
+		printf("LINE %s\n", (content != CONTENT_BINARY) ? data : "<binary>");
 #endif
 		if (data) {
 		    if ((content == CONTENT_TEXT) ||
@@ -3289,6 +3403,18 @@ msgid);
 	while (rmlastlines(bp));
 
 	strcpymax(fromdate, dp ? dp : "", DATESTRLEN);
+        if (prefered_content_charset) {
+#ifdef DEBUG_PARSE
+            fprintf(stderr, "Replacing charset %s with prefered_content_charset %s\n",
+                    charset, prefered_content_charset);
+#endif
+            if (charset) {
+                free(charset);
+            }
+            charset = prefered_content_charset;
+            prefered_content_charset = NULL;
+        }
+        
 	emp = addhash(num, date, namep, emailp, msgid, subject, inreply,
 		      fromdate, charset, NULL, NULL, bp);
 	if (emp) {
@@ -3322,7 +3448,10 @@ msgid);
 	if (charsetsave){
 	  *charsetsave = 0;
 	}
-
+        if (prefered_content_charset) {
+            free(prefered_content_charset);
+            prefered_content_charset = NULL;
+        }
 	if (msgid) {
 	    free(msgid);
 	    msgid = NULL;

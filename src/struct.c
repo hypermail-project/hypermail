@@ -731,6 +731,62 @@ struct boundary *multipart(struct boundary *bnd, char *line)
     return bound(bnd, line);
 }
 
+struct charset_stack *charsets(struct charset_stack *bnd, char *charset, char *charsetsave)
+{
+    struct charset_stack *newnode = NULL;
+
+    if (charset || charsetsave) {
+        newnode = (struct charset_stack *)emalloc(sizeof(struct charset_stack));
+        newnode->charset = (charset) ? strsav(charset) : NULL;
+        newnode->charsetsave = (charsetsave) ? strsav(charsetsave) : NULL;
+    
+        newnode->next = NULL;
+        newnode->prev = bnd;
+
+	if (bnd)
+	    bnd->next = newnode;
+
+	bnd = newnode;
+    }
+    else {
+	if (bnd->prev) {
+	    /* go back to the previous */
+	    bnd = bnd->prev;
+
+	    /* free the latest one */
+            if (bnd->next->charset) {
+                free(bnd->next->charset);
+            }
+            free(bnd->next->charsetsave);
+	    free(bnd->next);
+	    bnd->next = NULL;
+	}
+	else {
+	    /* this is the last node */
+            if (bnd->charset) {
+                free(bnd->charset);
+            }
+            free(bnd->charsetsave);
+	    free(bnd);
+            bnd = NULL;
+	}
+    }
+    return bnd;		/* the new "active" boundary */
+}
+
+/* returns the first element in the stack */
+struct charset_stack *charsets_head(struct charset_stack *bnd)
+{
+  struct charset_stack *cursor = bnd;
+
+  if (cursor) {
+      while (cursor->prev) {
+          cursor = cursor->prev;
+      }
+  }
+  return cursor;
+}
+  
 /*
 ** Frees the memory allocated to a boundary structure/
 ** Returns the number of elements freed.
@@ -751,6 +807,7 @@ static int free_boundary(struct boundary *bnd)
     cursor = bnd;
     while (cursor) {
         tmp = cursor->prev;
+        counter++;
         if (cursor->line) {
 #ifdef DEBUG_PARSE
             fprintf (stderr, "free_boundary(): freeing %s\n", cursor->line);
@@ -764,7 +821,7 @@ static int free_boundary(struct boundary *bnd)
     return counter;
 }
 
-int free_bound (struct boundary *bnd)
+int free_bound(struct boundary *bnd)
 {
     int t;
 
@@ -776,7 +833,7 @@ int free_bound (struct boundary *bnd)
     return t;
 }
 
-int free_multipart (struct boundary *mp)
+int free_multipart(struct boundary *mp)
 {
     int t;
     
@@ -786,6 +843,44 @@ int free_multipart (struct boundary *mp)
     fprintf (stderr, "free_multipart: freed %d elements\n", t);
 #endif
     return t;
+}
+
+int free_charsets(struct charset_stack *cs)
+{
+    struct charset_stack *cursor = cs;
+      
+    struct charset_stack *tmp;
+  
+    int counter = 0;
+    
+    if (cs && cs->next) {
+        fprintf (stderr, "free_charsets(): Error: boundary has a non-empty next element.\n charset = %s ; charsetsave = %s\n",
+                 cs->charset, cs->charsetsave);
+    }
+    
+    cursor = cs;
+    while (cursor) {
+        counter++;
+        tmp = cursor->prev;
+#ifdef DEBUG_PARSE
+        fprintf (stderr, "free_charsets(): freeing charset = %s ; charsetsave = %s\n", cursor->charset, cursor->charsetsave);
+#endif
+        if (cursor->charset) {
+            free (cursor->charset);
+        }
+        if (cursor->charsetsave) {
+            free (cursor->charsetsave);
+        }
+
+        free (cursor);
+        cursor = tmp;
+    }
+
+#if DEBUG_PARSE
+    fprintf (stderr, "free_charset_stack: freed %d elements\n", counter);
+#endif
+    
+    return counter;
 }
 
 /*

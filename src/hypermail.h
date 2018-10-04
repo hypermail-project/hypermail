@@ -330,6 +330,13 @@ struct boundary {
     char *line;
 };
 
+struct charset_stack {
+    struct charset_stack *next;
+    struct charset_stack *prev;
+    char *charset;
+    char *charsetsave;
+};
+
 VAR struct header *subjectlist;
 VAR struct header *authorlist;
 VAR struct header *datelist;
