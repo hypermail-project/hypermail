@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * $Id: triodef.h,v 1.1 2013-03-15 19:33:25 kahan Exp $
+ * $Id$
  *
  * Copyright (C) 2001 Bjorn Reese <breese@users.sourceforge.net>
  *
@@ -142,6 +142,18 @@
 # endif
 #endif
 
+#if defined(__powerpc) || defined(__powerpc__) || defined(_ARCH_PPC)
+# define TRIO_CPU_POWERPC
+#endif
+
+#if defined(__sparc) || defined(__sparc__)
+# define TRIO_CPU_SPARC
+#endif
+
+#if defined(__s390x__) || defined(__zarch__) || defined(__SYSC_ZARCH__)
+# define TRIO_CPU_SYSTEMZ
+#endif
+
 /*************************************************************************
  * Standards support detection
  */
@@ -154,10 +166,10 @@
 #if defined(__STDC_VERSION__)
 # define PREDEF_STANDARD_C90
 #endif
-#if (__STDC_VERSION__ - 0 >= 199409L)
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199409L)
 # define PREDEF_STANDARD_C94
 #endif
-#if (__STDC_VERSION__ - 0 >= 199901L)
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
 # define PREDEF_STANDARD_C99
 #endif
 #if defined(TRIO_COMPILER_SUNPRO) && (TRIO_COMPILER_SUNPRO >= 0x420)
@@ -169,7 +181,7 @@
 #if defined(__cplusplus)
 # define PREDEF_STANDARD_CXX
 #endif
-#if __cplusplus - 0 >= 199711L
+#if defined(__cplusplus) && (__cplusplus >= 199711L)
 # define PREDEF_STANDARD_CXX89
 #endif
 
@@ -206,7 +218,29 @@
  */
 
 #if !defined(TRIO_PUBLIC)
-# define TRIO_PUBLIC
+/* Based on http://gcc.gnu.org/wiki/Visibility */
+# if defined(TRIO_PLATFORM_WIN32) || defined (__CYGWIN__)
+#  if defined(BUILDING_DLL)
+#   if defined(TRIO_COMPILER_GCC)
+#    define TRIO_PUBLIC __attribute__ ((dllexport))
+#   else
+#    define TRIO_PUBLIC __declspec(dllexport)
+#   endif
+#  else
+#   if defined(TRIO_COMPILER_GCC)
+#    define TRIO_PUBLIC __attribute__ ((dllimport))
+#   else
+#    define TRIO_PUBLIC __declspec(dllimport)
+#   endif
+#  endif
+# else
+#  if defined(TRIO_COMPILER_GCC) && __GNUC__ >= 4
+#   define TRIO_PUBLIC __attribute__ ((visibility ("default")))
+#   define TRIO_PRIVATE __attribute__ ((visibility ("hidden")))
+#  else
+#   define TRIO_PUBLIC
+#  endif
+# endif
 #endif
 #if !defined(TRIO_PRIVATE)
 # define TRIO_PRIVATE static
@@ -232,6 +266,7 @@ typedef char * trio_pointer_t;
 # define TRIO_ARGS5(list,a1,a2,a3,a4,a5) list a1; a2; a3; a4; a5;
 # define TRIO_ARGS6(list,a1,a2,a3,a4,a5,a6) list a1; a2; a3; a4; a5; a6;
 # define TRIO_ARGS7(list,a1,a2,a3,a4,a5,a6,a7) list a1; a2; a3; a4; a5; a6; a7;
+# define TRIO_ARGS8(list,a1,a2,a3,a4,a5,a6,a7,a8) list a1; a2; a3; a4; a5; a6; a7; a8;
 # define TRIO_VARGS2(list,a1,a2) list a1; a2
 # define TRIO_VARGS3(list,a1,a2,a3) list a1; a2; a3
 # define TRIO_VARGS4(list,a1,a2,a3,a4) list a1; a2; a3; a4
@@ -255,6 +290,7 @@ typedef void * trio_pointer_t;
 # define TRIO_ARGS5(list,a1,a2,a3,a4,a5) (a1,a2,a3,a4,a5)
 # define TRIO_ARGS6(list,a1,a2,a3,a4,a5,a6) (a1,a2,a3,a4,a5,a6)
 # define TRIO_ARGS7(list,a1,a2,a3,a4,a5,a6,a7) (a1,a2,a3,a4,a5,a6,a7)
+# define TRIO_ARGS8(list,a1,a2,a3,a4,a5,a6,a7,a8) (a1,a2,a3,a4,a5,a6,a7,a8)
 # define TRIO_VARGS2 TRIO_ARGS2
 # define TRIO_VARGS3 TRIO_ARGS3
 # define TRIO_VARGS4 TRIO_ARGS4
@@ -331,5 +367,9 @@ typedef void * trio_pointer_t;
 #  define TRIO_NO_LOG10L 1
 # endif
 #endif
+
+# if defined(TRIO_CPU_POWERPC) || defined(TRIO_CPU_SPARC) || defined(TRIO_CPU_SYSTEMZ)
+#  define TRIO_DOUBLE_DOUBLE
+# endif
 
 #endif /* TRIO_TRIODEF_H */

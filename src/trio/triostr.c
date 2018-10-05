@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * $Id: triostr.c,v 1.1 2013-03-15 19:33:25 kahan Exp $
+ * $Id$
  *
  * Copyright (C) 2001 Bjorn Reese and Daniel Stenberg.
  *
@@ -160,7 +160,7 @@ struct _trio_string_t
  */
 
 #if !defined(TRIO_EMBED_STRING)
-static TRIO_CONST char rcsid[] = "@(#)$Id: triostr.c,v 1.1 2013-03-15 19:33:25 kahan Exp $";
+static TRIO_CONST char rcsid[] = "@(#)$Id$";
 #endif
 
 /*************************************************************************
@@ -292,7 +292,7 @@ TRIO_ARGS2((self, length),
 
 #if defined(TRIO_FUNC_INTERNAL_TO_UPPER)
 
-TRIO_PRIVATE_STRING TRIO_INLINE int
+TRIO_PRIVATE_STRING int
 internal_to_upper
 TRIO_ARGS1((source),
 	   int source)

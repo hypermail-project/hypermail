@@ -1,8 +1,9 @@
 SHELL = @SHELL@
 CC	= @CC@
-CFLAGS	= @CFLAGS@ -I. -DDEBUG
+CFLAGS	= @CFLAGS@ -I. -DDEBUG -fPIC -fvisibility=hidden
 OBJS	= triostr.o trio.o trionan.o
 TARGETLIB	= libtrio.a
+TARGETSHLIB	= $(TARGETLIB:.a=.so.2.0.0)
 TARGETINCS	= trio.h triop.h triodef.h trionan.h triostr.h
 LDFLAGS	= -L. -ltrio -lm
 AR	= ar
@@ -24,7 +25,7 @@ exec_prefix	= @exec_prefix@
 includedir	= @includedir@
 libdir		= @libdir@
 
-all: $(TARGETLIB) $(TARGET)
+all: $(TARGETLIB) $(TARGETSHLIB) $(TARGET)
 
 .PHONY: all check test install doc clean
 
@@ -42,10 +43,10 @@ check:	test
 test:	regression
 	./regression
 
-install:	$(TARGETLIB)
+install:	$(TARGETLIB) $(TARGETSHLIB)
 	$(MKDIR) $(libdir)
 	$(MKDIR) $(includedir)
-	$(INSTALL_DATA) $(TARGETLIB) $(libdir)/$(TARGETLIB)
+	$(INSTALL_DATA) $(TARGETLIB) $(TARGETSHLIB) $(libdir)/
 	for i in $(TARGETINCS);do \
 	(set -x;$(INSTALL_DATA) $(srcdir)/$$i $(includedir)); \
 	done
@@ -66,8 +67,11 @@ $(TARGETLIB): $(OBJS)
 	$(AR) ruv $(TARGETLIB) $(OBJS)
 	$(RANLIB) $(TARGETLIB)
 
+$(TARGETSHLIB): $(TARGETLIB)
+	$(CC) -lm -shared -Wl,-soname,$(patsubst %.so.2.0.0,%.so.2,$@) -Wl,--whole-archive,$< -Wl,--no-whole-archive -o $@
+
 doc::
 	(cd $(srcdir) && $(GENDOC) doc/trio.cfg)
 
 clean:
-	$(ERASE) *~ core core.* regression example $(TOBJS) $(OBJS) $(TARGET) $(TARGETLIB) example.o regression.o
+	$(ERASE) *~ core core.* regression example $(TOBJS) $(OBJS) $(TARGET) $(TARGETLIB) $(TARGETSHLIB) example.o regression.o

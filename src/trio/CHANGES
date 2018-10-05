@@ -4,6 +4,33 @@ CHANGES -- trio
 The changes listed without a name attributed to them were most likely done by
 Bjorn Reese and/or Daniel Stenberg.
 
+Version 1.16 - 2014/07/16
+-------------------------
+* Stephen Kitt
+  Fixed accuracy problems on platforms with double-double support.
+
+* Stephen Kitt
+  Added support for GCC format attribute.
+
+* Balint Reczey
+  Fixed several visibility problems.
+
+* David Turner
+  Changed trionan to use sigaction() instead of signal().
+
+* Chris Liddell
+  Fixed compiler warnings.
+
+
+Version 1.15 - 2010/09/12
+-------------------------
+* Jiri Hruska
+  Added the trio_cprintff() and trio_cscanff() function.
+
+* Fixed calculation of fraction digits for %#g numbers involving rounding
+  (reported by Lajos Foldy).
+
+
 Version 1.14 - 2010/01/26
 -------------------------
 * David Byron
