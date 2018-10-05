@@ -3,10 +3,16 @@
 *************************************************/
 
 /* This is a grep program that uses the PCRE regular expression library to do
-its pattern matching. On a Unix or Win32 system it can recurse into
-directories.
+its pattern matching. On Unix-like, Windows, and native z/OS systems it can
+recurse into directories, and in z/OS it can handle PDS files.
 
-           Copyright (c) 1997-2012 University of Cambridge
+Note that for native z/OS, in addition to defining the NATIVE_ZOS macro, an
+additional header is required. That header is not included in the main PCRE
+distribution because other apparatus is needed to compile pcregrep for z/OS.
+The header can be found in the special z/OS distribution, which is available
+from www.zaconsultants.net or from www.cbttape.org.
+
+           Copyright (c) 1997-2014 University of Cambridge
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -449,7 +455,7 @@ Arguments:
   s          pattern string to add
   after      if not NULL points to item to insert after
 
-Returns:     new pattern block
+Returns:     new pattern block or NULL on error
 */
 
 static patstr *
@@ -465,6 +471,7 @@ if (strlen(s) > MAXPATLEN)
   {
   fprintf(stderr, "pcregrep: pattern is too long (limit is %d bytes)\n",
     MAXPATLEN);
+  free(p);
   return NULL;
   }
 p->next = NULL;
@@ -530,16 +537,28 @@ while (fn != NULL)
 *            OS-specific functions               *
 *************************************************/
 
-/* These functions are defined so that they can be made system specific,
-although at present the only ones are for Unix, Win32, and for "no support". */
+/* These functions are defined so that they can be made system specific.
+At present there are versions for Unix-style environments, Windows, native
+z/OS, and "no support". */
 
 
-/************* Directory scanning in Unix ***********/
+/************* Directory scanning Unix-style and z/OS ***********/
 
-#if defined HAVE_SYS_STAT_H && defined HAVE_DIRENT_H && defined HAVE_SYS_TYPES_H
+#if (defined HAVE_SYS_STAT_H && defined HAVE_DIRENT_H && defined HAVE_SYS_TYPES_H) || defined NATIVE_ZOS
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
+
+#if defined NATIVE_ZOS
+/************* Directory and PDS/E scanning for z/OS ***********/
+/************* z/OS looks mostly like Unix with USS ************/
+/* However, z/OS needs the #include statements in this header */
+#include "pcrzosfs.h"
+/* That header is not included in the main PCRE distribution because
+   other apparatus is needed to compile pcregrep for z/OS. The header
+   can be found in the special z/OS distribution, which is available
+   from www.zaconsultants.net or from www.cbttape.org. */
+#endif
 
 typedef DIR directory_type;
 #define FILESEP '/'
@@ -579,7 +598,7 @@ closedir(dir);
 }
 
 
-/************* Test for regular file in Unix **********/
+/************* Test for regular file, Unix-style **********/
 
 static int
 isregfile(char *filename)
@@ -591,8 +610,26 @@ return (statbuf.st_mode & S_IFMT) == S_IFREG;
 }
 
 
-/************* Test for a terminal in Unix **********/
+#if defined NATIVE_ZOS
+/************* Test for a terminal in z/OS **********/
+/* isatty() does not work in a TSO environment, so always give FALSE.*/
 
+static BOOL
+is_stdout_tty(void)
+{
+return FALSE;
+}
+
+static BOOL
+is_file_tty(FILE *f)
+{
+return FALSE;
+}
+
+
+/************* Test for a terminal, Unix-style **********/
+
+#else
 static BOOL
 is_stdout_tty(void)
 {
@@ -604,9 +641,12 @@ is_file_tty(FILE *f)
 {
 return isatty(fileno(f));
 }
+#endif
+
+/* End of Unix-style or native z/OS environment functions. */
 
 
-/************* Directory scanning in Win32 ***********/
+/************* Directory scanning in Windows ***********/
 
 /* I (Philip Hazel) have no means of testing this code. It was contributed by
 Lionel Fourquaux. David Burgess added a patch to define INVALID_FILE_ATTRIBUTES
@@ -709,7 +749,7 @@ free(dir);
 }
 
 
-/************* Test for regular file in Win32 **********/
+/************* Test for regular file in Windows **********/
 
 /* I don't know how to do this, or if it can be done; assume all paths are
 regular if they are not directories. */
@@ -720,7 +760,7 @@ return !isdirectory(filename);
 }
 
 
-/************* Test for a terminal in Win32 **********/
+/************* Test for a terminal in Windows **********/
 
 /* I don't know how to do this; assume never */
 
@@ -735,6 +775,8 @@ is_file_tty(FILE *f)
 {
 return FALSE;
 }
+
+/* End of Windows functions */
 
 
 /************* Directory scanning when we can't do it ***********/
@@ -752,7 +794,7 @@ char *readdirectory(directory_type *dir) { return (char*)0;}
 void closedirectory(directory_type *dir) {}
 
 
-/************* Test for regular when we can't do it **********/
+/************* Test for regular file when we can't do it **********/
 
 /* Assume all files are regular. */
 
@@ -773,7 +815,7 @@ is_file_tty(FILE *f)
 return FALSE;
 }
 
-#endif
+#endif  /* End of system-specific functions */
 
 
 
@@ -1257,7 +1299,7 @@ switch(endlinetype)
     while (p > startptr && p[-1] != '\n') p--;
     if (p <= startptr + 1 || p[-2] == '\r') return p;
     }
-  return p;   /* But control should never get here */
+  /* Control can never get here */
 
   case EL_ANY:
   case EL_ANYCRLF:
@@ -1345,8 +1387,8 @@ Returns:            nothing
 */
 
 static void
-do_after_lines(int lastmatchnumber, char *lastmatchrestart, char *endptr,
-  char *printname)
+do_after_lines(unsigned long int lastmatchnumber, char *lastmatchrestart,
+  char *endptr, char *printname)
 {
 if (after_context > 0 && lastmatchnumber > 0)
   {
@@ -1356,7 +1398,7 @@ if (after_context > 0 && lastmatchnumber > 0)
     int ellength;
     char *pp = lastmatchrestart;
     if (printname != NULL) fprintf(stdout, "%s-", printname);
-    if (number) fprintf(stdout, "%d-", lastmatchnumber++);
+    if (number) fprintf(stdout, "%lu-", lastmatchnumber++);
     pp = end_of_line(pp, endptr, &ellength);
     FWRITE(lastmatchrestart, 1, pp - lastmatchrestart, stdout);
     lastmatchrestart = pp;
@@ -1378,6 +1420,7 @@ to find all possible matches.
 Arguments:
   matchptr     the start of the subject
   length       the length of the subject to match
+  options      options for pcre_exec
   startoffset  where to start matching
   offsets      the offets vector to fill in
   mrc          address of where to put the result of pcre_exec()
@@ -1388,8 +1431,8 @@ Returns:      TRUE if there was a match
 */
 
 static BOOL
-match_patterns(char *matchptr, size_t length, int startoffset, int *offsets,
-  int *mrc)
+match_patterns(char *matchptr, size_t length, unsigned int options,
+  int startoffset, int *offsets, int *mrc)
 {
 int i;
 size_t slen = length;
@@ -1404,7 +1447,7 @@ if (slen > 200)
 for (i = 1; p != NULL; p = p->next, i++)
   {
   *mrc = pcre_exec(p->compiled, p->hint, matchptr, (int)length,
-    startoffset, PCRE_NOTEMPTY, offsets, OFFSET_SIZE);
+    startoffset, options, offsets, OFFSET_SIZE);
   if (*mrc >= 0) return TRUE;
   if (*mrc == PCRE_ERROR_NOMATCH) continue;
   fprintf(stderr, "pcregrep: pcre_exec() gave error %d while matching ", *mrc);
@@ -1459,11 +1502,11 @@ static int
 pcregrep(void *handle, int frtype, char *filename, char *printname)
 {
 int rc = 1;
-int linenumber = 1;
-int lastmatchnumber = 0;
-int count = 0;
 int filepos = 0;
 int offsets[OFFSET_SIZE];
+unsigned long int linenumber = 1;
+unsigned long int lastmatchnumber = 0;
+unsigned long int count = 0;
 char *lastmatchrestart = NULL;
 char *ptr = main_buffer;
 char *endptr;
@@ -1539,10 +1582,14 @@ while (ptr < endptr)
   int endlinelength;
   int mrc = 0;
   int startoffset = 0;
+  int prevoffsets[2];
+  unsigned int options = 0;
   BOOL match;
   char *matchptr = ptr;
   char *t = ptr;
   size_t length, linelength;
+
+  prevoffsets[0] = prevoffsets[1] = -1;
 
   /* At this point, ptr is at the start of a line. We need to find the length
   of the subject string to pass to pcre_exec(). In multiline mode, it is the
@@ -1562,7 +1609,7 @@ while (ptr < endptr)
 
   if (endlinelength == 0 && t == main_buffer + bufsize)
     {
-    fprintf(stderr, "pcregrep: line %d%s%s is too long for the internal buffer\n"
+    fprintf(stderr, "pcregrep: line %lu%s%s is too long for the internal buffer\n"
                     "pcregrep: check the --buffer-size option\n",
                     linenumber,
                     (filename == NULL)? "" : " of file ",
@@ -1628,9 +1675,12 @@ while (ptr < endptr)
 
   /* Run through all the patterns until one matches or there is an error other
   than NOMATCH. This code is in a subroutine so that it can be re-used for
-  finding subsequent matches when colouring matched lines. */
+  finding subsequent matches when colouring matched lines. After finding one
+  match, set PCRE_NOTEMPTY to disable any further matches of null strings in
+  this line. */
 
-  match = match_patterns(matchptr, length, startoffset, offsets, &mrc);
+  match = match_patterns(matchptr, length, options, startoffset, offsets, &mrc);
+  options = PCRE_NOTEMPTY;
 
   /* If it's a match or a not-match (as required), do what's wanted. */
 
@@ -1642,9 +1692,13 @@ while (ptr < endptr)
 
     if (filenames == FN_NOMATCH_ONLY) return 1;
 
+    /* If all we want is a yes/no answer, stop now. */
+
+    if (quiet) return 0;
+
     /* Just count if just counting is wanted. */
 
-    if (count_only) count++;
+    else if (count_only) count++;
 
     /* When handling a binary file and binary-files==binary, the "binary"
     variable will be set true (it's false in all other cases). In this
@@ -1665,10 +1719,6 @@ while (ptr < endptr)
       return 0;
       }
 
-    /* Likewise, if all we want is a yes/no answer. */
-
-    else if (quiet) return 0;
-
     /* The --only-matching option prints just the substring that matched,
     and/or one or more captured portions of it, as long as these strings are
     not empty. The --file-offsets and --line-offsets options output offsets for
@@ -1682,55 +1732,103 @@ while (ptr < endptr)
       {
       if (!invert)
         {
-        if (printname != NULL) fprintf(stdout, "%s:", printname);
-        if (number) fprintf(stdout, "%d:", linenumber);
+        int oldstartoffset = startoffset;
 
-        /* Handle --line-offsets */
+        /* It is possible, when a lookbehind assertion contains \K, for the
+        same string to be found again. The code below advances startoffset, but
+        until it is past the "bumpalong" offset that gave the match, the same
+        substring will be returned. The PCRE1 library does not return the
+        bumpalong offset, so all we can do is ignore repeated strings. (PCRE2
+        does this better.) */
 
-        if (line_offsets)
-          fprintf(stdout, "%d,%d\n", (int)(matchptr + offsets[0] - ptr),
-            offsets[1] - offsets[0]);
-
-        /* Handle --file-offsets */
-
-        else if (file_offsets)
-          fprintf(stdout, "%d,%d\n",
-            (int)(filepos + matchptr + offsets[0] - ptr),
-            offsets[1] - offsets[0]);
-
-        /* Handle --only-matching, which may occur many times */
-
-        else
+        if (prevoffsets[0] != offsets[0] || prevoffsets[1] != offsets[1])
           {
-          BOOL printed = FALSE;
-          omstr *om;
+          prevoffsets[0] = offsets[0];
+          prevoffsets[1] = offsets[1];
 
-          for (om = only_matching; om != NULL; om = om->next)
+          if (printname != NULL) fprintf(stdout, "%s:", printname);
+          if (number) fprintf(stdout, "%lu:", linenumber);
+
+          /* Handle --line-offsets */
+
+          if (line_offsets)
+            fprintf(stdout, "%d,%d\n", (int)(matchptr + offsets[0] - ptr),
+              offsets[1] - offsets[0]);
+
+          /* Handle --file-offsets */
+
+          else if (file_offsets)
+            fprintf(stdout, "%d,%d\n",
+              (int)(filepos + matchptr + offsets[0] - ptr),
+              offsets[1] - offsets[0]);
+
+          /* Handle --only-matching, which may occur many times */
+
+          else
             {
-            int n = om->groupnum;
-            if (n < mrc)
+            BOOL printed = FALSE;
+            omstr *om;
+
+            for (om = only_matching; om != NULL; om = om->next)
               {
-              int plen = offsets[2*n + 1] - offsets[2*n];
-              if (plen > 0)
+              int n = om->groupnum;
+              if (n < mrc)
                 {
-                if (printed) fprintf(stdout, "%s", om_separator);
-                if (do_colour) fprintf(stdout, "%c[%sm", 0x1b, colour_string);
-                FWRITE(matchptr + offsets[n*2], 1, plen, stdout);
-                if (do_colour) fprintf(stdout, "%c[00m", 0x1b);
-                printed = TRUE;
+                int plen = offsets[2*n + 1] - offsets[2*n];
+                if (plen > 0)
+                  {
+                  if (printed) fprintf(stdout, "%s", om_separator);
+                  if (do_colour) fprintf(stdout, "%c[%sm", 0x1b, colour_string);
+                  FWRITE(matchptr + offsets[n*2], 1, plen, stdout);
+                  if (do_colour) fprintf(stdout, "%c[00m", 0x1b);
+                  printed = TRUE;
+                  }
                 }
               }
-            }
 
-          if (printed || printname != NULL || number) fprintf(stdout, "\n");
+            if (printed || printname != NULL || number) fprintf(stdout, "\n");
+            }
           }
 
-        /* Prepare to repeat to find the next match */
+        /* Prepare to repeat to find the next match. If the patterned contained
+        a lookbehind tht included \K, it is possible that the end of the match
+        might be at or before the actual strting offset we have just used. We
+        need to start one character further on. Unfortunately, for unanchored
+        patterns, the actual start offset can be greater that the one that was
+        set as a result of "bumpalong". PCRE1 does not return the actual start
+        offset, so we have to check against the original start offset. This may
+        lead to duplicates - we we need the fudge above to avoid printing them.
+        (PCRE2 does this better.) */
 
         match = FALSE;
         if (line_buffered) fflush(stdout);
         rc = 0;                      /* Had some success */
+
         startoffset = offsets[1];    /* Restart after the match */
+        if (startoffset <= oldstartoffset)
+          {
+          if ((size_t)startoffset >= length)
+            goto END_ONE_MATCH;              /* We were at the end */
+          startoffset = oldstartoffset + 1;
+          if (utf8)
+            while ((matchptr[startoffset] & 0xc0) == 0x80) startoffset++;
+          }
+
+        /* If the current match ended past the end of the line (only possible
+        in multiline mode), we must move on to the line in which it did end
+        before searching for more matches. */
+
+        while (startoffset > (int)linelength)
+          {
+          matchptr = ptr += linelength + endlinelength;
+          filepos += (int)(linelength + endlinelength);
+          linenumber++;
+          startoffset -= (int)(linelength + endlinelength);
+          t = end_of_line(ptr, endptr, &endlinelength);
+          linelength = t - ptr - endlinelength;
+          length = (size_t)(endptr - ptr);
+          }
+
         goto ONLY_MATCHING_RESTART;
         }
       }
@@ -1764,7 +1862,7 @@ while (ptr < endptr)
           {
           char *pp = lastmatchrestart;
           if (printname != NULL) fprintf(stdout, "%s-", printname);
-          if (number) fprintf(stdout, "%d-", lastmatchnumber++);
+          if (number) fprintf(stdout, "%lu-", lastmatchnumber++);
           pp = end_of_line(pp, endptr, &ellength);
           FWRITE(lastmatchrestart, 1, pp - lastmatchrestart, stdout);
           lastmatchrestart = pp;
@@ -1804,7 +1902,7 @@ while (ptr < endptr)
           int ellength;
           char *pp = p;
           if (printname != NULL) fprintf(stdout, "%s-", printname);
-          if (number) fprintf(stdout, "%d-", linenumber - linecount--);
+          if (number) fprintf(stdout, "%lu-", linenumber - linecount--);
           pp = end_of_line(pp, endptr, &ellength);
           FWRITE(p, 1, pp - p, stdout);
           p = pp;
@@ -1818,7 +1916,7 @@ while (ptr < endptr)
         endhyphenpending = TRUE;
 
       if (printname != NULL) fprintf(stdout, "%s:", printname);
-      if (number) fprintf(stdout, "%d:", linenumber);
+      if (number) fprintf(stdout, "%lu:", linenumber);
 
       /* In multiline mode, we want to print to the end of the line in which
       the end of the matched string is found, so we adjust linelength and the
@@ -1830,7 +1928,7 @@ while (ptr < endptr)
         {
         char *endmatch = ptr + offsets[1];
         t = ptr;
-        while (t < endmatch)
+        while (t <= endmatch)
           {
           t = end_of_line(t, endptr, &endlinelength);
           if (t < endmatch) linenumber++; else break;
@@ -1871,7 +1969,8 @@ while (ptr < endptr)
           {
           startoffset = offsets[1];
           if (startoffset >= (int)linelength + endlinelength ||
-              !match_patterns(matchptr, length, startoffset, offsets, &mrc))
+              !match_patterns(matchptr, length, options, startoffset, offsets,
+                &mrc))
             break;
           FWRITE(matchptr + startoffset, 1, offsets[0] - startoffset, stdout);
           fprintf(stdout, "%c[%sm", 0x1b, colour_string);
@@ -1926,6 +2025,7 @@ while (ptr < endptr)
   /* Advance to after the newline and increment the line number. The file
   offset to the current line is maintained in filepos. */
 
+  END_ONE_MATCH:
   ptr += linelength + endlinelength;
   filepos += (int)(linelength + endlinelength);
   linenumber++;
@@ -2006,13 +2106,13 @@ if (filenames == FN_NOMATCH_ONLY)
 
 /* Print the match count if wanted */
 
-if (count_only)
+if (count_only && !quiet)
   {
   if (count > 0 || !omit_zero_count)
     {
     if (printname != NULL && filenames != FN_NONE)
       fprintf(stdout, "%s:", printname);
-    fprintf(stdout, "%d\n", count);
+    fprintf(stdout, "%lu\n", count);
     }
   }
 
@@ -2062,6 +2162,11 @@ BZFILE *inbz2 = NULL;
 int pathlen;
 #endif
 
+#if defined NATIVE_ZOS
+int zos_type;
+FILE *zos_test_file;
+#endif
+
 /* If the file name is "-" we scan stdin */
 
 if (strcmp(pathname, "-") == 0)
@@ -2082,6 +2187,45 @@ lastcomp = (lastcomp == NULL)? pathname : lastcomp + 1;
 Otherwise, scan the directory and recurse for each path within it. The scanning
 code is localized so it can be made system-specific. */
 
+
+/* For z/OS, determine the file type. */
+
+#if defined NATIVE_ZOS
+zos_test_file =  fopen(pathname,"rb");
+
+if (zos_test_file == NULL)
+   {
+   if (!silent) fprintf(stderr, "pcregrep: failed to test next file %s\n",
+     pathname, strerror(errno));
+   return -1;
+   }
+zos_type = identifyzosfiletype (zos_test_file);
+fclose (zos_test_file);
+
+/* Handle a PDS in separate code */
+
+if (zos_type == __ZOS_PDS || zos_type == __ZOS_PDSE)
+   {
+   return travelonpdsdir (pathname, only_one_at_top);
+   }
+
+/* Deal with regular files in the normal way below. These types are:
+   zos_type == __ZOS_PDS_MEMBER
+   zos_type == __ZOS_PS
+   zos_type == __ZOS_VSAM_KSDS
+   zos_type == __ZOS_VSAM_ESDS
+   zos_type == __ZOS_VSAM_RRDS
+*/
+
+/* Handle a z/OS directory using common code. */
+
+else if (zos_type == __ZOS_HFS)
+ {
+#endif  /* NATIVE_ZOS */
+
+
+/* Handle directories: common code for all OS */
+
 if (isdirectory(pathname))
   {
   if (dee_action == dee_SKIP ||
@@ -2090,7 +2234,7 @@ if (isdirectory(pathname))
 
   if (dee_action == dee_RECURSE)
     {
-    char buffer[1024];
+    char buffer[2048];
     char *nextfile;
     directory_type *dir = opendirectory(pathname);
 
@@ -2105,7 +2249,14 @@ if (isdirectory(pathname))
     while ((nextfile = readdirectory(dir)) != NULL)
       {
       int frc;
-      sprintf(buffer, "%.512s%c%.128s", pathname, FILESEP, nextfile);
+      int fnlength = strlen(pathname) + strlen(nextfile) + 2;
+      if (fnlength > 2048)
+        {
+        fprintf(stderr, "pcre2grep: recursive filename is too long\n");
+        rc = 2;
+        break;
+        }
+      sprintf(buffer, "%s%c%s", pathname, FILESEP, nextfile);
       frc = grep_or_recurse(buffer, dir_recurse, FALSE);
       if (frc > 1) rc = frc;
        else if (frc == 0 && rc == 1) rc = 0;
@@ -2116,12 +2267,22 @@ if (isdirectory(pathname))
     }
   }
 
-/* If the file is not a directory and not a regular file, skip it if that's
-been requested. Otherwise, check for explicit include/exclude. */
+#if defined NATIVE_ZOS
+ }
+#endif
 
-else if ((!isregfile(pathname) && DEE_action == DEE_SKIP) ||
-          !test_incexc(lastcomp, include_patterns, exclude_patterns))
-        return -1;
+/* If the file is not a directory, check for a regular file, and if it is not,
+skip it if that's been requested. Otherwise, check for an explicit inclusion or
+exclusion. */
+
+else if (
+#if defined NATIVE_ZOS
+        (zos_type == __ZOS_NOFILE && DEE_action == DEE_SKIP) ||
+#else  /* all other OS */
+        (!isregfile(pathname) && DEE_action == DEE_SKIP) ||
+#endif
+        !test_incexc(lastcomp, include_patterns, exclude_patterns))
+  return -1;  /* File skipped */
 
 /* Control reaches here if we have a regular file, or if we have a directory
 and recursion or skipping was not requested, or if we have anything else and
@@ -2300,7 +2461,7 @@ return options;
 static char *
 ordin(int n)
 {
-static char buffer[8];
+static char buffer[14];
 char *p = buffer;
 sprintf(p, "%d", n);
 while (*p != 0) p++;
@@ -2366,7 +2527,14 @@ if ((popts & PO_FIXED_STRINGS) != 0)
     }
   }
 
-sprintf(buffer, "%s%.*s%s", prefix[popts], patlen, ps, suffix[popts]);
+if (snprintf(buffer, PATBUFSIZE, "%s%.*s%s", prefix[popts], patlen, ps,
+      suffix[popts]) > PATBUFSIZE)
+  {
+  fprintf(stderr, "pcregrep: Buffer overflow while compiling \"%s\"\n",
+    ps);
+  return FALSE;
+  }
+
 p->compiled = pcre_compile(buffer, options, &error, &errptr, pcretables);
 if (p->compiled != NULL) return TRUE;
 
@@ -2448,7 +2616,11 @@ while (fgets(buffer, PATBUFSIZE, f) != NULL)
   afterwards, as a precaution against any later code trying to use it. */
 
   *patlastptr = add_pattern(buffer, *patlastptr);
-  if (*patlastptr == NULL) return FALSE;
+  if (*patlastptr == NULL)
+    {
+    if (f != stdin) fclose(f);
+    return FALSE;
+    }
   if (*patptr == NULL) *patptr = *patlastptr;
 
   /* This loop is needed because compiling a "pattern" when -F is set may add
@@ -2460,7 +2632,10 @@ while (fgets(buffer, PATBUFSIZE, f) != NULL)
     {
     if (!compile_pattern(*patlastptr, pcre_options, popts, TRUE, filename,
         linenumber))
+      {
+      if (f != stdin) fclose(f);
       return FALSE;
+      }
     (*patlastptr)->string = NULL;            /* Insurance */
     if ((*patlastptr)->next == NULL) break;
     *patlastptr = (*patlastptr)->next;
@@ -2595,8 +2770,15 @@ for (i = 1; i < argc; i++)
         int arglen = (argequals == NULL || equals == NULL)?
           (int)strlen(arg) : (int)(argequals - arg);
 
-        sprintf(buff1, "%.*s", baselen, op->long_name);
-        sprintf(buff2, "%s%.*s", buff1, fulllen - baselen - 2, opbra + 1);
+        if (snprintf(buff1, sizeof(buff1), "%.*s", baselen, op->long_name) >
+              (int)sizeof(buff1) ||
+            snprintf(buff2, sizeof(buff2), "%s%.*s", buff1,
+              fulllen - baselen - 2, opbra + 1) > (int)sizeof(buff2))
+          {
+          fprintf(stderr, "pcregrep: Buffer overflow when parsing %s option\n",
+            op->long_name);
+          pcregrep_exit(2);
+          }
 
         if (strncmp(arg, buff1, arglen) == 0 ||
            strncmp(arg, buff2, arglen) == 0)
@@ -2861,8 +3043,8 @@ if (locale == NULL)
   locale_from = "LC_CTYPE";
   }
 
-/* If a locale has been provided, set it, and generate the tables the PCRE
-needs. Otherwise, pcretables==NULL, which causes the use of default tables. */
+/* If a locale is set, use it to generate the tables the PCRE needs. Otherwise,
+pcretables==NULL, which causes the use of default tables. */
 
 if (locale != NULL)
   {
@@ -2870,7 +3052,7 @@ if (locale != NULL)
     {
     fprintf(stderr, "pcregrep: Failed to set locale %s (obtained from %s)\n",
       locale, locale_from);
-    return 2;
+    goto EXIT2;
     }
   pcretables = pcre_maketables();
   }
@@ -2885,7 +3067,7 @@ if (colour_option != NULL && strcmp(colour_option, "never") != 0)
     {
     fprintf(stderr, "pcregrep: Unknown colour setting \"%s\"\n",
       colour_option);
-    return 2;
+    goto EXIT2;
     }
   if (do_colour)
     {
@@ -2925,7 +3107,7 @@ else if (strcmp(newline, "anycrlf") == 0 || strcmp(newline, "ANYCRLF") == 0)
 else
   {
   fprintf(stderr, "pcregrep: Invalid newline specifier \"%s\"\n", newline);
-  return 2;
+  goto EXIT2;
   }
 
 /* Interpret the text values for -d and -D */
@@ -2938,7 +3120,7 @@ if (dee_option != NULL)
   else
     {
     fprintf(stderr, "pcregrep: Invalid value \"%s\" for -d\n", dee_option);
-    return 2;
+    goto EXIT2;
     }
   }
 
@@ -2949,7 +3131,7 @@ if (DEE_option != NULL)
   else
     {
     fprintf(stderr, "pcregrep: Invalid value \"%s\" for -D\n", DEE_option);
-    return 2;
+    goto EXIT2;
     }
   }
 
@@ -3029,9 +3211,11 @@ for (j = 1, cp = patterns; cp != NULL; j++, cp = cp->next)
   cp->hint = pcre_study(cp->compiled, study_options, &error);
   if (error != NULL)
     {
-    char s[16];
-    if (patterns->next == NULL) s[0] = 0; else sprintf(s, " number %d", j);
-    fprintf(stderr, "pcregrep: Error while studying regex%s: %s\n", s, error);
+    if (patterns->next == NULL)
+      fprintf(stderr, "pcregrep: Error while studying regex: %s\n", error);
+    else
+      fprintf(stderr, "pcregrep: Error while studying regex number %d: %s\n",
+        j, error);
     goto EXIT2;
     }
 #ifdef SUPPORT_PCREGREP_JIT
@@ -3150,7 +3334,8 @@ EXIT:
 if (jit_stack != NULL) pcre_jit_stack_free(jit_stack);
 #endif
 
-if (main_buffer != NULL) free(main_buffer);
+free(main_buffer);
+free((void *)pcretables);
 
 free_pattern_chain(patterns);
 free_pattern_chain(include_patterns);

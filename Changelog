@@ -6,6 +6,9 @@ HYPERMAIL VERSION 2.4.0:
 
 2018-10-04 Jose Kahan
 
+	* src/pcre
+	Upgraded to upstream version 8.42
+	
 	* src/trio
 	Upgraded to upstream version 1.16
 
