@@ -57,6 +57,7 @@
 } while (0)
 
 using std::vector;
+using std::string;
 using pcrecpp::StringPiece;
 using pcrecpp::Scanner;
 
@@ -149,6 +150,8 @@ static void TestBigComment() {
 //       small stack size
 
 int main(int argc, char** argv) {
+  (void)argc;
+  (void)argv;
   TestScanner();
   TestBigComment();
 
