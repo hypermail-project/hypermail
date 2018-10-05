@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * $Id: trionan.c,v 1.1 2013-03-15 19:33:25 kahan Exp $
+ * $Id$
  *
  * Copyright (C) 2001 Bjorn Reese <breese@users.sourceforge.net>
  *
@@ -227,7 +227,7 @@
  */
 
 #if !defined(TRIO_EMBED_NAN)
-static TRIO_CONST char rcsid[] = "@(#)$Id: trionan.c,v 1.1 2013-03-15 19:33:25 kahan Exp $";
+static TRIO_CONST char rcsid[] = "@(#)$Id$";
 #endif
 
 #if defined(TRIO_FUNC_INTERNAL_MAKE_DOUBLE) \
@@ -292,6 +292,67 @@ static TRIO_CONST unsigned char ieee_754_qnan_array[] = {
 /*************************************************************************
  * Internal functions
  */
+
+/*
+ *
+ */
+#if defined(TRIO_PLATFORM_UNIX) && defined(TRIO_INTERNAL_ISNAN_FALLBACK)
+
+/* Assume that if SA_SIGINFO is defined, then sigaction() and
+ * 'struct sigaction' are also properly defined on this platform.
+ */
+#ifndef TRIO_USE_SIGACTION
+#  ifdef SA_SIGINFO
+#    define TRIO_USE_SIGACTION 1
+#  else
+#    define TRIO_USE_SIGACTION 0
+#  endif
+#endif
+
+#  if TRIO_USE_SIGACTION
+typedef struct sigaction signal_handler_t;
+#  else
+typedef void (*signal_handler_t) TRIO_PROTO((int));
+#  endif
+
+/*
+ * internal_ignore_signal_handler
+ */
+
+TRIO_PRIVATE_NAN signal_handler_t
+internal_ignore_signal_handler
+TRIO_ARGS1((signum),
+           int signum)
+{
+#  if TRIO_USE_SIGACTION
+  signal_handler_t old_handler, new_handler;
+  memset(&new_handler, '\0', sizeof(new_handler));
+  new_handler.sa_handler = SIG_IGN;
+  new_handler.sa_flags = SA_RESTART;
+  sigaction(signum, &new_handler, &old_handler);
+  return old_handler;
+#  else
+  return signal(signum, SIG_IGN);
+#  endif
+}
+
+/*
+ * internal_restore_signal_handler
+ */
+TRIO_PRIVATE_NAN void
+internal_restore_signal_handler
+TRIO_ARGS2((signum, handler),
+           int signum,
+           signal_handler_t handler)
+{
+#  if TRIO_USE_SIGACTION
+    sigaction(signum, &handler, NULL);
+#  else
+    signal(signum, handler);
+#  endif
+}
+
+#endif
 
 /*
  * internal_make_double
@@ -649,7 +710,7 @@ TRIO_ARGS1((number),
   double integral, fraction;
   
 #  if defined(TRIO_PLATFORM_UNIX)
-  void (*signal_handler)(int) = signal(SIGFPE, SIG_IGN);
+  signal_handler_t sigfpe_handler = internal_ignore_signal_handler(SIGFPE);
 #  endif
   
   status = (/*
@@ -664,7 +725,7 @@ TRIO_ARGS1((number),
 	      integral == fraction)));
   
 #  if defined(TRIO_PLATFORM_UNIX)
-  signal(SIGFPE, signal_handler);
+  internal_restore_signal_handler(SIGFPR, sigfpe_handler);
 #  endif
   
   return status;
@@ -711,7 +772,7 @@ TRIO_ARGS1((number),
   int status;
   
 #  if defined(TRIO_PLATFORM_UNIX)
-  void (*signal_handler)(int) = signal(SIGFPE, SIG_IGN);
+  signal_handler_t sigfpe_handler = internal_ignore_signal_handler(SIGFPE);
 #  endif
   
   double infinity = trio_pinf();
@@ -721,7 +782,7 @@ TRIO_ARGS1((number),
 	    : ((number == -infinity) ? -1 : 0));
   
 #  if defined(TRIO_PLATFORM_UNIX)
-  signal(SIGFPE, signal_handler);
+  internal_restore_signal_handler(SIGFPE, sigfpe_handler);
 #  endif
   
   return status;
@@ -997,7 +1058,7 @@ trio_pinf(TRIO_NOARGS)
      * operation to generate infinity.
      */
 #  if defined(TRIO_PLATFORM_UNIX)
-    void (*signal_handler)(int) = signal(SIGFPE, SIG_IGN);
+    signal_handler_t sigfpe_handler = internal_ignore_signal_handler(SIGFPE);
 #  endif
 
     pinf_value = HUGE_VAL;
@@ -1007,7 +1068,7 @@ trio_pinf(TRIO_NOARGS)
     }
     
 #  if defined(TRIO_PLATFORM_UNIX)
-    signal(SIGFPE, signal_handler);
+    internal_restore_signal_handler(SIGFPE, sigfpe_handler);
 #  endif
 
 # endif
@@ -1086,13 +1147,13 @@ trio_nan(TRIO_NOARGS)
      * the Invalid Operation floating-point exception is unmasked.
      */
 #  if defined(TRIO_PLATFORM_UNIX)
-    void (*signal_handler)(int) = signal(SIGFPE, SIG_IGN);
+    signal_handle_t sigfpe_handler = internal_ignore_signal_handler(SIGFPE);
 #  endif
     
     nan_value = trio_pinf() / trio_pinf();
     
 #  if defined(TRIO_PLATFORM_UNIX)
-    signal(SIGFPE, signal_handler);
+    internal_restore_signal_handler(SIGFPE, sigfpe_handler);
 #  endif
 
 # endif
@@ -1155,7 +1216,7 @@ int main(TRIO_NOARGS)
   double my_pinf;
   double my_ninf;
 # if defined(TRIO_PLATFORM_UNIX)
-  void (*signal_handler) TRIO_PROTO((int));
+  signal_handler_t signal_handler;
 # endif
 
   my_nan = trio_nan();
@@ -1207,7 +1268,7 @@ int main(TRIO_NOARGS)
 	 trio_isnan(my_ninf), trio_isinf(my_ninf), trio_isfinite(my_ninf));
   
 # if defined(TRIO_PLATFORM_UNIX)
-  signal_handler = signal(SIGFPE, SIG_IGN);
+  signal_handler = internal_ignore_signal_handler(SIGFPE);
 # endif
   
   my_pinf = DBL_MAX + DBL_MAX;
@@ -1215,7 +1276,7 @@ int main(TRIO_NOARGS)
   my_nan = my_pinf / my_pinf;
 
 # if defined(TRIO_PLATFORM_UNIX)
-  signal(SIGFPE, signal_handler);
+  internal_restore_signal_handler(SIGFPE, signal_handler);
 # endif
   
   printf("NaN : %4g 0x%02x%02x%02x%02x%02x%02x%02x%02x (%2d, %2d, %2d)\n",

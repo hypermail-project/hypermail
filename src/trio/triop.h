@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * $Id: triop.h,v 1.1 2013-03-15 19:33:25 kahan Exp $
+ * $Id$
  *
  * Copyright (C) 2000 Bjorn Reese and Daniel Stenberg.
  *
@@ -151,6 +151,7 @@ extern "C" {
 # define TRIO_FEATURE_FD 0
 # define TRIO_FEATURE_DYNAMICSTRING 0
 # define TRIO_FEATURE_CLOSURE 0
+# define TRIO_FEATURE_ARGFUNC 0
 # define TRIO_FEATURE_STRERR 0
 # define TRIO_FEATURE_LOCALE 0
 # define TRIO_EMBED_NAN 1
@@ -230,6 +231,29 @@ extern "C" {
  * These functions are rarely needed. This saves a (small) amount of code.
  */
 #if !defined(TRIO_FEATURE_CLOSURE)
+# define TRIO_FEATURE_CLOSURE 1
+#endif
+
+/*
+ * TRIO_FEATURE_ARGFUNC (=0 or =1)
+ *
+ * Define this to 0 to disable compilation of trio_cprintff() and
+ * trio_cscanff() functions and related code (might have a tiny
+ * performance gain), or define to 1 to enable them.
+ *
+ * This functionality is needed only if you have to fetch the arguments using
+ * a pull model instead of passing them all at once (for example if you plan
+ * to plug the library into a script interpreter or validate the types).
+ *
+ * Only the closure family of functions are available with this interface,
+ * because if you need this, you usually provide custom input/output
+ * handling too (and so this forces TRIO_FEATURE_CLOSURE to enabled).
+ */
+#if !defined(TRIO_FEATURE_ARGFUNC)
+# define TRIO_FEATURE_ARGFUNC 1
+#endif
+#if TRIO_FEATURE_ARGFUNC
+# undef TRIO_FEATURE_CLOSURE
 # define TRIO_FEATURE_CLOSURE 1
 #endif
 

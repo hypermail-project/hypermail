@@ -1,5 +1,8 @@
---- /tmp/trio-1.14/FILES	2009-10-31 16:51:57.000000000 +0100
-+++ ./FILES	2013-03-15 20:23:02.000000000 +0100
+Only in /tmp/trio-1.16/: doc
+Only in /tmp/trio-1.16/: example.c
+diff -u /tmp/trio-1.16/FILES ./FILES
+--- /tmp/trio-1.16/FILES	2013-06-13 11:17:24.000000000 +0200
++++ ./FILES	2018-10-05 18:41:53.156152928 +0200
 @@ -2,7 +2,6 @@
  README
  CHANGES
@@ -30,9 +33,12 @@
 -doc/trio.css
 -html/trio.css
 -html/*.html
---- /tmp/trio-1.14/triop.h	2009-10-31 16:51:57.000000000 +0100
-+++ ./triop.h	2013-03-15 20:12:57.000000000 +0100
-@@ -299,11 +299,11 @@
+Only in /tmp/trio-1.16/: html
+Only in /tmp/trio-1.16/: maketgz
+diff -u /tmp/trio-1.16/triop.h ./triop.h
+--- /tmp/trio-1.16/triop.h	2013-06-13 12:40:23.000000000 +0200
++++ ./triop.h	2018-10-05 18:43:16.201225628 +0200
+@@ -323,11 +323,11 @@
   * separately.
   */
  #if defined(TRIO_MINIMAL)
