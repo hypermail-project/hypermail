@@ -5,6 +5,11 @@ HYPERMAIL VERSION 2.4.0:
 ============================
 
 2018-10-04 Jose Kahan
+	* parse.c
+	Only use the headers charset for text/plain if its absent. If no charset
+	is available in the other parts, do not add it.
+
+2018-10-04 Jose Kahan
 
 	* Updated Changelog format for entries newer than version 2.3.0
 
@@ -20,6 +25,7 @@ HYPERMAIL VERSION 2.4.0:
 	* parse.c
 	References header was processed multiple times as it was not being marked as parsed
 	after being processed.
+	The epilogue of MIME parts was not being ignored.
 
 2018-06-19 Jose Kahan
 
