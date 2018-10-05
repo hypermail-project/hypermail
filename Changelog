@@ -5,6 +5,10 @@ HYPERMAIL VERSION 2.4.0:
 ============================
 
 2018-10-04 Jose Kahan
+
+	* src/trio
+	Upgraded to upstream version 1.16
+
 	* parse.c
 	Only use the headers charset for text/plain if its absent. If no charset
 	is available in the other parts, do not add it.
