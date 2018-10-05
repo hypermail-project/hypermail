@@ -2317,27 +2317,15 @@ int parsemail(char *mbox,	/* file name */
 #ifdef DEBUG_PARSE                                
                                 fprintf(stderr, "pushing charset %s and charsetsave %s\n", charset, charsetsave);
 #endif
-                                {
-                                    struct charset_stack *tmp = charsets_head(charsetsp);
-                                    /* @@JK Do we need to restore
-                                     * charset to the parents or to
-                                     * NULL? */
-
                                     if (charset) {
                                         free(charset);
                                     }
+                                    charsetsave[0] = '\0';
 
-                                    if (tmp->charset) {
-                                        charset = strsav(tmp->charset);
-                                    } else {
-                                        charset = NULL;
-                                    }
-                                    strcpy(charsetsave, tmp->charsetsave);
 #ifdef DEBUG_PARSE
                                     fprintf(stderr, "restoring parents charset %s and charsetsave %s\n", charset, charsetsave); 
 #endif
-                                }
-                                
+
 				/*
 				 * We set ourselves, "back in header" since there is
 				 * gonna come MIME headers now after the separator
@@ -3404,14 +3392,18 @@ msgid);
 
 	strcpymax(fromdate, dp ? dp : "", DATESTRLEN);
         if (prefered_content_charset) {
+            if (prefered_content_charset[0] != '\0') {
 #ifdef DEBUG_PARSE
-            fprintf(stderr, "Replacing charset %s with prefered_content_charset %s\n",
-                    charset, prefered_content_charset);
+                fprintf(stderr, "Replacing charset %s with prefered_content_charset %s\n",
+                        charset, prefered_content_charset);
 #endif
-            if (charset) {
-                free(charset);
+                if (charset) {
+                    free(charset);
+                }
+                charset = prefered_content_charset;
+            } else {
+                free(prefered_content_charset);
             }
-            charset = prefered_content_charset;
             prefered_content_charset = NULL;
         }
         
