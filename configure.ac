@@ -364,8 +364,8 @@ if test "${enable_system_libtrio}" = yes; then
   AC_CHECK_HEADER(trio.h, [],
                   [AC_MSG_ERROR([unable to find trio.h header file (dev version not installed?)])
 		  ])
-else   
-  AC_MSG_NOTICE([compiling bundled libtrio])
+else
+  AC_MSG_NOTICE([using bundled libtrio])
   APR_ADDTO(INCLUDES, "[-Itrio]")
   APR_ADDTO(LDFLAGS, "[-Ltrio]")
   APR_ADDTO(CPPFLAGS, "[-DTRIO_MINIMAL]")
@@ -459,11 +459,11 @@ fi
 
 dnl PCRE conclusion
 if test "$PCRE_CONFIG" != "false"; then
-  AC_MSG_NOTICE([found PCRE regular expressions library])
+  AC_MSG_NOTICE([using system PCRE regular expressions library])
   APR_ADDTO(CFLAGS, [`$PCRE_CONFIG --cflags`])
   APR_ADDTO(LIBS, [`$PCRE_CONFIG --libs`])
 else
-  AC_MSG_NOTICE([falling back to bundled PCRE regular expressions library])
+  AC_MSG_NOTICE([using bundled PCRE regular expressions library])
   APR_ADDTO(INCLUDES, [-Ipcre])
   APR_ADDTO(LDFLAGS, "[-Lpcre/.libs]")
   PCRE_DEP="pcre/.libs/libpcre.a"
