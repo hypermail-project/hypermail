@@ -6,9 +6,13 @@ HYPERMAIL VERSION 2.4.0:
 
 2018-10-07 Jose Kahan
 
+	* print.c printauthors(), printthreads(), printsubjects, printdates()
+	Even if set_i18n was enabled, Indexes were written with mixed charsets
+	instead of using utf-8 throughout.
+
 	* configure.ac, Makefile.in, src/Makefile.in
 	If the system has a recent libpcre, compile against it instead of using
-	the bundled one. This check is done by default when launching configure
+	the bundled one. This check is done by default when launching configure.
 
 	New configure options to allow to link against an external pcre library
 	(--with-external-pcre) or to force the build and link against the
