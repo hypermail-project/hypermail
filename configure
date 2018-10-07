@@ -4840,8 +4840,8 @@ fi
 
 
 else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: compiling bundled libtrio" >&5
-$as_echo "$as_me: compiling bundled libtrio" >&6;}
+  { $as_echo "$as_me:${as_lineno-$LINENO}: using bundled libtrio" >&5
+$as_echo "$as_me: using bundled libtrio" >&6;}
 
   if test "x$INCLUDES" = "x"; then
     test "x$silent" != "xyes" && echo "  setting INCLUDES to \""-Itrio"\""
@@ -5224,8 +5224,8 @@ fi
 fi
 
 if test "$PCRE_CONFIG" != "false"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: found PCRE regular expressions library" >&5
-$as_echo "$as_me: found PCRE regular expressions library" >&6;}
+  { $as_echo "$as_me:${as_lineno-$LINENO}: using system PCRE regular expressions library" >&5
+$as_echo "$as_me: using system PCRE regular expressions library" >&6;}
 
   if test "x$CFLAGS" = "x"; then
     test "x$silent" != "xyes" && echo "  setting CFLAGS to \"`$PCRE_CONFIG --cflags`\""
@@ -5269,8 +5269,8 @@ $as_echo "$as_me: found PCRE regular expressions library" >&6;}
   fi
 
 else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: falling back to bundled PCRE regular expressions library" >&5
-$as_echo "$as_me: falling back to bundled PCRE regular expressions library" >&6;}
+  { $as_echo "$as_me:${as_lineno-$LINENO}: using bundled PCRE regular expressions library" >&5
+$as_echo "$as_me: using bundled PCRE regular expressions library" >&6;}
 
   if test "x$INCLUDES" = "x"; then
     test "x$silent" != "xyes" && echo "  setting INCLUDES to \"-Ipcre\""
