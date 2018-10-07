@@ -26,19 +26,20 @@ CC=@CC@
 # Installation program to use
 INSTALL_PROG=@INSTALL@ 
 
-SPLINTFLAGS=@INCLUDES@ -Itrio
+SPLINTFLAGS=@INCLUDES@
 
 PCRE_DEP=@PCRE_DEP@
+TRIO_DEP=@TRIO_DEP@
 FNV_DEP=@FNV_DEP@
 
 #WNOERROR=-Werror
 #WARNINGS=$(WNOERROR) -ansi -pedantic -Wall -Wtraditional -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Dlint
 
 CFLAGS=@CFLAGS@ $(WARNINGS)
-CPPFLAGS=@CPPFLAGS@ @INCLUDES@ -Itrio -DTRIO_MINIMAL
+CPPFLAGS=@CPPFLAGS@ @INCLUDES@
 YACC=@YACC@
 NETLIBS=@LIBS@
-LDFLAGS=@LDFLAGS@ -Ltrio
+LDFLAGS=@LDFLAGS@
 MISC_LIBS= -lm -lpcre -ltrio
 OPT_LIBS=@EXTRA_LIBS@
 
@@ -61,7 +62,7 @@ MAILOBJS=	mail.o ../libcgi/libcgi.a
 .c.o:
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) $<
 
-all:    @PCRE_DEP@ trio/libtrio.a @FNV_DEP@ hypermail$(SUFFIX) mail$(SUFFIX) lang$(SUFFIX)
+all:    @PCRE_DEP@ @TRIO_DEP@ @FNV_DEP@ hypermail$(SUFFIX) mail$(SUFFIX) lang$(SUFFIX)
 
 pcre/.libs/libpcre.a:
 	@cd pcre; $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" ; rm -f .libs/lib*.so*
@@ -131,19 +132,19 @@ clean:
 	rm -f .inslog tca.map lint.out splint.out
 	rm -f getdate.c
 	@(if test "$(PCRE_DEP)" != "" ; then cd pcre; $(MAKE) clean; fi)
-	@cd trio; $(MAKE) clean
+	@(if test "$(TRIO_DEP)" != "" ; then cd trio; $(MAKE) clean; fi)
 	@(if test "$(FNV_DEP)" != "" ; then cd fnv; $(MAKE) clean; fi)
 	@cd ../libcgi; $(MAKE) clean
 
 clobber: clean
 	@(if test "$(PCRE_DEP)" != "" ; then cd pcre; rm -f *.lock; fi)
-	@cd trio; rm -f *.lock
+	@(if test "$(TRIO_DEP)" != ""; then cd trio; rm -f *.lock; fi)
 	@(if test "$(FNV_DEP)" != "" ; then cd fnv; $(MAKE) clobber; fi)
 	@cd ../libcgi; $(MAKE) clobber
 
 distclean: clobber
 	@(if test "$(PCRE_DEP)" != "" ; then cd pcre; $(MAKE) distclean; fi)
-	@cd trio; $(MAKE) clean
+	@(if test "$(TRIO_DEP)" != ""; then cd trio; $(MAKE) clean; fi)
 	@(if test "$(FNV_DEP)" != "" ; then cd fnv; $(MAKE) distclean; fi)
 	@cd ../libcgi; $(MAKE) distclean
 

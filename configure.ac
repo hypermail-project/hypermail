@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.67])
+AC_PREREQ([2.69])
 AC_REVISION($Revision: 1.2 $)dnl
 AC_INIT
 AC_CONFIG_SRCDIR([src/hypermail.c])
@@ -10,10 +10,13 @@ LDFLAGS=""
 LIBS=""
 EXTRA_LIBS=""
 INCLUDES=""
+CPPFLAGS=""
 GDBM_INCLUDE=""
 GDBM_LIB=""
-PCRE_DEP=""
 FNV_DEP=""
+TRIO_DEP=""
+PCRE_DEP=""
+PCRE_MIN_VERSION="8.39"
 
 dnl ===========================================================================
 dnl Get host, target and build variables filled with appropriate info.
@@ -153,9 +156,6 @@ dnl For subdirs that can be disabled thru configure options,
 dnl we configure them in a dedicated section near the test
 dnl ===========================================================================
 AC_DISABLE_OPTION_CHECKING
-APR_SUBDIR_CONFIG([src/trio], 
-                    [CFLAGS=[-DTRIO_MINIMAL]],
-  		    [--with-pcre=*|\'--with-pcre=*])
 
 dnl ===========================================================================
 dnl Checks headers
@@ -348,51 +348,130 @@ else
 fi
 
 dnl
-dnl PCRE: select whether to use an external or the bundled PCRE lib
-dnl borrowed from Apache's configure.in.
+dnl libtrio: select whether to use the system or the bundled libtrio
 dnl
 
-AC_MSG_NOTICE(Checking use of an external PCRE)
+dnl system libtrio
+AC_ARG_ENABLE([system_libtrio], 
+	      AS_HELP_STRING([--enable-system-libtrio],
+                             [Use the system libtrio instead of compiling the bundled one]))
+
+if test "${enable_system_libtrio}" = yes; then
+  AC_MSG_NOTICE(checking for system libtrio)
+  AC_SEARCH_LIBS([trio_printf], [trio], [],
+                 [AC_MSG_ERROR([unable to find trio_copy() function])
+                 ])
+  AC_CHECK_HEADER(trio.h, [],
+                  [AC_MSG_ERROR([unable to find trio.h header file (dev version not installed?)])
+		  ])
+else   
+  AC_MSG_NOTICE([compiling bundled libtrio])
+  APR_ADDTO(INCLUDES, "[-Itrio]")
+  APR_ADDTO(LDFLAGS, "[-Ltrio]")
+  APR_ADDTO(CPPFLAGS, "[-DTRIO_MINIMAL]")
+  TRIO_DEP="trio/libtrio.a"
+  APR_SUBDIR_CONFIG([src/trio],
+                      [CFLAGS=[-DTRIO_MINIMAL]],
+  		      [--with-pcre=*|\'--with-pcre=*])
+  AC_SUBST([TRIO_DEP])
+fi
+
+dnl
+dnl PCRE: select whether to use an external, the system, or the bundled PCRE lib
+dnl partially borrowed from Apache's configure.in
+dnl
+
+dnl bundled pcre lib
+AC_ARG_ENABLE(bundled_pcre, 
+	    AS_HELP_STRING([--enable-bundled-pcre],
+                           [Force the use of the bundled PCRE library instead of the system one]))
+
+dnl external PCRE lib
 AC_ARG_WITH(external_pcre, 
-	    AS_HELP_STRING([--with-external_pcre[=DIR]],
-                           [Use an external PCRE library instead of the bundled one (default /usr)])
-)
+	    AS_HELP_STRING([--with-external-pcre=PATH_TO_PCRE_DIR|PATH_TO_PCRE_CONFIG_SCRIPT],
+                           [Use an external PCRE library instead of the system or the bundled one]))
+
+AC_MSG_NOTICE(checking for PCRE regular expressions library)
+
+dnl if user selected the bundled one, give it priority over the bundled one
+if test ! -z ${enable_bundled_pcre}; then
+   with_external_pcre=""
+fi   
 
 case $with_external_pcre in
-yes) AC_PATH_PROG([PCRE_CONFIG], [pcre-config], [false]) ;;
- /*) if test -d "$with_external_pcre" && test -x "$with_external_pcre/bin/pcre-config"; then
-       PCRE_CONFIG=$with_external_pcre/bin/pcre-config
+ /*) AC_MSG_NOTICE(--with-external-pcre => checking for an external libpcre)
+     AC_MSG_CHECKING(for pcre-config)
+     if test -d "$with_external_pcre" && test -x "$with_external_pcre/pcre-config"; then
+       PCRE_CONFIG=$with_external_pcre/pcre-config
      elif test -x "$with_external_pcre"; then
        PCRE_CONFIG=$with_external_pcre
-     fi
-
-     if $PCRE_CONFIG --version >/dev/null 2>&1; then :; 
      else
-        PCRE_CONFIG=false
+       AC_MSG_RESULT(no)
+       AC_MSG_ERROR(${PCRE_CONFIG} does not point to a directory or pcre-config)
+     fi
+     AC_MSG_RESULT(${PCRE_CONFIG})
+     
+     AC_MSG_CHECKING(for pcre version equal or greater than ${PCRE_MIN_VERSION})
+     if test -f "${PCRE_CONFIG}" && test -x "${PCRE_CONFIG}"; then
+        PCRE_VERSION=$(${PCRE_CONFIG} --version)
+        AS_VERSION_COMPARE("${PCRE_VERSION}", "${PCRE_MIN_VERSION}",
+                           [PCRE_CONFIG=false], [], [])
+        if test "${PCRE_CONFIG}" != false; then
+           AC_MSG_RESULT(yes)
+        else
+           AC_MSG_RESULT(no)
+           AC_MSG_ERROR(the PCRE library version must be equal or greater than ${PCRE_MIN_VERSION})
+        fi
+     else
+        AC_MSG_RESULT(no)
+        AC_MSG_ERROR(${PCRE_CONFIG} does not point to a script)
      fi
      ;;
-*) PCRE_CONFIG=false ;;
+     
+  *) PCRE_CONFIG=false
+     ;;
 esac
 
-if test "$PCRE_CONFIG" != "false"; then
-  PCRE_PATH=`$PCRE_CONFIG --prefix`
+dnl nope; do we have a system PCRE lib?
+if test -z "${enable_bundled_pcre}" && test -z "${PCRE_CONFIG}" -o "${PCRE_CONFIG}" = "false"; then
+   AC_MSG_NOTICE(checking for a system libpcre)
+   AC_PATH_PROG([PCRE_CONFIG], [pcre-config], [])
+   if test ! -z "${PCRE_CONFIG}"; then
+      AC_MSG_CHECKING(checking pcre version equal or greater than ${PCRE_MIN_VERSION})
+      PCRE_VERSION=$(${PCRE_CONFIG} --version)
+      AS_VERSION_COMPARE("${PCRE_VERSION}", "${PCRE_MIN_VERSION}",
+                         [PCRE_CONFIG=false], [], [])
+      if test "${PCRE_CONFIG}" != false; then
+         AC_MSG_RESULT(yes)
+      else
+         AC_MSG_RESULT(no)
+      fi
+   else
+      PCRE_CONFIG=false
+   fi
+fi
+
+dnl found a library, do we have compilation headers?
+if test "${PCRE_CONFIG}" != false; then
+  PCRE_PATH=$(${PCRE_CONFIG} --prefix)
   AC_CHECK_HEADER(["$PCRE_PATH/include/pcre.h"], [ ],[PCRE_CONFIG=false])
 fi
 
+dnl PCRE conclusion
 if test "$PCRE_CONFIG" != "false"; then
-  AC_MSG_NOTICE([using external PCRE library])
+  AC_MSG_NOTICE([found PCRE regular expressions library])
   APR_ADDTO(CFLAGS, [`$PCRE_CONFIG --cflags`])
   APR_ADDTO(LIBS, [`$PCRE_CONFIG --libs`])
 else
-  AC_MSG_NOTICE([using bundled PCRE regular expression library])
+  AC_MSG_NOTICE([falling back to bundled PCRE regular expressions library])
   APR_ADDTO(INCLUDES, [-Ipcre])
   APR_ADDTO(LDFLAGS, "[-Lpcre/.libs]")
   PCRE_DEP="pcre/.libs/libpcre.a"
   APR_SUBDIR_CONFIG([src/pcre], 
                     [],
   		    [--with-pcre=*|\'--with-pcre=*])
+  AC_SUBST([PCRE_DEP])
 fi
-AC_SUBST([PCRE_DEP])
 
 dnl
 dnl The FNV hash library used for the nonsequential filenames
