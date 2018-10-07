@@ -4,11 +4,25 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.4.0:
 ============================
 
+2018-10-07 Jose Kahan
+
+	* configure.ac, Makefile.in, src/Makefile.in
+	If the system has a recent libpcre, compile against it instead of using
+	the bundled one. This check is done by default when launching configure
+
+	New configure options to allow to link against an external pcre library
+	(--with-external-pcre) or to force the build and link against the
+	bundled one (--enable-bundled-pcre).
+
+	New configure option to allow to compile against a system libtrio
+	(--enable-system-libtrio). Contrary to libpcre, it's not possible to find the
+	version of libtrio so we cannot compile automatically against it.
+
 2018-10-04 Jose Kahan
 
 	* src/pcre
 	Upgraded to upstream version 8.42
-	
+
 	* src/trio
 	Upgraded to upstream version 1.16
 
@@ -25,6 +39,7 @@ HYPERMAIL VERSION 2.4.0:
 	priority to the headers charset (if found) over that of the displayed body.
 	Sometimes the last found charset was the one being used throughout in the
 	generated body.
+
 	The metafile for attachments was sometimes inheriting the charset of the whole
 	body, even when not necessary or wrong. Now the meta doesn't include a charset
 	if the attachment doesn't explicitly give one.
