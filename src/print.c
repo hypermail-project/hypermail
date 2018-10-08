@@ -1759,7 +1759,7 @@ int print_links_up(FILE *fp, struct emailinfo *email, int pos, int in_thread_fil
 	      } else if (set_inreplyto_command) {
 		char *tmpptr;
 
-		tmpptr = makeinreplytocommand(set_inreplyto_command, email->inreplyto);
+		tmpptr = makeinreplytocommand(set_inreplyto_command, email->subject, email->inreplyto);
 		if (tmpptr) {		
 		  /* use an msgid resolver */
 		  fprintf(fp, "[ <a href=\"%s\"  title=\"%s\">%s</a> ]\n", 
@@ -1934,7 +1934,7 @@ int print_links(FILE *fp, struct emailinfo *email, int pos, int in_thread_file)
 	  } else if (set_inreplyto_command) {
 	    char *tmpptr;
 
-	    tmpptr = makeinreplytocommand(set_inreplyto_command, email->inreplyto);
+	    tmpptr = makeinreplytocommand(set_inreplyto_command, email->subject, email->inreplyto);
 	    if (tmpptr) {		
 	      /* use an msgid resolver */
 	      fprintf(fp, "<li><dfn>%s</dfn>:", lang[MSG_IN_REPLY_TO]);
