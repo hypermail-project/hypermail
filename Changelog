@@ -4,6 +4,13 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.4.0:
 ============================
 
+2018-10-08 Jose Kahan
+
+	* print.c, string.c, proto.h
+	The inreplyto_command could generate invalid links if the parser interpolated the
+	in-reply-to from the subject. If a message's in-reply-to is interpolated,
+	hypermail won't honor it anymore for that message.
+
 2018-10-07 Jose Kahan
 
 	* print.c printauthors(), printthreads(), printsubjects, printdates()
