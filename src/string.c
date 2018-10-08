@@ -1416,11 +1416,16 @@ char *makemailcommand(char *mailcommand, char *email, char *id, char *subject)
 ** Returns an ALLOCATED string!
 */
 
-char *makeinreplytocommand(char *inreplytocommand, char *id)
+char *makeinreplytocommand(char *inreplytocommand, char *subject, char *id)
 {
   char *newcmd = NULL;
   char *convid = NULL;
 
+  /* if id was interpolated from the subject, skip it */
+  if (strstr (subject, id)) {
+      return NULL;
+  }
+  
   /* escape id */
   if (set_email_address_obfuscation){
     convid = obfuscate_email_address (id);

@@ -123,7 +123,7 @@ char *convchars(char *, char *);
 char *convcharsnospamprotect(char *, char *);
 char *unconvchars(char *);
 char *makemailcommand(char *, char *, char *, char *);
-char *makeinreplytocommand(char *, char *);
+char *makeinreplytocommand(char *, char *, char *);
 char *unspamify(char *);
 char *parseemail(char *, char *, char *);
 char *parseurl(char *, char *);
