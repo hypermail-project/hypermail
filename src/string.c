@@ -1613,8 +1613,8 @@ static char *url[] = {
     "nntp://",
     /* "wais://", */ /* deprecated */
     "telnet://",
-    "prospero://", /* deprecated */
-/* "mailto:", *//* Can't have mailto: as it will be converted twice */
+/*  "prospero://",*/  /* deprecated */
+/*  "mailto:", *//* Can't have mailto: as it will be converted twice */
 /*  "tel:", */ /* code below assumes all URLs include a :// prefix */
 /*  "fax:", */ /* code below assumes all URLs include a :// prefix */
     "rtsp://",
@@ -1711,8 +1711,8 @@ char *parseurl(char *input, char *charset)
 		    endp = strstr(p, "://");
 		    if (endp) {
 			len = endp - p + 3;
-			// really means something else is wrong,
-			// but prevent buffer overflow
+			/* really means something else is wrong,
+			   but prevent buffer overflow */
 			if (len >= sizeof(thisprotocol))
 			    len = sizeof(thisprotocol) - 1;
 			strncpy(thisprotocol, p, len);
