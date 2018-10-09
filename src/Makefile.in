@@ -65,10 +65,10 @@ MAILOBJS=	mail.o ../libcgi/libcgi.a
 all:    @PCRE_DEP@ @TRIO_DEP@ @FNV_DEP@ hypermail$(SUFFIX) mail$(SUFFIX) lang$(SUFFIX)
 
 pcre/.libs/libpcre.a:
-	@cd pcre; $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" ; rm -f .libs/lib*.so*
+	@cd pcre; $(MAKE) CC="$(CC)" ; rm -f .libs/lib*.so*
 
 trio/libtrio.a:
-	@cd trio; $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS) -fpic" CPPFLAGS="$(CPPFLAGS)"
+	@cd trio; $(MAKE) CC="$(CC)"
 
 fnv/libfnv.a:
 	@cd fnv; $(MAKE) libfnv.a CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)"
