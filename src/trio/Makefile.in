@@ -3,7 +3,8 @@ CC	= @CC@
 CFLAGS	= @CFLAGS@ -I. -DDEBUG -fPIC -fvisibility=hidden
 OBJS	= triostr.o trio.o trionan.o
 TARGETLIB	= libtrio.a
-TARGETSHLIB	= $(TARGETLIB:.a=.so.2.0.0)
+#TARGETSHLIB	= $(TARGETLIB:.a=.so.2.0.0)
+TARGETSHLIB     =
 TARGETINCS	= trio.h triop.h triodef.h trionan.h triostr.h
 LDFLAGS	= -L. -ltrio -lm
 AR	= ar
