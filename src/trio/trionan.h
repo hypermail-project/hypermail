@@ -71,6 +71,10 @@ enum {
 #  endif
 # endif
 
+# if !defined(TRIO_INLINE_NAN)
+#  define TRIO_INLINE_NAN
+# endif  
+
 #else
 
 /*
