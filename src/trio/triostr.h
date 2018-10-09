@@ -119,6 +119,9 @@ enum {
 #  if !defined(TRIO_FUNC_TO_LONG_DOUBLE)
 #   define TRIO_FUNC_TO_LONG_DOUBLE
 #  endif
+#  if !defined(TRIO_FUNC_TO_FLOAT)
+#   define TRIO_FUNC_TO_FLOAT
+#  endif  
 # endif
 
 # if defined(TRIO_FUNC_STRING_TERMINATE)
