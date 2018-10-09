@@ -323,11 +323,11 @@ extern "C" {
  * separately.
  */
 #if defined(TRIO_MINIMAL)
-# if defined(TRIO_EMBED_NAN)
-#  undef TRIO_EMBED_NAN
+# if !defined(TRIO_EMBED_NAN)
+#  define TRIO_EMBED_NAN
 # endif
-# if defined(TRIO_EMBED_STRING)
-#  undef TRIO_EMBED_STRING
+# if !defined(TRIO_EMBED_STRING)
+#  define TRIO_EMBED_STRING
 # endif
 #endif
   
