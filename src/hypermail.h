@@ -416,7 +416,7 @@ extern char *months[], *days[];
 
 #ifdef lint
 extern int strcasecmp(const char *, const char *);
-extern int strncasecmp(const char *, const char *, int);
+extern int strncasecmp(const char *, const char *, size_t);
 #endif
 
 #endif				/* ! _HYPERMAIL_HYPERMAIL_H */
