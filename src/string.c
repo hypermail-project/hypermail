@@ -1598,33 +1598,37 @@ char *parseemail(char *input,	/* string to parse */
 ** run quickly.
 **/
 
-/* jk 8/03/2013: commented all the URLs that don't end with :// as the
-   current hypermail convurl code doesn't know how to handle them,
-   which results in sigsevs in some cases */
+/* See https://www.iana.org/assignments/uri-schemes/uri-schemes.xhtml
+   for current URI schemes */
 static char *url[] = {
     "http://",
     "https://",
-/*  "news:", */ /* code below assumes all URLs include a :// prefix */
+    "news:",
     "ftp://",
 #if 0
     "file://",/* can expose private files outside the archive in some cases? */
 #endif
     "gopher://",
     "nntp://",
-    /* "wais://", */ /* deprecated */
     "telnet://",
-/*  "prospero://",*/  /* deprecated */
 /*  "mailto:", *//* Can't have mailto: as it will be converted twice */
-/*  "tel:", */ /* code below assumes all URLs include a :// prefix */
-/*  "fax:", */ /* code below assumes all URLs include a :// prefix */
+    "tel:",
     "rtsp://",
-/*  "im:", */ /* code below assumes all URLs include a :// prefix */
-    /* some non RFC or experimental or de-facto ones */
+    "im:",  /* im:to[?header=value&header2=value] */
+    "sip:",
+    "sips:",
     "cap://",
-    "feed://",
+    /* some non RFC or experimental or de-facto ones */
     "webcal://",
     "irc://",
-/*  "callto:", */ /* code below assumes all URLs include a :// prefix */
+    /* URIs we used to support and that are now deprecated */
+/*    "feed://",*/   /* deprecated, not used anymore */
+/*  "prospero://",*/ /* deprecated */
+/*  "wais://", */    /* deprecated */
+/*  "fax:", */       /* deprecated by rfc3966 */
+/*  "callto:", */    /* deprecated by rfc3966, maybe supported for skype calls in browsers  */
+                     /* callto:<sip:foo@bar><sip:foo2@bar2> is more complex than
+                        convurl can currently handle */
     NULL
 };
 
@@ -1640,7 +1644,7 @@ char *parseurl(char *input, char *charset)
     if (!input || !*input)
 	return NULL;
 
-    if (!strstr(input, "://")) {
+    if (!strstr(input, ":")) {
 	/*
 	 * All our protocol prefixes have this "://" substring in them. Most
 	 * of the lines we process don't have any URL. Let's not spend any
@@ -1706,11 +1710,19 @@ char *parseurl(char *input, char *charset)
 		if (!leftmost || p < leftmost) {
 		    char *endp;
 		    int len;
+                    int url_suffix_len;
+
 		    leftmost = p;
 		    memset(thisprotocol, 0, sizeof(thisprotocol));
-		    endp = strstr(p, "://");
+		    if (p[strlen(*up) - 1] == '/') {
+                        endp = strstr(p, "://");
+                        url_suffix_len = 3;
+                    } else {
+                        endp = strstr(p, ":");
+                        url_suffix_len = 1;
+                    }
 		    if (endp) {
-			len = endp - p + 3;
+			len = endp - p + url_suffix_len;
 			/* really means something else is wrong,
 			   but prevent buffer overflow */
 			if (len >= sizeof(thisprotocol))
@@ -1727,7 +1739,8 @@ char *parseurl(char *input, char *charset)
 	if (leftmost) { /* we found at least one protocol prefix */
 	    int accepted = FALSE;
 	    int urlscan = FALSE;
-
+	    int istelprotocol = !strcasecmp(thisprotocol, "tel:");
+	    
 	    /* 
 	     * all the charaters between the position where we started
              * looking for a protocol prefix and the protocol prefix
@@ -1736,11 +1749,22 @@ char *parseurl(char *input, char *charset)
 
 	    translatechars(inputp, leftmost-1, &buff);
 	    inputp = leftmost + strlen(thisprotocol);
+            
+            /*
+             * If nothing follows the protocol URL, consider it's not a URL
+             * and skip it
+             */
 
-	    if (set_iso2022jp)
-		    urlscan = sscanf(inputp, "%255[^] \033)>\"\'\n[\t\\]", urlbuff);
-	    else
+            if (*inputp != '\0' && !isblank(*inputp)
+		&& ((istelprotocol && (*inputp == '+' || isdigit(*inputp)))
+		    || (!istelprotocol && !ispunct(*inputp)))) {
+
+                if (set_iso2022jp)
+		    urlscan = sscanf(inputp, "%255[^] \033)<>\"\'\n[\t\\]", urlbuff);
+                else
 		    urlscan = sscanf(inputp, "%255[^] )<>\"\'\n[\t\\]", urlbuff);
+            }
+
 	    if (urlscan == 1) {
 	        char *r;
 	
