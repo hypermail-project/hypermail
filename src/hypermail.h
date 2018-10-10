@@ -188,7 +188,7 @@ typedef enum {
 
 typedef enum {
   FORMAT_FIXED = 0,
-  FORMAT_FLOWED = 1,
+  FORMAT_FLOWED = 1
 } textplain_format_t;
 /* 
  * Path separator for attachment file path generation
