@@ -397,7 +397,7 @@ char *i18n_utf2numref(char *instr,int escape){
 }
 
 
-char *i18n_numref2utf(char *string){
+unsigned char *i18n_numref2utf(char *string){
 
   int status,len;
   unsigned short int utf;
@@ -430,7 +430,7 @@ char *i18n_numref2utf(char *string){
         convbuf[2]=*string++;
         convbuf[3]=*string++;
         convbuf[4]=0x0;
-        utf=strtol(&convbuf[0], NULL,10);
+        utf=strtol((const char *)&convbuf[0], NULL,10);
         if(utf<256){
           *utfstr=(unsigned char)utf;
           utfstr++;
