@@ -4,6 +4,19 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.4.0:
 ============================
 
+2018-10-10 Jose Kahan
+
+	* string.c
+	parseurl(): remove deprecated URLs. Improve support for URLs that don't
+	have slashes following the 'protocol:' schema. Improve support for tel:
+	URLs.
+
+2018-10-09 Bill Shannon
+
+	* string.c
+	parseurl(): non-URL text can be misinterpreted as a URL, causing segfault
+	Fixes issue #39
+
 2018-10-08 Jose Kahan
 
 	* print.c, string.c, proto.h
