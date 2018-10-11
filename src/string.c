@@ -25,6 +25,7 @@
 
 #include <iconv.h>
 #include <errno.h>
+#include <ctype.h>
 #include <sys/stat.h>
 
 #include "hypermail.h"
@@ -1640,13 +1641,20 @@ char *parseurl(char *input, char *charset)
     char *inputp;
     char *match[sizeof(url) / sizeof(char **)];
     int first;
+    char *c;
 
     if (!input || !*input)
 	return NULL;
 
-    if (!strstr(input, ":")) {
+    c = strstr(input, ":");
+    
+    if (!c  /* not found */
+	|| c == input     /* first char in line */
+	|| *(c+1) == '\0'  /* last char in line */
+	|| !isalpha(*(c-1))  /* not between alpha/graph */
+        || !isgraph(*(c+1)))  {
 	/*
-	 * All our protocol prefixes have this "://" substring in them. Most
+	 * All our protocol prefixes have this ":" substring in them. Most
 	 * of the lines we process don't have any URL. Let's not spend any
 	 * time looking for URLs in lines that we can prove cheaply don't
 	 * have any; it will be a big win for average input if we follow
