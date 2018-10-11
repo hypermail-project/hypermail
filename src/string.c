@@ -1526,8 +1526,13 @@ char *parseemail(char *input,	/* string to parse */
 
 	    /* check left side */
 	    while (backoff) {
-		if (sscanf
-		    (email, "%1[" VALID_IN_EMAIL_USERNAME "]", content) == 1) {
+                int res;
+
+                res = sscanf(email, "%1[" VALID_IN_EMAIL_USERNAME "]", content);
+                /* for some reason, if we have ,name sscanf will interpret the , as
+                   if were declared in VALID_IN_EMAIL_USERNAME, thus the additional
+                   check */
+		if (res && content[0] != ',') {
 		    email--;
 		    backoff--;
 		}
