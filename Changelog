@@ -4,10 +4,15 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.4.0:
 ============================
 
+2018-10-12 Jose Kahan
+	* setup.c
+	PreConfig(): removed a 64-bit warning
+
 2018-10-11 Jose Kahan
 
-	* string.c parseemail(): for some reason if a ',' char was concatenaned
-	to an email address, it was being parsed as part of the email username.
+	* string.c
+	parseemail(): for some reason if a ',' char was concatenaned to an
+	email address, it was being parsed as part of the email username.
 
 2018-10-10 Jose Kahan
 
