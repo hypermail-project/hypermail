@@ -8,6 +8,9 @@ HYPERMAIL VERSION 2.4.0:
 	* setup.c
 	PreConfig(): removed a 64-bit warning
 
+	* hypermail.c
+	main(): if the en_US locale is not available, try en_US.UTF-8
+
 2018-10-11 Jose Kahan
 
 	* string.c
