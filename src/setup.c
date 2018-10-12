@@ -1042,7 +1042,7 @@ void PreConfig(void)
 	case CFG_INTEGER:
 	case CFG_OCTAL:
 	    if (defval == cfg[i].def)
-	        *(int *)cfg[i].value = (int)defval;
+	        *(int *)cfg[i].value = (intptr_t)defval;
 	    else
 	        *(int *)cfg[i].value = atoi(defval);
 	    break;
