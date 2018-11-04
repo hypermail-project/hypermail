@@ -4,6 +4,10 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.4.0:
 ============================
 
+2018-11-04 Bill Shannon
+	* string.c
+	i18n_convstring(): fix usage problems with iconv
+
 2018-10-12 Jose Kahan
 	* setup.c
 	PreConfig(): removed a 64-bit warning
