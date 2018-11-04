@@ -287,7 +287,6 @@ char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *
   }
   errno=0;
   ret=iconv(iconvfd, &string, &strleft, &convbuf, &bufleft);
-  iconv_close(iconvfd);
 
   if (ret==(size_t)-1){
     error = 1;
@@ -315,8 +314,11 @@ char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *
       break;
     }
   } else {
+    /* return to initial state */
+    iconv(iconvfd, NULL, NULL, &convbuf, &bufleft);
     error = 0;
   }
+  iconv_close(iconvfd);
 
   if (error) {
     origconvbuf[origlen]=0x0;
