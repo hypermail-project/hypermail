@@ -324,6 +324,7 @@ char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *
     origconvbuf[origlen]=0x0;
     *len=origlen;
   } else {
+#if 0
     /* hmm... do we really need to do this? (daigo) */
     if (strncasecmp(tocharset,"ISO-2022-JP",11)==0){
       *len=origlen*7-bufleft;
@@ -334,7 +335,9 @@ char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *
     }else{
       *len=origlen*7-bufleft;
     }
-    
+#else
+   *len=origlen*7-bufleft; 
+#endif
     *(origconvbuf+*len)=0x0;
   }
 
@@ -1488,6 +1491,7 @@ char *parseemail(char *input,	/* string to parse */
     char tempbuff[MAXLINE];
     char *ptr;
     char *lastpos = input;
+    char *start = NULL;
     struct Push buff;
     
     char *at;
@@ -1500,31 +1504,50 @@ char *parseemail(char *input,	/* string to parse */
     else
       at="@";
 
+    if (strchr(input, '@') == NULL && strstr(input, "&#64;") == NULL) {
+        /* nothing to do here */
+    	return strsav(input);
+    }
+
     INIT_PUSH(buff);
 
     while (*input) {
-      if ((ptr = strchr (input, '@')))
-	at_len = 1;
-      else if ((ptr = strstr (input, "&#64;")))
-	at_len = 5;
+        
+      /* skip detection if this is an escape or non-ascii sequence */
+      if (set_iso2022jp) {
+	iso2022_state(input, &in_ascii, &esclen);
+	if (esclen != 0) {
+	  input += esclen;
+	  continue;
+	}
+	if (in_ascii == FALSE) {
+	  input++;
+	  start = NULL;
+	  continue;
+	}
+      }
+
+      if (start == NULL) {
+          start = input;
+      }
+      
+      ptr = NULL;
+      if (*input == '@') {
+          ptr = input;
+          at_len = 1;
+      } else if (strncmp(input, "&#64;", 5) == 0) {
+          ptr = input;
+          at_len = 5;
+      }
+      
       if (ptr) {
 	    /* found a @ */
 	    char *email = ptr - 1;
 	    char content[2];
-	    int backoff = ptr - input;	/* max */
+	    int backoff = ptr - start;	/* max */
 
 #define VALID_IN_EMAIL_USERNAME   "a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~"
 #define VALID_IN_EMAIL_DOMAINNAME "a-zA-Z0-9.-"
-
-	    if (set_iso2022jp) {
-		    for (; ptr > input; input++) {
-			    iso2022_state(input, &in_ascii, &esclen);
-			    if (!esclen) continue;
-			    input += esclen;
-			    if (in_ascii == TRUE)
-				    backoff = ptr - input;
-		    }
-	    }
 
 	    /* check left side */
 	    while (backoff) {
@@ -1572,23 +1595,26 @@ char *parseemail(char *input,	/* string to parse */
 			PushString(&buff, tempbuff);
 
 			input = ptr + strlen(mailbuff) + at_len;
+			start = input;
 			lastpos = input;
 			continue;
 		    }
 		    else {	/* bad address */
 			PushString(&buff, mailaddr);
 			input = ptr + strlen(mailbuff) + at_len;
+			start = input;
 			lastpos = input;
 			continue;
 		    }
 		}
 	    }
 	    /* no address, continue from here */
-	    input = ptr + 1;
+	    input = ptr + at_len;
+	    start = input;
 	    continue;
       }
       else
-	input = strchr(input, '\0');
+	input++;
     }
     if (lastpos < input) {
 	PushNString(&buff, lastpos, input - lastpos);
