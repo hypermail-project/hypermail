@@ -4,6 +4,11 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.4.0:
 ============================
 
+2018-11-29 Bill Shannon
+	* string.c
+	spamify_replacedomain: another fix for greedy "@" replacement in the
+	middle of a string of iso-2022-jp encoded Japanese characters.
+
 2018-11-04 Bill Shannon
 	* string.c
 	i18n_convstring(): When converting a utf-8 string to iso-2022-jp,
