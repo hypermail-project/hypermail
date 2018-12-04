@@ -1450,6 +1450,69 @@ char *makeinreplytocommand(char *inreplytocommand, char *subject, char *id)
   return newcmd;
 }
 
+char *spamify(char *input)
+{
+    if (set_antispamdomain) {
+        return spamify_replacedomain(input, set_antispamdomain);
+    }
+    else {
+        return spamify_small(input);
+    }
+}
+
+char *spamify_small(char *input)
+{
+  /* we should replace the @-letter in the email address */
+
+  char *atptr = strchr(input, '@');
+
+  if (atptr) {
+      char *newbuf = replacechar(input, '@', set_antispam_at);
+    
+      /* correct the pointer and free the old */
+      free(input);
+      return newbuf;
+  }
+  /* weird email, bail out */
+  return input;
+}
+
+char *spamify_replacedomain(char *input, char *antispamdomain)
+{
+    char *atptr = strchr(input, '@');
+    
+    if (atptr) {
+	/* replace everything after the @-letter in the email address */
+	int domainlen = strlen(antispamdomain);
+	struct Push buff;
+	int in_ascii = TRUE, esclen = 0;
+
+	INIT_PUSH(buff);
+
+	for (; *input; input++) {
+	    if (set_iso2022jp) {
+                iso2022_state(input, &in_ascii, &esclen);
+            }
+	    if (in_ascii == TRUE && *input == '@') {
+		PushString(&buff, set_antispam_at);
+		if (domainlen > 0) {
+		    /* append the new domain */
+		    PushString(&buff, antispamdomain);
+		    break;
+		}
+	    }
+	    else {
+		PushByte(&buff, *input);
+            }
+	}
+	free(input);
+	RETURN_PUSH(buff);
+    }
+    
+    /* weird email, bail out */
+    return input;
+}
+
 char *unspamify(char *s)
 {
     char *p;
