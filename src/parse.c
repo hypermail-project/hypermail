@@ -1803,10 +1803,10 @@ int parsemail(char *mbox,	/* file name */
 			getname(head->line, &namep, &emailp);
 			head->parsedheader = TRUE;
                         if (set_spamprotect) {
-			    emailp=spamify(emailp);
+			    emailp = spamify(strsav(emailp));
 			    /* we need to "fix" the name as well, as sometimes
 			       the email ends up in the name part */
-			    namep=spamify(namep);
+			    namep = spamify(strsav(namep));
                         }
 		    }
 		    else if (!strncasecmp(head->line, "Message-Id:", 11)) {
