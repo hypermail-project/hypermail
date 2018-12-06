@@ -1486,14 +1486,15 @@ char *spamify_replacedomain(char *input, char *antispamdomain)
 	int domainlen = strlen(antispamdomain);
 	struct Push buff;
 	int in_ascii = TRUE, esclen = 0;
-
+	char *cursor;
+	
 	INIT_PUSH(buff);
 
-	for (; *input; input++) {
+	for (cursor = input; *cursor; cursor++) {
 	    if (set_iso2022jp) {
-                iso2022_state(input, &in_ascii, &esclen);
+                iso2022_state(cursor, &in_ascii, &esclen);
             }
-	    if (in_ascii == TRUE && *input == '@') {
+	    if (in_ascii == TRUE && *cursor == '@') {
 		PushString(&buff, set_antispam_at);
 		if (domainlen > 0) {
 		    /* append the new domain */
@@ -1502,7 +1503,7 @@ char *spamify_replacedomain(char *input, char *antispamdomain)
 		}
 	    }
 	    else {
-		PushByte(&buff, *input);
+		PushByte(&buff, *cursor);
             }
 	}
 	free(input);
