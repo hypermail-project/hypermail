@@ -190,6 +190,13 @@ typedef enum {
   FORMAT_FIXED = 0,
   FORMAT_FLOWED = 1
 } textplain_format_t;
+
+/* conversions supported by string.c:parseemail() */
+typedef enum {
+  MAKEMAILCOMMAND = 1, /* makes links clickable */
+  REPLACE_DOMAIN = 2,  /* replaces domain by antispamdomain */
+} parseemail_conversion_t;
+
 /* 
  * Path separator for attachment file path generation
  */

@@ -37,7 +37,6 @@
 #include <string.h>
 #endif
 
-
 /*
 ** email address obfuscation
 */
@@ -1482,32 +1481,11 @@ char *spamify_replacedomain(char *input, char *antispamdomain)
     char *atptr = strchr(input, '@');
     
     if (atptr) {
-	/* replace everything after the @-letter in the email address */
-	int domainlen = strlen(antispamdomain);
-	struct Push buff;
-	int in_ascii = TRUE, esclen = 0;
-	char *cursor;
-	
-	INIT_PUSH(buff);
+        char *buff;
 
-	for (cursor = input; *cursor; cursor++) {
-	    if (set_iso2022jp) {
-                iso2022_state(cursor, &in_ascii, &esclen);
-            }
-	    if (in_ascii == TRUE && *cursor == '@') {
-		PushString(&buff, set_antispam_at);
-		if (domainlen > 0) {
-		    /* append the new domain */
-		    PushString(&buff, antispamdomain);
-		    break;
-		}
-	    }
-	    else {
-		PushByte(&buff, *cursor);
-            }
-	}
-	free(input);
-	RETURN_PUSH(buff);
+        buff = parseemail(input, NULL, antispamdomain, REPLACE_DOMAIN);
+        free(input);
+        return(buff);
     }
     
     /* weird email, bail out */
@@ -1548,7 +1526,8 @@ char *unspamify(char *s)
 
 char *parseemail(char *input,	/* string to parse */
 		 char *mid,	/* message ID */
-		 char *msubject)
+		 char *msubject,
+		 parseemail_conversion_t conversion) /* how to output parsed mail */
 {				/* message subject */
     char mailbuff[256];
     char mailaddr[MAILSTRLEN];
@@ -1647,15 +1626,26 @@ char *parseemail(char *input,	/* string to parse */
 				  ptr-email, email, at, mailbuff);
 
 		    if (valid_root_domain(mailaddr)) {
-			char *mailcmd = makemailcommand(set_mailcommand,
-							mailaddr, mid,
-							msubject);
-			trio_snprintf(tempbuff, sizeof(tempbuff),
-				      "<a href=\"%s\">%s</a>", mailcmd,
-				      obfuscate_email_address(mailaddr));
 
-			free(mailcmd);
-
+                        if (conversion == MAKEMAILCOMMAND) {
+                            char *mailcmd = makemailcommand(set_mailcommand,
+                                                            mailaddr, mid,
+                                                            msubject);
+                            trio_snprintf(tempbuff, sizeof(tempbuff),
+                                          "<a href=\"%s\">%s</a>", mailcmd,
+                                          obfuscate_email_address(mailaddr));
+                            
+                            free(mailcmd);
+                        }
+                        else if (conversion == REPLACE_DOMAIN) {
+                            trio_snprintf(tempbuff, sizeof(mailaddr),"%.*s%s%s", 
+                                          ptr-email, email, at, msubject);
+                            
+                        }
+                        else {
+                            strcpy (tempbuff, mailaddr);
+			}
+			
 			PushString(&buff, tempbuff);
 
 			input = ptr + strlen(mailbuff) + at_len;

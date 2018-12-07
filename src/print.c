@@ -1105,7 +1105,8 @@ char *ConvURLsString(char *line, char *mailid, char *mailsubject, char *charset)
 	if (parsed && *parsed) {
 	    newparse = parseemail(parsed,	/* source */
 				  mailid,	/* mail's Message-Id: */
-				  mailsubject);	/* mail's Subject: */
+				  mailsubject,	/* mail's Subject: */
+				  MAKEMAILCOMMAND); /* make a mailto: */
 	    free(parsed);
 	    parsed = newparse;
 	}

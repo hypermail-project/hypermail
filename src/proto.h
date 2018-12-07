@@ -128,7 +128,7 @@ char *spamify(char *input);
 char *spamify_small(char *input);
 char *spamify_replacedomain(char *input, char *antispamdomain);
 char *unspamify(char *);
-char *parseemail(char *, char *, char *);
+char *parseemail(char *, char *, char *, parseemail_conversion_t);
 char *parseurl(char *, char *);
 
 char *hm_strchr(const char *, int);
