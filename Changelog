@@ -4,6 +4,12 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.4.0:
 ============================
 
+2018-12-07 Jose Kahan
+	* If the antispamdomain config option was used, hypermail was replacing
+	everything following a "@" character by the antispam domain.  This fix
+	makes antispamdomain only apply for the domain part of valid email
+	addresses.
+
 2018-11-29 Bill Shannon
 	* string.c
 	spamify_replacedomain(): fix another greedy "@" replacement in the
