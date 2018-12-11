@@ -1145,8 +1145,8 @@ static bool rfc3676_handler (const char *line, bool delsp, int *quotelevel,
   new_quotelevel = get_quotelevel (line);
 
 #if DEBUG_PARSE
-  printf("RFC3676: Previous quote level: %d\n", quotelevel);
-  printf("RFC3676: Previous line flow flag: %d\n", continue_prev_flow_flag);
+  printf("RFC3676: Previous quote level: %d\n", *quotelevel);
+  printf("RFC3676: Previous line flow flag: %d\n", *continue_prev_flow_flag);
   printf("RFC3676: New quote level: %d\n", new_quotelevel);
 #endif
 
@@ -1168,6 +1168,7 @@ static bool rfc3676_handler (const char *line, bool delsp, int *quotelevel,
   }
 
   /* Is it a signature separator? */
+  /* @@ add sscanf for --\s?\r?\n here */
   if (!strcmp (line + tmp_padding, "-- \n") || !strcmp (line + tmp_padding, "-- \r\n")) {
     /* don't join */
     *continue_prev_flow_flag = FALSE;
