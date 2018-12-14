@@ -874,6 +874,75 @@ char *oneunre(char *subject)
     return NULL;
 }
 
+/* remove space from spacecrlf eol ff sequence */
+void rfc3676_trim_softlb(char *line)
+{
+  char *eold;
+  
+  eold = strrchr (line, '\n');
+  if (line != eold) {
+    if (*(eold - 1) == '\r')
+      eold--;
+  }
+  if (line != eold) {
+    if (*(eold - 1) == ' ') {
+      /* remove the space stuffing and copy the end of line */
+      char *ptr = eold - 1;
+      
+      while (*ptr != '\0') {
+	*ptr = *(ptr + 1);
+	ptr++;
+      }
+    }
+  }
+}
+
+/* 
+** Deletes space stuffing after quotes
+** If spaces are deleted, returns a buffer that the caller must free
+*/
+char *rfc3676_delsp_quotes (char *line)
+{
+  char *c = line;
+  
+  while (*c == '>') {
+    c++;
+  }
+  
+  if (*c == ' ') {
+    struct Push buf;
+    char tmp_c;
+    
+    INIT_PUSH(buf);
+    tmp_c = *c;
+    *c = '\0';                
+    PushString(&buf, line);
+    PushString(&buf, c+1);
+    *c = tmp_c;
+    
+    RETURN_PUSH(buf);
+  }
+
+  return NULL;
+}
+
+/* 
+** returns true if line ends with a \n or \r\n 
+*/
+int rfc3676_ishardlb(const char *line)
+{
+  int res;
+
+  if (*line == '\n'
+      || (*line == '\r' && *(line+1) == '\n')) {
+      res = TRUE;
+  } else {
+      res = FALSE;
+  }
+
+  return res;
+}
+
 /*
 ** Is a line in an article body part of a quoted passage?
 */
