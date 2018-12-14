@@ -1117,112 +1117,180 @@ static int get_quotelevel (const char *line)
 ** headers), the previous line quotelevel, and a flag saying if the
 ** previous line was marked as a continuing one.
 **
-** The function returns true if the current line should be merged with
-** the next line to be parsed. 
-**
 ** The function updates the quotelevel to
 ** that of the current parsed line. The function will update the
 ** continue_prev_flow_flag to say if the current line should be joined
 ** to the previous one, and, if positive, the padding offset that
 ** should be applied to the current line when merging it (for skipping
-** quotes or space-padding).
+** quotes or space-stuffing).
+**
+** If delsp is true, the function will remove the space in the soft 
+** line break if the line is flowed.
+**
+** The function returns true if the current line is flowed.
+**
 */
-static bool rfc3676_handler (const char *line, bool delsp, int *quotelevel, 
+static bool rfc3676_handler (char *line, bool delsp_flag, int *quotelevel, 
 			     bool *continue_prev_flow_flag, int *padding)
 {
   int new_quotelevel = 0;
+  int space_stuffing = 0;
   int tmp_padding = 0;
   bool sig_sep = FALSE;
   bool flowed = FALSE;
 
   /* rules for evaluation if the flow should stop:
      1. new quote level is different from previous one
-     2. The line ends with a signature "(quotes)(stuffing)-- \n"
+     2. The line ends with a signature "[(quotes)][(ss)]-- \n"
+     3. The line is a hard break "\n"
+     4. The message body has ended
+
+     rules for removing space-stuffing:
+     1. if f=f, then remove the first space of any line beginning with a space,
+        before processing for f=f.
+     2. space char may depend on charset.
+
+     rules for quotes:
+     1. quoted lines always begin with a '>' char. This symbol may depend on the
+        msg charset. 
+     2. They are not ss before the quote symbol but may be after it 
+        appears.
+
+     rules for seeing if a line should be flowed with the next one:
+     1. line ends with a soft line break sp\n
+     2. remove the sp if delsp=true; keep it otherwise
+
+     special case, space-stuffed or f=f? A line that has only this content:
+     " \n": this is a space-stuffed newline.
   */
 
-  /* If this is line is part of the flow and begins with quotes,
-     remove the quote level and stuffed space if found */
-  new_quotelevel = get_quotelevel (line);
 
 #if DEBUG_PARSE
   printf("RFC3676: Previous quote level: %d\n", *quotelevel);
   printf("RFC3676: Previous line flow flag: %d\n", *continue_prev_flow_flag);
+#endif
+
+  /* 
+  ** hard crlf detection.
+  */
+  if (rfc3676_ishardlb(line)) {
+      /* Hard crlf, reset flags */
+      *quotelevel = 0;
+      *padding = 0;
+      /* *continue_prev_flow_flag = FALSE; */
+#if DEBUG_PARSE
+      printf("RFC3676: hard CRLF detected. Stopping ff\n");
+#endif
+      return FALSE;
+  }
+  
+  /*
+  ** quote level detection
+  */
+  new_quotelevel = get_quotelevel (line);
+#if DEBUG_PARSE
   printf("RFC3676: New quote level: %d\n", new_quotelevel);
 #endif
 
-  /* remove the multi-line quotes padding */
+  /* change of quote level, stop ff */
+  if (new_quotelevel != *quotelevel
+      || (new_quotelevel > 0 && set_format_flowed_disable_quoted)) {
+      *continue_prev_flow_flag = FALSE;
+
+#if DEBUG_PARSE
+      printf("RFC3676: different quote levels detected. Stopping ff\n");
+#endif      
+  }
   tmp_padding = new_quotelevel;
 
-  if (*continue_prev_flow_flag 
-      && (new_quotelevel != *quotelevel 
-	  || (new_quotelevel == *quotelevel 
-	      && new_quotelevel > 0 
-	      && set_format_flowed_disable_quoted))) {
-    /* don't join */
-    *continue_prev_flow_flag = FALSE;
-  }
-
-  /* remove space stuffing if any */
+  /* 
+  ** skip space stuffing if any 
+  */
   if (line[tmp_padding] == ' ') {
-    tmp_padding++;
+      space_stuffing = 1;
+      tmp_padding++;
+#if DEBUG_PARSE
+      printf("RFC3676: space-stuffing detected; skipping space\n");
+#endif            
   }
 
+  /* 
+  ** hard crlf detection after quotes
+  */
+  if (rfc3676_ishardlb(line+tmp_padding)) {
+      /* Hard crlf, reset flags */
+      /* *continue_prev_flow_flag = FALSE; */
+      *quotelevel = new_quotelevel;
+      *padding = 0;
+#if DEBUG_PARSE
+      printf("RFC3676: hard CRLF detected after quote. Stopping ff\n");
+#endif
+      return FALSE;
+  }
+    
+  /*
+  ** signature detection
+  */
+  
   /* Is it a signature separator? */
-  /* @@ add sscanf for --\s?\r?\n here */
-  if (!strcmp (line + tmp_padding, "-- \n") || !strcmp (line + tmp_padding, "-- \r\n")) {
-    /* don't join */
-    *continue_prev_flow_flag = FALSE;
-    sig_sep = TRUE;
+  /* rfc3676 gives "-- \n" and "--\r\n" as signatures. We also add "--\n" to this list,
+     as mutt allows it */
+  if (!strcmp (line + tmp_padding, "-- \n")
+      || !strcmp (line + tmp_padding, "-- \r\n")
+      || !strcmp (line + tmp_padding, "--\n")) {
+      /* yes, stop f=f */
+      *continue_prev_flow_flag = FALSE;
+      sig_sep = TRUE;
 #if DEBUG_PARSE
-    printf("RFC3676: Current line is signature\n", sig_sep);
+      printf ("RFC3676: -- signature detected. Stopping ff\n", sig_sep);
 #endif
-  }
-
-  if (*continue_prev_flow_flag == FALSE)
-    tmp_padding = 0;
-
-  *padding = tmp_padding;
-
-  /* is this line part of a flowed sequence (beginning or continuation)?  */
-  if (!sig_sep) {
-    char *eold;
-    eold = strrchr (line, '\n');
-    if (line != eold) {
-      if (*(eold - 1) == '\r')
-	eold--;
-    }
-    if (line != eold) {
-      if (*(eold - 1) == ' ') {
-	flowed = TRUE;
-	if (delsp) {
-	  /* remove the space stuffing and copy the end of line */
-	  char *ptr = eold - 1;
-#if DEBUG_PARSE
-	  printf("deleting delsp separator\n");
-#endif
-	  while (*ptr != '\0') {
-	    *ptr = *(ptr + 1);
-	    ptr++;
-	  }
-	}
+      if (delsp_flag) {
+          rfc3676_trim_softlb (line);
       }
-    }
   }
 
-  if (flowed) {
-    *quotelevel = new_quotelevel;
-  } else {
-    *quotelevel = 0;
-  }
-
+  /*
+  ** is this line f=f?
+  */
+  if (!sig_sep) {
+      char *eold;
+      eold = strrchr (line, '\n');
+      if (line != eold) {
+          if (*(eold - 1) == '\r')
+              eold--;
+      }
+      if (line != eold && (line + tmp_padding) != eold) {
+          if (*(eold - 1) == ' ') {
+              if (!sig_sep) {
+                  flowed = TRUE;
 #if DEBUG_PARSE
-  if (continue_prev_flow_flag)
-    printf("RFC3676: Continuing previous flow\n");
-  else
-    printf("RFC3676: Stopping previous flow\n");
+                  printf("RFC3676: f=f line detected\n");
+#endif
+              }
+              if (delsp_flag) {
+                  /* remove the space stuffing and copy the end of line */
+                  rfc3676_trim_softlb(line);
+              }
+          }
+      }
+  }
+  
+  /*
+  ** update flags
+  */
+  *quotelevel = new_quotelevel;
+  
+  if (*continue_prev_flow_flag) {
+      *padding = new_quotelevel + space_stuffing;
+  } else {
+    *padding = (new_quotelevel == 0) ? space_stuffing : 0;
+  }
+  
+#if DEBUG_PARSE
+  if (*continue_prev_flow_flag)
+      printf("RFC3676: Continuing previous flow\n");
   if (flowed) {
-    printf("RFC3676: Current line is flowed\n");
-    printf("RFC3676: New quote level: %d\n", new_quotelevel);
+      printf("RFC3676: Current line is flowed\n");
   }
 #endif
 
@@ -1559,7 +1627,7 @@ int parsemail(char *mbox,	/* file name */
     bool flowed_line = FALSE;
     int quotelevel = 0;
     bool continue_previous_flow_flag = FALSE;
-    bool delsp = FALSE; 
+    bool delsp_flag = FALSE;
 
     int binfile = -1;
 
@@ -2054,7 +2122,7 @@ int parsemail(char *mbox,	/* file name */
 			    sscanf(cp, "%128[^;\"\n]", charbuffer);
 			    /* save the delsp info */
 			    if (!strcasecmp (charbuffer, "yes"))
-			      delsp = TRUE;
+			      delsp_flag = TRUE;
 			  }
 			}
 
@@ -2533,9 +2601,9 @@ int parsemail(char *mbox,	/* file name */
 		  textplain_format = FORMAT_FIXED;
 		}
 
-		if (textplain_format == FORMAT_FIXED && delsp) {
-		  /* delsp only accepted for format=flowed */
-		  delsp = FALSE;
+		if (textplain_format == FORMAT_FIXED && delsp_flag) {
+                    /* delsp only accepted for format=flowed */
+                    delsp_flag = FALSE;
 		}
 
 		if (append_bp && append_bp != bp) {
@@ -2648,7 +2716,7 @@ msgid);
 
 		/* reset related RFC 3676 state flags */
 		textplain_format = FORMAT_FIXED;
-		delsp = FALSE;
+		delsp_flag = FALSE;
 		flowed_line = FALSE;
 		quotelevel = 0;
 		continue_previous_flow_flag = FALSE;
@@ -2876,7 +2944,7 @@ msgid);
 
 			/* reset related RFC 3676 state flags */
 			textplain_format = FORMAT_FIXED;
-			delsp = FALSE;
+			delsp_flag = FALSE;
 			flowed_line = FALSE;
 			quotelevel = 0;
 			continue_previous_flow_flag = FALSE;
@@ -2998,16 +3066,18 @@ msgid);
 			  int padding; /* used for skipping padding detected by rfc3676_handler,
 					  which seems smarter than moving all the bytes in data
 					  before injecting it into addbody */
-			  if (!isinheader && textplain_format == FORMAT_FLOWED) {
-			    flowed_line = rfc3676_handler (data, delsp, &quotelevel, 
-							   &continue_previous_flow_flag, &padding);
-			    if (continue_previous_flow_flag)
-			      bodyflags |= BODY_CONTINUE;
-			    else
-			      bodyflags &= ~BODY_CONTINUE;
-			    continue_previous_flow_flag = flowed_line;
+			  if (!isinheader && (textplain_format == FORMAT_FLOWED)) {
+                              flowed_line = rfc3676_handler (data, delsp_flag, &quotelevel, 
+                                                             &continue_previous_flow_flag,
+                                                             &padding);
+                              if (continue_previous_flow_flag) {
+                                  bodyflags |= BODY_CONTINUE;
+                              } else  {
+                                  bodyflags &= ~BODY_CONTINUE;
+                              }
+                              continue_previous_flow_flag = flowed_line;
 			  } else {
-			    padding = 0;
+                              padding = 0;
 			  }
 			  bp = addbody(bp, &lp, data + padding,
 				       (content == CONTENT_HTML ?
@@ -3375,9 +3445,9 @@ msgid);
 	  textplain_format = FORMAT_FIXED;
 	}
 
-	if (textplain_format == FORMAT_FIXED && delsp) {
+	if (textplain_format == FORMAT_FIXED && delsp_flag) {
 	  /* delsp only accepted for format=flowed */
-	  delsp = FALSE;
+	  delsp_flag = FALSE;
 	}
 
 	if (append_bp && append_bp != bp) {
@@ -3464,7 +3534,7 @@ msgid);
 
 	/* reset related RFC 3676 state flags */
 	textplain_format = FORMAT_FIXED;
-	delsp = FALSE;
+	delsp_flag = FALSE;
 	flowed_line = FALSE;
 	quotelevel = 0;
 	continue_previous_flow_flag = FALSE;
