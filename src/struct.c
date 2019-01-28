@@ -912,14 +912,38 @@ struct body *addbody(struct body *bp, struct body **lp,	/* points to the last po
 {
     struct body *tempnode;
     struct body *newnode = NULL;
+    char *unstuffed_line = line;
+    int free_unstuffed_line = 0;
 
+    /* delete both space stuffing and quotes where applicable for f=f */
+    if (flags & BODY_DEL_SSQ) {
+        if (flags & BODY_CONTINUE) {
+            /* delete all quote levels, we're reusing those of the precedent line */
+            while (*unstuffed_line == '>') {
+                unstuffed_line++;
+            }
+        }
+        /* deleting space-stuffing at beginning of line */
+        if (unstuffed_line[0] == ' ') {
+            unstuffed_line++;
+        } 
+        else if (unstuffed_line[0] == '>') {
+            char *delsp_line = rfc3676_delsp_quotes(unstuffed_line);
+            if (delsp_line) {
+                unstuffed_line = delsp_line;
+                free_unstuffed_line = 1;
+            }
+        }
+    }
+    
     if (!(flags & BODY_CONTINUE)) {
 	newnode = (struct body *)emalloc(sizeof(struct body));
 	memset(newnode, 0, sizeof(struct body));
-	newnode->line = spamify(strsav(line));
+	newnode->line = spamify(strsav(unstuffed_line));
 	newnode->html = (flags & BODY_HTMLIZED) ? 1 : 0;
 	newnode->header = (flags & BODY_HEADER) ? 1 : 0;
 	newnode->attached = (flags & BODY_ATTACHED) ? 1 : 0;
+        newnode->format_flowed = (flags & BODY_FORMAT_FLOWED) ? 1 : 0;
 	newnode->next = NULL;
     }
     if (bp == NULL) {
@@ -935,7 +959,7 @@ struct body *addbody(struct body *bp, struct body **lp,	/* points to the last po
 	    char *newbuf;
 
 	    /* get the new size + 1 for the terminating zero */
-	    newlen = strlen(tempnode->line) + strlen(line) + 1;
+	    newlen = strlen(tempnode->line) + strlen(unstuffed_line) + 1;
 
 	    /* extend the former memory area: */
 	    newbuf = (char *)realloc(tempnode->line, newlen);
@@ -949,7 +973,7 @@ struct body *addbody(struct body *bp, struct body **lp,	/* points to the last po
 		    *lf = 0;
 
 		/* append the new part */
-		strcat(newbuf, line);
+		strcat(newbuf, unstuffed_line);
 
 		/* point out the new buffer instead */
 		tempnode->line = newbuf;
@@ -960,6 +984,11 @@ struct body *addbody(struct body *bp, struct body **lp,	/* points to the last po
 	    *lp = newnode;
 	}
     }
+
+    if (free_unstuffed_line) {
+        free(unstuffed_line);
+    }
+    
     return bp;
 }
 
