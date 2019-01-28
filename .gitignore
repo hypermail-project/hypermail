@@ -42,8 +42,13 @@ src/pcre/libtool
 src/pcre/pcregrep
 src/pcre/pcretest
 
+# other files created when compiling
+archive/msg2archive
+archive/rdmsg
+tests/testhm
+
 # vi or emacs edited ones
-*.~
+.*~
 \#.*
 
 # swap files
