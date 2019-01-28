@@ -1117,31 +1117,29 @@ static int get_quotelevel (const char *line)
 ** headers), the previous line quotelevel, and a flag saying if the
 ** previous line was marked as a continuing one.
 **
-** The function updates the quotelevel to
-** that of the current parsed line. The function will update the
-** continue_prev_flow_flag to say if the current line should be joined
-** to the previous one, and, if positive, the padding offset that
-** should be applied to the current line when merging it (for skipping
-** quotes or space-stuffing).
+** The function updates the quotelevel to that of the current parsed
+** line. The function will update the continue_prev_flow_flag to say
+** if the current line should be joined to the previous one, and, if
+** positive, the padding offset that should be applied to the current
+** line when merging it (for skipping quotes or space-stuffing).
 **
-** If delsp is true, the function will remove the space in the soft 
+** If delsp is true, the function will remove the space in the soft
 ** line break if the line is flowed.
 **
 ** The function returns true if the current line is flowed.
 **
 */
 static bool rfc3676_handler (char *line, bool delsp_flag, int *quotelevel, 
-			     bool *continue_prev_flow_flag, int *padding)
+			     bool *continue_prev_flow_flag)
 {
   int new_quotelevel = 0;
-  int space_stuffing = 0;
   int tmp_padding = 0;
   bool sig_sep = FALSE;
   bool flowed = FALSE;
 
   /* rules for evaluation if the flow should stop:
      1. new quote level is different from previous one
-     2. The line ends with a signature "[(quotes)][(ss)]-- \n"
+     2. The line is a signature "[(quotes)][(ss)]-- \n"
      3. The line is a hard break "\n"
      4. The message body has ended
 
@@ -1162,6 +1160,7 @@ static bool rfc3676_handler (char *line, bool delsp_flag, int *quotelevel,
 
      special case, space-stuffed or f=f? A line that has only this content:
      " \n": this is a space-stuffed newline.
+     @@ test this special case with mutt
   */
 
 
@@ -1176,8 +1175,7 @@ static bool rfc3676_handler (char *line, bool delsp_flag, int *quotelevel,
   if (rfc3676_ishardlb(line)) {
       /* Hard crlf, reset flags */
       *quotelevel = 0;
-      *padding = 0;
-      /* *continue_prev_flow_flag = FALSE; */
+      *continue_prev_flow_flag = FALSE;
 #if DEBUG_PARSE
       printf("RFC3676: hard CRLF detected. Stopping ff\n");
 #endif
@@ -1207,7 +1205,6 @@ static bool rfc3676_handler (char *line, bool delsp_flag, int *quotelevel,
   ** skip space stuffing if any 
   */
   if (line[tmp_padding] == ' ') {
-      space_stuffing = 1;
       tmp_padding++;
 #if DEBUG_PARSE
       printf("RFC3676: space-stuffing detected; skipping space\n");
@@ -1221,13 +1218,12 @@ static bool rfc3676_handler (char *line, bool delsp_flag, int *quotelevel,
       /* Hard crlf, reset flags */
       /* *continue_prev_flow_flag = FALSE; */
       *quotelevel = new_quotelevel;
-      *padding = 0;
 #if DEBUG_PARSE
       printf("RFC3676: hard CRLF detected after quote. Stopping ff\n");
 #endif
       return FALSE;
   }
-    
+
   /*
   ** signature detection
   */
@@ -1279,12 +1275,6 @@ static bool rfc3676_handler (char *line, bool delsp_flag, int *quotelevel,
   ** update flags
   */
   *quotelevel = new_quotelevel;
-  
-  if (*continue_prev_flow_flag) {
-      *padding = new_quotelevel + space_stuffing;
-  } else {
-    *padding = (new_quotelevel == 0) ? space_stuffing : 0;
-  }
   
 #if DEBUG_PARSE
   if (*continue_prev_flow_flag)
@@ -3063,23 +3053,27 @@ msgid);
 			    }
 			}
 			else {
-			  int padding; /* used for skipping padding detected by rfc3676_handler,
-					  which seems smarter than moving all the bytes in data
-					  before injecting it into addbody */
 			  if (!isinheader && (textplain_format == FORMAT_FLOWED)) {
+                              /* remove both space stuffing and quotes
+                               * where applicable for f=f */
+                              bodyflags |= BODY_DEL_SSQ;
                               flowed_line = rfc3676_handler (data, delsp_flag, &quotelevel, 
-                                                             &continue_previous_flow_flag,
-                                                             &padding);
+                                                             &continue_previous_flow_flag);
                               if (continue_previous_flow_flag) {
                                   bodyflags |= BODY_CONTINUE;
                               } else  {
                                   bodyflags &= ~BODY_CONTINUE;
+                                  if (flowed_line) {
+                                      bodyflags |= BODY_FORMAT_FLOWED;
+                                  } else {
+                                      bodyflags &= ~BODY_FORMAT_FLOWED;
+				  }
                               }
                               continue_previous_flow_flag = flowed_line;
 			  } else {
-                              padding = 0;
+                              bodyflags &= ~BODY_DEL_SSQ;
 			  }
-			  bp = addbody(bp, &lp, data + padding,
+			  bp = addbody(bp, &lp, data,
 				       (content == CONTENT_HTML ?
 					BODY_HTMLIZED : 0) | bodyflags);
 			}
