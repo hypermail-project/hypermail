@@ -4,6 +4,12 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.4.0:
 ============================
 
+2019-11-19 Jose Kahan
+	* src/pcre
+	Upgraded to upstream version 8.43. This fixes some autoconf issues we
+	had on newer debian releases. This is only relevant for people that
+	are not linking against a system libpcre.
+
 2018-12-07 Jose Kahan
 	* If the antispamdomain config option was used, hypermail was replacing
 	everything following a "@" character by the antispam domain.  This fix
