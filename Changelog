@@ -10,6 +10,10 @@ HYPERMAIL VERSION 2.4.0:
 	had on newer debian releases. This is only relevant for people that
 	are not linking against a system libpcre.
 
+	* tests/diff_hypermail_archives.pl
+	Rewrote diff_hypermail.pl to make it more flexible and powerful for finding
+	the differences in two hypermail archives.
+
 2018-12-07 Jose Kahan
 	* If the antispamdomain config option was used, hypermail was replacing
 	everything following a "@" character by the antispam domain.  This fix
