@@ -46,6 +46,8 @@ src/pcre/pcretest
 archive/msg2archive
 archive/rdmsg
 tests/testhm
+tests/testdir
+tests/testmail
 
 # vi or emacs edited ones
 .*~
