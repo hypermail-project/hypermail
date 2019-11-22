@@ -4,6 +4,11 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.4.0:
 ============================
 
+2019-11-22 Jose Kahan
+	* src/print.c
+	printsubject() / printdates(): the "by suject" and "by dates" views
+	were not escaping markup present in mail's Suject and From headers.
+
 2019-11-19 Jose Kahan
 	* src/pcre
 	Upgraded to upstream version 8.43. This fixes some autoconf issues we
