@@ -788,9 +788,14 @@ void printdates(FILE *fp, struct header *hp, int year, int month, struct emailin
 	&& (month == -1 || month_of_datenum(em->date) == month)
 	&& !em->is_deleted
 	&& (!subdir_email || subdir_email->subdir == em->subdir)) {
-        
-        subject = (set_i18n) ? em->subject :  convchars(em->subject, em->charset);
-        name = (set_i18n) ? em->name : convchars(em->name,em->charset);
+
+#ifdef HAVE_ICONV
+      subject = convchars(em->subject, "utf-8");
+      name = convchars(em->name, "utf-8");
+#else
+      subject = convchars(em->subject, em->charset);
+      name = convchars(em->name, em->charset);
+#endif
       
       if(set_indextable) {
 	startline = "<tr><td>";
@@ -830,11 +835,9 @@ void printdates(FILE *fp, struct header *hp, int year, int month, struct emailin
 	      set_fragment_prefix, em->msgnum, set_fragment_prefix, em->msgnum, 
 	      name,
 	      break_str, date_str, endline);
-      
-      if (!set_i18n) {
-          free(subject);
-          free(name);
-      }
+
+      free(subject);
+      free(name);
     }
     printdates(fp, hp->right, year, month, subdir_email, prev_date_str);
   }
@@ -2689,9 +2692,15 @@ void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
 	&& (month == -1 || month_of_datenum(hp->data->date) == month)
 	&& !hp->data->is_deleted
 	&& (!subdir_email || subdir_email->subdir == hp->data->subdir)) {
-        subject = (set_i18n) ? hp->data->unre_subject : convchars(hp->data->unre_subject, hp->data->charset);
-        name = (set_i18n) ? hp->data->name : convchars(hp->data->name,hp->data->charset);
-        
+
+#ifdef HAVE_ICONV
+        subject = convchars(hp->data->unre_subject, "utf-8");
+        name = convchars(hp->data->name, "utf-8");
+#else
+        subject = convchars(hp->data->subject, hp->data->charset);
+        name = convchars(hp->data->name, hp->data->charset);
+#endif
+
 	if (strcasecmp(hp->data->unre_subject, *oldsubject)) {
 	    if (set_indextable) {
 		fprintf(fp,
@@ -2732,10 +2741,8 @@ void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
 		set_fragment_prefix, hp->data->msgnum, date_str, endline);
 	*oldsubject = hp->data->unre_subject;
 
-        if (!set_i18n) {
-            free(subject);
-            free(name);
-        }
+	free(subject);
+	free(name);
     }
     printsubjects(fp, hp->right, oldsubject, year, month, subdir_email);
   }
