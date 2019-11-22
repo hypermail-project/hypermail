@@ -1109,7 +1109,7 @@ char *convcharsreal(char *line, char *charset, int spamprotect)
 	}
     }
     RETURN_PUSH(buff);
-} /* end convchars() */
+} /* end convcharsreal() */
 
 char *convcharsnospamprotect(char *line, char *charset)
 {
