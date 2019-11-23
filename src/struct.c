@@ -729,10 +729,14 @@ struct body *addbody(struct body *bp, struct body **lp,	/* points to the last po
     if (!(flags & BODY_CONTINUE)) {
 	newnode = (struct body *)emalloc(sizeof(struct body));
 	memset(newnode, 0, sizeof(struct body));
-	newnode->line = spamify(strsav(line));
 	newnode->html = (flags & BODY_HTMLIZED) ? 1 : 0;
 	newnode->header = (flags & BODY_HEADER) ? 1 : 0;
 	newnode->attached = (flags & BODY_ATTACHED) ? 1 : 0;
+	// only spamify headers; body is handled in parseemail
+	if (newnode->header)
+	    newnode->line = spamify(strsav(line));
+	else
+	    newnode->line = strsav(line);
 	newnode->next = NULL;
     }
     if (bp == NULL) {
