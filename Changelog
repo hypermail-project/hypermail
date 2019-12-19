@@ -4,6 +4,12 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.4.0:
 ============================
 
+2019-12-19 Jose Kahan
+	* src/parse.c
+	parsemail(): a Content-Transfer-Encoding header with a missing value
+	would output a random string when generating unsupported encoding
+	body message.
+
 2019-11-22 Jose Kahan
 	* src/print.c
 	printsubject() / printdates(): the "by suject" and "by dates" views

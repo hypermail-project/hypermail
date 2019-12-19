@@ -2466,7 +2466,13 @@ int parsemail(char *mbox,	/* file name */
 			    /* Unknown format, we use default decoding */
 			    char code[64];
 
-			    sscanf(ptr, "%63s", code);
+			    /* is there any value for content-encoding or is it missing? */
+			    if (*ptr) {
+			      sscanf(ptr, "%63s", code);
+			    } else {
+			      code[0] = '\0';
+			    }
+			    
                             snprintf(line, sizeof(line_buf) - set_ietf_mbox,
 				     " ('%s' %s)\n", code, 
                                      lang[MSG_ENCODING_IS_NOT_SUPPORTED]);
