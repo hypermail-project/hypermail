@@ -7,8 +7,8 @@ HYPERMAIL VERSION 2.4.0:
 2019-12-19 Jose Kahan
 	* src/parse.c
 	parsemail(): a Content-Transfer-Encoding header with a missing value
-	would output a random string when generating unsupported encoding
-	body message.
+	would result in an unitialized variable being used to output an unknown
+	encoding warning message. Hypermail now skips this header if it's empty.
 
 2019-11-22 Jose Kahan
 	* src/print.c

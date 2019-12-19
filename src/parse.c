@@ -2467,18 +2467,23 @@ int parsemail(char *mbox,	/* file name */
 			    char code[64];
 
 			    /* is there any value for content-encoding or is it missing? */
-			    if (*ptr) {
-			      sscanf(ptr, "%63s", code);
-			    } else {
-			      code[0] = '\0';
-			    }
-			    
-                            snprintf(line, sizeof(line_buf) - set_ietf_mbox,
-				     " ('%s' %s)\n", code, 
-                                     lang[MSG_ENCODING_IS_NOT_SUPPORTED]);
+			    if (sscanf(ptr, "%63s", code) != EOF) {
+			      
+			      snprintf(line, sizeof(line_buf) - set_ietf_mbox,
+				       " ('%s' %s)\n", code, 
+				       lang[MSG_ENCODING_IS_NOT_SUPPORTED]);
 
-			    bp = addbody(bp, &lp, line,
-					BODY_HTMLIZED | bodyflags);
+			      bp = addbody(bp, &lp, line,
+					   BODY_HTMLIZED | bodyflags);
+
+#if DEBUG_PARSE
+			      printf("Ignoring unknown Content-Transfer-Encoding: %s\n", code);
+#endif
+			    } else {
+#if DEBUG_PARSE
+			      printf("Missing Content-Transfer-Encoding value\n");
+#endif
+			    }
 			}
 #if DEBUG_PARSE
 			printf("DECODE set to %d\n", decode);
