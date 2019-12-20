@@ -4,6 +4,11 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.4.0:
 ============================
 
+2019-12-20 Jose Kahan
+	* src/getdate.y
+	A message's sent or received date with a specified TZ but without any
+	seconds value was using the local date seconds value instead of 00.
+
 2019-12-19 Jose Kahan
 	* src/parse.c
 	parsemail(): a Content-Transfer-Encoding header with a missing value
