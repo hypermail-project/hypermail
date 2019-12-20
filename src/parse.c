@@ -174,6 +174,28 @@ int textcontent(char *type)
     return 0;
 }
 
+static int is_applemail_ua(char *ua_string)
+{
+    /* returns TRUE if the ua_string is one of the declared applemail
+     * clients */
+
+    int res = FALSE;
+
+    if (ua_string && *ua_string != '\0') {
+        char *buff;
+        char *ptr;
+
+        buff = strsav(ua_string);
+        ptr = strcasestr(buff, " Mail (");
+        if (ptr) {
+            *ptr = '\0';
+            res = inlist(set_applemail_ua_value, buff);
+        }
+        free(buff);
+    }
+
+    return res;
+}
 
 /*
  * Should return TRUE if the input is a Re: start. The end pointer should
@@ -1049,7 +1071,7 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 	printf("NEW: %s\n", storage);
 
 	{
-	    unsigned char *f;
+	    char *f;
 	    puts("NEW:");
 	    for (f = storage; f < output; f++) {
 		if (isgraph(*f))
@@ -1095,18 +1117,20 @@ static int get_quotelevel (const char *line)
 ** headers), the previous line quotelevel, and a flag saying if the
 ** previous line was marked as a continuing one.
 **
-** The function returns true if the current line should be merged with
-** the next line to be parsed. 
+** The function updates the quotelevel to that of the current parsed
+** line. The function will update the continue_prev_flow_flag to say
+** if the current line should be joined to the previous one, and, if
+** positive, the padding offset that should be applied to the current
+** line when merging it (for skipping quotes or space-stuffing).
 **
-** The function updates the quotelevel to
-** that of the current parsed line. The function will update the
-** continue_prev_flow_flag to say if the current line should be joined
-** to the previous one, and, if positive, the padding offset that
-** should be applied to the current line when merging it (for skipping
-** quotes or space-padding).
+** If delsp is true, the function will remove the space in the soft
+** line break if the line is flowed.
+**
+** The function returns true if the current line is flowed.
+**
 */
-static bool rfc3676_handler (const char *line, bool delsp, int *quotelevel, 
-			     bool *continue_prev_flow_flag, int *padding)
+static bool rfc3676_handler (char *line, bool delsp_flag, int *quotelevel, 
+			     bool *continue_prev_flow_flag)
 {
   int new_quotelevel = 0;
   int tmp_padding = 0;
@@ -1115,91 +1139,148 @@ static bool rfc3676_handler (const char *line, bool delsp, int *quotelevel,
 
   /* rules for evaluation if the flow should stop:
      1. new quote level is different from previous one
-     2. The line ends with a signature "(quotes)(stuffing)-- \n"
+     2. The line is a signature "[(quotes)][(ss)]-- \n"
+     3. The line is a hard break "\n"
+     4. The message body has ended
+
+     rules for removing space-stuffing:
+     1. if f=f, then remove the first space of any line beginning with a space,
+        before processing for f=f.
+     2. space char may depend on charset.
+
+     rules for quotes:
+     1. quoted lines always begin with a '>' char. This symbol may depend on the
+        msg charset. 
+     2. They are not ss before the quote symbol but may be after it 
+        appears.
+
+     rules for seeing if a line should be flowed with the next one:
+     1. line ends with a soft line break sp\n
+     2. remove the sp if delsp=true; keep it otherwise
+
+     special case, space-stuffed or f=f? A line that has only this content:
+     " \n": this is a space-stuffed newline.
+     @@ test this special case with mutt
   */
 
-  /* If this is line is part of the flow and begins with quotes,
-     remove the quote level and stuffed space if found */
-  new_quotelevel = get_quotelevel (line);
 
 #if DEBUG_PARSE
-  printf("RFC3676: Previous quote level: %d\n", quotelevel);
-  printf("RFC3676: Previous line flow flag: %d\n", continue_prev_flow_flag);
+  printf("RFC3676: Previous quote level: %d\n", *quotelevel);
+  printf("RFC3676: Previous line flow flag: %d\n", *continue_prev_flow_flag);
+#endif
+
+  /* 
+  ** hard crlf detection.
+  */
+  if (rfc3676_ishardlb(line)) {
+      /* Hard crlf, reset flags */
+      *quotelevel = 0;
+      *continue_prev_flow_flag = FALSE;
+#if DEBUG_PARSE
+      printf("RFC3676: hard CRLF detected. Stopping ff\n");
+#endif
+      return FALSE;
+  }
+  
+  /*
+  ** quote level detection
+  */
+  new_quotelevel = get_quotelevel (line);
+#if DEBUG_PARSE
   printf("RFC3676: New quote level: %d\n", new_quotelevel);
 #endif
 
-  /* remove the multi-line quotes padding */
+  /* change of quote level, stop ff */
+  if (new_quotelevel != *quotelevel
+      || (new_quotelevel > 0 && set_format_flowed_disable_quoted)) {
+      *continue_prev_flow_flag = FALSE;
+
+#if DEBUG_PARSE
+      printf("RFC3676: different quote levels detected. Stopping ff\n");
+#endif      
+  }
   tmp_padding = new_quotelevel;
 
-  if (*continue_prev_flow_flag 
-      && (new_quotelevel != *quotelevel 
-	  || (new_quotelevel == *quotelevel 
-	      && new_quotelevel > 0 
-	      && set_format_flowed_disable_quoted))) {
-    /* don't join */
-    *continue_prev_flow_flag = FALSE;
-  }
-
-  /* remove space stuffing if any */
+  /* 
+  ** skip space stuffing if any 
+  */
   if (line[tmp_padding] == ' ') {
-    tmp_padding++;
+      tmp_padding++;
+#if DEBUG_PARSE
+      printf("RFC3676: space-stuffing detected; skipping space\n");
+#endif            
   }
 
+  /* 
+  ** hard crlf detection after quotes
+  */
+  if (rfc3676_ishardlb(line+tmp_padding)) {
+      /* Hard crlf, reset flags */
+      /* *continue_prev_flow_flag = FALSE; */
+      *quotelevel = new_quotelevel;
+#if DEBUG_PARSE
+      printf("RFC3676: hard CRLF detected after quote. Stopping ff\n");
+#endif
+      return FALSE;
+  }
+
+  /*
+  ** signature detection
+  */
+  
   /* Is it a signature separator? */
-  if (!strcmp (line + tmp_padding, "-- \n") || !strcmp (line + tmp_padding, "-- \r\n")) {
-    /* don't join */
-    *continue_prev_flow_flag = FALSE;
-    sig_sep = TRUE;
+  /* rfc3676 gives "-- \n" and "--\r\n" as signatures. We also add "--\n" to this list,
+     as mutt allows it */
+  if (!strcmp (line + tmp_padding, "-- \n")
+      || !strcmp (line + tmp_padding, "-- \r\n")
+      || !strcmp (line + tmp_padding, "--\n")) {
+      /* yes, stop f=f */
+      *continue_prev_flow_flag = FALSE;
+      sig_sep = TRUE;
 #if DEBUG_PARSE
-    printf("RFC3676: Current line is signature\n", sig_sep);
+      printf ("RFC3676: -- signature detected. Stopping ff\n", sig_sep);
 #endif
-  }
-
-  if (*continue_prev_flow_flag == FALSE)
-    tmp_padding = 0;
-
-  *padding = tmp_padding;
-
-  /* is this line part of a flowed sequence (beginning or continuation)?  */
-  if (!sig_sep) {
-    char *eold;
-    eold = strrchr (line, '\n');
-    if (line != eold) {
-      if (*(eold - 1) == '\r')
-	eold--;
-    }
-    if (line != eold) {
-      if (*(eold - 1) == ' ') {
-	flowed = TRUE;
-	if (delsp) {
-	  /* remove the space stuffing and copy the end of line */
-	  char *ptr = eold - 1;
-#if DEBUG_PARSE
-	  printf("deleting delsp separator\n");
-#endif
-	  while (*ptr != '\0') {
-	    *ptr = *(ptr + 1);
-	    ptr++;
-	  }
-	}
+      if (delsp_flag) {
+          rfc3676_trim_softlb (line);
       }
-    }
   }
 
-  if (flowed) {
-    *quotelevel = new_quotelevel;
-  } else {
-    *quotelevel = 0;
-  }
-
+  /*
+  ** is this line f=f?
+  */
+  if (!sig_sep) {
+      char *eold;
+      eold = strrchr (line, '\n');
+      if (line != eold) {
+          if (*(eold - 1) == '\r')
+              eold--;
+      }
+      if (line != eold && (line + tmp_padding) != eold) {
+          if (*(eold - 1) == ' ') {
+              if (!sig_sep) {
+                  flowed = TRUE;
 #if DEBUG_PARSE
-  if (continue_prev_flow_flag)
-    printf("RFC3676: Continuing previous flow\n");
-  else
-    printf("RFC3676: Stopping previous flow\n");
+                  printf("RFC3676: f=f line detected\n");
+#endif
+              }
+              if (delsp_flag) {
+                  /* remove the space stuffing and copy the end of line */
+                  rfc3676_trim_softlb(line);
+              }
+          }
+      }
+  }
+  
+  /*
+  ** update flags
+  */
+  *quotelevel = new_quotelevel;
+  
+#if DEBUG_PARSE
+  if (*continue_prev_flow_flag)
+      printf("RFC3676: Continuing previous flow\n");
   if (flowed) {
-    printf("RFC3676: Current line is flowed\n");
-    printf("RFC3676: New quote level: %d\n", new_quotelevel);
+      printf("RFC3676: Current line is flowed\n");
   }
 #endif
 
@@ -1395,7 +1476,6 @@ static int do_uudecode(FILE *fp, char *line, char *line_buf,
     return 1;
 }
 
-
 static void write_txt_file(struct emailinfo *emp, struct Push *raw_text_buf)
 {
     char *txt_filename;
@@ -1475,6 +1555,7 @@ int parsemail(char *mbox,	/* file name */
     struct body *origlp = NULL;	/* ... and the original lp */
     char alternativeparser = FALSE;	/* set when inside alternative parser mode */
     int alternative_weight = -1;	/* the current weight of the prefered alternative content */
+    char *prefered_content_charset = NULL;  /* the current charset of the alternative */
     struct body *alternative_lp = NULL;	/* the previous alternative lp */
     struct body *alternative_bp = NULL;	/* the previous alternative bp */
     struct body *append_bp = NULL; /* text to append to body after parse done*/
@@ -1482,7 +1563,11 @@ int parsemail(char *mbox,	/* file name */
     FileStatus alternative_lastfile_created = NO_FILE;	/* previous alternative attachments, for non-inline MIME types */
     char alternative_file[129];	/* file name where we store the non-inline alternatives */
     char alternative_lastfile[129];	/* last file name where we store the non-inline alternatives */
+    char last_alternative_type[129];      /* the alternative Content-Type value */
     int att_counter = 0;	/* used to generate a unique name for attachments */
+    int parse_multipart_alternative_force_save_alts = 0; /* used to control if we are parsing alternative as multipart */
+    int old_set_save_alts = -1;  /* used to store the set_save_alts when overriding it for apple mail */
+    int applemail_ua_header_len = (set_applemail_mimehack) ? strlen (set_applemail_ua_header) : 0; /* code optimization to avoid computing it each time */
     /* 
     ** keeps track of attachment file name used so far for this message 
     */
@@ -1498,7 +1583,8 @@ int parsemail(char *mbox,	/* file name */
 
     struct body *headp = NULL;	/* stored pointer to the point where we last
 				   scanned the headers of this mail. */
-
+    struct body *content_type_p = NULL;  /* pointer to the Content-Type header */
+        
     char Mime_B = FALSE;
     char boundbuffer[256] = "";
 
@@ -1506,6 +1592,18 @@ int parsemail(char *mbox,	/* file name */
 					   of boundary separators in cases with mimed 
 					   mails inside mimed mails */
 
+    struct boundary *multipartp = NULL; /* This variable is used to store a stack of
+                                           mimetypes when dealing with multipart mails */
+
+    struct charset_stack *charsetsp = NULL; /* This variable is used
+                                               to store a stack of
+                                               charset/charset_save
+                                               values when dealing
+                                               with multipart mails */
+
+    bool skip_mime_epilogue = FALSE;  /* This variable is used to help skip multipart/foo
+                                           epilogues */
+    
     char multilinenoend = FALSE;	/* This variable is set TRUE if we have read 
 					   a partial line off a multiline-encoded line, 
 					   and the next line we read is supposed to get
@@ -1519,7 +1617,7 @@ int parsemail(char *mbox,	/* file name */
     bool flowed_line = FALSE;
     int quotelevel = 0;
     bool continue_previous_flow_flag = FALSE;
-    bool delsp = FALSE; 
+    bool delsp_flag = FALSE;
 
     int binfile = -1;
 
@@ -1587,6 +1685,9 @@ int parsemail(char *mbox,	/* file name */
     bp = NULL;
     subject = NOSUBJECT;
 
+    parse_multipart_alternative_force_save_alts = 0;
+    old_set_save_alts = -1;
+    
     require_filter_len = require_filter_full_len = 0;
     for (tlist = set_filter_require; tlist != NULL; require_filter_len++, tlist = tlist->next)
 	;
@@ -1623,14 +1724,32 @@ int parsemail(char *mbox,	/* file name */
     for ( ; fgets(line_buf, MAXLINE, fp) != NULL; 
 	  set_txtsuffix ? PushString(&raw_text_buf, line_buf) : 0) {
 #if DEBUG_PARSE
-	printf("IN: %s", line);
+        fprintf(stderr,"\n^IN: %s", line_buf);
+        fprintf(stderr, "^  BP %.0s: %.40s|\n^  LP %.0s: %.40s|\n^ ABP %.0s: %.40s|\n^ ALP %.0s: %.40s|\n^ OBP %.0s: %.40s|\n^ "
+                "OLP %.0s: %.40s|\n^HEAD %.0s: %.40s|\n",
+                "bp", (bp) ? bp->line : "",
+                "lp", (lp) ? lp->line : "",
+                "alternative_bp", (alternative_bp) ? alternative_bp->line : "",
+                "alternative_lp", (alternative_lp) ? alternative_lp->line : "",
+                "origbp", (origbp) ? origbp->line : "",
+                "origlp", (origlp) ? origlp->line : "",
+                "headp", (headp) ? headp->line : "");	
 #endif 
 	if(set_append) {
 	    if(fputs(line_buf, fpo) < 0) {
 	        progerr("Can't write to \"mbox\""); /* revisit me */
 	    }
 	}
-	line = line_buf + set_ietf_mbox; 
+	line = line_buf + set_ietf_mbox;
+
+        if (skip_mime_epilogue) {
+            if (line[0] == '\n') {
+                continue;
+            } else {
+                skip_mime_epilogue = FALSE;
+            }
+        }
+        
 	if (!is_deleted &&
 	    inlist_regex_pos(set_filter_out_full_body, line) != -1) {
 	    is_deleted = FILTERED_OUT;
@@ -1742,11 +1861,11 @@ int parsemail(char *mbox,	/* file name */
 		    else if (!strncasecmp(head->line, "From:", 5)) {
 			getname(head->line, &namep, &emailp);
 			head->parsedheader = TRUE;
-            if (set_spamprotect) {
-			    emailp=spamify(emailp);
+                        if (set_spamprotect) {
+			    emailp = spamify(strsav(emailp));
 			    /* we need to "fix" the name as well, as sometimes
 			       the email ends up in the name part */
-			    namep=spamify(namep);
+			    namep = spamify(strsav(namep));
                         }
 		    }
 		    else if (!strncasecmp(head->line, "Message-Id:", 11)) {
@@ -1776,9 +1895,50 @@ int parsemail(char *mbox,	/* file name */
 			if (set_linkquotes) {
 			    bp = addbody(bp, &lp, line, 0);
 			}
+                        head->parsedheader = TRUE;
 		    }
-		}
+                    else if (!strncasecmp(head->line, "Content-Type:", 13)) {
+                        content_type_p = head;
+                    }
+		    else if (applemail_ua_header_len > 0
+                             && !strncasecmp(head_name, set_applemail_ua_header,
+                                             applemail_ua_header_len)) {
+                        /* we only need to set this one up once per message*/
+                        head->parsedheader = TRUE;
+                        if (alternativeparser
+                            || !Mime_B
+                            || set_save_alts
+                            || !set_applemail_mimehack) {
+                            continue;
+                        }
+                        
+                        /* If the UA is an apple mail client and we're configured to do the
+                         * applemail hack and we're not already configured to
+                         * save the alternatives, memorize the old setting and force
+                         * the alternatives save
+                         */
+                        if (!parse_multipart_alternative_force_save_alts
+                            && is_applemail_ua(head->line + applemail_ua_header_len + 2)) {
 
+                            parse_multipart_alternative_force_save_alts = 1;
+
+			    /* to avoid confusion and quoting out of
+                            ** context, we won't show the alternatives
+                            ** in-line.
+                            */
+
+                            old_set_save_alts = set_save_alts;
+			    set_save_alts = 2;
+			    
+#if DEBUG_PARSE
+                            printf("Applemail_hack force save_alts: yes\n");
+			    printf("Applemail_hack set_save_alts changed from %d to %d\n",
+                                   old_set_save_alts, set_save_alts);
+#endif
+                        }
+                    }
+                }
+                
 		if (!is_deleted && set_delete_older && (date || fromdate)) {
 		    time_t email_time = convtoyearsecs(date);
 		    if (email_time == -1)
@@ -1793,9 +1953,9 @@ int parsemail(char *mbox,	/* file name */
 		    if (email_time != -1 && email_time > delete_newer_than)
 		        is_deleted = FILTERED_NEW;
 		}
+
 		if (!headp)
 		    headp = bp;
-
 
 		savealternative = FALSE;
 		attach_force = FALSE;
@@ -1825,7 +1985,7 @@ int parsemail(char *mbox,	/* file name */
 			       attachment */
 			    if (inlist(set_ignore_types, "$NONPLAIN")
 				|| inlist(set_ignore_types, "$BINARY"))
-			        content = CONTENT_IGNORE;
+                                content = CONTENT_IGNORE;
 			    else {
 				attach_force = TRUE;
 
@@ -1885,8 +2045,8 @@ int parsemail(char *mbox,	/* file name */
 				attachname[0] = '\0';	/* just clear it */
 			    }
 			    file_created = MAKE_FILE;	/* please make one */
-			}
-		    }
+			} /* inline */
+                        } /* Content-Disposition: */
 		    else if (!strncasecmp(head->line, "Content-Base:", 13)) {
 #ifdef NOTUSED
 			char *ptr = head->line + 13;
@@ -1952,22 +2112,53 @@ int parsemail(char *mbox,	/* file name */
 			    sscanf(cp, "%128[^;\"\n]", charbuffer);
 			    /* save the delsp info */
 			    if (!strcasecmp (charbuffer, "yes"))
-			      delsp = TRUE;
+			      delsp_flag = TRUE;
 			  }
 			}
 
 			if (alternativeparser) {
 			    struct body *next;
 			    struct body *temp_bp = NULL;
-
+                            
 			    /* We are parsing alternatives... */
 
+                            if (parse_multipart_alternative_force_save_alts
+                                && multipartp
+                                && !strcasecmp(multipartp->line, "multipart/alternative")
+                                && *last_alternative_type
+                                && !strcasecmp(last_alternative_type, "text/plain")) {
+                            
+                                /* if the UA is Apple mail and if the only
+                                ** alternatives are text/plain and
+                                ** text/html and if the preference is
+                                ** text/plain, skip the text/html version
+                                ** if the applemail_hack is enabled
+                                */
+                                if (!strcasecmp(type, "text/html")) {
+#if DEBUG_PARSE
+                                    fprintf(stderr, "Discarding apparently equivalent text//html alternative\n");
+#endif
+                                    content = CONTENT_IGNORE;
+                                    break;
+                                }
+                            }
+                            
 			    if (preferedcontent(&alternative_weight, type, decode)) {
 				/* ... this is a prefered type, we want to store
 				   this [instead of the earlier one]. */
 				/* erase the previous alternative info */
 				temp_bp = alternative_bp;	/* remember the value of bp for GC */
 				alternative_bp = alternative_lp = NULL;
+                                if (prefered_content_charset) {
+                                    free(prefered_content_charset);
+                                }
+                                prefered_content_charset = strsav (charset);                                
+                                strncpy(last_alternative_type, type,
+                                        sizeof(last_alternative_type) - 1);
+#ifdef DEBUG_PARSE
+                                fprintf(stderr, "setting new prefered alternative charset to %s\n", charset);
+#endif
+
 				alternative_lastfile_created = NO_FILE;
 				content = CONTENT_UNKNOWN;
 				if (alternative_lastfile[0] != '\0') {
@@ -1976,13 +2167,13 @@ int parsemail(char *mbox,	/* file name */
 				    alternative_lastfile[0] = '\0';
 				}
 			    }
-			    else if (set_save_alts == 2)
-				content = CONTENT_BINARY;
-			    else {
+                            else if (set_save_alts == 2) {
+                                content = CONTENT_BINARY;
+                            } else {
 				/* ...and this type is not a prefered one. Thus, we
 				 * shall ignore it completely! */
 				content = CONTENT_IGNORE;
-				/* erase the current alternative info */
+                                /* erase the current alternative info */
 				temp_bp = bp;	/* remember the value of bp for GC */
 				lp = alternative_lp;
 				bp = alternative_bp;
@@ -1995,7 +2186,8 @@ int parsemail(char *mbox,	/* file name */
 				alternative_lastfile[0] = '\0';
 				/* we haven't yet created any attachment file, so there's no need
 				   to erase it yet */
-			    }
+                            }
+                            
 			    /* free any previous alternative */
 			    while (temp_bp) {
 				next = temp_bp->next;
@@ -2004,6 +2196,7 @@ int parsemail(char *mbox,	/* file name */
 				free(temp_bp);
 				temp_bp = next;
 			    }
+
 			    /* @@ not sure if I should add a diff flag to do this break */
 			    if (content == CONTENT_IGNORE)
 				/* end the header parsing... we already know what we want */
@@ -2035,6 +2228,15 @@ int parsemail(char *mbox,	/* file name */
 				content = CONTENT_HTML;
 			    else
 				content = CONTENT_TEXT;
+                            
+			    if (!alternativeparser && !prefered_content_charset) {
+                                /* there are apparently no
+                                   alternatives in this message, let's
+                                   use the first text/* charset we
+                                   found as the prefered one */
+                                prefered_content_charset = strsav (charset);
+                            }
+                            
 			    continue;
 			}
 			else if (!strncasecmp(type, "message/rfc822", 14)) {
@@ -2096,6 +2298,9 @@ int parsemail(char *mbox,	/* file name */
 			     * Find the first boundary separator 
 			     */
 
+			    struct body *tmpbp;
+			    struct body *tmplp;
+			    
 			    boundary_id = strcasestr(ptr, "boundary=");
 #if DEBUG_PARSE
 			    printf("boundary found in %s\n", ptr);
@@ -2116,12 +2321,9 @@ int parsemail(char *mbox,	/* file name */
 				    boundary_id = boundbuffer;
 				}
 
-				/* let's remember 'bp' and 'lp' */
-				origbp = bp;
-				origlp = lp;
 				/* restart on a new list: */
-				lp = bp = NULL;
-
+				tmpbp = tmplp = NULL;
+			
 				while (fgets(line_buf, MAXLINE, fp)) {
 				    if(set_append) {
 				        if(fputs(line_buf, fpo) < 0) {
@@ -2134,40 +2336,54 @@ int parsemail(char *mbox,	/* file name */
 					break;
 				    }
 				    if (!strncasecmp(line_buf, "From ", 5)) {
-				        isinheader = 0;
 #if DEBUG_PARSE
 					printf("Error, new message found instead of boundary!\n");
 #endif
-					if (bp != origbp)
-					  origbp = append_body(origbp, &origlp, bp);
-					bp = origbp;
-					lp = origlp;
+				        isinheader = 0;
+					if (tmpbp)
+					  bp = append_body(bp, &lp, tmpbp);
 					boundary_id = NULL;
 					goto leave_header;
 				    }
 				    /* save lines in case no boundary found */
-				    bp = addbody(bp, &lp, line_buf, bodyflags);
+				    tmpbp = addbody(tmpbp, &tmplp, line_buf, bodyflags);
 				}
 				if (!strncmp(line_buf + set_ietf_mbox + 2 + strlen(boundary_id), "--", 2)
-				    && bp != origbp) {
+				    && tmpbp) {
+#if DEBUG_PARSE
+				    printf("Error, end of mime found before mime start!\n");
+#endif
 				    /* end of mime found before mime start */
-				    origbp = append_body(origbp, &origlp, bp);
-				    bp = origbp;
-				    lp = origlp;
+				    bp = append_body(bp, &lp, tmpbp);
 				    boundary_id = NULL;
 				    goto leave_header;
 				}
-				free_body(bp);
-				bp = origbp;
-				lp = origlp;
+				free_body(tmpbp);
 
 				/* 
 				 * This stores the boundary string in a stack 
 				 * of strings: 
 				 */
 				boundp = bound(boundp, boundbuffer);
-
+                                multipartp = multipart(multipartp, type);
+                                skip_mime_epilogue = FALSE;
+                                
 				/* printf("set new boundary: %s\n", boundp->line); */
+
+                                /* @@JK Take into account errors when we abort, malformed mime, etc,
+                                 probably put this call up, before detecting errors? */
+                                charsetsp = charsets(charsetsp, charset, charsetsave);
+#ifdef DEBUG_PARSE                                
+                                fprintf(stderr, "pushing charset %s and charsetsave %s\n", charset, charsetsave);
+#endif
+                                    if (charset) {
+                                        free(charset);
+                                    }
+                                    charsetsave[0] = '\0';
+
+#ifdef DEBUG_PARSE
+                                    fprintf(stderr, "restoring parents charset %s and charsetsave %s\n", charset, charsetsave); 
+#endif
 
 				/*
 				 * We set ourselves, "back in header" since there is
@@ -2213,8 +2429,7 @@ int parsemail(char *mbox,	/* file name */
 #if DEBUG_PARSE
 				    printf("SAVEALTERNATIVE: yes\n");
 #endif
-
-				}
+                                }
 
 			    }
 			    else
@@ -2251,13 +2466,24 @@ int parsemail(char *mbox,	/* file name */
 			    /* Unknown format, we use default decoding */
 			    char code[64];
 
-			    sscanf(ptr, "%63s", code);
-                            snprintf(line, sizeof(line_buf) - set_ietf_mbox,
-				     " ('%s' %s)\n", code, 
-                                     lang[MSG_ENCODING_IS_NOT_SUPPORTED]);
+			    /* is there any value for content-encoding or is it missing? */
+			    if (sscanf(ptr, "%63s", code) != EOF) {
+			      
+			      snprintf(line, sizeof(line_buf) - set_ietf_mbox,
+				       " ('%s' %s)\n", code, 
+				       lang[MSG_ENCODING_IS_NOT_SUPPORTED]);
 
-			    bp = addbody(bp, &lp, line,
-					BODY_HTMLIZED | bodyflags);
+			      bp = addbody(bp, &lp, line,
+					   BODY_HTMLIZED | bodyflags);
+
+#if DEBUG_PARSE
+			      printf("Ignoring unknown Content-Transfer-Encoding: %s\n", code);
+#endif
+			    } else {
+#if DEBUG_PARSE
+			      printf("Missing Content-Transfer-Encoding value\n");
+#endif
+			    }
 			}
 #if DEBUG_PARSE
 			printf("DECODE set to %d\n", decode);
@@ -2286,6 +2512,7 @@ int parsemail(char *mbox,	/* file name */
 		    alternative_lp = alternative_bp = NULL;
 		    alternative_lastfile_created = NO_FILE;
 		    alternative_file[0] = alternative_lastfile[0] = '\0';
+                    last_alternative_type[0] = '\0';
 		}
 		headp = lp;	/* start at this point next time */
 	    }
@@ -2312,37 +2539,47 @@ int parsemail(char *mbox,	/* file name */
 		    binfile = -1;
 		}
 
+                /* as long as we don't handle UTF-8 throughout), use the prefered
+                   content charset if we got one  */
+                if (prefered_content_charset) {
+                    if (charset) {
+                        free(charset);
+                    }
+                    charset = prefered_content_charset;
+                    prefered_content_charset = NULL;
+                }
+
 #ifdef HAVE_ICONV
-		if (!charset){
-		  if (*charsetsave!=0){
-		    /**
-		    if(set_showprogress){
-		      printf("\nput charset from subject header..\n");
-		    }
-		    **/
-		    charset=strsav(charsetsave);
-		  }else{
-		    /* default charset is US-ASCII */
-		    /* ISO-8859-1 is modern, however (DM) */
-		    charset=strsav("US-ASCII");
-		    /**
-		    if(set_showprogress){
-		      printf("\nfound no charset for body, set ISO-8859-1.\n");
-		    }
-		    **/
-		  }
-		}else{
-		  /* if body is us-ascii but subject is not,
-		     try to use subject's charset. */
-		  if (strncasecmp(charset,"us-ascii",8)==0){
-		    if (*charsetsave!=0 && strcasecmp(charsetsave,"us-ascii")!=0){
-		      free(charset);
-		      charset=strsav(charsetsave);
-		    }
-		  }
+		if (!charset) {
+                    if (*charsetsave!=0){
+#ifdef DEBUG_PARSE
+                        printf("put charset from subject header..\n");
+#endif
+                        charset=strsav(charsetsave);
+                    } else{
+                        /* default charset for plain/text is US-ASCII */
+                        /* ISO-8859-1 is modern, however (DM) */
+                        charset=strsav("US-ASCII");
+#ifdef DEBUG_PARSE
+                        fprintf(stderr, "found no charset for body, set ISO-8859-1.\n");
+#endif
+                    }
+		} else {
+                    /* if body is us-ascii but subject is not,
+                       try to use subject's charset. */
+                    if (strncasecmp(charset,"us-ascii",8)==0){
+                        if (*charsetsave!=0 && strcasecmp(charsetsave,"us-ascii")!=0){
+                            free(charset);
+                            charset=strsav(charsetsave);
+                        }
+                    }
 		}
 #endif
 
+#ifdef DEBUG_PARSE
+                fprintf(stderr, "Message will be stored using charset %s\n", charset);
+#endif
+                
 		isinheader = 1;
 		if (!hassubject)
 		    subject = NOSUBJECT;
@@ -2365,17 +2602,17 @@ int parsemail(char *mbox,	/* file name */
 		  textplain_format = FORMAT_FIXED;
 		}
 
-		if (textplain_format == FORMAT_FIXED && delsp) {
-		  /* delsp only accepted for format=flowed */
-		  delsp = FALSE;
+		if (textplain_format == FORMAT_FIXED && delsp_flag) {
+                    /* delsp only accepted for format=flowed */
+                    delsp_flag = FALSE;
 		}
 
 		if (append_bp && append_bp != bp) {
-		   /* if we had attachments, close the structure */
-		    append_bp = 
-		      addbody(append_bp, &append_lp, "</div>\n",
-			      BODY_HTMLIZED | bodyflags);
-		    bp = append_body(bp, &lp, append_bp);
+                    /* if we had attachments, close the structure */
+                    append_bp = 
+                        addbody(append_bp, &append_lp, "</div>\n",
+                                BODY_HTMLIZED | bodyflags);
+                    bp = append_body(bp, &lp, append_bp);
 		    append_bp = append_lp = NULL;
 		}
 		else if(!bp)	/* probably never used */
@@ -2458,6 +2695,10 @@ msgid);
 		if (charsetsave){
 		  *charsetsave = 0;
 		}
+                if (prefered_content_charset) {
+                    free(prefered_content_charset);
+                    prefered_content_charset = NULL;
+                }
 		if (msgid) {
 		    free(msgid);
 		    msgid = NULL;
@@ -2476,7 +2717,7 @@ msgid);
 
 		/* reset related RFC 3676 state flags */
 		textplain_format = FORMAT_FIXED;
-		delsp = FALSE;
+		delsp_flag = FALSE;
 		flowed_line = FALSE;
 		quotelevel = 0;
 		continue_previous_flow_flag = FALSE;
@@ -2485,7 +2726,9 @@ msgid);
 		content = CONTENT_TEXT;
 		decode = ENCODE_NORMAL;
 		Mime_B = FALSE;
+                skip_mime_epilogue = FALSE;
 		headp = NULL;
+                content_type_p = NULL;
 		multilinenoend = FALSE;
 		if (att_dir) {
 		    free(att_dir);
@@ -2510,8 +2753,32 @@ msgid);
 		is_deleted = 0;
 		exp_time = -1;
 
+		free_bound (boundp);
+		boundp = NULL;
+		
+		free_multipart (multipartp);
+		multipartp = NULL;
+
+                free_charsets (charsetsp);
+                charsetsp = NULL;
+                
                 alternativeparser = FALSE; /* there is none anymore */
 
+		if (parse_multipart_alternative_force_save_alts) {
+                    parse_multipart_alternative_force_save_alts = 0;
+                    
+#if DEBUG_PARSE
+                    printf("Applemail_hack resetting parse_multipart_alternative_force_save_alts\n");
+#endif
+                    if (old_set_save_alts != -1) {
+                        set_save_alts = old_set_save_alts;
+                        old_set_save_alts = -1;
+#if DEBUG_PARSE                        
+                        printf("Applemail_hack resetting save_alts to %d\n", old_set_save_alts);
+#endif                        
+                    }
+		}
+                
 		if (!(num % 10) && set_showprogress && !readone) {
 		    print_progress(num - startnum, NULL, NULL);
 		}
@@ -2540,7 +2807,7 @@ msgid);
 			printf("hit %s\n", line);
 #endif
 			if (!strncmp(line + 2 + strlen(boundp->line), "--", 2)) {
-			    /* @@@ don't know why we had this line here. Doesn't hurt to take
+			  /* @@@ don't know why we had this line here. Doesn't hurt to take
 			       it out, though */
 #if 0
 			    bp = addbody(bp, &lp, "\n",
@@ -2552,15 +2819,54 @@ msgid);
 
 #if DEBUG_PARSE
 			    printf("End boundary %s\n", line);
+                            printf("alternativeparser %d\n", alternativeparser);
+                            printf("has_more_alternatives %d\n", has_multipart(multipartp, "multipart/alternative"));
 #endif
+
 			    boundp = bound(boundp, NULL);
 			    if (!boundp) {
 				bodyflags &= ~BODY_ATTACHED;
-			    }
-			    if (alternativeparser) {
+                            }
+                            /* skip the MIME epilogue until the next section (or next message!) */
+                            skip_mime_epilogue = TRUE;
+			    multipartp = multipart(multipartp, NULL);
+
+                            /* retrieve the parent's charset and charsetsave  */
+                            if (charsetsp->prev != NULL) {
+                                charsetsp = charsets(charsetsp, NULL, NULL);
+                            }
+                            if (charsetsp) {
+                                if (charset) {
+                                    free(charset);
+                                    if (charsetsp) {
+                                        charset = (charsetsp->charset) ? strsav (charsetsp->charset) : NULL;			    }
+                                } else {
+                                    charsetsave[0]='\0';
+                                }
+                                strcpy (charsetsave, charsetsp->charsetsave);
+                            }
+#ifdef DEBUG_PARSE
+                            fprintf(stderr, "Pulling charset %s and charsetsave %s\n", charset, charsetsave);
+#endif                            
+                            if (!boundp && charsetsp->prev == NULL) {
+#ifdef DEBUG_PARSE
+                                fprintf(stderr, "No more MIME parts, freeing charsetsp\n");
+#endif
+                                free_charsets(charsetsp);
+
+                                charsetsp = NULL;
+                            }
+                            
+			    if (alternativeparser
+				&& !has_multipart(multipartp, "multipart/alternative")) {
 #ifdef NOTUSED
 				struct body *next;
 #endif
+				
+#if DEBUG_PARSE
+				printf("We no longer have alternatives\n");
+#endif
+
 				/* we no longer have alternatives */
 				alternativeparser = FALSE;
 				/* reset the alternative variables (I think we can skip
@@ -2570,6 +2876,7 @@ msgid);
 				alternative_lastfile_created = NO_FILE;
 				alternative_file[0] =
 				    alternative_lastfile[0] = '\0';
+                                last_alternative_type[0] = '\0';
 #if DEBUG_PARSE
 				printf("We DUMP the chosen alternative\n");
 #endif
@@ -2577,6 +2884,7 @@ msgid);
 				    origbp = append_body(origbp, &origlp, bp);
 				bp = origbp;
 				lp = origlp;
+				origbp = origlp = NULL;
 
 				headp = NULL;
 			    }
@@ -2585,9 +2893,17 @@ msgid);
 				printf("back %s\n", boundp->line);
 			    else
 				printf("back to NONE\n");
+                            
+                            if (multipartp)
+                                printf("current multipart: %s\n", multipartp->line);
+			    else
+				printf("current multipart: NONE\n");
 #endif
 			}
 			else {
+			    /* we found the beginning of a new section */
+			    skip_mime_epilogue = FALSE;
+			    
 			    if (alternativeparser && !set_save_alts) {
 				/*
 				 * parsing another alternative, so we save the
@@ -2599,6 +2915,9 @@ msgid);
 				    file_created;
 				strcpy(alternative_lastfile,
 				       alternative_file);
+                                strncpy(last_alternative_type, type,
+                                        sizeof(last_alternative_type) - 1);
+
 				/* and now reset them */
 				headp = bp = lp = NULL;
 				alternative_file[0] = '\0';
@@ -2626,18 +2945,35 @@ msgid);
 
 			/* reset related RFC 3676 state flags */
 			textplain_format = FORMAT_FIXED;
-			delsp = FALSE;
+			delsp_flag = FALSE;
 			flowed_line = FALSE;
 			quotelevel = 0;
 			continue_previous_flow_flag = FALSE;
 
+			/* restore the parent's charset/charsetsave values */
+                        if (charsetsp) {
+                            if (charset) {
+                                free(charset);
+                            }
+                            if (charsetsp->charset) {
+                                charset = strsav(charsetsp->charset);
+                            } else {
+                                charset = NULL;
+                            }
+                            strcpy(charsetsave, charsetsp->charsetsave);
+
+#ifdef DEBUG_PARSE
+                            printf("New section: restoring charset %s and charsetsave %s\n", charset, charsetsave);
+#endif
+                        }
 			if (-1 != binfile) {
 			    close(binfile);
 			    binfile = -1;
 			}
+                        
 			continue;
 		    }
-		}
+                }
 
 		switch (decode) {
 		case ENCODE_QP:
@@ -2670,7 +3006,7 @@ msgid);
 		    break;
 		}
 #if DEBUG_PARSE
-		printf("LINE %s\n", data);
+		printf("LINE %s\n", (content != CONTENT_BINARY) ? data : "<binary>");
 #endif
 		if (data) {
 		    if ((content == CONTENT_TEXT) ||
@@ -2728,21 +3064,27 @@ msgid);
 			    }
 			}
 			else {
-			  int padding; /* used for skipping padding detected by rfc3676_handler,
-					  which seems smarter than moving all the bytes in data
-					  before injecting it into addbody */
-			  if (!isinheader && textplain_format == FORMAT_FLOWED) {
-			    flowed_line = rfc3676_handler (data, delsp, &quotelevel, 
-							   &continue_previous_flow_flag, &padding);
-			    if (continue_previous_flow_flag)
-			      bodyflags |= BODY_CONTINUE;
-			    else
-			      bodyflags &= ~BODY_CONTINUE;
-			    continue_previous_flow_flag = flowed_line;
+			  if (!isinheader && (textplain_format == FORMAT_FLOWED)) {
+                              /* remove both space stuffing and quotes
+                               * where applicable for f=f */
+                              bodyflags |= BODY_DEL_SSQ;
+                              flowed_line = rfc3676_handler (data, delsp_flag, &quotelevel, 
+                                                             &continue_previous_flow_flag);
+                              if (continue_previous_flow_flag) {
+                                  bodyflags |= BODY_CONTINUE;
+                              } else  {
+                                  bodyflags &= ~BODY_CONTINUE;
+                                  if (flowed_line) {
+                                      bodyflags |= BODY_FORMAT_FLOWED;
+                                  } else {
+                                      bodyflags &= ~BODY_FORMAT_FLOWED;
+				  }
+                              }
+                              continue_previous_flow_flag = flowed_line;
 			  } else {
-			    padding = 0;
+                              bodyflags &= ~BODY_DEL_SSQ;
 			  }
-			  bp = addbody(bp, &lp, data + padding,
+			  bp = addbody(bp, &lp, data,
 				       (content == CONTENT_HTML ?
 					BODY_HTMLIZED : 0) | bodyflags);
 			}
@@ -2906,17 +3248,26 @@ msgid);
 					    free(meta_file);
 					}
 				    }
-				    if (alternativeparser)
+				    if (alternativeparser) {
 					/* save the last name, in case we need to supress it */
 					strncpy(alternative_file, binname,
 						sizeof(alternative_file) -
 						1);
+                                        /* save the last mime type to help deal with the 
+                                         * apple mail hack */
+					strncpy(last_alternative_type, type,
+						sizeof(last_alternative_type) - 1);
+                                    }
 
 				}
 				else {
-				    if (alternativeparser)
+				    if (alternativeparser) {
 					/* save the last name, in case we need to supress it */
 					alternative_file[0] = '\0';
+                                        /* save the last mime type to  help deal with the apple
+                                         * hack */
+                                        last_alternative_type[0] = '\0';
+                                    }
 				}
 
 				/* point to the filename and skip the separator */
@@ -3099,23 +3450,39 @@ msgid);
 	  textplain_format = FORMAT_FIXED;
 	}
 
-	if (textplain_format == FORMAT_FIXED && delsp) {
+	if (textplain_format == FORMAT_FIXED && delsp_flag) {
 	  /* delsp only accepted for format=flowed */
-	  delsp = FALSE;
+	  delsp_flag = FALSE;
 	}
 
 	if (append_bp && append_bp != bp) {
-	  /* close the DIV */
-	  append_bp = 
-	    addbody(append_bp, &append_lp, "</div>\n",
-		    BODY_HTMLIZED | bodyflags);
-	    bp = append_body(bp, &lp, append_bp);
+            /* close the DIV */
+            append_bp = 
+                addbody(append_bp, &append_lp, "</div>\n",
+                        BODY_HTMLIZED | bodyflags);
+            bp = append_body(bp, &lp, append_bp);
 	    append_bp = append_lp = NULL;
 	}
 
 	while (rmlastlines(bp));
 
 	strcpymax(fromdate, dp ? dp : "", DATESTRLEN);
+        if (prefered_content_charset) {
+            if (prefered_content_charset[0] != '\0') {
+#ifdef DEBUG_PARSE
+                fprintf(stderr, "Replacing charset %s with prefered_content_charset %s\n",
+                        charset, prefered_content_charset);
+#endif
+                if (charset) {
+                    free(charset);
+                }
+                charset = prefered_content_charset;
+            } else {
+                free(prefered_content_charset);
+            }
+            prefered_content_charset = NULL;
+        }
+        
 	emp = addhash(num, date, namep, emailp, msgid, subject, inreply,
 		      fromdate, charset, NULL, NULL, bp);
 	if (emp) {
@@ -3149,7 +3516,10 @@ msgid);
 	if (charsetsave){
 	  *charsetsave = 0;
 	}
-
+        if (prefered_content_charset) {
+            free(prefered_content_charset);
+            prefered_content_charset = NULL;
+        }
 	if (msgid) {
 	    free(msgid);
 	    msgid = NULL;
@@ -3169,7 +3539,7 @@ msgid);
 
 	/* reset related RFC 3676 state flags */
 	textplain_format = FORMAT_FIXED;
-	delsp = FALSE;
+	delsp_flag = FALSE;
 	flowed_line = FALSE;
 	quotelevel = 0;
 	continue_previous_flow_flag = FALSE;
@@ -3178,6 +3548,7 @@ msgid);
 	content = CONTENT_TEXT;
 	decode = ENCODE_NORMAL;
 	Mime_B = FALSE;
+        skip_mime_epilogue = FALSE;
 	headp = NULL;
 	multilinenoend = FALSE;
 	if (att_dir) {
@@ -3198,6 +3569,21 @@ msgid);
 	att_name_list = NULL;
 	description = NULL;
 
+	if (parse_multipart_alternative_force_save_alts) {
+            parse_multipart_alternative_force_save_alts = 0;
+                    
+#if DEBUG_PARSE
+            printf("Applemail_hack resetting parse_multipart_alternative_force_save_alts\n");
+#endif
+            if (old_set_save_alts != -1) {
+                set_save_alts = old_set_save_alts;
+                old_set_save_alts = -1;
+#if DEBUG_PARSE                        
+                printf("Applemail_hack resetting save_alts to %d\n", old_set_save_alts);
+#endif                        
+            }
+        }
+		
 	/* by default we have none! */
 	hassubject = 0;
 	hasdate = 0;
@@ -3257,11 +3643,8 @@ msgid);
 
     /* can we clean up a bit please... */
 
-    if (boundp != NULL) {
-	if (boundp->line)
-	    free(boundp->line);
-	free(boundp);
-    }
+    free_bound (boundp);
+    free_multipart (multipartp);
 
     if(charsetsave){
       free(charsetsave);
@@ -4489,4 +4872,3 @@ int count_deleted(int limit)
     }
     return total;
 }
-

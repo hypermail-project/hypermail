@@ -1,8 +1,14 @@
 Upgrade Notes
 ==============
 
-From Hypermail 2.3.0 to Hypermail 2.3.1
+From Hypermail 2.3.0 to Hypermail 2.4.0
 -----------------------------------------
+
+Hypermail will now detect and link with a system libpcre if it's
+available and current.  Otherwise, it will compile the bundled
+libpcre. You can force the compile with the bundled one with the
+--enable-bundled-pcre configure option.
+
 The configuration directive "htmlmessage_deleted" has been
 renamed "htmlmessage_deleted_spam".
 

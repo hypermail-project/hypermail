@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * $Id: strio.h,v 1.1 2013-03-15 19:33:24 kahan Exp $
+ * $Id$
  *
  * Copyright (C) 1998 Bjorn Reese and Daniel Stenberg.
  *

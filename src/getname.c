@@ -14,77 +14,6 @@ static int blankstring(char *str)
     return (1);
 }
 
-char *spamify(char *input)
-{
-    if (set_antispamdomain) {
-        return spamify_replacedomain(input, set_antispamdomain);
-    }
-    else {
-        return spamify_small(input);
-    }
-}
-
-char *spamify_small(char *input)
-{
-    int insertlen = strlen(set_antispam_at);
-    /* we should replace the @-letter in the email address */
-    int newlen = strlen(input) + insertlen;
-
-    char *atptr = strchr(input, '@');
-
-    if (atptr) {
-        char *newbuf = malloc(newlen);
-        int index = atptr - input;
-        /* copy the part before the @ */
-        memcpy(newbuf, input, index);
-        memcpy(newbuf + index, set_antispam_at, insertlen);
-
-        /* append the part after the @ */
-        strcpy(newbuf + index + insertlen, input + index + 1);
-
-        /* correct the pointer and free the old */
-        free(input);
-        return newbuf;
-    }
-    /* weird email, bail out */
-    return input;
-}
-
-char *spamify_replacedomain(char *input, char *antispamdomain)
-{
-    /* replace everything after the @-letter in the email address */
-    int newlen = strlen(input) + strlen(set_antispam_at);
-    int domainlen = strlen(antispamdomain);
-
-    char *atptr = strchr(input, '@');
-
-    if (domainlen > 0) {
-        newlen = newlen + domainlen;
-    }
-
-    if (atptr) {
-        char *newbuf = malloc(newlen);
-        int index    = atptr - input;
-        /* copy the part before the @ */
-        memcpy(newbuf, input, index);
-        /* append _at_ */
-        memcpy(newbuf + index, set_antispam_at, strlen(set_antispam_at));
-        if (domainlen > 0) {
-            /* append the new domain */
-            strcpy(newbuf + index + strlen(set_antispam_at), antispamdomain);
-        }
-        else {
-            /* append the part after the @ */
-            strcpy(newbuf + index + strlen(set_antispam_at), input + index + 1);
-        }
-        /* correct the pointer and free the old */
-        free(input);
-        return newbuf;
-    }
-    /* weird email, bail out */
-    return input;
-}
-
 /*
 ** Grabs the name and email address from a From: header.
 ** This could get tricky; I've tried to keep it simple.
@@ -252,9 +181,9 @@ void getname(char *line, char **namep, char **emailp)
             char *c2 = strchr(line, '>');
             if (c2 != NULL) {
                 c = c2 + 1;
-                for (i = 0, len = NAMESTRLEN - 1; *c && *c != '\n' && i < len; c++)
+                for (i = 0, len = NAMESTRLEN - 1; *c && *c != '\n' && i < len; c++) {
                     name[i++] = *c;
-
+		}
                 comment_fnd = 1;
             }
         }

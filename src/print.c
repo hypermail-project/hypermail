@@ -772,7 +772,7 @@ void printhtml(FILE *fp, char *line)
 void printdates(FILE *fp, struct header *hp, int year, int month, struct emailinfo *subdir_email,
 		char *prev_date_str)
 {
-  char *subj,*tmpptr=0;
+  char *subject=NULL,*name=NULL;
   const char *startline;
   const char *break_str;
   const char *endline;
@@ -788,7 +788,15 @@ void printdates(FILE *fp, struct header *hp, int year, int month, struct emailin
 	&& (month == -1 || month_of_datenum(em->date) == month)
 	&& !em->is_deleted
 	&& (!subdir_email || subdir_email->subdir == em->subdir)) {
-      subj = convchars(em->subject, em->charset);
+
+#ifdef HAVE_ICONV
+      subject = convchars(em->subject, "utf-8");
+      name = convchars(em->name, "utf-8");
+#else
+      subject = convchars(em->subject, em->charset);
+      name = convchars(em->name, em->charset);
+#endif
+      
       if(set_indextable) {
 	startline = "<tr><td>";
 	break_str = "</td><td nowrap>";
@@ -820,15 +828,16 @@ void printdates(FILE *fp, struct header *hp, int year, int month, struct emailin
 	subj_tag = "";
 	subj_end_tag = "";
       }
+
       fprintf(fp,"%s<a href=\"%s\">%s%s%s</a>%s<a name=\"%s%d\" id=\"%s%d\"><em>%s</em></a>%s%s%s\n",
 	      startline, msg_href(em, subdir_email, FALSE), 
-	      subj_tag, subj, subj_end_tag, break_str, 
+	      subj_tag, subject, subj_end_tag, break_str, 
 	      set_fragment_prefix, em->msgnum, set_fragment_prefix, em->msgnum, 
-	      tmpptr=convchars(em->name,em->charset),
+	      name,
 	      break_str, date_str, endline);
-      free(subj);
-      if(tmpptr)
-	free(tmpptr);
+
+      free(subject);
+      free(name);
     }
     printdates(fp, hp->right, year, month, subdir_email, prev_date_str);
   }
@@ -840,7 +849,7 @@ void printdates(FILE *fp, struct header *hp, int year, int month, struct emailin
 */
 int printattachments(FILE *fp, struct header *hp, struct emailinfo *subdir_email, bool *is_first)
 {
-    char *subj,*tmpptr=0;
+    char *subject=NULL,*name=NULL;
     char *attdir;
     char *msgnum;
     int  nb_attach = 0;
@@ -853,7 +862,9 @@ int printattachments(FILE *fp, struct header *hp, struct emailinfo *subdir_email
 	nb_attach = printattachments(fp, hp->left, subdir_email, is_first);
 	if ((!subdir_email || subdir_email->subdir == em->subdir)
 	    && !em->is_deleted) {
-	    subj = convchars(em->subject, em->charset);
+            
+	    subject = (set_i18n) ? em->subject : convchars(em->subject, em->charset);
+            name = (set_i18n) ? em->name : convchars(em->name,em->charset);
 
 	    /* See if there's a directory corresponding to this message */
 	    msgnum = message_name(em);
@@ -864,16 +875,16 @@ int printattachments(FILE *fp, struct header *hp, struct emailinfo *subdir_email
 		/* consider that if there's an attachment directory, there are attachments */
 		nb_attach++;
 		if (set_indextable) {
-		  fprintf(fp, "<tr><td>%s%s</a></td><td><a name=\"%s%d\" id=\"%s%d\"><em>%s</em></a></td>" "<td>%s</td></tr>\n", msg_href(em, subdir_email, TRUE), subj, set_fragment_prefix, em->msgnum, set_fragment_prefix, em->msgnum, tmpptr=convchars(em->name,em->charset), getindexdatestr(em->date));
+		  fprintf(fp, "<tr><td>%s%s</a></td><td><a name=\"%s%d\" id=\"%s%d\"><em>%s</em></a></td>" "<td>%s</td></tr>\n", msg_href(em, subdir_email, TRUE), subject, set_fragment_prefix, em->msgnum, set_fragment_prefix, em->msgnum, name, getindexdatestr(em->date));
 		}
 		else {
 		  fprintf(fp, "<li>%s%s<dfn>%s</dfn></a>&nbsp;" 
 			  "<a name=\"%s%d\" id=\"%s%d\"><em>%s</em></a>&nbsp;<em>(%s)</em>\n", 
 			  (*is_first) ? first_attributes : "",
-			  msg_href(em, subdir_email, TRUE), subj, 
+			  msg_href(em, subdir_email, TRUE), subject, 
 			  set_fragment_prefix, em->msgnum, 
 			  set_fragment_prefix, em->msgnum, 
-			  tmpptr=convchars(em->name,em->charset), 
+			  name,
 			  getindexdatestr(em->date));
 		  if (*is_first)
 		    *is_first = FALSE;
@@ -916,10 +927,13 @@ int printattachments(FILE *fp, struct header *hp, struct emailinfo *subdir_email
 		    closedir(dir);
 		}
 	    }
+            
 	    free(attdir);
-	    free(subj);
-	    if(tmpptr)
-	      free(tmpptr);
+            
+            if (!set_i18n) {
+                free(subject);
+                free(name);
+            }
 	}
 	nb_attach += printattachments(fp, hp->right, subdir_email, is_first);
     }
@@ -1094,7 +1108,8 @@ char *ConvURLsString(char *line, char *mailid, char *mailsubject, char *charset)
 	if (parsed && *parsed) {
 	    newparse = parseemail(parsed,	/* source */
 				  mailid,	/* mail's Message-Id: */
-				  mailsubject);	/* mail's Subject: */
+				  mailsubject,	/* mail's Subject: */
+				  MAKEMAILCOMMAND); /* make a mailto: */
 	    free(parsed);
 	    parsed = newparse;
 	}
@@ -1123,7 +1138,7 @@ void printheaders (FILE *fp, struct emailinfo *email)
 	d_index = MSG_EXPIRED;
       if (email->is_deleted == 4 || email->is_deleted == 8)
 	d_index = MSG_FILTERED_OUT;
-      fprintf(fp, "<a name=\"start%d\" accesskey=\"j\" id=\"start%d\"></a>", email->msgnum,email->msgnum);
+      fprintf(fp, "<a name=\"start\" accesskey=\"j\" id=\"start\"></a>");
       fprintf(fp, "<span id=\"deleted\">(%s)</span>\n", lang[d_index]);
       return;
     }
@@ -1259,7 +1274,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
     }
 
     /* tag the start of the message body */
-    fprintf(fp, "<a name=\"start%d\" accesskey=\"j\" id=\"start%d\"></a>", email->msgnum,email->msgnum);
+    fprintf(fp, "<a name=\"start\" accesskey=\"j\" id=\"start\"></a>");
 
     if (set_showhtml == 2)
       init_txt2html();
@@ -1623,8 +1638,8 @@ int print_links_up(FILE *fp, struct emailinfo *email, int pos, int in_thread_fil
 
 	    fprintf(fp, "<li>\n");
 	    fprintf(fp, "<dfn>%s</dfn>:\n", lang[MSG_THIS_MESSAGE]);
-	    fprintf(fp, "[ <a href=\"#start%d\" name=\"options1\" id=\"options1\" tabindex=\"1\">"
-		    "%s</a> ]\n", email->msgnum, lang[MSG_MSG_BODY]);
+	    fprintf(fp, "[ <a href=\"#start\" name=\"options1\" id=\"options1\" tabindex=\"1\">"
+		    "%s</a> ]\n", lang[MSG_MSG_BODY]);
 	    if (set_mailcommand && set_hmail) {
 	      if ((email->msgid && email->msgid[0]) || (email->subject && email->subject[0])) {
 #ifdef HAVE_ICONV
@@ -1748,7 +1763,7 @@ int print_links_up(FILE *fp, struct emailinfo *email, int pos, int in_thread_fil
 	      } else if (set_inreplyto_command) {
 		char *tmpptr;
 
-		tmpptr = makeinreplytocommand(set_inreplyto_command, email->inreplyto);
+		tmpptr = makeinreplytocommand(set_inreplyto_command, email->subject, email->inreplyto);
 		if (tmpptr) {		
 		  /* use an msgid resolver */
 		  fprintf(fp, "[ <a href=\"%s\"  title=\"%s\">%s</a> ]\n", 
@@ -1836,8 +1851,8 @@ int print_links(FILE *fp, struct emailinfo *email, int pos, int in_thread_file)
 	  ** format for items: <li><dfn>Next</dfn>: <a href="0047.html" 
 	  title="wai thing">subject of message</a></li>\n */
 	     
-	  fprintf (fp, "<li><dfn>%s</dfn>: [ <a href=\"#start%d\">%s</a> ]</li>\n", 
-		   lang[MSG_THIS_MESSAGE], email->msgnum, lang[MSG_MSG_BODY]);
+	  fprintf (fp, "<li><dfn>%s</dfn>: [ <a href=\"#start\">%s</a> ]</li>\n", 
+		   lang[MSG_THIS_MESSAGE], lang[MSG_MSG_BODY]);
 	  
 	  printcomment(fp, "lnext", "start");
 	  /*
@@ -1923,7 +1938,7 @@ int print_links(FILE *fp, struct emailinfo *email, int pos, int in_thread_file)
 	  } else if (set_inreplyto_command) {
 	    char *tmpptr;
 
-	    tmpptr = makeinreplytocommand(set_inreplyto_command, email->inreplyto);
+	    tmpptr = makeinreplytocommand(set_inreplyto_command, email->subject, email->inreplyto);
 	    if (tmpptr) {		
 	      /* use an msgid resolver */
 	      fprintf(fp, "<li><dfn>%s</dfn>:", lang[MSG_IN_REPLY_TO]);
@@ -2664,7 +2679,7 @@ void writethreads(int amountmsgs, struct emailinfo *email)
 void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
 		   int year, int month, struct emailinfo *subdir_email)
 {
-  char *subj, *tmpptr=0;
+  char *subject=NULL, *name=NULL;
   const char *startline;
   const char *break_str;
   const char *endline;
@@ -2677,13 +2692,20 @@ void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
 	&& (month == -1 || month_of_datenum(hp->data->date) == month)
 	&& !hp->data->is_deleted
 	&& (!subdir_email || subdir_email->subdir == hp->data->subdir)) {
-      subj = convchars(hp->data->unre_subject, hp->data->charset);
+
+#ifdef HAVE_ICONV
+        subject = convchars(hp->data->unre_subject, "utf-8");
+        name = convchars(hp->data->name, "utf-8");
+#else
+        subject = convchars(hp->data->subject, hp->data->charset);
+        name = convchars(hp->data->name, hp->data->charset);
+#endif
 
 	if (strcasecmp(hp->data->unre_subject, *oldsubject)) {
 	    if (set_indextable) {
 		fprintf(fp,
 			"<tr><td colspan=\"3\"><strong>%s</strong></td></tr>\n",
-			subj);
+			subject);
 	    }
 	    else {
 	      bool is_first;
@@ -2695,7 +2717,7 @@ void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
 		  is_first = TRUE;
 
 		fprintf(fp, "<li>%s<dfn>%s</dfn>\n", 
-			(is_first) ? first_attributes : "", subj);
+			(is_first) ? first_attributes : "", subject);
 		fprintf(fp, "<ul>\n");
 	    }
 	}
@@ -2714,14 +2736,13 @@ void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
 	fprintf(fp,
 		"%s%s%s</a>%s <a name=\"%s%d\" id=\"%s%d\">%s</a>%s\n", startline,
 		msg_href(hp->data, subdir_email, TRUE), 
-		tmpptr=convchars(hp->data->name,hp->data->charset), break_str,
+                name, break_str,        
 		set_fragment_prefix, hp->data->msgnum, 
 		set_fragment_prefix, hp->data->msgnum, date_str, endline);
 	*oldsubject = hp->data->unre_subject;
-      
-	free(subj);
-	if(tmpptr)
-	  free(tmpptr);
+
+	free(subject);
+	free(name);
     }
     printsubjects(fp, hp->right, oldsubject, year, month, subdir_email);
   }

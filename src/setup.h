@@ -97,6 +97,8 @@ extern bool set_report_new_file;
 extern bool set_report_new_folder;
 extern bool set_use_sender_date;
 extern bool set_inline_addlink;
+extern bool set_applemail_mimehack;
+extern char *set_applemail_ua_header;
 
 extern int set_showhtml;
 extern int set_thrdlevels;
@@ -143,6 +145,7 @@ extern struct hmlist *set_filter_out;
 extern struct hmlist *set_filter_require;
 extern struct hmlist *set_filter_out_full_body;
 extern struct hmlist *set_filter_require_full_body;
+extern struct hmlist *set_applemail_ua_value;
 
 extern bool set_format_flowed;
 extern bool set_format_flowed_disable_quoted;

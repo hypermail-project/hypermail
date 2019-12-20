@@ -43,7 +43,7 @@
 #define DOUBLE_EQUAL(x,y) (((x)>(y)-DBL_EPSILON) && ((x)<(y)+DBL_EPSILON))
 #define FLOAT_EQUAL(x,y) (((x)>(y)-FLT_EPSILON) && ((x)<(y)+FLT_EPSILON))
 
-static TRIO_CONST char rcsid[] = "@(#)$Id: regression.c,v 1.1 2013-03-15 19:33:24 kahan Exp $";
+static TRIO_CONST char rcsid[] = "@(#)$Id$";
 
 #if defined(TRIO_EMBED_NAN)
 # include "trionan.c"
@@ -104,11 +104,30 @@ TRIO_ARGS4((file, line, expected, got),
  *
  */
 int
+Compare
+TRIO_ARGS4((file, line, expected, got),
+	   TRIO_CONST char *file,
+	   int line,
+	   TRIO_CONST char *expected,
+	   TRIO_CONST char *got)
+{
+  if (!trio_equal_case(expected, got))
+    {
+      Report(file, line, expected, got);
+      return 1;
+    }
+  return 0;
+}
+
+/*************************************************************************
+ *
+ */
+int
 Verify
 TRIO_VARGS5((file, line, result, fmt, va_alist),
 	    TRIO_CONST char *file,
 	    int line,
-	    TRIO_CONST char *result,
+	    TRIO_CONST char *expected,
 	    TRIO_CONST char *fmt,
 	    TRIO_VA_DECL)
 {
@@ -122,12 +141,29 @@ TRIO_VARGS5((file, line, result, fmt, va_alist),
     Dump(buffer, rc);
   TRIO_VA_END(args);
 
-  if (!trio_equal_case(result, buffer))
-    {
-      Report(file, line, result, buffer);
-      return 1;
-    }
-  return 0;
+  return Compare(file, line, expected, buffer);
+}
+
+/*************************************************************************
+ *
+ */
+int
+VerifyV
+TRIO_ARGS5((file, line, result, fmt, args),
+	    TRIO_CONST char *file,
+	    int line,
+	    TRIO_CONST char *expected,
+	    TRIO_CONST char *fmt,
+	    trio_pointer_t args)
+{
+  int rc;
+  char buffer[4096];
+
+  rc = trio_snprintfv(buffer, sizeof(buffer), fmt, args);
+  if (rc < 0)
+    Dump(buffer, rc);
+
+  return Compare(file, line, expected, buffer);
 }
 
 /*************************************************************************
@@ -697,7 +733,38 @@ VerifyFormattingRegression(TRIO_NOARGS)
 		    "%e", 0.5);
   nerrors += Verify(__FILE__, __LINE__, "6.000000e-01",
 		    "%e", 0.6);
+
+  /* Calculate the correct number of fractional digits while rounding */
+  nerrors += Verify(__FILE__, __LINE__, "7654321.0",
+		    "%#.8g", 7654320.99);
 #endif
+
+  return nerrors;
+}
+
+/*************************************************************************
+ *
+ */
+int
+VerifyFormattingArgarray(TRIO_NOARGS)
+{
+  int nerrors = 0;
+  int rc;
+  trio_pointer_t argarray[4];
+  int value = 42;
+  double number = 123.456;
+  float smallNumber = 123.456;
+
+  argarray[0] = &value;
+  nerrors += VerifyV(__FILE__, __LINE__, "42",
+		     "%d", argarray);
+  argarray[0] = "my string";
+  nerrors += VerifyV(__FILE__, __LINE__, "my string",
+		     "%s", argarray);
+  argarray[0] = &number;
+  argarray[1] = &smallNumber;
+  nerrors += VerifyV(__FILE__, __LINE__, "123.456000 123.456001",
+		     "%f %hf", argarray);
 
   return nerrors;
 }
@@ -718,6 +785,7 @@ VerifyFormatting(TRIO_NOARGS)
   nerrors += VerifyFormattingFloats();
   nerrors += VerifyFormattingRegression();
   nerrors += VerifyFormattingUserDefined();
+  nerrors += VerifyFormattingArgarray();
 
   /* Pointer */
   if (sizeof(void *) == 4)
@@ -869,7 +937,7 @@ VerifyFormatting(TRIO_NOARGS)
 		    "%.17Rf", 1.4);
   nerrors += Verify(__FILE__, __LINE__, "39413.8",
 		    "%.30Rf", 39413.80);
-#  if !defined(TRIO_COMPILER_ANCIENT)
+#  if !defined(TRIO_COMPILER_ANCIENT) && !defined(TRIO_DOUBLE_DOUBLE)
   /* Long double */
   nerrors += Verify(__FILE__, __LINE__, "1.4",
 		    "%RLf", 1.4L);

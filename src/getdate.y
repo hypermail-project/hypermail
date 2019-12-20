@@ -233,6 +233,7 @@ time	: tUNUMBER tMERIDIAN {
 	| tUNUMBER ':' tUNUMBER tSNUMBER {
 	    yyHour = $1;
 	    yyMinutes = $3;
+	    yySeconds = 0;
 	    yyMeridian = MER24;
 	    yyHaveZone++;
 	    yyTimezone = ($4 < 0

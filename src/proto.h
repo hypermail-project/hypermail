@@ -98,7 +98,7 @@ char *unobfuscate_email_address (char *);
 
 char *i18n_convstring(char *, char *, char *, size_t *);
 char *i18n_utf2numref(char *, int);
-char *i18n_numref2utf(char *);
+unsigned char *i18n_numref2utf(char *);
 
 char *PushByte(struct Push *, char);
 char *PushString(struct Push *, const char *);
@@ -115,6 +115,9 @@ char *getvalue(char *);
 char *getconfvalue(char *, char *, char *);
 char *unre(char *);
 char *oneunre(char *);
+void rfc3676_trim_softlb(char *);
+char *rfc3676_delsp_quotes(char *);
+int rfc3676_ishardlb(const char *);
 int isquote(const char *);
 char *replace(char *, char *, char *);
 char *replacechar(char *, char, char *);
@@ -123,9 +126,12 @@ char *convchars(char *, char *);
 char *convcharsnospamprotect(char *, char *);
 char *unconvchars(char *);
 char *makemailcommand(char *, char *, char *, char *);
-char *makeinreplytocommand(char *, char *);
+char *makeinreplytocommand(char *, char *, char *);
+char *spamify(char *input);
+char *spamify_small(char *input);
+char *spamify_replacedomain(char *input, char *antispamdomain);
 char *unspamify(char *);
-char *parseemail(char *, char *, char *);
+char *parseemail(char *, char *, char *, parseemail_conversion_t);
 char *parseurl(char *, char *);
 
 char *hm_strchr(const char *, int);

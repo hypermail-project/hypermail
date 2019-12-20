@@ -1,9 +1,12 @@
-This is the ctrio 1.14 [1] release, stripped of its documentation and with
-some patches to fix compilation problems [2].
+This is the ctrio 1.16 [1] release, stripped of its documentation and with
+some patches to fix compilation problems when using -DTRIO_MINIMAL.
+
+The generation of the libtrio shared library is also disabled as we're
+doing a static link.
 
 See the hypermail-patches.diff file for the exact changes.
 
--Jose Kahan 15/03/2013
+-Jose Kahan 09/10/2018
 
 [1] https://sourceforge.net/projects/ctrio/
-[2] https://sourceforge.net/tracker/index.php?func=detail&aid=3608193&group_id=14216&atid=114216
+

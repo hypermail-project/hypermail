@@ -78,6 +78,8 @@ bool set_report_new_file;
 bool set_report_new_folder;
 bool set_use_sender_date;
 bool set_inline_addlink;
+bool set_applemail_mimehack;
+char *set_applemail_ua_header;
 
 int set_showhtml;
 int set_thrdlevels;
@@ -128,6 +130,7 @@ struct hmlist *set_filter_out = NULL;
 struct hmlist *set_filter_require = NULL;
 struct hmlist *set_filter_out_full_body = NULL;
 struct hmlist *set_filter_require_full_body = NULL;
+struct hmlist *set_applemail_ua_value;
 
 bool set_format_flowed;
 bool set_format_flowed_disable_quoted;
@@ -502,6 +505,30 @@ struct Config cfg[] = {
      "# $BINARY - ignore all types that would be stored as separate files.\n"
      "# $NONPLAIN - ignore all types not treated as text/plain, and all $BINARY types.\n"
      "# Note: the behavior of these may be affected by the inlinehtml option.\n", FALSE},
+
+    {"applemail_mimehack", &set_applemail_mimehack, BFALSE, CFG_SWITCH,
+     "# Set to On to process Apple Mail MIME multipart/alternative\n"
+     "# as if the save_alts was enabled. If the message contains only\n"
+     "# a text/plain and a text/html alternatives, the text/plain one will\n"
+     "# be kept and the text/html alternative will be discared. If the\n"
+     "# message contains text/plain and another kind of alternative, such as\n"
+     "# multipart/mixed or multipart/related, all the alternative elements\n"
+     "# be displayed. This is to take into account Apple Mail's MIME format\n"
+     "# where attachments are associated by default with the text/html alternative.\n"
+     "# Use this option if you're using text/plain as a prefered type.\n"
+     "# This option is ignored if save_alts is enabled or if text/html is\n"
+     "# the prefered type.", FALSE},
+
+    {"applemail_ua_header", &set_applemail_ua_header, "X-Mailer", CFG_STRING,
+     "# Set to the header name that Apple Mail uses to identify its mail agent.\n"
+     "# This option is only useful if you enabled the applemail_mimehack configuration\n"
+     "# option.\n", FALSE},
+
+    {"applemail_ua_value", &set_applemail_ua_value, APPLE_MAIL_UA, CFG_LIST,
+     "# Set to the list of the header value that Apple Mail uses to identify\n"
+     "# its mail agent. Do not add the version number unless you know what you're doing.\n"
+     "# This option is only useful if you enabled the applemail_mimehack configuration\n"
+     "# option.\n", FALSE},
 
     {"show_headers", &set_show_headers, NULL, CFG_LIST,
      "# This is the list of headers to be displayed if 'showheaders'\n"
@@ -1015,7 +1042,7 @@ void PreConfig(void)
 	case CFG_INTEGER:
 	case CFG_OCTAL:
 	    if (defval == cfg[i].def)
-	        *(int *)cfg[i].value = (int)defval;
+	        *(int *)cfg[i].value = (intptr_t)defval;
 	    else
 	        *(int *)cfg[i].value = atoi(defval);
 	    break;
@@ -1080,6 +1107,35 @@ void PostConfig(void)
     if (set_htmlbody != NULL)
 	printf("Warning: the body option has been disabled. See the\n"
 	       "INSTALL file for instructions on replacing it with a style sheet.\n");
+
+    if (set_save_alts < 0 || set_save_alts > 2) {
+        printf("Error: save_alts option value must be between 0 and 2.\n");
+        exit(0);
+    }
+    
+    if (set_applemail_mimehack && set_save_alts) {
+        printf("Warning: the applemail_mimehack option will be ignored as\n"
+	       "the save_alts options is enabled.\n");
+        set_applemail_mimehack = 0;
+    }
+    if (set_applemail_mimehack && set_prefered_types
+        &&  !strcasecmp(set_prefered_types->val, "text/html")) {
+        printf("Warning: the applemail_mimehack option will be ignored as\n"
+	       "text/html is the prefered type.\n");
+        set_applemail_mimehack = 0;
+    }
+    if (set_applemail_mimehack) {
+        if (!set_applemail_ua_header || !*set_applemail_ua_header) {
+            printf("Error: the applemail_mimehack option is enabled\n"
+                   "but the applemail_ua_header configuration variable is empty.\n");
+            exit(0);
+        }
+        else if (!set_applemail_ua_value) {
+        printf("Error: the applemail_mimehack option is enabled\n"
+               "but the applemail_ua_value configuration variable is empty.\n");
+        exit(0);
+        }
+    }
 }
 
 int ConfigAddItem(char *cfg_line)
@@ -1294,7 +1350,8 @@ void dump_config(void)
     printf("set_describe_folder = %s\n",set_describe_folder ? set_describe_folder : "Not set");
     printf("set_latest_folder = %s\n",set_latest_folder ? set_latest_folder : "Not set");
     printf("set_antispamdomain = %s\n",set_antispamdomain ? set_antispamdomain : "Not set");
-
+    printf("set_applemail_ua_header = %s\n",set_applemail_ua_header ? set_applemail_ua_header : "Not set");
+    
     /* Boolean or integer */
 
     printf("set_overwrite = %d\n",set_overwrite);
@@ -1346,6 +1403,7 @@ void dump_config(void)
     printf("set_noindex_onindexes = %d\n",set_noindex_onindexes);
     printf("set_format_flowed= %d\n",set_format_flowed);
     printf("set_format_flowed_disable_quoted= %d\n",set_format_flowed_disable_quoted);
+    printf("set_applemail_mimehack = %d\n",set_applemail_mimehack);    
 
     if (!set_ihtmlheader)
         printf("set_ihtmlheader = Not set\n");
@@ -1425,7 +1483,9 @@ void dump_config(void)
     print_list("set_deleted", set_deleted);
     print_list("set_expires", set_expires);
     print_list("set_delete_msgnum", set_delete_msgnum);
-
+    print_list("set_applemail_ua_value", set_applemail_ua_value);
+    
+    
 }
 
 #endif

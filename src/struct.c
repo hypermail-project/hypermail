@@ -704,6 +704,7 @@ struct boundary *bound(struct boundary *bnd, char *line)
 	    /* free the latest one */
 	    free(bnd->next->line);
 	    free(bnd->next);
+	    bnd->next = NULL;
 	}
 	else {
 	    /* this is the last node */
@@ -715,6 +716,192 @@ struct boundary *bound(struct boundary *bnd, char *line)
     return bnd;		/* the new "active" boundary */
 }
 
+/*
+** Add a line to a linked list that makes up a multipart stack. This new one 
+** should be the new "active" multipart.
+**
+** "Adding" a NULL will retrieve the formerly used multipart pointer.
+** 
+** We reuse the boundary function as we don't have any different
+** procedure to distinguish from it.
+*/
+
+struct boundary *multipart(struct boundary *bnd, char *line)
+{
+    return bound(bnd, line);
+}
+
+struct charset_stack *charsets(struct charset_stack *bnd, char *charset, char *charsetsave)
+{
+    struct charset_stack *newnode = NULL;
+
+    if (charset || charsetsave) {
+        newnode = (struct charset_stack *)emalloc(sizeof(struct charset_stack));
+        newnode->charset = (charset) ? strsav(charset) : NULL;
+        newnode->charsetsave = (charsetsave) ? strsav(charsetsave) : NULL;
+    
+        newnode->next = NULL;
+        newnode->prev = bnd;
+
+	if (bnd)
+	    bnd->next = newnode;
+
+	bnd = newnode;
+    }
+    else {
+	if (bnd->prev) {
+	    /* go back to the previous */
+	    bnd = bnd->prev;
+
+	    /* free the latest one */
+            if (bnd->next->charset) {
+                free(bnd->next->charset);
+            }
+            free(bnd->next->charsetsave);
+	    free(bnd->next);
+	    bnd->next = NULL;
+	}
+	else {
+	    /* this is the last node */
+            if (bnd->charset) {
+                free(bnd->charset);
+            }
+            free(bnd->charsetsave);
+	    free(bnd);
+            bnd = NULL;
+	}
+    }
+    return bnd;		/* the new "active" boundary */
+}
+
+/* returns the first element in the stack */
+struct charset_stack *charsets_head(struct charset_stack *bnd)
+{
+  struct charset_stack *cursor = bnd;
+
+  if (cursor) {
+      while (cursor->prev) {
+          cursor = cursor->prev;
+      }
+  }
+  return cursor;
+}
+  
+/*
+** Frees the memory allocated to a boundary structure/
+** Returns the number of elements freed.
+*/
+static int free_boundary(struct boundary *bnd)
+{
+    struct boundary *cursor = bnd;
+      
+    struct boundary *tmp;
+  
+    int counter = 0;
+    
+    if (bnd && bnd->next) {
+        fprintf (stderr, "free_boundary(): Error: boundary has a non-empty next element.\nLINE : %s\n",
+                 bnd->line);
+    }
+    
+    cursor = bnd;
+    while (cursor) {
+        tmp = cursor->prev;
+        counter++;
+        if (cursor->line) {
+#ifdef DEBUG_PARSE
+            fprintf (stderr, "free_boundary(): freeing %s\n", cursor->line);
+#endif
+            free (cursor->line);
+        }
+        free (cursor);
+        cursor = tmp;
+    }
+  
+    return counter;
+}
+
+int free_bound(struct boundary *bnd)
+{
+    int t;
+
+    t = free_boundary (bnd);
+
+#if DEBUG_PARSE
+    fprintf (stderr, "free_bound: freed %d elements\n", t);
+#endif
+    return t;
+}
+
+int free_multipart(struct boundary *mp)
+{
+    int t;
+    
+    t = free_boundary (mp);
+    
+#if DEBUG_PARSE
+    fprintf (stderr, "free_multipart: freed %d elements\n", t);
+#endif
+    return t;
+}
+
+int free_charsets(struct charset_stack *cs)
+{
+    struct charset_stack *cursor = cs;
+      
+    struct charset_stack *tmp;
+  
+    int counter = 0;
+    
+    if (cs && cs->next) {
+        fprintf (stderr, "free_charsets(): Error: boundary has a non-empty next element.\n charset = %s ; charsetsave = %s\n",
+                 cs->charset, cs->charsetsave);
+    }
+    
+    cursor = cs;
+    while (cursor) {
+        counter++;
+        tmp = cursor->prev;
+#ifdef DEBUG_PARSE
+        fprintf (stderr, "free_charsets(): freeing charset = %s ; charsetsave = %s\n", cursor->charset, cursor->charsetsave);
+#endif
+        if (cursor->charset) {
+            free (cursor->charset);
+        }
+        if (cursor->charsetsave) {
+            free (cursor->charsetsave);
+        }
+
+        free (cursor);
+        cursor = tmp;
+    }
+
+#if DEBUG_PARSE
+    fprintf (stderr, "free_charset_stack: freed %d elements\n", counter);
+#endif
+    
+    return counter;
+}
+
+/*
+** Returns TRUE if a given boundary stack has an element of the given mime_type 
+*/
+bool has_multipart (const struct boundary *multipartp, char *mime_type)
+{
+    const struct boundary *tempnode;
+    bool res = FALSE;
+    
+    if (mime_type != NULL && *mime_type != '\0') {
+        for (tempnode = multipartp; tempnode; tempnode = tempnode->prev) {
+            if (!strcasecmp (tempnode->line, mime_type)) {
+                res = TRUE;
+                break;
+            }
+        }
+    }
+  
+    return res;
+}
 
 /*
 ** Add a line to a linked list that makes up an article's body.
@@ -725,14 +912,38 @@ struct body *addbody(struct body *bp, struct body **lp,	/* points to the last po
 {
     struct body *tempnode;
     struct body *newnode = NULL;
+    char *unstuffed_line = line;
+    int free_unstuffed_line = 0;
 
+    /* delete both space stuffing and quotes where applicable for f=f */
+    if (flags & BODY_DEL_SSQ) {
+        if (flags & BODY_CONTINUE) {
+            /* delete all quote levels, we're reusing those of the precedent line */
+            while (*unstuffed_line == '>') {
+                unstuffed_line++;
+            }
+        }
+        /* deleting space-stuffing at beginning of line */
+        if (unstuffed_line[0] == ' ') {
+            unstuffed_line++;
+        } 
+        else if (unstuffed_line[0] == '>') {
+            char *delsp_line = rfc3676_delsp_quotes(unstuffed_line);
+            if (delsp_line) {
+                unstuffed_line = delsp_line;
+                free_unstuffed_line = 1;
+            }
+        }
+    }
+    
     if (!(flags & BODY_CONTINUE)) {
 	newnode = (struct body *)emalloc(sizeof(struct body));
 	memset(newnode, 0, sizeof(struct body));
-	newnode->line = spamify(strsav(line));
+	newnode->line = spamify(strsav(unstuffed_line));
 	newnode->html = (flags & BODY_HTMLIZED) ? 1 : 0;
 	newnode->header = (flags & BODY_HEADER) ? 1 : 0;
 	newnode->attached = (flags & BODY_ATTACHED) ? 1 : 0;
+        newnode->format_flowed = (flags & BODY_FORMAT_FLOWED) ? 1 : 0;
 	newnode->next = NULL;
     }
     if (bp == NULL) {
@@ -748,7 +959,7 @@ struct body *addbody(struct body *bp, struct body **lp,	/* points to the last po
 	    char *newbuf;
 
 	    /* get the new size + 1 for the terminating zero */
-	    newlen = strlen(tempnode->line) + strlen(line) + 1;
+	    newlen = strlen(tempnode->line) + strlen(unstuffed_line) + 1;
 
 	    /* extend the former memory area: */
 	    newbuf = (char *)realloc(tempnode->line, newlen);
@@ -762,7 +973,7 @@ struct body *addbody(struct body *bp, struct body **lp,	/* points to the last po
 		    *lf = 0;
 
 		/* append the new part */
-		strcat(newbuf, line);
+		strcat(newbuf, unstuffed_line);
 
 		/* point out the new buffer instead */
 		tempnode->line = newbuf;
@@ -773,6 +984,11 @@ struct body *addbody(struct body *bp, struct body **lp,	/* points to the last po
 	    *lp = newnode;
 	}
     }
+
+    if (free_unstuffed_line) {
+        free(unstuffed_line);
+    }
+    
     return bp;
 }
 

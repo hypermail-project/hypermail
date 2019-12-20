@@ -366,8 +366,19 @@ int main(int argc, char **argv)
 
 #ifdef HAVE_LOCALE_H
 	if (!setlocale(LC_ALL, locale_code)) {
-	    snprintf(errmsg, sizeof(errmsg), "WARNING: locale \"%s\", not supported.\n", locale_code);
-	    fprintf(stderr, "%s", errmsg);/* AUDIT biege: avoid format-bug warning */
+            char *rv;
+            
+            if (!strcmp(locale_code, "en_US")) {
+                /* many systems now install by defualt en_US.UTF-8.
+                   Here we assume that the mapping between en_US and en_US.UTF-8
+                   in system messages is identical. 
+                   We cannot do the same for other languages, though */
+                rv = setlocale(LC_ALL, "en_US.UTF-8");
+            }
+            if (!rv) {
+                snprintf(errmsg, sizeof(errmsg), "WARNING: locale \"%s\", not supported.\n", locale_code);
+                fprintf(stderr, "%s", errmsg);/* AUDIT biege: avoid format-bug warning */
+            }
     }
 #endif
 	

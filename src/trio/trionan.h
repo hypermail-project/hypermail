@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * $Id: trionan.h,v 1.1 2013-03-15 19:33:25 kahan Exp $
+ * $Id$
  *
  * Copyright (C) 2001 Bjorn Reese <breese@users.sourceforge.net>
  *
@@ -70,6 +70,10 @@ enum {
 #   define TRIO_FUNC_PINF
 #  endif
 # endif
+
+# if !defined(TRIO_INLINE_NAN)
+#  define TRIO_INLINE_NAN
+# endif  
 
 #else
 

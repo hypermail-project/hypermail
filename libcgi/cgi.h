@@ -110,10 +110,10 @@ unsigned char dd2c(char, char);
 void dump_cgi_info(cgi_info *);
 
 #ifdef lint
-int isspace(int);
-int isalnum(int);
+extern int isspace(int);
+extern int isalnum(int);
 
 extern int strcasecmp(const char *, const char *);
-extern int strncasecmp(const char *, const char *, int);
+extern int strncasecmp(const char *, const char *, size_t);
 #endif
 #endif

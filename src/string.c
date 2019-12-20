@@ -25,6 +25,7 @@
 
 #include <iconv.h>
 #include <errno.h>
+#include <ctype.h>
 #include <sys/stat.h>
 
 #include "hypermail.h"
@@ -35,7 +36,6 @@
 #ifdef HAVE_STRING_H
 #include <string.h>
 #endif
-
 
 /*
 ** email address obfuscation
@@ -286,7 +286,6 @@ char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *
   }
   errno=0;
   ret=iconv(iconvfd, &string, &strleft, &convbuf, &bufleft);
-  iconv_close(iconvfd);
 
   if (ret==(size_t)-1){
     error = 1;
@@ -314,13 +313,17 @@ char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *
       break;
     }
   } else {
+    /* return to initial state */
+    iconv(iconvfd, NULL, NULL, &convbuf, &bufleft);
     error = 0;
   }
+  iconv_close(iconvfd);
 
   if (error) {
     origconvbuf[origlen]=0x0;
     *len=origlen;
   } else {
+#if 0
     /* hmm... do we really need to do this? (daigo) */
     if (strncasecmp(tocharset,"ISO-2022-JP",11)==0){
       *len=origlen*7-bufleft;
@@ -331,7 +334,9 @@ char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *
     }else{
       *len=origlen*7-bufleft;
     }
-    
+#else
+   *len=origlen*7-bufleft; 
+#endif
     *(origconvbuf+*len)=0x0;
   }
 
@@ -397,7 +402,7 @@ char *i18n_utf2numref(char *instr,int escape){
 }
 
 
-char *i18n_numref2utf(char *string){
+unsigned char *i18n_numref2utf(char *string){
 
   int status,len;
   unsigned short int utf;
@@ -430,7 +435,7 @@ char *i18n_numref2utf(char *string){
         convbuf[2]=*string++;
         convbuf[3]=*string++;
         convbuf[4]=0x0;
-        utf=strtol(&convbuf[0], NULL,10);
+        utf=strtol((const char *)&convbuf[0], NULL,10);
         if(utf<256){
           *utfstr=(unsigned char)utf;
           utfstr++;
@@ -869,6 +874,75 @@ char *oneunre(char *subject)
     return NULL;
 }
 
+/* remove space from spacecrlf eol ff sequence */
+void rfc3676_trim_softlb(char *line)
+{
+  char *eold;
+  
+  eold = strrchr (line, '\n');
+  if (line != eold) {
+    if (*(eold - 1) == '\r')
+      eold--;
+  }
+  if (line != eold) {
+    if (*(eold - 1) == ' ') {
+      /* remove the space stuffing and copy the end of line */
+      char *ptr = eold - 1;
+      
+      while (*ptr != '\0') {
+	*ptr = *(ptr + 1);
+	ptr++;
+      }
+    }
+  }
+}
+
+/* 
+** Deletes space stuffing after quotes
+** If spaces are deleted, returns a buffer that the caller must free
+*/
+char *rfc3676_delsp_quotes (char *line)
+{
+  char *c = line;
+  
+  while (*c == '>') {
+    c++;
+  }
+  
+  if (*c == ' ') {
+    struct Push buf;
+    char tmp_c;
+    
+    INIT_PUSH(buf);
+    tmp_c = *c;
+    *c = '\0';                
+    PushString(&buf, line);
+    PushString(&buf, c+1);
+    *c = tmp_c;
+    
+    RETURN_PUSH(buf);
+  }
+
+  return NULL;
+}
+
+/* 
+** returns true if line ends with a \n or \r\n 
+*/
+int rfc3676_ishardlb(const char *line)
+{
+  int res;
+
+  if (*line == '\n'
+      || (*line == '\r' && *(line+1) == '\n')) {
+      res = TRUE;
+  } else {
+      res = FALSE;
+  }
+
+  return res;
+}
+
 /*
 ** Is a line in an article body part of a quoted passage?
 */
@@ -1035,7 +1109,7 @@ char *convcharsreal(char *line, char *charset, int spamprotect)
 	}
     }
     RETURN_PUSH(buff);
-} /* end convchars() */
+} /* end convcharsreal() */
 
 char *convcharsnospamprotect(char *line, char *charset)
 {
@@ -1416,11 +1490,16 @@ char *makemailcommand(char *mailcommand, char *email, char *id, char *subject)
 ** Returns an ALLOCATED string!
 */
 
-char *makeinreplytocommand(char *inreplytocommand, char *id)
+char *makeinreplytocommand(char *inreplytocommand, char *subject, char *id)
 {
   char *newcmd = NULL;
   char *convid = NULL;
 
+  /* if id was interpolated from the subject, skip it */
+  if (strstr (subject, id)) {
+      return NULL;
+  }
+  
   /* escape id */
   if (set_email_address_obfuscation){
     convid = obfuscate_email_address (id);
@@ -1437,6 +1516,49 @@ char *makeinreplytocommand(char *inreplytocommand, char *id)
   free (convid);
    
   return newcmd;
+}
+
+char *spamify(char *input)
+{
+    if (set_antispamdomain) {
+        return spamify_replacedomain(input, set_antispamdomain);
+    }
+    else {
+        return spamify_small(input);
+    }
+}
+
+char *spamify_small(char *input)
+{
+  /* we should replace the @-letter in the email address */
+
+  char *atptr = strchr(input, '@');
+
+  if (atptr) {
+      char *newbuf = replacechar(input, '@', set_antispam_at);
+    
+      /* correct the pointer and free the old */
+      free(input);
+      return newbuf;
+  }
+  /* weird email, bail out */
+  return input;
+}
+
+char *spamify_replacedomain(char *input, char *antispamdomain)
+{
+    char *atptr = strchr(input, '@');
+    
+    if (atptr) {
+        char *buff;
+
+        buff = parseemail(input, NULL, antispamdomain, REPLACE_DOMAIN);
+        free(input);
+        return(buff);
+    }
+    
+    /* weird email, bail out */
+    return input;
 }
 
 char *unspamify(char *s)
@@ -1473,13 +1595,15 @@ char *unspamify(char *s)
 
 char *parseemail(char *input,	/* string to parse */
 		 char *mid,	/* message ID */
-		 char *msubject)
+		 char *msubject,
+		 parseemail_conversion_t conversion) /* how to output parsed mail */
 {				/* message subject */
     char mailbuff[256];
     char mailaddr[MAILSTRLEN];
     char tempbuff[MAXLINE];
     char *ptr;
     char *lastpos = input;
+    char *start = NULL;
     struct Push buff;
     
     char *at;
@@ -1492,36 +1616,60 @@ char *parseemail(char *input,	/* string to parse */
     else
       at="@";
 
+    if (strchr(input, '@') == NULL && strstr(input, "&#64;") == NULL) {
+        /* nothing to do here */
+    	return strsav(input);
+    }
+
     INIT_PUSH(buff);
 
     while (*input) {
-      if ((ptr = strchr (input, '@')))
-	at_len = 1;
-      else if ((ptr = strstr (input, "&#64;")))
-	at_len = 5;
+        
+      /* skip detection if this is an escape or non-ascii sequence */
+      if (set_iso2022jp) {
+	iso2022_state(input, &in_ascii, &esclen);
+	if (esclen != 0) {
+	  input += esclen;
+	  continue;
+	}
+	if (in_ascii == FALSE) {
+	  input++;
+	  start = NULL;
+	  continue;
+	}
+      }
+
+      if (start == NULL) {
+          start = input;
+      }
+      
+      ptr = NULL;
+      if (*input == '@') {
+          ptr = input;
+          at_len = 1;
+      } else if (strncmp(input, "&#64;", 5) == 0) {
+          ptr = input;
+          at_len = 5;
+      }
+      
       if (ptr) {
 	    /* found a @ */
 	    char *email = ptr - 1;
 	    char content[2];
-	    int backoff = ptr - input;	/* max */
+	    int backoff = ptr - start;	/* max */
 
 #define VALID_IN_EMAIL_USERNAME   "a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~"
 #define VALID_IN_EMAIL_DOMAINNAME "a-zA-Z0-9.-"
 
-	    if (set_iso2022jp) {
-		    for (; ptr > input; input++) {
-			    iso2022_state(input, &in_ascii, &esclen);
-			    if (!esclen) continue;
-			    input += esclen;
-			    if (in_ascii == TRUE)
-				    backoff = ptr - input;
-		    }
-	    }
-
 	    /* check left side */
 	    while (backoff) {
-		if (sscanf
-		    (email, "%1[" VALID_IN_EMAIL_USERNAME "]", content) == 1) {
+                int res;
+
+                res = sscanf(email, "%1[" VALID_IN_EMAIL_USERNAME "]", content);
+                /* for some reason, if we have ,name sscanf will interpret the , as
+                   if were declared in VALID_IN_EMAIL_USERNAME, thus the additional
+                   check */
+		if (res && content[0] != ',') {
 		    email--;
 		    backoff--;
 		}
@@ -1547,35 +1695,49 @@ char *parseemail(char *input,	/* string to parse */
 				  ptr-email, email, at, mailbuff);
 
 		    if (valid_root_domain(mailaddr)) {
-			char *mailcmd = makemailcommand(set_mailcommand,
-							mailaddr, mid,
-							msubject);
-			trio_snprintf(tempbuff, sizeof(tempbuff),
-				      "<a href=\"%s\">%s</a>", mailcmd,
-				      obfuscate_email_address(mailaddr));
 
-			free(mailcmd);
-
+                        if (conversion == MAKEMAILCOMMAND) {
+                            char *mailcmd = makemailcommand(set_mailcommand,
+                                                            mailaddr, mid,
+                                                            msubject);
+                            trio_snprintf(tempbuff, sizeof(tempbuff),
+                                          "<a href=\"%s\">%s</a>", mailcmd,
+                                          obfuscate_email_address(mailaddr));
+                            
+                            free(mailcmd);
+                        }
+                        else if (conversion == REPLACE_DOMAIN) {
+                            trio_snprintf(tempbuff, sizeof(mailaddr),"%.*s%s%s", 
+                                          ptr-email, email, at, msubject);
+                            
+                        }
+                        else {
+                            strcpy (tempbuff, mailaddr);
+			}
+			
 			PushString(&buff, tempbuff);
 
 			input = ptr + strlen(mailbuff) + at_len;
+			start = input;
 			lastpos = input;
 			continue;
 		    }
 		    else {	/* bad address */
 			PushString(&buff, mailaddr);
 			input = ptr + strlen(mailbuff) + at_len;
+			start = input;
 			lastpos = input;
 			continue;
 		    }
 		}
 	    }
 	    /* no address, continue from here */
-	    input = ptr + 1;
+	    input = ptr + at_len;
+	    start = input;
 	    continue;
       }
       else
-	input = strchr(input, '\0');
+	input++;
     }
     if (lastpos < input) {
 	PushNString(&buff, lastpos, input - lastpos);
@@ -1584,15 +1746,17 @@ char *parseemail(char *input,	/* string to parse */
 }
 
 /*
+** Convert stuff that looks like a URL in a plain text string into a
+** corresponding html reference to the URL.
+**
 ** Returns the allocated and converted string.
 **
 ** This function is run on each and every body line, so it pays to make it
 ** run quickly.
 **/
 
-/* jk 8/03/2013: commented all the URLs that don't end with :// as the
-   current hypermail convurl code doesn't know how to handle them,
-   which results in sigsevs in some cases */
+/* See https://www.iana.org/assignments/uri-schemes/uri-schemes.xhtml
+   for current URI schemes */
 static char *url[] = {
     "http://",
     "https://",
@@ -1603,20 +1767,25 @@ static char *url[] = {
 #endif
     "gopher://",
     "nntp://",
-    /* "wais://", */ /* deprecated */
     "telnet://",
-    "prospero://", /* deprecated */
-/* "mailto:", *//* Can't have mailto: as it will be converted twice */
-    /*"tel:", */
-    /* "fax:", */
+/*  "mailto:", *//* Can't have mailto: as it will be converted twice */
+    "tel:",
     "rtsp://",
-    /* "im:", */
-    /* some non RFC or experimental or de-facto ones */
+    "im:",  /* im:to[?header=value&header2=value] */
+    "sip:",
+    "sips:",
     "cap://",
-    "feed://",
+    /* some non RFC or experimental or de-facto ones */
     "webcal://",
     "irc://",
-    /* "callto:", */
+    /* URIs we used to support and that are now deprecated */
+/*    "feed://",*/   /* deprecated, not used anymore */
+/*  "prospero://",*/ /* deprecated */
+/*  "wais://", */    /* deprecated */
+/*  "fax:", */       /* deprecated by rfc3966 */
+/*  "callto:", */    /* deprecated by rfc3966, maybe supported for skype calls in browsers  */
+                     /* callto:<sip:foo@bar><sip:foo2@bar2> is more complex than
+                        convurl can currently handle */
     NULL
 };
 
@@ -1628,13 +1797,20 @@ char *parseurl(char *input, char *charset)
     char *inputp;
     char *match[sizeof(url) / sizeof(char **)];
     int first;
+    char *c;
 
     if (!input || !*input)
 	return NULL;
 
-    if (!strstr(input, "://")) {
+    c = strstr(input, ":");
+    
+    if (!c  /* not found */
+	|| c == input     /* first char in line */
+	|| *(c+1) == '\0'  /* last char in line */
+	|| !isalpha(*(c-1))  /* not between alpha/graph */
+        || !isgraph(*(c+1)))  {
 	/*
-	 * All our protocol prefixes have this "//:" substring in them. Most
+	 * All our protocol prefixes have this ":" substring in them. Most
 	 * of the lines we process don't have any URL. Let's not spend any
 	 * time looking for URLs in lines that we can prove cheaply don't
 	 * have any; it will be a big win for average input if we follow
@@ -1698,11 +1874,23 @@ char *parseurl(char *input, char *charset)
 		if (!leftmost || p < leftmost) {
 		    char *endp;
 		    int len;
+                    int url_suffix_len;
+
 		    leftmost = p;
 		    memset(thisprotocol, 0, sizeof(thisprotocol));
-		    endp = strstr(p, "://");
+		    if (p[strlen(*up) - 1] == '/') {
+                        endp = strstr(p, "://");
+                        url_suffix_len = 3;
+                    } else {
+                        endp = strstr(p, ":");
+                        url_suffix_len = 1;
+                    }
 		    if (endp) {
-			len = endp - p + 3;
+			len = endp - p + url_suffix_len;
+			/* really means something else is wrong,
+			   but prevent buffer overflow */
+			if (len >= sizeof(thisprotocol))
+			    len = sizeof(thisprotocol) - 1;
 			strncpy(thisprotocol, p, len);
 			thisprotocol[len] = '\0';
 		    }
@@ -1715,7 +1903,8 @@ char *parseurl(char *input, char *charset)
 	if (leftmost) { /* we found at least one protocol prefix */
 	    int accepted = FALSE;
 	    int urlscan = FALSE;
-
+	    int istelprotocol = !strcasecmp(thisprotocol, "tel:");
+	    
 	    /* 
 	     * all the charaters between the position where we started
              * looking for a protocol prefix and the protocol prefix
@@ -1724,11 +1913,22 @@ char *parseurl(char *input, char *charset)
 
 	    translatechars(inputp, leftmost-1, &buff);
 	    inputp = leftmost + strlen(thisprotocol);
+            
+            /*
+             * If nothing follows the protocol URL, consider it's not a URL
+             * and skip it
+             */
 
-	    if (set_iso2022jp)
-		    urlscan = sscanf(inputp, "%255[^] \033)>\"\'\n[\t\\]", urlbuff);
-	    else
+            if (*inputp != '\0' && !isblank(*inputp)
+		&& ((istelprotocol && (*inputp == '+' || isdigit(*inputp)))
+		    || (!istelprotocol && !ispunct(*inputp)))) {
+
+                if (set_iso2022jp)
+		    urlscan = sscanf(inputp, "%255[^] \033)<>\"\'\n[\t\\]", urlbuff);
+                else
 		    urlscan = sscanf(inputp, "%255[^] )<>\"\'\n[\t\\]", urlbuff);
+            }
+
 	    if (urlscan == 1) {
 	        char *r;
 	

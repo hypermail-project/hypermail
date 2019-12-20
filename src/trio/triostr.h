@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- * $Id: triostr.h,v 1.1 2013-03-15 19:33:25 kahan Exp $
+ * $Id$
  *
  * Copyright (C) 2001 Bjorn Reese and Daniel Stenberg.
  *
@@ -119,6 +119,9 @@ enum {
 #  if !defined(TRIO_FUNC_TO_LONG_DOUBLE)
 #   define TRIO_FUNC_TO_LONG_DOUBLE
 #  endif
+#  if !defined(TRIO_FUNC_TO_FLOAT)
+#   define TRIO_FUNC_TO_FLOAT
+#  endif  
 # endif
 
 # if defined(TRIO_FUNC_STRING_TERMINATE)

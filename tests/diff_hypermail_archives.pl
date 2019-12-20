@@ -122,6 +122,7 @@ sub filter_filenames {
 	if ($filename =~ m/$regex/) {
 	    $res = 1;
 	    print "$filename is ignored per regex: " . $regex . "\n" if $debug && !$quiet;
+	    last;
 	}
     }
 
@@ -139,6 +140,7 @@ sub filter_regex {
 	if ($text1 =~ m/$regex/ && $text2 =~ m/$regex/) {
 	    $res = 1;
 	    print "$text1 is ignored per regex: " . $regex . "\n" if $debug && !$quiet;
+	    last;
 	}
     }
     
@@ -251,11 +253,10 @@ sub diff_files_complete {
 			|| (defined $ln_1_1 && !defined $ln_1_2
 			    && defined $ln_2_1 && !defined $ln_2_2)) {
 
-			if ($ignore_footer) {
-			    if ($ln_1_1 >= $footer_line) {
-				$skip = 1;
-				last;
-			    }
+			if ($ignore_footer
+			    && ($ln_1_1 >= $footer_line)) {
+			    $skip = 1;
+			    last;
 			    
 			} elsif ((!defined $ln_1_2 
 				  && $$generated_by_lines{$ln_1_1})

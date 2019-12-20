@@ -108,4 +108,4 @@ prefered_types = text/plain text/html
 #ihtmlfooterfile = test-footer.hyp
 #mhtmlheaderfile = test-msg.hyp
 #mhtmlfooterfile = test-footer.hyp
-
+#applemail_hack = On
