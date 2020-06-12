@@ -9,10 +9,10 @@ HYPERMAIL VERSION 2.4.1:
 	* configure.ac
 	configure didn't signal an error if yacc was not installed
 
-	* src/parse.c
-	URLs were not detected and converted when they were preceeded by a :
-	that was not attached to a valid URL like foo: https://example.com or :
-	https://example.com
+	* src/string.c
+	parseurl(): URLs were not detected and converted when they were
+	preceeded by a : that was not attached to a valid URL like
+	foo: https://example.com or : https://example.com
 
 2020-02-23 @cacsar
 	* Makefile.in
