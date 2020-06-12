@@ -46,6 +46,8 @@ dnl ===========================================================================
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_YACC
+AC_CHECK_PROG(YACC_CHECK,$YACC,yes)
+AS_IF([test x"$YACC_CHECK" != x"yes"], [AC_MSG_ERROR([Please install either bison or yacc and run configure again])])
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
