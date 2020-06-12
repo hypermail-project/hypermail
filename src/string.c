@@ -1802,22 +1802,40 @@ char *parseurl(char *input, char *charset)
     if (!input || !*input)
 	return NULL;
 
-    c = strstr(input, ":");
+    /*
+     * All our protocol prefixes have this ":" substring in them. Most
+     * of the lines we process don't have any URL. Let's not spend any
+     * time looking for URLs in lines that we can prove cheaply don't
+     * have any; it will be a big win for average input if we follow
+     * this trivial heuristic. 
+     */
     
-    if (!c  /* not found */
-	|| c == input     /* first char in line */
-	|| *(c+1) == '\0'  /* last char in line */
-	|| !isalpha(*(c-1))  /* not between alpha/graph */
-        || !isgraph(*(c+1)))  {
-	/*
-	 * All our protocol prefixes have this ":" substring in them. Most
-	 * of the lines we process don't have any URL. Let's not spend any
-	 * time looking for URLs in lines that we can prove cheaply don't
-	 * have any; it will be a big win for average input if we follow
-	 * this trivial heuristic. 
-	 */
+    first = FALSE;
+    
+    c = strstr(input, ":");
+    if (c == input) { /* first char in line */
+        c++;
+        c = strstr(c, ":");
+    }
+
+    /* !c === not found */
+    while (c) {
+        if (*(c+1) == '\0')  /* last char in line */
+            break;
+        else if ( !isalpha(*(c-1))  /* not between alpha/graph */
+                  || !isgraph(*(c+1)))  {
+            c++;
+            c = strstr(c, ":");
+        } else {
+            first = TRUE;
+            break;
+        }
+    }
+
+    if (!first) {
 	return convchars(input, charset);
     }
+
     INIT_PUSH(buff);
 
     /*
