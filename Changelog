@@ -5,6 +5,14 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.4.1:
 ============================
 
+2020-06-19 Jose Kahan
+	* domains.c
+	valid_root_domains() was validating a domain name against the
+	historical DNS domains such as .org, .com. DNS has evolved and allows a
+	bigger variety of domains than those this function verified. That part
+	of the function has been invalidated and will be either eventually
+	removed or evolve to a user-configurable option.
+
 2020-06-12 Jose Kahan
 	* configure.ac
 	configure didn't signal an error if yacc was not installed
