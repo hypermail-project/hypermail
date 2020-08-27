@@ -5,8 +5,14 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.4.1:
 ============================
 
+2020-08-27 Jose Kahan
+	* src/string.c
+	extended parseurl() in a naive approach for supporting U+00A0
+	nonbreakable space inside sscanf. This function should eventually be
+	rewritten to use libpcre
+
 2020-06-19 Jose Kahan
-	* domains.c
+	* src/domains.c
 	valid_root_domains() was validating a domain name against the
 	historical DNS domains such as .org, .com. DNS has evolved and allows a
 	bigger variety of domains than those this function verified. That part
