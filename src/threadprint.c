@@ -245,7 +245,7 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
     char *subj, *tmpname;
     char *href = NULL;
     char buffer[256];
-    char *first_attributes = (is_first) ? " accesskey=\"j\" id=\"first\"" : "";
+    char *first_attributes = (is_first) ? " id=\"first\"" : "";
 
 #ifdef HAVE_ICONV
     subj = convchars(email->subject, "utf-8");

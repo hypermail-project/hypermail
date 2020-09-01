@@ -428,7 +428,7 @@ void print_index_header_links (FILE *fp, mindex_t called_from, long startdatenum
     /* print the links to the other indexes */
     if (show_index[dlev][THREAD_INDEX]) {
       if (called_from != THREAD_INDEX)
-	fprintf(fp, " [ <a href=\"%s\" title=\"%s\" accesskey=\"t\" rel=\"alternate\">%s</a> ]\n", 
+	fprintf(fp, " [ <a href=\"%s\" title=\"%s\" rel=\"alternate\">%s</a> ]\n", 
 		index_name[dlev][THREAD_INDEX], lang[MSG_LTITLE_BY_THREAD], lang[MSG_THREAD]);
       else
 	fprintf(fp, " [ %s ]\n", lang[MSG_THREAD]);
@@ -436,7 +436,7 @@ void print_index_header_links (FILE *fp, mindex_t called_from, long startdatenum
 
     if (show_index[dlev][AUTHOR_INDEX]) {
       if (called_from != AUTHOR_INDEX)
-	fprintf(fp, " [ <a href=\"%s\" title=\"%s\" accesskey=\"a\" rel=\"alternate\">%s</a> ]\n", 
+	fprintf(fp, " [ <a href=\"%s\" title=\"%s\" rel=\"alternate\">%s</a> ]\n", 
 		index_name[dlev][AUTHOR_INDEX], lang[MSG_LTITLE_BY_AUTHOR], lang[MSG_AUTHOR]);
       else
 	fprintf(fp, " [ %s ]\n", lang[MSG_AUTHOR]);
@@ -444,7 +444,7 @@ void print_index_header_links (FILE *fp, mindex_t called_from, long startdatenum
 
     if (show_index[dlev][DATE_INDEX]) {
       if (called_from != DATE_INDEX)
-	fprintf(fp, " [ <a href=\"%s\" title=\"%s\" accesskey=\"d\" rel=\"alternate\">%s</a> ]\n", 
+	fprintf(fp, " [ <a href=\"%s\" title=\"%s\" rel=\"alternate\">%s</a> ]\n", 
 		index_name[dlev][DATE_INDEX], lang[MSG_LTITLE_BY_DATE], lang[MSG_DATE]);
       else
 	fprintf(fp, " [ %s ]\n", lang[MSG_DATE]);
@@ -452,7 +452,7 @@ void print_index_header_links (FILE *fp, mindex_t called_from, long startdatenum
 
     if (show_index[dlev][SUBJECT_INDEX]) {
       if (called_from != SUBJECT_INDEX)
-	fprintf(fp, " [ <a href=\"%s\" title=\"%s\" accesskey=\"s\" rel=\"alternate\">%s</a> ]\n", 
+	fprintf(fp, " [ <a href=\"%s\" title=\"%s\" rel=\"alternate\">%s</a> ]\n", 
 		index_name[dlev][SUBJECT_INDEX],  lang[MSG_LTITLE_BY_SUBJECT], lang[MSG_SUBJECT]);
       else
 	fprintf(fp, " [ %s ]\n", lang[MSG_SUBJECT]);
@@ -460,7 +460,7 @@ void print_index_header_links (FILE *fp, mindex_t called_from, long startdatenum
 
     if (set_attachmentsindex) {
       if (called_from != ATTACHMENT_INDEX) {
-      fprintf(fp, " [ <a href=\"%s\" title=\"%s\" accesskey=\"a\" rel=\"alternate\">%s</a> ]\n", 
+      fprintf(fp, " [ <a href=\"%s\" title=\"%s\" rel=\"alternate\">%s</a> ]\n", 
 	      index_name[dlev][ATTACHMENT_INDEX],  lang[MSG_LTITLE_BY_ATTACHMENT],
 	      lang[MSG_ATTACHMENT]);
       }
@@ -472,7 +472,7 @@ void print_index_header_links (FILE *fp, mindex_t called_from, long startdatenum
     /* print the mail actions */
     if (set_mailcommand && set_hmail) {
       ptr = makemailcommand("mailto:$TO", set_hmail, "", "");
-      fprintf (fp, "<li><dfn>%s</dfn>: [ <a href=\"%s\" accesskey=\"n\">%s</a> ]</li>\n",
+      fprintf (fp, "<li><dfn>%s</dfn>: [ <a href=\"%s\">%s</a> ]</li>\n",
 	       lang[MSG_MAIL_ACTIONS], ptr ? ptr : "", lang[MSG_MA_NEW_MESSAGE]);
       if (ptr)
 	free (ptr);
@@ -779,7 +779,7 @@ void printdates(FILE *fp, struct header *hp, int year, int month, struct emailin
   const char *subj_tag;
   const char *subj_end_tag;
   static char date_str[DATESTRLEN+40]; /* made static for smaller stack */
-  static char *first_attributes = "<a  accesskey=\"j\" id=\"first\"></a>";
+  static char *first_attributes = "<a  id=\"first\"></a>";
 
   if (hp != NULL) {
     struct emailinfo *em=hp->data;
@@ -853,7 +853,7 @@ int printattachments(FILE *fp, struct header *hp, struct emailinfo *subdir_email
     char *attdir;
     char *msgnum;
     int  nb_attach = 0;
-    static char *first_attributes = "<a  accesskey=\"j\" id=\"first\"></a>";
+    static char *first_attributes = "<a  id=\"first\"></a>";
 
     const char *rel_path_to_top = (subdir_email ? subdir_email->subdir->rel_path_to_top : "");
 
@@ -1137,7 +1137,7 @@ void printheaders (FILE *fp, struct emailinfo *email)
 	d_index = MSG_EXPIRED;
       if (email->is_deleted == 4 || email->is_deleted == 8)
 	d_index = MSG_FILTERED_OUT;
-      fprintf(fp, "<a accesskey=\"j\" id=\"start\"></a>");
+      fprintf(fp, "<a id=\"start\"></a>");
       fprintf(fp, "<span id=\"deleted\">(%s)</span>\n", lang[d_index]);
       return;
     }
@@ -1254,7 +1254,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
 	  break;
 	}
       default:
-	fprintf(fp, "<a accesskey=\"j\" id=\"start\"></a>");
+	fprintf(fp, "<a id=\"start\"></a>");
 	fprintf(fp, "<p>%s</p>\n", lang[d_index]);
       }
       return;
@@ -1273,7 +1273,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
     }
 
     /* tag the start of the message body */
-    fprintf(fp, "<a accesskey=\"j\" id=\"start\"></a>");
+    fprintf(fp, "<a id=\"start\"></a>");
 
     if (set_showhtml == 2)
       init_txt2html();
@@ -1652,7 +1652,7 @@ int print_links_up(FILE *fp, struct emailinfo *email, int pos, int in_thread_fil
 		ptr = makemailcommand(set_replymsg_command, set_hmail, email->msgid, 
 				      email->subject);
 #endif
-		fprintf(fp, " [ <a href=\"%s\" accesskey=\"r\" title=\"%s\">%s</a> ]\n",
+		fprintf(fp, " [ <a href=\"%s\" title=\"%s\">%s</a> ]\n",
 			ptr, lang[MSG_MA_REPLY], lang[MSG_RESPOND]);
 		if (ptr)
 		  free(ptr);
@@ -1691,7 +1691,7 @@ int print_links_up(FILE *fp, struct emailinfo *email, int pos, int in_thread_fil
 	      ptr = convchars(email2->subject, email2->charset);
 	      tmpptr= convchars(email2->name,email2->charset);
 #endif
-	      fprintf(fp, "[ <a href=\"%s\" accesskey=\"d\" title=\"%s: &quot;%s&quot;\">%s</a> ]\n", 
+	      fprintf(fp, "[ <a href=\"%s\" title=\"%s: &quot;%s&quot;\">%s</a> ]\n", 
 		      msg_href (email2, email, FALSE), 
 		      tmpptr, ptr ? ptr : "", 
 		      lang[MSG_NEXT_MESSAGE]);
@@ -1787,7 +1787,7 @@ int print_links_up(FILE *fp, struct emailinfo *email, int pos, int in_thread_fil
 	      ptr = convchars(email_next_in_thread->subject, email_next_in_thread->charset);
 	      tmpptr=convchars(email_next_in_thread->name,email_next_in_thread->charset);
 #endif
-	      fprintf(fp, "[ <a href=\"%s\" accesskey=\"t\" title=\"%s: &quot;%s&quot;\">%s</a> ]\n", 
+	      fprintf(fp, "[ <a href=\"%s\" title=\"%s: &quot;%s&quot;\">%s</a> ]\n", 
 		      href01(email, email_next_in_thread, in_thread_file, FALSE),
 		      tmpptr, ptr, 
 		      lang[MSG_NEXT_IN_THREAD]);
@@ -2225,6 +2225,8 @@ void writearticles(int startnum, int maxnum)
 			 email->msgid, email->charset, email->date, filename, 
 			 REMOVE_MESSAGE(email), email->annotation_robot);
 #endif
+	fprintf (fp, "<header class=\"head\">\n");
+	// REMOVE
 	fprintf (fp, "<div class=\"head\">\n");
 
 	/* print the navigation bar to upper levels */
@@ -2295,7 +2297,9 @@ void writearticles(int startnum, int maxnum)
 	    fprint_menu0(fp, email, PAGE_TOP);
 	if ((set_show_msg_links && set_show_msg_links != 4) || !set_usetable)
 	  {
+	    // REMOVE
 	    fprintf(fp, "</div>\n");
+	    fprintf(fp, "</header>\n");
 	  }
 
 	/*
@@ -2688,7 +2692,7 @@ void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
   const char *break_str;
   const char *endline;
   static char date_str[DATESTRLEN+40]; /* made static for smaller stack */
-  static char *first_attributes = "<a  accesskey=\"j\" id=\"first\"></a>";
+  static char *first_attributes = "<a  id=\"first\"></a>";
 
   if (hp != NULL) {
     printsubjects(fp, hp->left, oldsubject, year, month, subdir_email);
@@ -2844,7 +2848,7 @@ void printauthors(FILE *fp, struct header *hp, char **oldname,
   const char *break_str;
   const char *endline;
   static char date_str[DATESTRLEN+40]; /* made static for smaller stack */
-  static char *first_attributes = "<a  accesskey=\"j\" id=\"first\"></a>";
+  static char *first_attributes = "<a  id=\"first\"></a>";
 
   if (hp != NULL) {
     printauthors(fp, hp->left, oldname, year, month, subdir_email);
