@@ -4502,12 +4502,12 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
         snprintf(current_maybe_pattern, sizeof(current_maybe_pattern), 
                 "<li><dfn>%s</dfn>: <a href=", lang[MSG_MAYBE_REPLY]);
         snprintf(current_link_maybe_pattern, sizeof(current_maybe_pattern), 
-                "<li><a name=\"replies\" id=\"replies\"></a><dfn>%s</dfn>: <a href=", 
+                "<li><a id=\"replies\"></a><dfn>%s</dfn>: <a href=", 
 		 lang[MSG_MAYBE_REPLY]);
         snprintf(current_reply_pattern, sizeof(current_reply_pattern), 
                 "<li><dfn>%s</dfn>: <a href=", lang[MSG_REPLY]);
         snprintf(current_link_reply_pattern, sizeof(current_reply_pattern), 
-                "<li><a name=\"replies\" id=\"replies\"></a><dfn>%s</dfn>: <a href=",
+                "<li><a id=\"replies\"></a><dfn>%s</dfn>: <a href=",
 		 lang[MSG_REPLY]);
         snprintf(current_nextinthread_pattern, 
                 sizeof(current_nextinthread_pattern), 
@@ -4640,7 +4640,7 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 		if (list_started == FALSE) {
 		  list_started = TRUE;
 		  trio_asprintf(&ptr1,
-				"<li><a name=\"replies\" id=\"replies\"></a>"
+				"<li><a id=\"replies\"></a>"
 				"<dfn>%s</dfn>: %s <a href=\"%s\" title=\"%s\">"
 				"%s: \"%s\"</a></li>\n",
 				lang[subjmatch ? MSG_MAYBE_REPLY : MSG_REPLY],

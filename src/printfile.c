@@ -236,17 +236,15 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
       rp = "ISO-8859-1";
     fprintf(fp,
 	    "<?xml version=\"1.0\" encoding=\"%s\"?>\n"
-	    "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n"
-	    "    \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n",
-	    rp);
-    fprintf(fp, "<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"%s\">\n", set_language);
+	    "<!DOCTYPE html>\n"
+	    "<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"%s\">\n",
+	    rp, set_language);
     fprintf(fp, "<head>\n");
 
     if (charset && *charset) {
 	/* charset info "as early as possible within the HEAD of the document"
 	 */
-	fprintf(fp, "<meta http-equiv=\"Content-Type\""
-		" content=\"text/html; charset=%s\" />\n", charset);
+	fprintf(fp, "<meta charset=\"%s\" />\n", charset);
     }
     fprintf(fp, "<meta name=\"generator\" content=\"%s %s, see %s\" />\n",
                 PROGNAME, VERSION, HMURL);
@@ -338,7 +336,7 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
        * if style sheets are not specified, emit a default one.
        */
        /* @@ JK: the new css */
-      fprintf (fp, "<style type=\"text/css\">\n");
+      fprintf (fp, "<style>\n");
       
       fprintf (fp,"/*<![CDATA[*/\n");
       fprintf (fp, "/* To be incorporated in the main stylesheet, don't code it in hypermail! */\n");
@@ -422,6 +420,8 @@ void print_index_header(FILE *fp, char *label, char *dir, char *subject,
 #else
         print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL, NULL, 0, 0);
 #endif
+	fprintf (fp, "<header class=\"head\">\n");
+	// REMOVE
 	fprintf (fp, "<div class=\"head\">\n");
 	if (ihtmlnavbar2upfile)
 	  fprintf(fp, "<map title=\"%s\" id=\"upper\">\n%s</map>\n", 
@@ -462,7 +462,7 @@ void printfooter(FILE *fp, char *htmlfooter, char *label, char *dir,
 void printlaststats (FILE *fp, long lastdatenum)
 {
     fprintf (fp, "<ul>\n");
-    fprintf (fp, "<li><dfn><a id=\"end\" name=\"end\">%s</a></dfn>: <em>%s</em></li>\n",
+    fprintf (fp, "<li><dfn><a id=\"end\">%s</a></dfn>: <em>%s</em></li>\n",
 	     lang[MSG_LAST_MESSAGE_DATE], getdatestr(lastdatenum));
 
     fprintf (fp, "<li><dfn>%s</dfn>: %s</li>\n",  lang[MSG_ARCHIVED_ON], getlocaltime());

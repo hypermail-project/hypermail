@@ -127,7 +127,7 @@ char *remove_hypermail_tags(char *line)
 	    }
 	}
     }
-    while ((p = strcasestr(buffer, "<a name=\"")) && isdigit(p[9])
+    while ((p = strcasestr(buffer, "<a id=\"")) && isdigit(p[9])
 	   && isdigit(p[10]) && isdigit(p[11]) && isdigit(p[12])
 	   && (p1 = strstr(p, "qlink"))) {
 	const char *p2 = strstr(p1, "\">");

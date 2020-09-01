@@ -219,7 +219,7 @@ void fprint_menu(FILE *fp, mindex_t idx, char *archives, char *currentid, char *
 	    if (pos == PAGE_TOP)
 				fprintf(fp, "<th><a href=\"#end\">%s</a></th>\n", lang[MSG_END_OF_MESSAGES]);
 	    else
-				fprintf(fp, "<th><a name=\"end\" href=\"#\">%s</a></th>\n", lang[MSG_START_OF_MESSAGES]);
+				fprintf(fp, "<th><a id=\"end\" href=\"#\">%s</a></th>\n", lang[MSG_START_OF_MESSAGES]);
 	}
 
 	for (i = 0; i <= AUTHOR_INDEX; ++i) {
@@ -281,8 +281,8 @@ void fprint_menu0(FILE *fp, struct emailinfo *email, int pos)
   }
 
   if (set_mailcommand && set_hmail) {
-    fprintf(fp, "<li><a name=\"%s\" id=\"%s\"></a><dfn>%s</dfn>:", 
-	    id,id,lang[MSG_MAIL_ACTIONS]);
+    fprintf(fp, "<li><a id=\"%s\"></a><dfn>%s</dfn>:", 
+	    id,lang[MSG_MAIL_ACTIONS]);
     if ((email->msgid && email->msgid[0]) || (email->subject && email->subject[0])) {
 #ifdef HAVE_ICONV
       ptr = makemailcommand(set_replymsg_command, set_hmail, email->msgid, tmpptr);
@@ -308,7 +308,7 @@ void fprint_menu0(FILE *fp, struct emailinfo *email, int pos)
     fprintf (fp, "<li>");
     /* add the anchor if we didn't do so in the above block */
     if (!(set_mailcommand && set_hmail))
-      fprintf (fp, "<a name=\"%s\" id=\"%s\"></a>",id,id);
+      fprintf (fp, "<a id=\"%s\"></a>",id);
     fprintf(fp, "<dfn>%s</dfn>:", lang[MSG_CONTEMPORARY_MSGS_SORTED]);
     if (show_index[dlev][DATE_INDEX])
       fprintf(fp, " [ <a href=\"%s#%s%d\" title=\"%s\">%s</a> ]", 
@@ -366,7 +366,7 @@ void fprint_summary(FILE *fp, int pos, long first_d, long last_d, int num)
 		fprintf(fp, "  <th>%s:</th><td><em>%s</em></td>\n</tr>\n", lang[MSG_ENDING], getdatestr(last_d));
     }
     else { /* bottom of page */
-		fprintf(fp, "<tr><th><a name=\"end\">%s: </a></th><td><em>%s</em></td>\n", lang[MSG_LAST_MESSAGE_DATE], getdatestr(last_d));
+		fprintf(fp, "<tr><th><a id=\"end\">%s: </a></th><td><em>%s</em></td>\n", lang[MSG_LAST_MESSAGE_DATE], getdatestr(last_d));
 		fprintf(fp, "<th>%s: </th><td><em>%s</em></td>\n", lang[MSG_ARCHIVED_ON], getlocaltime());
     }
     fprintf(fp, "</table>\n</div>\n");
@@ -399,7 +399,7 @@ void print_index_header_links (FILE *fp, mindex_t called_from, long startdatenum
 #endif
 
 
-    fprintf(fp, "<map title=\"%s\" id=\"navbar\" name=\"navbar\">\n", lang[MSG_NAVBAR]);
+    fprintf(fp, "<map title=\"%s\" id=\"navbar\">\n", lang[MSG_NAVBAR]);
     fprintf(fp, "<ul>\n");
     /*
      * Printout the Dates for the Starting and Ending messages 
@@ -549,7 +549,7 @@ void print_index_footer_links(FILE *fp, mindex_t called_from, long enddatenum, i
 #endif
 
     fprintf (fp, "<div class=\"foot\">\n");
-    fprintf (fp, "<map title=\"%s\" id=\"navbarfoot\" name=\"navbarfoot\">\n", lang[MSG_NAVBAR]);
+    fprintf (fp, "<map title=\"%s\" id=\"navbarfoot\">\n", lang[MSG_NAVBAR]);
     fprintf (fp, "<ul>\n");
     
     if ((called_from != AUTHOR_INDEX && show_index[dlev][AUTHOR_INDEX]) 
@@ -779,7 +779,7 @@ void printdates(FILE *fp, struct header *hp, int year, int month, struct emailin
   const char *subj_tag;
   const char *subj_end_tag;
   static char date_str[DATESTRLEN+40]; /* made static for smaller stack */
-  static char *first_attributes = "<a  accesskey=\"j\" name=\"first\" id=\"first\"></a>";
+  static char *first_attributes = "<a  accesskey=\"j\" id=\"first\"></a>";
 
   if (hp != NULL) {
     struct emailinfo *em=hp->data;
@@ -829,10 +829,10 @@ void printdates(FILE *fp, struct header *hp, int year, int month, struct emailin
 	subj_end_tag = "";
       }
 
-      fprintf(fp,"%s<a href=\"%s\">%s%s%s</a>%s<a name=\"%s%d\" id=\"%s%d\"><em>%s</em></a>%s%s%s\n",
+      fprintf(fp,"%s<a href=\"%s\">%s%s%s</a>%s<a id=\"%s%d\"><em>%s</em></a>%s%s%s\n",
 	      startline, msg_href(em, subdir_email, FALSE), 
 	      subj_tag, subject, subj_end_tag, break_str, 
-	      set_fragment_prefix, em->msgnum, set_fragment_prefix, em->msgnum, 
+	      set_fragment_prefix, em->msgnum, 
 	      name,
 	      break_str, date_str, endline);
 
@@ -853,7 +853,7 @@ int printattachments(FILE *fp, struct header *hp, struct emailinfo *subdir_email
     char *attdir;
     char *msgnum;
     int  nb_attach = 0;
-    static char *first_attributes = "<a  accesskey=\"j\" name=\"first\" id=\"first\"></a>";
+    static char *first_attributes = "<a  accesskey=\"j\" id=\"first\"></a>";
 
     const char *rel_path_to_top = (subdir_email ? subdir_email->subdir->rel_path_to_top : "");
 
@@ -875,14 +875,13 @@ int printattachments(FILE *fp, struct header *hp, struct emailinfo *subdir_email
 		/* consider that if there's an attachment directory, there are attachments */
 		nb_attach++;
 		if (set_indextable) {
-		  fprintf(fp, "<tr><td>%s%s</a></td><td><a name=\"%s%d\" id=\"%s%d\"><em>%s</em></a></td>" "<td>%s</td></tr>\n", msg_href(em, subdir_email, TRUE), subject, set_fragment_prefix, em->msgnum, set_fragment_prefix, em->msgnum, name, getindexdatestr(em->date));
+		  fprintf(fp, "<tr><td>%s%s</a></td><td><a id=\"%s%d\"><em>%s</em></a></td>" "<td>%s</td></tr>\n", msg_href(em, subdir_email, TRUE), subject, set_fragment_prefix, em->msgnum, name, getindexdatestr(em->date));
 		}
 		else {
 		  fprintf(fp, "<li>%s%s<dfn>%s</dfn></a>&nbsp;" 
-			  "<a name=\"%s%d\" id=\"%s%d\"><em>%s</em></a>&nbsp;<em>(%s)</em>\n", 
+			  "<a id=\"%s%d\"><em>%s</em></a>&nbsp;<em>(%s)</em>\n", 
 			  (*is_first) ? first_attributes : "",
 			  msg_href(em, subdir_email, TRUE), subject, 
-			  set_fragment_prefix, em->msgnum, 
 			  set_fragment_prefix, em->msgnum, 
 			  name,
 			  getindexdatestr(em->date));
@@ -1138,7 +1137,7 @@ void printheaders (FILE *fp, struct emailinfo *email)
 	d_index = MSG_EXPIRED;
       if (email->is_deleted == 4 || email->is_deleted == 8)
 	d_index = MSG_FILTERED_OUT;
-      fprintf(fp, "<a name=\"start\" accesskey=\"j\" id=\"start\"></a>");
+      fprintf(fp, "<a accesskey=\"j\" id=\"start\"></a>");
       fprintf(fp, "<span id=\"deleted\">(%s)</span>\n", lang[d_index]);
       return;
     }
@@ -1255,7 +1254,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
 	  break;
 	}
       default:
-	fprintf(fp, "<a name=\"start\" accesskey=\"j\" id=\"start\"></a>");
+	fprintf(fp, "<a accesskey=\"j\" id=\"start\"></a>");
 	fprintf(fp, "<p>%s</p>\n", lang[d_index]);
       }
       return;
@@ -1274,7 +1273,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
     }
 
     /* tag the start of the message body */
-    fprintf(fp, "<a name=\"start\" accesskey=\"j\" id=\"start\"></a>");
+    fprintf(fp, "<a accesskey=\"j\" id=\"start\"></a>");
 
     if (set_showhtml == 2)
       init_txt2html();
@@ -1582,7 +1581,7 @@ print_replies(FILE *fp, struct emailinfo *email, int num, int in_thread_file)
 	    char *del_msg = (email2->is_deleted ? lang[MSG_DEL_SHORT] : "");
 	    if (!list_started) {
 	        list_started = TRUE;
-		fprintf (fp, "<li><a name=\"replies\" id=\"replies\"></a>\n");
+		fprintf (fp, "<li><a id=\"replies\"></a>\n");
 	    }
 	    else
 	        fprintf (fp, "<li>");
@@ -1632,13 +1631,13 @@ int print_links_up(FILE *fp, struct emailinfo *email, int pos, int in_thread_fil
 	      ptr = "navbar";
 	    else
 	      ptr = "navbarfoot";
-	    fprintf(fp, "<map id=\"%s\" name=\"%s\">\n", ptr, ptr);
+	    fprintf(fp, "<map id=\"%s\">\n", ptr);
 	    if (pos == PAGE_TOP)
 	    fprintf(fp, "<ul class=\"links\">\n");
 
 	    fprintf(fp, "<li>\n");
 	    fprintf(fp, "<dfn>%s</dfn>:\n", lang[MSG_THIS_MESSAGE]);
-	    fprintf(fp, "[ <a href=\"#start\" name=\"options1\" id=\"options1\" tabindex=\"1\">"
+	    fprintf(fp, "[ <a href=\"#start\" id=\"options1\" tabindex=\"1\">"
 		    "%s</a> ]\n", lang[MSG_MSG_BODY]);
 	    if (set_mailcommand && set_hmail) {
 	      if ((email->msgid && email->msgid[0]) || (email->subject && email->subject[0])) {
@@ -2317,7 +2316,7 @@ void writearticles(int startnum, int maxnum)
 	 */
 
 	fprintf (fp, "<div class=\"foot\">\n");
-	fprintf (fp, "<map id=\"navbarfoot\" name=\"navbarfoot\" title=\"%s\">\n", 
+	fprintf (fp, "<map id=\"navbarfoot\" title=\"%s\">\n", 
 		 lang[MSG_RELATED_MESSAGES]);
 	
 	print_links(fp, email, PAGE_BOTTOM, FALSE);
@@ -2459,8 +2458,9 @@ void writedates(int amountmsgs, struct emailinfo *email)
      */
     print_index_header_links(fp, DATE_INDEX, start_date_num, end_date_num,
 			     amountmsgs, email ? email->subdir : NULL);
+    // REMOVE
     fprintf (fp, "</div>\n");
-
+    fprintf (fp, "</header>\n");
     /*
      * Print out the actual message index lists. Here's the beef.
      */
@@ -2547,7 +2547,9 @@ void writeattachments(int amountmsgs, struct emailinfo *email)
      */
     print_index_header_links(fp, ATTACHMENT_INDEX, start_date_num, end_date_num,
 			     amountmsgs, email ? email->subdir : NULL);
+    // REMOVE
     fprintf (fp, "</div>\n");
+    fprintf (fp, "</header>\n");
 
     /*
      * Print out the actual message index lists. Here's the beef.
@@ -2636,7 +2638,9 @@ void writethreads(int amountmsgs, struct emailinfo *email)
      */
     print_index_header_links(fp, THREAD_INDEX, start_date_num, end_date_num,
 			     amountmsgs, email ? email->subdir : NULL);
+    // REMOVE
     fprintf (fp, "</div>\n");
+    fprintf (fp, "</header>\n");
 
     if (set_indextable) {
 	fprintf(fp, "<div class=\"center\">\n<table>\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong> %s</strong></td></tr>\n", lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
@@ -2684,7 +2688,7 @@ void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
   const char *break_str;
   const char *endline;
   static char date_str[DATESTRLEN+40]; /* made static for smaller stack */
-  static char *first_attributes = "<a  accesskey=\"j\" name=\"first\" id=\"first\"></a>";
+  static char *first_attributes = "<a  accesskey=\"j\" id=\"first\"></a>";
 
   if (hp != NULL) {
     printsubjects(fp, hp->left, oldsubject, year, month, subdir_email);
@@ -2734,10 +2738,9 @@ void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
 	    endline = "</li>";
 	}
 	fprintf(fp,
-		"%s%s%s</a>%s <a name=\"%s%d\" id=\"%s%d\">%s</a>%s\n", startline,
+		"%s%s%s</a>%s <a  id=\"%s%d\">%s</a>%s\n", startline,
 		msg_href(hp->data, subdir_email, TRUE), 
                 name, break_str,        
-		set_fragment_prefix, hp->data->msgnum, 
 		set_fragment_prefix, hp->data->msgnum, date_str, endline);
 	*oldsubject = hp->data->unre_subject;
 
@@ -2783,8 +2786,10 @@ void writesubjects(int amountmsgs, struct emailinfo *email)
 	 */
 	print_index_header_links(fp, SUBJECT_INDEX, start_date_num, end_date_num,
 				 amountmsgs, email ? email->subdir : NULL);
+	// REMOVE
 	fprintf (fp, "</div>\n");
-	
+	fprintf (fp, "</header>\n");
+
     if (set_indextable) {
 	fprintf(fp, "<div class=\"center\">\n<table>\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong> %s</strong></td></tr>\n", lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
     }
@@ -2839,7 +2844,7 @@ void printauthors(FILE *fp, struct header *hp, char **oldname,
   const char *break_str;
   const char *endline;
   static char date_str[DATESTRLEN+40]; /* made static for smaller stack */
-  static char *first_attributes = "<a  accesskey=\"j\" name=\"first\" id=\"first\"></a>";
+  static char *first_attributes = "<a  accesskey=\"j\" id=\"first\"></a>";
 
   if (hp != NULL) {
     printauthors(fp, hp->left, oldname, year, month, subdir_email);
@@ -2889,9 +2894,9 @@ void printauthors(FILE *fp, struct header *hp, char **oldname,
 	snprintf(date_str, sizeof(date_str), "<em>(%s)</em>", getindexdatestr(hp->data->date));
 	endline = "</li>";
       }
-      fprintf(fp,"%s%s%s</a>%s<a name=\"%s%d\" id=\"%s%d\">%s</a>%s\n",
+      fprintf(fp,"%s%s%s</a>%s<a id=\"%s%d\">%s</a>%s\n",
 	      startline, msg_href(hp->data, subdir_email, TRUE), subj, break_str,
-	      set_fragment_prefix, hp->data->msgnum, set_fragment_prefix, hp->data->msgnum, 
+	      set_fragment_prefix, hp->data->msgnum, 
 	      date_str, endline);
       if(subj)
 	free(subj);
@@ -2939,7 +2944,9 @@ void writeauthors(int amountmsgs, struct emailinfo *email)
      */
     print_index_header_links(fp, AUTHOR_INDEX, start_date_num, end_date_num,
 			     amountmsgs, email ? email->subdir : NULL);
+    // REMOVE
     fprintf (fp, "</div>\n");
+    fprintf (fp, "</header>\n");
 
     if (set_indextable) {
 		fprintf(fp, "<div class=\"center\">\n<table>\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong> %s</strong></td></tr>\n", lang[MSG_CAUTHOR], lang[MSG_CSUBJECT], lang[MSG_CDATE]);
@@ -3386,7 +3393,7 @@ void write_toplevel_indices(int amountmsgs)
 	      }
 	      fprintf(fp, "  <tr%s>\n    <td scope=\"row\" class=\"period\" align=\"left\">%s",
 		      (first) ? " class=\"first\"" : "",
-		      (first) ? "<a name=\"first\" id=\"first\"></a>" : "");
+		      (first) ? "<a id=\"first\"></a>" : "");
 	      /* only add a link to the index if it is not empty */
 	      if (sd->count > 0)
 		fprintf (fp, "<a title=\"%s %s\" href=\"%s%s\">",
