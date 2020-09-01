@@ -245,7 +245,7 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
     char *subj, *tmpname;
     char *href = NULL;
     char buffer[256];
-    char *first_attributes = (is_first) ? " accesskey=\"j\" name=\"first\" id=\"first\"" : "";
+    char *first_attributes = (is_first) ? " accesskey=\"j\" id=\"first\"" : "";
 
 #ifdef HAVE_ICONV
     subj = convchars(email->subject, "utf-8");
@@ -279,10 +279,10 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
     if (set_indextable) {
 	fprintf(fp,
 		"<tr><td>%s<a href=\"%s\"%s><strong>%s</strong></a></td>"
-		"<td nowrap><a name=\"%s%d\" id=\"%s%d\">%s</a></td>" "<td nowrap>%s</td></tr>\n",
+		"<td nowrap><a id=\"%s%d\">%s</a></td>" "<td nowrap>%s</td></tr>\n",
 		level > 1 ? "--&gt; " : "", 
 		href, first_attributes,
-		subj, set_fragment_prefix, email->msgnum, set_fragment_prefix, email->msgnum, tmpname, getindexdatestr(email->date));
+		subj, set_fragment_prefix, email->msgnum, tmpname, getindexdatestr(email->date));
     }
     else {
         if (num_open_li[level] != 0) {
@@ -290,9 +290,9 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
 	  num_open_li[level]--;
 	}
 	fprintf(fp, "<li><a href=\"%s\"%s>%s</a>&nbsp;"
-		"<a name=\"%s%d\" id=\"%s%d\"><em>%s</em></a>&nbsp;<em>(%s)</em>\n", 
+		"<a id=\"%s%d\"><em>%s</em></a>&nbsp;<em>(%s)</em>\n", 
 		href, first_attributes, 
-		subj, set_fragment_prefix, email->msgnum, set_fragment_prefix, email->msgnum, tmpname, getindexdatestr(email->date));
+		subj, set_fragment_prefix, email->msgnum, tmpname, getindexdatestr(email->date));
     }
     if (subj)
       free(subj);

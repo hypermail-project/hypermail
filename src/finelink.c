@@ -59,7 +59,7 @@ static struct body *place_anchor(const String_Match * match_info,
 	    if (*ptr == match_info->start_match) {
 		strcpy(token, last_ptr);
 		*last_ptr = 0;
-		fprintf(fp2, "%s<a name=\"%s\">", buffer, anchor);
+		fprintf(fp2, "%s<a id=\"%s\">", buffer, anchor);
 		strcpy(buffer, token);
 		*ptr = last_ptr0;
 		return bp;
@@ -86,7 +86,7 @@ static struct body *place_anchor(const String_Match * match_info,
 	if (0)
 	    printf("No match found %s; %s", anchor, buffer);
     }
-    fprintf(fp2, "<a name=\"%s\">", anchor);
+    fprintf(fp2, "<a id=\"%s\">", anchor);
     return bp;
 }
 
@@ -430,7 +430,7 @@ int handle_quoted_text(FILE *fp, struct emailinfo *email, const struct body *bp,
 	    tmpline[part2 - line] = 0;
 	}
 	if (set_link_to_replies)
-	    fprintf(fp, "<a name=\"qlink%d\"></a>", quote_num);
+	    fprintf(fp, "<a id=\"qlink%d\"></a>", quote_num);
 	p2 = ConvURLsString(part2, email->msgid, email->subject, email->charset);
 	if (replacing)
 	    fprintf(fp, fmt1, url1, set_quote_link_string, p2 ? p2 : "");
