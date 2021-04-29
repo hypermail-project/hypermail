@@ -1600,7 +1600,7 @@ char *parseemail(char *input,	/* string to parse */
 {				/* message subject */
     char mailbuff[256];
     char mailaddr[MAILSTRLEN];
-    char tempbuff[MAXLINE];
+    char *tempbuff;
     char *ptr;
     char *lastpos = input;
     char *start = NULL;
@@ -1700,23 +1700,26 @@ char *parseemail(char *input,	/* string to parse */
                             char *mailcmd = makemailcommand(set_mailcommand,
                                                             mailaddr, mid,
                                                             msubject);
-                            trio_snprintf(tempbuff, sizeof(tempbuff),
-                                          "<a href=\"%s\">%s</a>", mailcmd,
+                            trio_asprintf(&tempbuff, "<a href=\"%s\">%s</a>",
+					  mailcmd,
                                           obfuscate_email_address(mailaddr));
                             
                             free(mailcmd);
                         }
                         else if (conversion == REPLACE_DOMAIN) {
-                            trio_snprintf(tempbuff, sizeof(mailaddr),"%.*s%s%s", 
+                            trio_asprintf(&tempbuff, "%.*s%s%s", 
                                           ptr-email, email, at, msubject);
                             
                         }
                         else {
-                            strcpy (tempbuff, mailaddr);
+                            trio_asprintf(&tempbuff, "%s",
+                                          mailaddr);
 			}
 			
 			PushString(&buff, tempbuff);
-
+                        
+                        free (tempbuff);
+                        
 			input = ptr + strlen(mailbuff) + at_len;
 			start = input;
 			lastpos = input;
