@@ -2378,6 +2378,7 @@ int parsemail(char *mbox,	/* file name */
 #endif
                                     if (charset) {
                                         free(charset);
+					charset = NULL;
                                     }
                                     charsetsave[0] = '\0';
 
