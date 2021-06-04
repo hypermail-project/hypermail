@@ -3734,14 +3734,14 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
     FILE *fp;
 
     char inreply_start[256];
-    static char *inreply_start_old = "<li><dfn>In reply to</dfn>: <a href=\"";
+    static char *inreply_start_old = "<li><span class=\"heading\">In reply to</span>: <a href=\"";
 
     if (set_nonsequential && !msgnum_id_table[num])
       return 0;
 
     if (set_linkquotes) {
         snprintf(inreply_start, sizeof(inreply_start), 
-                "<dfn>%s</dfn>: <a href=\"", lang[MSG_IN_REPLY_TO]);
+                "<span class=\"heading\">%s</span>: <a href=\"", lang[MSG_IN_REPLY_TO]);
     }
 
     /* prepare the name of the file that stores the message */
@@ -4430,7 +4430,7 @@ void fixnextheader(char *dir, int num, int direction)
 #else
 	      ptr = convchars(email->subject, email->charset);
 #endif
-	      fprintf(fp, "<li><dfn>%s</dfn>: ", lang[MSG_NEXT_MESSAGE]);
+	      fprintf(fp, "<li><span class=\"heading\">%s</span>: ", lang[MSG_NEXT_MESSAGE]);
 	      fprintf(fp, "<a href=\"%s\" title=\"%s\">%s: \"%s\"</a></li>\n", 
 		      msg_href(email, e3, FALSE), lang[MSG_LTITLE_NEXT],
 #ifdef HAVE_ICONV
@@ -4525,20 +4525,20 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 
     if (remove_maybes || set_linkquotes) {
         snprintf(current_maybe_pattern, sizeof(current_maybe_pattern), 
-                "<li><dfn>%s</dfn>: <a href=", lang[MSG_MAYBE_REPLY]);
+                "<li><span class=\"heading\">%s</span>: <a href=", lang[MSG_MAYBE_REPLY]);
         snprintf(current_link_maybe_pattern, sizeof(current_maybe_pattern), 
-                "<li><a id=\"replies\"></a><dfn>%s</dfn>: <a href=", 
+                "<li><a id=\"replies\"></a><span class=\"heading\">%s</span>: <a href=", 
 		 lang[MSG_MAYBE_REPLY]);
         snprintf(current_reply_pattern, sizeof(current_reply_pattern), 
-                "<li><dfn>%s</dfn>: <a href=", lang[MSG_REPLY]);
+                "<li><span class=\"heading\">%s</span>: <a href=", lang[MSG_REPLY]);
         snprintf(current_link_reply_pattern, sizeof(current_reply_pattern), 
-                "<li><a id=\"replies\"></a><dfn>%s</dfn>: <a href=",
+                "<li><a id=\"replies\"></a><span class=\"heading\">%s</span>: <a href=",
 		 lang[MSG_REPLY]);
         snprintf(current_nextinthread_pattern, 
                 sizeof(current_nextinthread_pattern), 
-                "<li><dfn>%s</dfn>: <a href=", lang[MSG_NEXT_IN_THREAD]);
+                "<li><span class=\"heading\">%s</span>: <a href=", lang[MSG_NEXT_IN_THREAD]);
         snprintf(current_next_pattern, sizeof(current_next_pattern), 
-                "<li>dfn>%s</dfn>: <a href=", lang[MSG_NEXT_MESSAGE]);
+                "<li><class span=\"heading\">%s</span>: <a href=", lang[MSG_NEXT_MESSAGE]);
 
 	/* backwards compatiblity */
 	snprintf(old2_maybe_pattern, sizeof(old2_maybe_pattern), 
@@ -4666,7 +4666,7 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 		  list_started = TRUE;
 		  trio_asprintf(&ptr1,
 				"<li><a id=\"replies\"></a>"
-				"<dfn>%s</dfn>: %s <a href=\"%s\" title=\"%s\">"
+				"<span class=\"heading\">%s</span>: %s <a href=\"%s\" title=\"%s\">"
 				"%s: \"%s\"</a></li>\n",
 				lang[subjmatch ? MSG_MAYBE_REPLY : MSG_REPLY],
 				del_msg, msg_href(email, email2, FALSE), 
@@ -4679,7 +4679,7 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 		}
 		else
 		  trio_asprintf(&ptr1,
-				"<li><dfn>%s</dfn>: %s <a href=\"%s\" title=\"%s\">"
+				"<li><span class=\"heading\">%s</span>: %s <a href=\"%s\" title=\"%s\">"
 				"%s: \"%s\"</a></li>\n",
 				lang[subjmatch ? MSG_MAYBE_REPLY : MSG_REPLY],
 				del_msg, msg_href(email, email2, FALSE), 
@@ -4839,7 +4839,7 @@ void fixthreadheader(char *dir, int num, int max_update)
 	    else if (!strncmp(bp->line, "<!-- lnextthr", 13)) {
 	      struct emailinfo *e3;
 	      if (hashnumlookup(num, &e3)) {
-		fprintf(fp, "<li><dfn>%s</dfn>: ",
+		fprintf(fp, "<li><span class=\"heading\">%s</span>: ",
 			lang[MSG_NEXT_IN_THREAD]);
 		fprintf(fp, "<a href=\"%s\" title=\"\%s\">%s: \"%s\"</a></li>\n", 
 			msg_href(e3, rp->data, FALSE), lang[MSG_LTITLE_NEXT_IN_THREAD],
