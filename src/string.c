@@ -1944,19 +1944,10 @@ char *parseurl(char *input, char *charset)
 		&& ((istelprotocol && (*inputp == '+' || isdigit(*inputp)))
 		    || (!istelprotocol && !ispunct(*inputp)))) {
 
-                if (set_iso2022jp) {
-                    if (charset && !strncasecmp(charset, "UTF-8", 5)) {
-                        urlscan = sscanf(inputp, "%255[^] \u00a0\033)<>\"\'\n[\t\\]", urlbuff);
-                    } else {
-                        urlscan = sscanf(inputp, "%255[^] \033)<>\"\'\n[\t\\]", urlbuff);
-                    }
-                } else {
-                    if (charset && !strncasecmp(charset, "UTF-8", 5)) {
-                        urlscan = sscanf(inputp, "%255[^] \u00a0)<>\"\'\n[\t\\]", urlbuff);
-                    } else {
-                        urlscan = sscanf(inputp, "%255[^] )<>\"\'\n[\t\\]", urlbuff);
-                    }
-                }
+                if (set_iso2022jp)
+		    urlscan = sscanf(inputp, "%255[^] \033)<>\"\'\n[\t\\]", urlbuff);
+                else
+		    urlscan = sscanf(inputp, "%255[^] )<>\"\'\n[\t\\]", urlbuff);
             }
 
 	    if (urlscan == 1) {

@@ -75,7 +75,7 @@ int uudecode(FILE *input,	/* get file data from (if needed) */
     if (init) {
 	/* search for header line */
 	/* AUDIT biege: BOF in buf! */
-	sprintf(scanfstring, "begin %%o %%%us", sizeof(buf));
+	sprintf(scanfstring, "begin %%o %%%us", sizeof(buf) - 1);
 	while (2 != sscanf(iptr, scanfstring, &mode, buf)) {
 	    if (!fgets(buf, MAXPATHLEN, input)) {
 		return 2;

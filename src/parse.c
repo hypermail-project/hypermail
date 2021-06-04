@@ -924,7 +924,7 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
     char charset[129];
     char encoding[33];
     char dummy[129];
-    char *ptr;
+    char *ptr, *endptr;
     char *old_output;
 
 #ifdef NOTUSED
@@ -959,6 +959,7 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 
 	    if (!strcasecmp("q", encoding)) {
 		/* quoted printable decoding */
+            endptr = ptr + strlen(ptr);
 
 #ifdef HAVE_ICONV
 	      char *orig2,*output2,*output3;
@@ -967,7 +968,7 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 	      memset(output2,0,strlen(string)+1);
 	      old_output=output;
 
-		for (; *ptr; ptr++) {
+		for (; ptr < endptr; ptr++) {
 		    switch (*ptr) {
 		    case '=':
 			sscanf(ptr + 1, "%02X", &value);
@@ -991,7 +992,7 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 		memcpy(charsetsave,charset,charsetlen);
 		charsetsave[charsetlen] = '\0';
 #else
-		for (; *ptr; ptr++) {
+		for (; ptr < endptr; ptr++) {
 		    switch (*ptr) {
 		    case '=':
 			sscanf(ptr + 1, "%02X", &value);
@@ -2378,6 +2379,7 @@ int parsemail(char *mbox,	/* file name */
 #endif
                                     if (charset) {
                                         free(charset);
+					charset = NULL;
                                     }
                                     charsetsave[0] = '\0';
 
