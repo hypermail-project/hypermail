@@ -552,7 +552,7 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
 	        char *tmpptr = convchars(ep2->subject, ep2->charset);
 		if (tmpptr) {
 		    char *path = get_path(ep, ep2);
-                    fprintf(fp2, "<li><dfn>%s</dfn> " 
+                    fprintf(fp2, "<li><span class=\"heading\">%s</span> " 
 			    "<a href=\"%s%.4d.%s\" title=\"%s\">%s: \"%s\"</a></li>\n", 
 			    lang[MSG_IN_REPLY_TO], path, 
 			    new_reply_to, set_htmlsuffix, lang[MSG_LTITLE_IN_REPLY_TO], 
@@ -577,9 +577,9 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
 		    "<strong>%s:</strong>",
 		    "<li> <b>Previous message:</b> <a href=\"",
 		    "<li> <strong>%s:</strong> <a href=\"",
-		    "<li><dfn>%s</dfn>: <a href=\"",
-		    "<li><dfn>%s</dfn>: <a href=\"",
-		    "<li><dfn>%s</dfn>: <a href=\"",
+		    "<li><span class=\"heading\">%s</span>: <a href=\"",
+		    "<li><span class=\"heading\">%s</span>: <a href=\"",
+		    "<li><span class=\"heading\">%s</span>: <a href=\"",
 		    NULL
 		};
 		static const int indices[] = { MSG_MAYBE_IN_REPLY_TO,
