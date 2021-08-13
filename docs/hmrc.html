@@ -98,12 +98,14 @@ href=mailto:</li>
 <li><a href="#domainaddr">domainaddr</a> to append to incomplete
 addresses</li>
 <li><a href="#use_sender_date">use_sender_date</a> which date to
-trust more</li>
+    trust more</li>
 <li><a href="#fragment_prefix">fragment_prefix</a> how to prefix
-each URI fragment</li>
+    each URI fragment</li>
 <li><a href=
-"#email_address_obfuscation">email_address_obfuscation</a> simple
-obfuscation of email addresses</li>
+       "#email_address_obfuscation">email_address_obfuscation</a> simple
+    obfuscation of email addresses</li>
+<li><a href=
+       "#default_css_url">default_css_url</a> URL of the defaul CSS file used by hypermail</li>
 </ul>
 </li>
 </ul>
@@ -147,7 +149,7 @@ of folders</li>
 <li><a href="#thrdlevels">thrdlevels</a> max indentation</li>
 <li><a href="#thread_file_depth">thread_file_depth</a> threads get
 their own files</li>
-<li><a href="#icss_url">icss_url</a> stylesheet</li>
+<li><a href="#icss_url">icss_url</a> URL of CSS stylesheet for indexes</li>
 <li><a href="#describe_folder">describe_folder</a> labels for
 subdirs</li>
 </ul>
@@ -176,7 +178,7 @@ URLs</li>
 <li><a href="#iquotes">iquotes</a> italicize quotes</li>
 <li><a href="#i18n_body">i18n_body</a> translate message body into
 UTF-8</li>
-<li><a href="#mcss_url">mcss_url</a> stylesheet</li>
+<li><a href="#mcss_url">mcss_url</a> URL of CSS stylesheet for messages</li>
 <li><a href="#quote_hide_threshold">quote_hide_threshold</a> cut
 excessive quoting</li>
 <li><a href="#files_by_thread">files_by_thread</a> add file with
@@ -387,7 +389,7 @@ locale codes that are available on that system.<br />
 <em>iso2022jp = 0</em></dd>
 <dt id="i18n">i18n = [ 0 | 1 ]</dt>
 <dd>Enable I18N features, hypermail must be linked with <a href=
-"http://www.gnu.org/software/libiconv/">libiconv</a>.<br />
+"https://www.gnu.org/software/libiconv/">libiconv</a>.<br />
 <br />
 <em>i18n = 1</em> (disabled by default)</dd>
 <dt id="eurodate">eurodate = [ 0 | 1 ]</dt>
@@ -454,7 +456,7 @@ corresponding to an <em>In-Reply-To</em> header. The variable
 <em>$ID</em> is used to specify where the <em>Message-Identifier
 value</em> will appear in the link.<br />
 <br />
-<em>inreplyto_command = http://example.org/mid-resolver/$ID.</em>
+<em>inreplyto_command = https://example.org/mid-resolver/$ID.</em>
 (disabled by default)</dd>
 </dl>
 <h3><a id="misc_pages">Miscellaneous</a></h3>
@@ -514,11 +516,18 @@ fragment.<br />
 <em>fragment_prefix = id</em> (default is <em>msg</em>)</dd>
 <dt id="email_address_obfuscation">email_address_obfuscation = [ 0 | 1 ]</dt>
 <dd>Set to 1 to enable email address obfuscation using numeric
-character references.<br />
-<br />
-<em>mail_address_obfuscation = 1</em> (disabled by default)</dd>
+    character references.<br />
+    <br />
+    <em>mail_address_obfuscation = 1</em> (disabled by default)</dd>
+<dt id="default_css_url">default_css_url = [ URL | NONE ]</dt>
+<dd>Gives the URL for the default CSS file used by hypermail if either the <a href="#icss_url">icss_url</a> or <a href="#mcss_url">mcss_url</a> configuration options are not declared. The stylesheet will be linked to thru a <code>link</code> element in the in the document's <code>head</code>.
+    <br />
+    The default value is <em>hypermail.css</em> (link relative to the archive).<br />
+    <br />
+<em>default_css_url = https://example.org/StyleSheets/my_hypermail.css</em> 
 </dl>
     </section>
+    
     <section>
 <h2><a id="index">Index page options</a></h2>
 <h3><a id="index_avail">Index
@@ -655,15 +664,16 @@ option is turned on, and probably needs to be less than
 thrdlevels.<br />
 <br />
 <em>thread_file_depth = 0</em></dd>
-<dt id="icss_url">icss_url= [ URL | NONE ]</dt>
+<dt id="icss_url">icss_url = [ URL | NONE ]</dt>
 <dd>This option let's you specify an external stylesheet that you
-would like to link to the index files. The stylesheet will be
-linked to thru a LINK element in the HEAD in the document's
-HEAD.<br />
-By default, this option is deactivated.<br />
+    would like to link to the index files. The stylesheet will be
+    linked to thru a <code>link</code> element in the in the document's
+    <code>head</code>. If this option is not configured, indexes will use the value of the
+    <code>default_css_url</code>.<br />
+    By default, this option is inactive.<br />
 <br />
 <em>icss_url =
-http://example.w3.org/StyleSheets/Mail/messagelist.css</em></dd>
+https://example.org/StyleSheets/index.css</em></dd>
 <dt id="describe_folder">describe_folder = format string</dt>
 <dd>Controls the labels used in folders.html to describe the
 directories created by the <a href=
@@ -730,7 +740,7 @@ option to 1 also tells Hypermail to attempt to italicize quoted
 passages in articles.<br />
 Set this to 2 for more complex conversion to html similar to that
 in <a href=
-"http://www.cs.wustl.edu/~seth/txt2html/">txt2html.pl</a>.<br />
+"https://www.cs.wustl.edu/~seth/txt2html/">txt2html.pl</a>.<br />
 Showhtml = 2 will normally produce nicer looking results than<br />
 showhtml = 1, and showhtml = 0 will look pretty dull, but<br />
 1 and 2 run risks of altering the appearance in undesired
@@ -759,14 +769,16 @@ Only take effect if showhtml is set to 1.<br />
 configuration option must be enabled.<br />
 <br />
 <em>i18n_body = 1</em> (disabled by default)</dd>
-<dt id="mcss_url">mcss_url= [ URL | NONE ]</dt>
+<dt id="mcss_url">mcss_url = [ URL | NONE ]</dt>
 <dd>This option let's you specify an external stylesheet that you
 would like to link to the message files. The stylesheet will be
-linked to thru a LINK element in the HEAD in the document's HEAD.
-By default, this option is inactive.<br />
+    linked to thru a <code>link</code> element in the in the document's <code>head</code>.
+If this option is not configured, messages will use the value of the
+    <code>default_css_url</code>.<br />
+    By default, this option is inactive.<br />
 <br />
 <em>mcss_url =
-http://www.w3.org/StyleSheets/Mail/public-message.css</em></dd>
+https://example.org/StyleSheets/message.css</em></dd>
 <dt id="quote_hide_threshold">quote_hide_threshold = percent (integer)</dt>
 <dd>If the <a href="#linkquotes">linkquotes</a> option is on,
 setting this to an integer less than 100 will cause it to replace
@@ -1145,7 +1157,7 @@ By default such messages are discarded.<br />
 </dl>
 <h3><a id="filters">Message Filtering</a></h3>
 <p>Regular expression support is provided by the <a href=
-"http://www.pcre.org/">PCRE</a>&nbsp; library package, which is
+"https://www.pcre.org/">PCRE</a>&nbsp; library package, which is
 open source software, written by Philip Hazel, and copyright by the
 University of Cambridge, England.</p>
 <p>The full body searches can be slow, and do not match multi-line
@@ -1314,7 +1326,7 @@ option for more info about what happens to a deleted message.<br />
 a the contents of a message should be indexed and/or if the
 outgoing links from the message should be followed, doing so thru a
 specific HTML meta tag (browse <a href=
-"http://www.robotstxt.org/">About the Robots &lt;META&gt; tag</a>
+"https://www.robotstxt.org/">About the Robots &lt;META&gt; tag</a>
 for further details).<br />
 Robot annotations can have either one or both of the following
 values:
@@ -1419,11 +1431,11 @@ Custom markup to use in the body of manually edited message when
 <em>delete_level</em> is equal or superior to 2.<br />
 <br />
 <em>htmlmessage_edited = &lt;div class="edited"&gt;&lt;img
-src="http://example.org/Mail/edited.png" alt="original message
+src="https://example.org/Mail/edited.png" alt="original message
 edited" /&gt; &lt;p class="editedmmes"&gt;The originally received
 message was edited by the archive maintainer.&lt;/p&gt;&lt;p
 class="spamfooter"&gt;The editing of this email is consistent with
-&lt;a href="http://example.org/Mail/"&gt;example.org's Mailing List
+&lt;a href="https://example.org/Mail/"&gt;example.org's Mailing List
 and Archive Usage Policy.&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</em>
 (disabled by default)</dd>
 <dt id="htmlmessage_deleted_other">htmlmessage_deleted_other = [HTML markup
@@ -1434,11 +1446,11 @@ other than spam) when <em>delete_level</em> is equal or superior to
 2.<br />
 <br />
 <em>htmlmessage_deleted_spam = &lt;div class="deleted"&gt;&lt;img
-src="http://example.org/Mail/deleted.png" alt="email removed" /&gt;
+src="https://example.org/Mail/deleted.png" alt="email removed" /&gt;
 &lt;p class="deletedmmes"&gt;This message was removed from our mail
 archives by the archive maintainer.&lt;/p&gt;&lt;p
 class="deletedfooter"&gt;The removal of this email is consistent
-with &lt;a href="http://example.org/Mail/"&gt;example.org's Mailing
+with &lt;a href="https://example.org/Mail/"&gt;example.org's Mailing
 List and Archive Usage Policy.&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</em>
 (disabled by default)</dd>
 <dt id="htmlmessage_deleted_spam">htmlmessage_deleted_spam = [HTML markup
@@ -1449,12 +1461,12 @@ reasons) when <em>delete_level</em> is equal or superior to
 2.<br />
 <br />
 <em>htmlmessage_deleted_spam = &lt;div class="spam"&gt;&lt;img
-src="http://example.org/Mail/noUCE.png" alt="unsolicited bulk email
+src="https://example.org/Mail/noUCE.png" alt="unsolicited bulk email
 removed" /&gt; &lt;p class="spammes"&gt;This message was determined
 to be unsolicited bulk email and has been removed from our
 archives.&lt;/p&gt;&lt;p class="spamfooter"&gt;The removal of this
 email is consistent with &lt;a
-href="http://example.org/Mail/"&gt;example.org's Mailing List and
+href="https://example.org/Mail/"&gt;example.org's Mailing List and
 Archive Usage Policy.&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</em> (disabled
 by default)</dd>
 <dt id="progress">progress = [ 0 | 1 | 2 ]</dt>
@@ -1491,7 +1503,7 @@ processing inbound messages before it is overridden.<br />
 the latest_folder option is used and the folder_by_date makes
 directories more than one level deep (e.g. with '%y/%m').<br />
 <br />
-<em>base_url = http://www.hypermail-project.org/archive/</em></dd>
+<em>base_url = https://www.hypermail-project.org/archive/</em></dd>
 <dt id="report_new_folder">report_new_folder = [ 0 | 1 ]</dt>
 <dd>Set this to On to have it print (on stdout) the names of any
 new directories created pursuant to the folder_by_date or

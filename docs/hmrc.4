@@ -543,7 +543,7 @@ directives.
 .B Robot annotations
 instruct a visiting web robot if the contents of a message should be indexed
 and/or if the outgoing links from the message should be followed, doing so thru
-a specific HTML meta tag.  (browse http://www.robotstxt.org/ for further
+a specific HTML meta tag.  (browse https://www.robotstxt.org/ for further
 details).
 
 .B Robot annotations
@@ -857,25 +857,36 @@ header. The variable
 is used to specify where the
 .B Message-Identifier value
 will appear in the link. A possible command one could use is
-.B http://example.org/mid-resolver/$ID.
+.B https://example.org/mid-resolver/$ID.
 This option is 
 .B disabled
 by default.
 .TP
+.B default_css_url = "URL"
+This option points to an external stylesheet that will be used
+for indexes and messages if either 
+.B icss_url
+or
+.B mcss_url
+are not configured. 
+
+By default this option is the relative URL
+.B hypermail.css
+.TP
 .B icss_url = "URL"
 This will link an external stylesheet found at the given URL to
 the index files. This will happen thru a
-.B LINK
+.B link
 element in the index document's
-.B HEAD.
+.B head.
 By default this option is disabled.
 .TP
 .B mcss_url = "URL"
 This will link an external stylesheet found at the given URL to
 the message files. This will happen thru a
-.B LINK
+.B link
 element in the message document's
-.B HEAD.
+.B head.
 By default this option is disabled.
 .TP
 .B show_headers = list_of_RFC_Headers_to_display
