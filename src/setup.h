@@ -125,6 +125,7 @@ extern char *set_domainaddr;
 
 extern char *set_icss_url;
 extern char *set_mcss_url;
+extern char *set_default_css_url;
 
 extern char *set_dateformat;
 extern char *set_indexdateformat;
@@ -158,6 +159,10 @@ extern char *set_ihtmlhelplow;
 extern char *set_ihtmlnavbar2up;
 extern char *set_mhtmlheader;
 extern char *set_mhtmlfooter;
+extern char *set_mhtmlnavbar2up;
+
+extern bool set_archived_on;
+extern bool set_hypermail_colophon;
 
 extern char *set_attachmentlink;
 extern char *set_unsafe_chars;
