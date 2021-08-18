@@ -37,6 +37,10 @@
 	 main {
 	     border-bottom: 2px solid black;
 	 }
+
+	 .deprecated {
+	     text-decoration: line-through;
+	 }
 	
 	</style>
     </head>
@@ -89,6 +93,8 @@ messages found outside the archive</li>
 </li>
 <li><a href="#misc_pages">Miscellaneous</a>
 <ul>
+<li><a href="#archive_date">archive_date</a> show archive generation date in indexes</li>
+<li><a href="#hypermail_colophon">hypermail_colophon</a> display hypermail version and archive generation date</li>
 <li><a href="#stripsubject">stripsubject</a> text to be removed
 from subject line</li>
 <li><a href="#mailcommand">mailcommand</a> controls most
@@ -141,7 +147,7 @@ robots to not index hypermail generated indexes</li>
 <li><a href="#index_body">Body style</a>
 <ul>
 <li><a href="#indextable">indextable</a> style of message
-lists</li>
+    lists <strong>deprecated</strong></li>
 <li><a href="#reverse">reverse</a> sort order, date/thread
 files</li>
 <li><a href="#reverse_folders">reverse_folders</a> sort order, list
@@ -221,6 +227,7 @@ format=flowed</li>
 disable support for RFC 3676 format=flowed in quoted text</li>
 <li><a href="#mhtmlheaderfile">mhtmlheaderfile</a> template</li>
 <li><a href="#mhtmlfooterfile">mhtmlfooterfile</a> template</li>
+<li><a href="#mhtmlnavbar2up">mhtmlnavbar2upfile</a> template</li>
 </ul>
 </li>
 </ul>
@@ -461,6 +468,14 @@ value</em> will appear in the link.<br />
 </dl>
 <h3><a id="misc_pages">Miscellaneous</a></h3>
 <dl>
+    <dt id="archive_date">archive_date = [ 0 | 1 ]</dt>
+    <dd>adds a specific line in the indexes giving the date the archive was generated.<br />
+	<br />
+	<em>archive_date = On</em> (disabled by default)</dd>
+<dt id="hypermail_colophon">hypermail_colophon = [ 0 | 1 ]</dt>
+<dd>adds a footnote stating the hypermail version that was used and generation date.<br />
+    <br />
+    <em>hypermail_colophon = On</em> (enabled by default)</dd>
 <dt id="stripsubject">stripsubject = [ string | NONE ]</dt>
 <dd>A string to be stripped from all subject lines. Helps unclutter
 mailing lists which add tags to subject lines.<br />
@@ -623,13 +638,13 @@ for further discussion on <strong>noindex</strong>.<br />
 </dl>
 <h3><a id="index_body">Index body style</a></h3>
 <dl>
-<dt id="indextable">indextable = [ 0 | 1 ]</dt>
-<dd>Setting this variable to 1 will tell Hypermail to generate a
+    <dt id="indextable">indextable = [ 0 | 1 ] <strong>DEPRECATED</strong></dt>
+<dd class="deprecated">Setting this variable to 1 will tell Hypermail to generate a
 message index Subject/Author/Date listings using a table format.
 Set to 0 if you want the standard Hypermail index page look and
 feel.<br />
 <br />
-<em>indextable = 0</em></dd>
+<em class="deprecated">indextable = 0</em></dd>
 <dt id="reverse">reverse = [ 0 | 1 ]</dt>
 <dd>Setting this variable to 1 will reverse-sort the article
 entries in the date and thread index files by the date they were
@@ -933,11 +948,24 @@ by default)</dd>
 <dt id="mhtmlfooterfile">mhtmlfooterfile = [ path to message footer template
 file | NONE ]</dt>
 <dd>Set this to the path to the Message footer template file. The
-template file contains HTML directives and substitution cookies for
-runtime expansion.<br />
-<br />
-<em>mhtmlfooterfile = /lists/hypermail-msgfooter.hyp</em> (disabled
-by default)</dd>
+    template file contains HTML directives and substitution cookies for
+    runtime expansion.<br />
+    <br />
+    <em>mhtmlfooterfile = /lists/hypermail-msgfooter.hyp</em> (disabled
+    by default)</dd>
+
+<dt id="mhtmlnavbar2upfile">mhtmlnavbar2upfile = [ path to message navbar template
+    file | NONE ]</dt>
+<dd>Set this to the path to a template  file  containing
+    valid  HTML  formatting  statements  that you wish to be
+    included as information in each archived message,
+    giving links to the hierarchy of your archive.<br />
+    By default uses the value of <code>ihtmlnavbar2upfile</code>,<br />
+
+    <br />
+    <em>mhtmlfooterfile = /lists/hypermail-msgfooter.hyp</em> (disabled
+    by default)</dd>
+
 </dl>
     </section>
     <section>
