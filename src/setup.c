@@ -108,6 +108,7 @@ static char *set_htmlbody;
 
 char *set_icss_url;
 char *set_mcss_url;
+char *set_default_css_url;
 
 char *set_label;
 
@@ -143,6 +144,11 @@ char *set_ihtmlhelplow;
 char *set_ihtmlnavbar2up;
 char *set_mhtmlheader;
 char *set_mhtmlfooter;
+char *set_mhtmlnavbar2up;
+
+bool set_archived_on;
+bool set_hypermail_colophon;
+
 char *set_attachmentlink;
 char *set_unsafe_chars;
 char *set_filename_base;
@@ -321,8 +327,8 @@ struct Config cfg[] = {
 
     {"showhr", &set_showhr, BFALSE, CFG_SWITCH,
      "# Set this to On to place horizontal rules before and after articles.\n"
-     "NOTE: THIS OPTION HAS BEEN DEPRECATED BY THE WAI CHANGES. IT WILL BE\n"
-     "IGNORED.\n", FALSE},
+     "NOTE: THIS OPTION HAS BEEN DEPRECATED BY THE HTML5 and WAI CHANGES.\n"
+     "IT WILL BE IGNORED.\n", FALSE},
 
     {"showreplies", &set_showreplies, BTRUE, CFG_SWITCH,
      "# Set this to On to show all replies to a message as links\n"
@@ -351,11 +357,14 @@ struct Config cfg[] = {
      "NOTE: THIS OPTION HAS BEEN DEPRECATED BY THE WAI CHANGES. IT WILL BE\n"
      "IGNORED.\n", FALSE},
 
+    /* deprecated in 2.2.25 */
+    /* 
     {"indextable", &set_indextable, BFALSE, CFG_SWITCH,
      "# Setting this variable to On will tell Hypermail to generate\n"
      "# message index Subject/Author/Date listings using a nice table\n"
      "# format. Set to Off if you want the original Hypermail index look.\n", FALSE},
-
+    */
+    
     {"iquotes", &set_iquotes, BTRUE, CFG_SWITCH,
      "# Set this to On to italicize quoted lines.\n", FALSE},
 
@@ -484,6 +493,12 @@ struct Config cfg[] = {
      "# The CSS will be associated to the indexes thru an HTML LINK element.\n"
     , FALSE},
 
+    {"default_css_url", &set_default_css_url, "hypermail.css", CFG_STRING,
+     "# Specifies the name for the CSS file used by hypermail if either\n"
+     "# icss_url or mcss_url are not declared.\n"
+     "# The defaul name is hypermail.css.\n"
+    , FALSE},
+    
     {"text_types", &set_text_types, NULL, CFG_LIST,
      "# This is a list of MIME types that you want hypermail to treat\n"
      "# exactly as if they were text/plain.\n", FALSE},
@@ -523,14 +538,15 @@ struct Config cfg[] = {
 
     {"applemail_ua_header", &set_applemail_ua_header, "X-Mailer", CFG_STRING,
      "# Set to the header name that Apple Mail uses to identify its mail agent.\n"
-     "# This option is only useful if you enabled the applemail_mimehack configuration\n"
-     "# option.\n", FALSE},
+     "# This option is only useful if you enabled the\n"
+     "# applemail_mimehack configuration option.\n", FALSE},
 
     {"applemail_ua_value", &set_applemail_ua_value, APPLE_MAIL_UA, CFG_LIST,
      "# Set to the list of the header value that Apple Mail uses to identify\n"
-     "# its mail agent. Do not add the version number unless you know what you're doing.\n"
-     "# This option is only useful if you enabled the applemail_mimehack configuration\n"
-     "# option.\n", FALSE},
+     "# its mail agent. Do not add the version number unless you know what\n"
+     "# you're doing.\n"
+     "# This option is only useful if you enabled the\n"
+     "# applemail_mimehack configuration option.\n", FALSE},
 
     {"show_headers", &set_show_headers, NULL, CFG_LIST,
      "# This is the list of headers to be displayed if 'showheaders'\n"
@@ -568,13 +584,14 @@ struct Config cfg[] = {
     {"ihtmlhelplowfile", &set_ihtmlhelplow, NULL, CFG_STRING,
      "# Define path as the path to a template  file  containing\n"
      "# valid  HTML  formatting  statements  that  you  wish to\n"
-     "# included as information giving help to your archive users,"
+     "# included as information giving help to your archive users\n,"
      "# in the lower navigation bar.\n", FALSE},
 
     {"ihtmlnavbar2upfile", &set_ihtmlnavbar2up, NULL, CFG_STRING,
      "# Define path as the path to a template  file  containing\n"
      "# valid  HTML  formatting  statements  that  you  wish to\n"
-     "# included as information giving links to the hierarchin your archive.\n", FALSE},
+     "# included as information in your indexes,\n"
+     "# giving links to the hierarchin in your archive.\n", FALSE},
 
     {"mhtmlheaderfile", &set_mhtmlheader, NULL, CFG_STRING,
      "# Define path as the path to a template  file  containing\n"
@@ -586,6 +603,13 @@ struct Config cfg[] = {
      "# valid HTML formatting statements you wish to use at the\n"
      "# bottom of every message page.\n", FALSE},
 
+    {"mhtmlnavbar2upfile", &set_mhtmlnavbar2up, NULL, CFG_STRING,
+     "# Define path as the path to a template  file  containing\n"
+     "# valid  HTML  formatting  statements  that  you  wish to be\n"
+     "# included as information in each archived message,\n"
+     "# giving links to the hierarchy of your archive.\n"
+     "# By default uses the value of ihtmlnavbar2upfile,\n", FALSE},
+
     {"locktime", &set_locktime, INT(3600), CFG_INTEGER,
      "# Specify number of seconds to wait for a lock before we\n"
      "# override it! .\n", FALSE},
@@ -596,6 +620,14 @@ struct Config cfg[] = {
     {"indexdateformat", &set_indexdateformat, NULL, CFG_STRING,
      "# Format (see strftime(3)) for displaying dates in the index pages.\n"
      "# Will use dateformat if not specified.\n", FALSE},
+
+    {"archive_date", &set_archived_on, BFALSE, CFG_SWITCH,
+     "# Adds a specific line in the indexes giving the date the archive was\n"
+     "# generated.\n", FALSE},
+     
+    {"hypermail_colophon", &set_hypermail_colophon, BTRUE, CFG_SWITCH,
+     "# Adds a line stating that the archive was generated by hypermail\n"
+     "# as well as the generation date.\n", FALSE},
 
     {"stripsubject", &set_stripsubject, NULL, CFG_STRING,
      "# A word to be stripped from all subject lines.  Helps unclutter\n"
@@ -638,7 +670,7 @@ struct Config cfg[] = {
      "# the searchbackmsgnum option to alter the performance).\n" , FALSE},
 
     {"searchbackmsgnum", &set_searchbackmsgnum, INT(500), CFG_INTEGER,
-     "# If the linkquotes option is on and an incremental update is being"
+     "# If the linkquotes option is on and an incremental update is being\n"
      "# done (-u option), this controls the tradeoff between speed and\n"
      "# the reliability of finding the right source for quoted text.\n"
      "# Try to set it to the largest number of messages between a\n"
@@ -1344,7 +1376,8 @@ void dump_config(void)
     printf("set_domainaddr = %s\n",set_domainaddr ? set_domainaddr : "Not set");
     printf("set_icss_url = %s\n",set_icss_url ? set_icss_url : "Not set");
     printf("set_mcss_url = %s\n",set_mcss_url ? set_mcss_url : "Not set");
-
+    printf("set_default_css = %s\n",set_default_css ? set_default_css : "Not set");
+    
     printf("set_attachmentlink = %s\n",set_attachmentlink ? set_attachmentlink : "Not set");
     printf("set_link_to_replies = %s\n",set_link_to_replies ? set_link_to_replies : "Not set");
     printf("set_quote_link_string = %s\n",set_quote_link_string ? set_quote_link_string : "Not set");
@@ -1406,7 +1439,9 @@ void dump_config(void)
     printf("set_format_flowed= %d\n",set_format_flowed);
     printf("set_format_flowed_disable_quoted= %d\n",set_format_flowed_disable_quoted);
     printf("set_applemail_mimehack = %d\n",set_applemail_mimehack);    
-
+    printf("set_archived_on = %d\n",set_archived_on);
+    printf("set_hypermail_colophon = %d\n",set_hypermail_colophon);
+    
     if (!set_ihtmlheader)
         printf("set_ihtmlheader = Not set\n");
     else {
@@ -1455,7 +1490,6 @@ void dump_config(void)
              putchar(*cp);
     }
 
-
     if (!set_mhtmlheader)
         printf("set_mhtmlheader = Not set\n");
     else {
@@ -1469,6 +1503,14 @@ void dump_config(void)
     else {
         printf("set_mhtmlfooter = ");
         for (cp = set_mhtmlfooter; *cp; cp++)
+             putchar(*cp);
+    }
+
+    if (!set_mhtmlnavbar2up)
+        printf("set_mhtmlnavbar2up = Not set\n");
+    else {
+        printf("set_mhtmlnavbar2up = ");
+        for (cp = set_mhtmlnavbar2up; *cp; cp++)
              putchar(*cp);
     }
 
