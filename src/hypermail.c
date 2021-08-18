@@ -456,7 +456,12 @@ int main(int argc, char **argv)
     ihtmlnavbar2upfile = expand_contents(set_ihtmlnavbar2up);
     mhtmlheaderfile = expand_contents(set_mhtmlheader);
     mhtmlfooterfile = expand_contents(set_mhtmlfooter);
-
+    if (set_mhtmlnavbar2up) {
+        mhtmlnavbar2upfile = expand_contents(set_mhtmlnavbar2up);
+    } else {
+        mhtmlnavbar2upfile = expand_contents(set_ihtmlnavbar2up);
+    }
+    
     if (set_dir)
 	set_dir = strreplace(set_dir, dirpath(set_dir));
 
@@ -594,6 +599,20 @@ int main(int argc, char **argv)
 
     checkdir(set_dir);
 
+    /* write the default css if any of the two custom ones was not
+       declared */
+    if (! (set_icss_url && *set_icss_url) ||
+        ! (set_mcss_url && *set_mcss_url)) {
+        
+        char *filename;
+        
+        trio_asprintf(&filename, "%s%s", set_dir, "hypermail.css");
+        if (!isfile(filename)) {
+            write_css_file (filename);
+        }
+        free(filename);
+    }
+	
     /*
      * Let's do it.
      */
@@ -749,6 +768,8 @@ int main(int argc, char **argv)
 	free(mhtmlheaderfile);
     if (mhtmlfooterfile)
 	free(mhtmlfooterfile);
-
+    if (mhtmlnavbar2upfile)
+	free(mhtmlnavbar2upfile);
+    
     return (0);
 }

@@ -114,7 +114,7 @@
 #define TRUE  1
 
 #define PROGNAME    "hypermail"
-#define HMURL       "http://www.hypermail-project.org/"
+#define HMURL       "https://github.com/hypermail-project/hypermail/"
 
 #define INDEXNAME   "index"
 #define DIRNAME     "archive"
@@ -395,6 +395,7 @@ VAR char *ihtmlhelplowfile;
 VAR char *ihtmlnavbar2upfile;
 VAR char *mhtmlheaderfile;
 VAR char *mhtmlfooterfile;
+VAR char *mhtmlnavbar2upfile;
 
 VAR long firstdatenum;
 VAR long lastdatenum;
