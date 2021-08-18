@@ -1,9 +1,9 @@
 
                              Hypermail
 
-                          Version:  2.4.x
+                          Version:  2.5.x
 
-This is a release of the 2.4.x version of hypermail.
+This is a release of the 2.5.x version of hypermail.
 
 Hypermail is a program that takes a file of mail messages in UNIX mailbox
 format and generates a set of cross-referenced HTML documents. 
@@ -154,7 +154,7 @@ Getting Help:
 Additionally:
 =============
 
-    You'll find the image "hypermail.gif" included with the source;
+    You'll find the image "hypermail.png" included with the source;
     this icon is for your use in your Hypermail-related pages and links 
     to them. If you are talented with graphics and would like to donate
     new icons and images to the hypermail effort, please feel free.
