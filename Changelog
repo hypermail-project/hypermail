@@ -23,8 +23,12 @@ HYPERMAIL VERSION 2.4.1:
 	Fixes for memory issues detected by libasan
 
 2021-02-nn Jose Kahan
+	* src/string.c
+	Make unrre() returN NOSUBJECT when a subject is made only of
+        one or more Re: (or equivalent) strings
+
 	* src/parse.c
-	findre was being too greedy and detecting all Re: strings
+	findre() was being too greedy and detecting all Re: strings
 	even if they were not at the beginning of a subject
 
 	* src/setup.c src/setup.h src/print.c src/hypermail.c
