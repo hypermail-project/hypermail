@@ -241,7 +241,11 @@ char *findre(char *in, char **end)
     while (*in) {
 	if (isre(in, end))
 	    return in;
-	in++;
+	if (isspace(*in)) {
+	  in++;
+	} else {
+	  break;
+	}
     }
     return NULL;
 }
@@ -2110,8 +2114,8 @@ int parsemail(char *mbox,	/* file name */
 			    sscanf(cp, "%128[^;\"\n]", charbuffer);
 			    /* save the charset info */
 			    charset = strsav(charbuffer);
-			}
-
+                        }
+                        
 			/* now check if there's a format indicator */
 			if (set_format_flowed) {
 			  cp = strcasestr(ptr, "format=");
