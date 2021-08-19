@@ -6,6 +6,16 @@ HYPERMAIL VERSION 2.4.1:
 ============================
 
 2021-02-nn Jose Kahan
+	* src/parse.c
+	findre was being too greedy and detecting all Re: strings
+	even if they were not at the beginning of a subject
+
+	* src/setup.c src/setup.h src/print.c src/hypermail.c
+	Move all CSS statements to an external CSS file called by default
+	hypermail.css. Hypermail will generate that file if it's missing
+	and if either the index or message CSS URLs are not declared.
+	This name can be configured thru the set_hypermail_css variable.
+
 	* src/string.c
 	Very long mail subjects were not being handled correctly and could
 	result in invalid markup.
@@ -18,7 +28,7 @@ HYPERMAIL VERSION 2.4.1:
 	updated markup to HTML5. Reviewed and enhanced the WAI related markup
 
 	* src/hypermail.c src/setup.[ch] src/print.c
-	new configuration option mhtmlnavbar2upfile to specify a hierarchin
+	new configuration option mhtmlnavbar2upfile to specify a specific
 	navbar for messages. By default uses the value of ihtmlnavbar2upfile
 
 2021-06-04 Baptiste Daroussin
