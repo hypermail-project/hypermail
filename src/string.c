@@ -831,6 +831,11 @@ char *unre(char *subject)
     while (*s && isspace(*s))
 	s++;
 
+    if (strlen(s) == 0) {
+        /* the subject consists only of Re:... use NOSUBJECT */
+        s = NOSUBJECT;
+    }
+    
     c = s;			/* the first non-space position after the last re: */
 
     while (*c) {
