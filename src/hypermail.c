@@ -608,7 +608,7 @@ int main(int argc, char **argv)
         
         trio_asprintf(&filename, "%s%s", set_dir, "hypermail.css");
         if (!isfile(filename)) {
-            write_css_file (filename);
+            print_default_css_file (filename);
         }
         free(filename);
     }

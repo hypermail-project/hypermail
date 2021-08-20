@@ -91,6 +91,11 @@ void dump_config(void);
 #endif
 
 /*
+** printcss.c functions
+*/
+void print_default_css_file(char *);
+
+/*
 ** string.c functions
 */
 char *obfuscate_email_address (char *);
