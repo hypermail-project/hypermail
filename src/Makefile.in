@@ -48,12 +48,12 @@ INCS=		domains.h hypermail.h lang.h proto.h \
 		getdate.h getname.h finelink.h txt2html.h search.h
 
 SRCS=		base64.c date.c domains.c file.c hypermail.c lang.c lock.c \
-		mem.c parse.c print.c printfile.c string.c struct.c uudecode.c\
+		mem.c parse.c print.c printfile.c printcss.c string.c struct.c uudecode.c\
 		dmatch.c setup.c threadprint.c getdate.c getname.c\
 		finelink.c txt2html.c search.c quotes.c
 
 OBJS=		base64.o date.o domains.o file.o hypermail.o lang.o lock.o \
-		mem.o parse.o print.o printfile.o string.o struct.o uudecode.o\
+		mem.o parse.o print.o printfile.o printcss.o string.o struct.o uudecode.o\
 		dmatch.o setup.o threadprint.o getdate.o getname.o\
 		finelink.o txt2html.o search.o quotes.o
 
@@ -179,6 +179,8 @@ print.o: print.c hypermail.h ../config.h ../patchlevel.h proto.h lang.h \
  threadprint.h
 printfile.o: printfile.c hypermail.h ../config.h ../patchlevel.h proto.h \
  lang.h setup.h print.h printfile.h struct.h
+printcss.o: printcss.c hypermail.h ../config.h ../patchlevel.h proto.h \
+ lang.h  setup.h
 quotes.o: quotes.c hypermail.h ../config.h ../patchlevel.h proto.h lang.h \
  setup.h
 search.o: search.c hypermail.h ../config.h ../patchlevel.h proto.h lang.h \
@@ -195,3 +197,4 @@ txt2html.o: txt2html.c hypermail.h ../config.h ../patchlevel.h proto.h \
  lang.h setup.h print.h finelink.h txt2html.h
 uudecode.o: uudecode.c hypermail.h ../config.h ../patchlevel.h proto.h \
  lang.h setup.h uudecode.h
+
