@@ -3,21 +3,41 @@
 use strict;
 use warnings;
 
-# This script reads a CSS file in stdin and outputs in stdout a the C
-# code for print.c:write_css_file(). Replace that function with the
+# This script reads a CSS file in stdin and outputs in stdout the C
+# code for the src/printcss.c file. Replace that file  with the
 # output from this script.
 #
-# write_css_file() will generate the default CSS file for an hypermail
-# mailing list archive
+# print_default_css_file() will generate the default CSS file for
+# an hypermail mailing list archive
 
-# Usage: css_to_c.pl <css_file > write_css_func.c
+# Usage: css_to_c.pl <../docs/hypermail.css >../src/printcss.c
 #
 
 sub beginning {
 
     print << "__HERE__";
+/* 
+** This program and library is free software; you can redistribute it and/or 
+** modify it under the terms of the GNU (Library) General Public License 
+** as published by the Free Software Foundation; either version 2 
+** of the License, or any later version. 
+** 
+** This program is distributed in the hope that it will be useful, 
+** but WITHOUT ANY WARRANTY; without even the implied warranty of 
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+** GNU (Library) General Public License for more details. 
+** 
+** You should have received a copy of the GNU (Library) General Public License
+** along with this program; if not, write to the Free Software 
+** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA 
+*/
+			      
+#include "hypermail.h"
+#include "setup.h"
 
-void write_css_file (char *filename)
+#include "proto.h"
+
+void print_default_css_file(char *filename)
 {
     FILE *fp;
   
@@ -25,8 +45,6 @@ void write_css_file (char *filename)
         snprintf(errmsg, sizeof(errmsg), "%s \\"%s\\".", lang[MSG_COULD_NOT_WRITE], filename);
         progerr(errmsg);
     }
-
-    fprintf(fp, "/* default CSS for hypermail mailing list archives */\n\n");
 
 __HERE__
 }
@@ -41,7 +59,7 @@ sub end {
 	progerr(errmsg);
     }
     
-} /* end write_css_file */
+} /* end print_default_css_file */
 
 __HERE__
 }
