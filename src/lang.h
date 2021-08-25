@@ -231,6 +231,8 @@ struct language_entry {
 #define MSG_EDITED                               166
 #define MSG_SENDER_DELETED                       167
 #define MSG_SUBJECT_DELETED                      168
+#define MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION      169
+
 #ifdef MAIN_FILE
 
 /*
@@ -423,6 +425,7 @@ char *de[] = {       /* German */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
+  "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   NULL,                              /* End Of Message Table - NOWHERE*/
 };
 
@@ -602,6 +605,7 @@ char *pl[] = {                      /* English */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
+  "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -778,10 +782,11 @@ char *en[] = {       /* English */
   "from", /* from - HTML */
   "on", /* on - HTML */
   "message archived in another list or period", /* unknown in reply to - HTML */
-  "This message has been deleted from the archive", /* MSG_DELETED_OTHER -HTML */
-  "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
-  "deleted", /* MSG_SENDER_DELETED -HTML */
-  "deleted", /* MSG_SUBJECT_DELETED -HTML */
+  "This message has been deleted from the archive", /* MSG_DELETED_OTHER - HTML */
+  "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED - HTML */
+  "deleted", /* MSG_SENDER_DELETED - HTML */
+  "deleted", /* MSG_SUBJECT_DELETED - HTML */
+  "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   NULL,                         /* End Of Message Table      - NOWHERE*/
 };
 
@@ -973,6 +978,7 @@ char *es[] = {       /* Espanol/Spanish */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
+  "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   NULL,                               /* End Of Message Table */
 };
 
@@ -1155,6 +1161,7 @@ char *pt[] = {                     /* Brazilian Portuguese */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
+  "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   NULL,                                /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1333,6 +1340,7 @@ char *fi[] = {       /* Finnish */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
+  "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1514,6 +1522,7 @@ char *it[] = {       /* Italian */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
+  "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1694,6 +1703,7 @@ char *fr[] = {       /* French */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
+  "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   NULL,                                    /* End Of Message Table  - NOWHERE*/
 };
 
@@ -1876,6 +1886,7 @@ char *is[] = {       /* Icelandic */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
+  "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   NULL,                               /* End Of Message Table      - NOWHERE*/
 };
 
@@ -2061,6 +2072,7 @@ char *sv[] = {
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
+  "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 
@@ -2246,6 +2258,7 @@ char *no[] = {
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
+  "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 
@@ -2432,6 +2445,7 @@ char *gr[] = {       /* Greek */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
+  "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   NULL,                           	/* End Of Message Table - NOWHERE*/
 };
 
@@ -2610,6 +2624,7 @@ char *ru[] = {     /* Russian */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
+  "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 
