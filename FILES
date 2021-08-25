@@ -47,7 +47,7 @@ configs/hypermail-msg.hyp
 configs/hypermail.rc
 # 
 #  - Contributed utilities
-# 
+#
 contrib/hoaf-28/haof-0.1.dtd
 contrib/hoaf-28/README
 contrib/hoaf-28/collect_snipplets.py
@@ -57,6 +57,7 @@ contrib/hoaf-28/hypermail-2b28-2b28+.patch
 contrib/hoaf-28/top_html.hdr
 contrib/canonicalize.pl
 contrib/cron_hypermail
+contrib/css_to_c.pl
 contrib/fixhtime.pl
 contrib/hyperfeed.pl
 contrib/hypetombox.pl
@@ -148,6 +149,7 @@ src/parse.c
 src/parse.h
 src/print.c
 src/print.h
+src/printcss.c
 src/printfile.c
 src/printfile.h
 src/proto.h
