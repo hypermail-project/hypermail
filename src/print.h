@@ -47,4 +47,4 @@ void write_toplevel_indices(int);
 struct emailinfo *nextinthread(int);
 void init_index_names(void);
 
-void write_messageindex (int, int);
+void write_messageindex(int, int);
