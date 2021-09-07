@@ -2,10 +2,10 @@ Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ============================
-HYPERMAIL VERSION 2.4.1:
+HYPERMAIL VERSION 2.5.0
 ============================
 
-2021-02-nn Jose Kahan
+2021-09-07 Jose Kahan
 	* src/string.c
 	Make unrre() returN NOSUBJECT when a subject is made only of
         one or more Re: (or equivalent) strings
