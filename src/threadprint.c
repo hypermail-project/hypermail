@@ -154,10 +154,12 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 	    newlevel = i + 1;
 	    if (newlevel == level) {
 	      /* same level, close the previous item */
-	      if (!set_indextable && num_open_li[level] != 0) {
-		fprintf (fp, "</li>\n");
-		num_open_li[level]--;
-	      }
+                if (!set_indextable && num_open_li[level] != 0) {
+                    if (num_open_li[level] != 1) {
+                        fprintf (fp, "</li>\n");
+                    }
+                    num_open_li[level]--;
+                }
 	    }
 	    else if (newlevel > level) {
 		/* I don't think this branch will be used - do the right thing anyway */
@@ -228,7 +230,7 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 	rp = rp->next;
     }
 
-    if (!set_indextable && num_open_li[0] != 0)
+    if (!set_indextable && num_open_li[0] > 1)
       fprintf (fp, "</li>\n");
 
     if (set_files_by_thread && filenameb && last_email) {
@@ -286,13 +288,23 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
     }
     else {
         if (num_open_li[level] != 0) {
-	  fprintf (fp, "</li>\n");
-	  num_open_li[level]--;
+            if (num_open_li[level] != 1) {
+                fprintf (fp, "</li>\n");
+            }
+            num_open_li[level]--;
 	}
-	fprintf(fp, "<li><a href=\"%s\"%s>%s</a>&nbsp;"
-		"<a id=\"%s%d\"><em>%s</em></a>&nbsp;<em>(%s)</em>\n", 
-		href, first_attributes, 
-		subj, set_fragment_prefix, email->msgnum, tmpname, getindexdatestr(email->date));
+	if (level == 0) {
+            fprintf(fp, "<h2%s class=\"theading\"><a id=\"%s%d\" href=\"%s\">%s</a> "
+                    "<em>%s</em> <em>(%s)</em></h2>\n", 
+                    first_attributes,
+                    set_fragment_prefix, email->msgnum, href,
+                    subj, tmpname, getindexdatestr(email->date));
+	} else {
+            fprintf(fp, "<li><a id=\"%s%d\" href=\"%s\">%s</a> "
+                    "<em>%s</em> <em>(%s)</em>\n", 
+                    set_fragment_prefix, email->msgnum, href,
+                    subj, tmpname, getindexdatestr(email->date));
+	}
     }
     if (subj)
       free(subj);

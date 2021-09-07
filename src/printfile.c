@@ -227,25 +227,26 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
     char *title;
     char *rp;
     char *rp2;
-
-    /* @@ JK: Don't know what to do with US-ASCII. If there's no charset,
+    char *css_url;
+    
+    /* JK: Don't know what to do with US-ASCII. If there's no charset,
        assume the default one is ISO-8859-1 */
     if (charset && *charset)
       rp = charset;
     else
       rp = "ISO-8859-1";
     fprintf(fp,
-	    "<?xml version=\"1.0\" encoding=\"%s\"?>\n"
 	    "<!DOCTYPE html>\n"
 	    "<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"%s\">\n",
-	    rp, set_language);
+	    set_language);
     fprintf(fp, "<head>\n");
 
     if (charset && *charset) {
 	/* charset info "as early as possible within the HEAD of the document"
 	 */
-	fprintf(fp, "<meta charset=\"%s\" />\n", charset);
+	fprintf(fp, "<meta charset=\"%s\" />\n", rp);
     }
+    fprintf(fp, "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n");
     fprintf(fp, "<meta name=\"generator\" content=\"%s %s, see %s\" />\n",
                 PROGNAME, VERSION, HMURL);
 
@@ -324,44 +325,19 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
 
     /* print the css url according to the type of header */
     if (index_header && set_icss_url && *set_icss_url) {
-      fprintf(fp, "<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\" />\n",
-              set_icss_url);
+        css_url = set_icss_url;
 
     } else if (!index_header && set_mcss_url && *set_mcss_url) {
-      fprintf(fp, "<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\" />\n",
-              set_mcss_url);
+        css_url = set_mcss_url;
 
     } else {
-      /*
-       * if style sheets are not specified, emit a default one.
-       */
-       /* @@ JK: the new css */
-      fprintf (fp, "<style>\n");
-      
-      fprintf (fp,"/*<![CDATA[*/\n");
-      fprintf (fp, "/* To be incorporated in the main stylesheet, don't code it in hypermail! */\n");
-      fprintf (fp, "body {color: black; background: #ffffff;}\n");
-      fprintf (fp, "dfn {font-weight: bold;}\n");
-      fprintf (fp, "pre { background-color:inherit;}\n");
-      fprintf (fp, ".head { border-bottom:1px solid black;}\n");
-      fprintf (fp, ".foot { border-top:1px solid black;}\n");
-      fprintf (fp, "th {font-style:italic;}\n");
-      fprintf (fp, "table { margin-left:2em;}");
-
-      /* JK: This was the WAI rule before */
-      /* fprintf (fp, "#body {background-color:#fff;}\n"); */
-      fprintf (fp, "map ul {list-style:none;}\n");
-      fprintf (fp, "#mid { font-size:0.9em;}\n");
-      fprintf (fp, "#received { float:right;}\n");
-      fprintf (fp, "address { font-style:inherit;}\n");
-      fprintf (fp, "/*]]>*/\n");
-      fprintf(fp, ".quotelev1 {color : #990099;}\n");
-      fprintf(fp, ".quotelev2 {color : #ff7700;}\n");
-      fprintf(fp, ".quotelev3 {color : #007799;}\n");
-      fprintf(fp, ".quotelev4 {color : #95c500;}\n");
-      fprintf (fp, ".period {font-weight: bold;}\n");
-      fprintf (fp, "</style>\n");
+        /* no custom css. Use hypermail's own CSS. We consider it is
+	   relative to messages */
+        css_url = set_default_css_url;
     }
+
+    fprintf(fp, "<link rel=\"stylesheet\" href=\"%s\" />\n",
+              css_url);
 
     if (ihtmlheadfile)
       fprintf (fp, "%s", ihtmlheadfile);
@@ -421,11 +397,9 @@ void print_index_header(FILE *fp, char *label, char *dir, char *subject,
         print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL, NULL, 0, 0);
 #endif
 	fprintf (fp, "<header class=\"head\">\n");
-	// REMOVE
-	fprintf (fp, "<div class=\"head\">\n");
 	if (ihtmlnavbar2upfile)
-	  fprintf(fp, "<map title=\"%s\" id=\"upper\">\n%s</map>\n", 
-		  lang[MSG_NAVBAR2UPPERLEVELS], ihtmlnavbar2upfile);
+	  fprintf(fp, "<nav class=\"breadcrumb\" id=\"upper\">\n%s</nav>\n", 
+		  ihtmlnavbar2upfile);
 
 	fprintf(fp, "<h1>%s %s</h1>\n", label, subject);
     }
@@ -443,16 +417,17 @@ void printfooter(FILE *fp, char *htmlfooter, char *label, char *dir,
     if (htmlfooter)
 	printfile(fp, htmlfooter, label, subject,
 		  dir, NULL, NULL, NULL, NULL, NULL, filename);
-    else {
-	fprintf(fp, "<p><small><em>\n");
+    else if (set_hypermail_colophon) {
+	fprintf(fp, "<p class=\"colophon\"><em>\n");
 	fprintf(fp, "%s ", lang[MSG_ARCHIVE_GENERATED_BY]);
-	fprintf(fp, "<a href=\"%s\">%s %s</a>\n", HMURL, PROGNAME, VERSION);
+	fprintf(fp, "<a href=\"%s\">%s %s</a>", HMURL, PROGNAME, VERSION);
 	fprintf(fp, ": %s\n", getlocaltime());
-	fprintf(fp, "</em></small></p>\n");
+	fprintf(fp, "</em></p>\n");
     }
-    if (close_div)
-      fprintf (fp, "</div>\n");
-    fprintf(fp, "</body>\n</html>\n");
+    if (close_div) {
+        fprintf (fp, "</footer>\n");
+        fprintf(fp, "</body>\n</html>\n");
+    }
 }
 
 /*
@@ -461,10 +436,11 @@ void printfooter(FILE *fp, char *htmlfooter, char *label, char *dir,
 
 void printlaststats (FILE *fp, long lastdatenum)
 {
-    fprintf (fp, "<ul>\n");
-    fprintf (fp, "<li><dfn><a id=\"end\">%s</a></dfn>: <em>%s</em></li>\n",
-	     lang[MSG_LAST_MESSAGE_DATE], getdatestr(lastdatenum));
+  fprintf (fp, "<p id=\"end\"><span class=\"heading\">%s</span>: %s</p>\n",
+	   lang[MSG_LAST_MESSAGE_DATE], getdatestr(lastdatenum));
 
-    fprintf (fp, "<li><dfn>%s</dfn>: %s</li>\n",  lang[MSG_ARCHIVED_ON], getlocaltime());
-    fprintf (fp, "</ul>\n");
+  if (set_archived_on) {
+      fprintf (fp, "<p><span class=\"heading\">%s</span>: %s</p>\n",  lang[MSG_ARCHIVED_ON], getlocaltime());
+    }
 }
+

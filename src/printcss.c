@@ -28,8 +28,7 @@ void print_default_css_file(char *filename)
         progerr(errmsg);
     }
 
-    fprintf(fp, "/* default CSS for hypermail mailing list archives */\n");
-
+    fprintf(fp, "/* Style sheet for hypermail archives   */\n");
     fprintf(fp, "\n");
     fprintf(fp, "html {\n");
     fprintf(fp, "    color: black;\n");
