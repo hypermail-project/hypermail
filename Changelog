@@ -22,6 +22,11 @@ HYPERMAIL VERSION 2.5.0
 	* src/uudecode.c src/parse.c
 	Fixes for memory issues detected by libasan
 
+2021-09-08 Jose Kahan
+	* src/print.c src/print.h
+	If set_show_headers is configured, output headers respecting the same
+	order as they are declared in this configuration variable.
+
 2021-09-07 Jose Kahan
 	* src/string.c
 	Make unrre() returN NOSUBJECT when a subject is made only of
@@ -45,7 +50,7 @@ HYPERMAIL VERSION 2.5.0
 	changed the link pointing to the hypermail project to the github
 	repository
 
-	* src/print.c src/printfile.c
+	* src/print.c src/printfile,c src/threadprint.c
 	updated markup to HTML5. Reviewed and enhanced the WAI related markup
 
 	* src/hypermail.c src/setup.[ch] src/print.c
