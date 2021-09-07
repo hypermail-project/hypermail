@@ -1638,9 +1638,7 @@ int parsemail(char *mbox,	/* file name */
     char inline_force = FALSE;	/* show a attachment in-line, regardles of
 				   the content_disposition */
     char *description = NULL;	/* user-supplied description for an attachment */
-    /* @@@ test for attachment */
     char attach_force;
-    /* @@@ */
 
     EncodeType decode = ENCODE_NORMAL;
     ContentType content = CONTENT_TEXT;
