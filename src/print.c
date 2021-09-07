@@ -23,6 +23,7 @@
 #include <sys/stat.h>
 
 #include "hypermail.h"
+#include "dmatch.h"
 #include "setup.h"
 #include "struct.h"
 #include "printfile.h"
@@ -946,10 +947,18 @@ int printattachments(FILE *fp, struct header *hp, struct emailinfo *subdir_email
     return nb_attach;
 }
 
-int showheader(char *header)
+int showheader_list(char *header)
 {
     return (!inlist (set_skip_headers, header) 
 	    && (inlist(set_show_headers, header) || inlist(set_show_headers, "*")));
+}
+
+int showheader_match(char *header, char *wildcard)
+{
+  if (Match(header, wildcard) || Match("*", wildcard))
+      return 1;
+  else
+      return 0;
 }
 
 /*
@@ -1131,7 +1140,7 @@ char *ConvURLsString(char *line, char *mailid, char *mailsubject, char *charset)
 
 void printheaders (FILE *fp, struct emailinfo *email)
 {
-    struct body *bp = email->bodylist;
+    struct body *bp;
     char *id = email->msgid;
     char *subject = email->subject;
     char head[128];
@@ -1149,54 +1158,64 @@ void printheaders (FILE *fp, struct emailinfo *email)
     }
     
     if (set_show_headers) {
-      while (bp != NULL && bp->header) {
-        if ((bp->line)[0] == '\n') {   /* don't try to convert newline */
-          break;
-        }
+        struct hmlist *shp;
+        
+        for (shp = set_show_headers; shp != NULL; shp = shp->next) {
 
-	if (sscanf(bp->line, "%127[^:]", head) == 1 && showheader(head)) {
-	  /* this is a header we want to show */
+            if (inlist(set_skip_headers, shp->val)) {
+                continue;
+            }
+            
+            bp = email->bodylist;
+            while (bp != NULL && bp->header) {
+                if ((bp->line)[0] == '\n') {   /* don't try to convert newline */
+                    break;
+                }
 
-	  strcpy (head_lower, head);
-	  strtolower (head_lower);
+                if (sscanf(bp->line, "%127[^:]", head) == 1 && showheader_match(head, shp->val)) {
+                    /* this is a header we want to show */
+                    
+                    strcpy (head_lower, head);
+                    strtolower (head_lower);
 
-	  /* we print the header, escaping it as needed */
+                    /* we print the header, escaping it as needed */
 
-	  header_content = bp->line + strlen (head) + 2;
-	  fprintf (fp, "<span id=\"%s\"><span class=\"heading\">%s</span>: ",
-		   head_lower, head);
+                    header_content = bp->line + strlen (head) + 2;
+                    fprintf (fp, "<span id=\"%s\"><span class=\"heading\">%s</span>: ",
+                             head_lower, head);
 
 
-	  /* JK: avoid converting Message-Id: headers */
-	  if (!strcmp(head_lower, "message-id") && use_mailcommand) {
-	    /* we desactivate it just during this conversion */
-	    use_mailcommand = 0;
-	    ConvURLs(fp, header_content, id, subject, email->charset);
-	    use_mailcommand = 1;
-	  }
-	  else{
+                    /* JK: avoid converting Message-Id: headers */
+                    if (!strcmp(head_lower, "message-id") && use_mailcommand) {
+                        /* we desactivate it just during this conversion */
+                        use_mailcommand = 0;
+                        ConvURLs(fp, header_content, id, subject, email->charset);
+                        use_mailcommand = 1;
+                    }
+                    else {
 #ifdef HAVE_ICONV
-	    size_t tmplen;
-	    char *tmpptr=i18n_convstring(header_content,"UTF-8",email->charset,&tmplen);
-	    ConvURLs(fp, tmpptr, id, subject, email->charset);
-	    if (tmpptr)
-	      free(tmpptr);
+                        size_t tmplen;
+                        char *tmpptr=i18n_convstring(header_content,"UTF-8",email->charset,&tmplen);
+                        ConvURLs(fp, tmpptr, id, subject, email->charset);
+                        if (tmpptr)
+                            free(tmpptr);
 #else
-	    ConvURLs(fp, header_content, id, subject, email->charset);
+                        ConvURLs(fp, header_content, id, subject, email->charset);
 #endif
-	  }
-	  fprintf (fp, "</span><br />\n");
-	}
+                    }
+                    fprintf (fp, "</span><br />\n");
+                }
 	
-	/* go to the next header or stop if we reached the end of the headers 
-	   (signaled thru the \n char). */
-	if ((bp->line)[0] != '\n') {
-	  bp = bp->next;
-	  continue;
-	}
-	else
-	  break;
-      }
+                /* go to the next header or stop if we reached the end of the headers 
+                   (signaled thru the \n char). */
+                if ((bp->line)[0] != '\n') {
+                    bp = bp->next;
+                    continue;
+                }
+                else
+                    break;
+            }
+        }
     }
 } /* printheaders */
 
@@ -1312,7 +1331,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
 	      }
 	      inheader = TRUE;
 	    }
-	    if (sscanf(bp->line, "%127[^:]", head) == 1 && set_show_headers && !showheader(head)) {
+	    if (sscanf(bp->line, "%127[^:]", head) == 1 && set_show_headers && !showheader_list(head)) {
 	      /* the show header keyword has been used, then we skip all those
 		 that aren't mentioned! */
 	      if (isalnum(*head) || !set_showheaders) {
@@ -1545,7 +1564,7 @@ void print_headers(FILE *fp, struct emailinfo *email, int in_thread_file)
   /* date */
   fprintf(fp, "<span id=\"date\"><span class=\"heading\">%s</span>: %s</span><br />\n", lang[MSG_CDATE], email->datestr);
 
-  printheaders (fp, email);
+  printheaders(fp, email);
 
   fprintf(fp, "</address>\n");
 

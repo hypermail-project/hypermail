@@ -1,5 +1,5 @@
 Hypermail 2.5.0
-
+o
 *** NEW FEATURES
 
 - HTML5
@@ -52,6 +52,10 @@ states that the archive was generated with hypermail and the
 generation date (both in messages and indexes). Both these options may
 be considered mutually exclusive as they both display the archive
 generation date. You can disable both of them.
+
+- Other code improvements
+
+Read the Changelog for more details.
 
 ** DEPRECATED FEATURES
 

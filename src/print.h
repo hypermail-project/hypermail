@@ -39,7 +39,8 @@ void print_index_header_links(FILE *, mindex_t, long, long, int,
 void print_index_footer_links(FILE *, mindex_t, long, int,
 			      struct emailsubdir *);
 void printhtml(FILE *, char *);
-int showheader(char *);
+int showheader_list(char *);
+int showheader_match(char *, char *);
 void ConvURLs(FILE *, char *, char *, char *, char *);
 char *ConvURLsString(char *, char *, char *, char *);
 void write_summary_indices(int);
