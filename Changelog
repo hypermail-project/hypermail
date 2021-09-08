@@ -10,14 +10,20 @@ HYPERMAIL VERSION 2.5.0
 	If set_show_headers is configured, output headers respecting the same
 	order as they are declared in this configuration variable.
 
+	* src/setup.c
+	When using hypermail -v to print out the config options, Makeconfig()
+	was dereferencing the values using a pointer to a long, instead of
+	a pointer to an int. Even if this function could display wrong values,
+	it didn't have any incidence on how hypermail works.
+
 2021-09-07 Jose Kahan
 	* src/string.c
 	Make unrre() returN NOSUBJECT when a subject is made only of
-        one or more Re: (or equivalent) strings
+        one or more Re: (or equivalent) strings.
 
 	* src/parse.c
 	findre() was being too greedy and detecting all Re: strings
-	even if they were not at the beginning of a subject
+	even if they were not at the beginning of a subject.
 
 	* src/setup.c src/setup.h src/print.c src/hypermail.c
 	Move all CSS statements to an external CSS file called by default

@@ -996,7 +996,7 @@ void MakeConfig(bool comments)
 		if (cfg[i].changed)
 		    /* they differ, show the actual contents */
 		    fprintf(stdout, "%s = %lo\n", cfg[i].label,
-			    *(long *)(cfg[i].value));
+			    *(int *)(cfg[i].value));
 		else if (comments)
 		    /* show the default value, but commented */
 /*
@@ -1009,7 +1009,7 @@ void MakeConfig(bool comments)
 		if (cfg[i].changed)
 		    /* they differ, show the actual contents */
 		    fprintf(stdout, "%s = %ld\n", cfg[i].label,
-			    *(long *)(cfg[i].value));
+			    *(int *)(cfg[i].value));
 		else if (comments)
 		    /* show the default value, but commented */
 /*
