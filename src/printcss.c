@@ -85,10 +85,13 @@ void print_default_css_file(char *filename)
     fprintf(fp, "/* Not too big on the heading - they can be long */\n");
     fprintf(fp, "h1 { font-size: 150%% }\n");
     fprintf(fp, "\n");
-    fprintf(fp, "/* for displaying the heaeders */\n");
+    fprintf(fp, "/* use the following rule if you want to add some style to the\n");
+    fprintf(fp, "archive's name as displayed in the h1 of each index */\n");
+    fprintf(fp, "/* .archive-label  {  } */\n");
+    fprintf(fp, "\n");
+    fprintf(fp, "/* for displaying the headers */\n");
     fprintf(fp, "#message-id { font-size: small;}\n");
     fprintf(fp, "address { font-style:inherit ;}\n");
-    fprintf(fp, "\n");
     fprintf(fp, "\n");
     fprintf(fp, "/* don't print the navbars pointing to the next message and indexes */\n");
     fprintf(fp, "@media print {\n");

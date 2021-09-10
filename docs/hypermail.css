@@ -49,10 +49,13 @@ pre {
 /* Not too big on the heading - they can be long */
 h1 { font-size: 150% }
 
-/* for displaying the heaeders */
+/* use the following rule if you want to add some style to the
+archive's name as displayed in the h1 of each index */
+/* .archive-label  {  } */
+
+/* for displaying the headers */
 #message-id { font-size: small;}
 address { font-style:inherit ;}
-
 
 /* don't print the navbars pointing to the next message and indexes */
 @media print {
