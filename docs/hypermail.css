@@ -1,0 +1,212 @@
+/*
+** This program and library is free software; you can redistribute it and/or 
+** modify it under the terms of the GNU (Library) General Public License 
+** as published by the Free Software Foundation; either version 2 
+** of the License, or any later version. 
+** 
+** This program is distributed in the hope that it will be useful, 
+** but WITHOUT ANY WARRANTY; without even the implied warranty of 
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+** GNU (Library) General Public License for more details. 
+** 
+** You should have received a copy of the GNU (Library) General Public License
+** along with this program; if not, write to the Free Software 
+** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA 
+**/
+
+/*
+** Default stylesheet for hypermail archives
+** 
+** Last revised: 10/Sep/2021
+**/
+
+html {
+    color: black;
+    background-color:  #FFF6E0; /* was: #FFEEC2 */
+}
+
+body {
+    margin: 20px;
+    line-height: 1.4;
+    background: transparent;
+    font-family: sans-serif;
+    color: black;
+}
+
+#body {background-color:#fff;}
+
+pre {
+    color: black;
+    background-color: white; 
+    padding: 0.5em;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}
+
+.mail, .head { border-bottom:1px solid black;}
+#body {background-color:#fff;}
+
+/* Not too big on the heading - they can be long */
+h1 { font-size: 150% }
+
+/* for displaying the heaeders */
+#message-id { font-size: small;}
+address { font-style:inherit ;}
+
+
+/* don't print the navbars pointing to the next message and indexes */
+@media print {
+ #upper, #navbarfoot, #navbar {
+    display: none;
+  }
+}
+
+.heading {font-weight: bold; }
+.head { border-bottom:1px solid black;}
+.foot { border-top:1px solid black;}
+table { margin-left:2em;}nav ul {list-style:none;}
+#mid { font-size:0.9em;}
+address { font-style:inherit;}
+
+.quotelev1 {color : #990099;}
+.quotelev2 {color : #ff7700;}
+.quotelev3 {color : #007799;}
+.quotelev4 {color : #95c500;}
+.period {font-weight: bold;}
+
+.messages-list {
+  border-top:thin solid black;
+  border-bottom:thin solid black;
+}
+
+/*
+**  accessible breadcrumbs 
+*/
+nav ul {list-style:none;}
+
+nav.breadcrumb ul { padding: 0; }
+nav.breadcrumb ul li { display: inline;}
+nav.breadcrumb ul li+li::before { content: " > "; }
+
+/*
+**  accessible horizontal menus 
+*/
+ul.hmenu_container > li { list-style-type: none; }
+ul.hmenu { font-style: normal; padding: 0; display: inline; }
+ul.hmenu li { display: inline; }
+
+ul.hmenu li {
+    border-right: 1.2px solid black;
+    padding-right: 0.4em;
+}
+
+ul.hmenu li:last-child {
+    border-right: none;
+    padding-right: 0;
+}
+
+/*
+**  replacement for dfn 
+*/
+.heading { font-weight: bold; }
+
+h2.heading, h2.theading {
+    font-size: inherit;
+    font-weight: normal;
+    margin-top: 0.2em;
+    margin-bottom: 0;
+    display: list-item;
+}
+
+/* 
+** rules for the thread view
+*/
+h2.theading:before  {
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background: #b83b3b;
+    display:inline-block;
+}
+
+h2.theading + ul {
+    list-style-type: disc;
+}
+
+/* decreasing indent levels for deeply-nested threads (8 levels) */
+.messages-list {
+    padding-top: 1.5em;
+    margin-left: 2.5em;
+}
+
+.messages-list ul {
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-left: 2em;
+    padding-left: 0;
+    list-style-type: disc;
+}
+
+.messages-list ul ul {
+    margin-left: 0;
+    padding-left: 2em;
+    list-style-type: inherit;
+}
+
+.messages-list ul ul ul {
+    padding-left: 1.75em;
+    list-style-type: inherit;
+}
+
+.messages-list ul ul ul ul {
+    padding-left: 1.5em;
+    list-style-type: inherit;
+}
+
+.messages-list ul ul ul ul ul {
+    padding-left: 1.25em;
+    list-style-type: inherit;
+}
+
+.messages-list ul ul ul ul ul ul {
+    padding-left: 1em;
+    list-style-type: inherit;
+}
+
+.messages-list ul ul ul ul ul ul ul {
+    padding-left: 0.75em;
+    list-style-type: inherit;
+}
+
+.messages-list ul ul ul ul ul ul ul ul {
+    padding-left: 0.5em;
+    list-style-type: inherit;
+}
+
+/*
+** accessible links 
+*/
+
+/* make links visible thru focus or hover */
+a:link {
+    text-decoration-thickness: 1px;
+}
+
+a:visited {
+    color:#754675
+}
+
+a:focus {
+    outline: 2px solid;
+    outline-offset: 1px;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    outline-color:#005A9C;
+    cursor :pointer;
+}
+
+a:hover {
+    color:#930;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+}
