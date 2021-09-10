@@ -5,6 +5,15 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.5.0
 ============================
 
+2021-09-10 Jose Kahan
+	* src/Makefile.in
+	Add update_css rule to convert ../docs/hypermail.css into printcss.c
+	This rule must be run by hand as we didn't want to tie for the moment
+	hypermail's compilation	to a working install of perl
+
+	* docs/hypermail.css
+	Added the default stylesheet used by hypermail
+
 2021-09-08 Jose Kahan
 	* src/print.c src/print.h
 	If set_show_headers is configured, output headers respecting the same
