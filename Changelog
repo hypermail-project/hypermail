@@ -24,9 +24,10 @@ HYPERMAIL VERSION 2.5.0
 
 2021-09-10 Jose Kahan
 	* src/Makefile.in
-	Add update_css rule to convert ../docs/hypermail.css into printcss.c
-	This rule must be run by hand as we didn't want to tie for the moment
-	hypermail's compilation	to a working install of perl
+	Add convert-css rule to use contrib/csstoc.pl to convert
+	../docs/hypermail.css into printcss.c This rule must be run by hand as
+	we didn't want to tie for the moment hypermail's compilation to a
+	working install of perl
 
 	* docs/hypermail.css
 	Added the default stylesheet used by hypermail
