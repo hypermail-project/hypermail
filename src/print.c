@@ -887,7 +887,7 @@ int printattachments(FILE *fp, struct header *hp, struct emailinfo *subdir_email
 		}
 		else {
 		  fprintf(fp, "<h2%s class=\"heading\"><a id=\"%s%d\" href=\"%s\">%s</a> " 
-			  "span class=\"messages-list-author\">%s</span> <span class=\"messages-list-date\">(%s)</span></h2>\n", 
+			  "<span class=\"messages-list-author\">%s</span> <span class=\"messages-list-date\">(%s)</span></h2>\n", 
 			  (*is_first) ? first_attributes : "",
                           set_fragment_prefix, em->msgnum, 
 			  msg_href(em, subdir_email, FALSE), subject, 
