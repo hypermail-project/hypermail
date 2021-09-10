@@ -401,7 +401,7 @@ void print_index_header(FILE *fp, char *label, char *dir, char *subject,
 	  fprintf(fp, "<nav class=\"breadcrumb\" id=\"upper\">\n%s</nav>\n", 
 		  ihtmlnavbar2upfile);
 
-	fprintf(fp, "<h1>%s %s</h1>\n", label, subject);
+	fprintf(fp, "<h1><span class=\"archive-label\">%s</span> %s</h1>\n", label, subject);
     }
 }
 
