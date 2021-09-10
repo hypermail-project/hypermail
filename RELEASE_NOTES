@@ -1,5 +1,5 @@
 Hypermail 2.5.0
-o
+
 *** NEW FEATURES
 
 - HTML5
@@ -74,11 +74,11 @@ code will be removed from the code base in a future release.
 Many thanks to W3C for their contributions to this version of
 hypermail.  In particular Josh O'Connor, Daniel Montalvo, and Shadi
 Abou-Zahr from the WAI Team for their evaluation and feedback on how
-to improve hypermail's accesibility; thanks to Vivien Lacourba and
+to improve hypermail's accessibility; thanks to Vivien Lacourba and
 Gerald Oskoboiny from the Systems Team for their testing and feedback
 of the pre-release version of hypermail.  Many thanks too to Judy
 Brewer of the W3C WAI Team as well as Vivien Lacourba of the W3C
-Systems Team for their involvement and for facilitation disccusions
+Systems Team for their involvement and facilitating discussions
 and work on this version of hypermail.
 
 Thanks to Baptiste Daroussin and @cacsar for their bug reports and
