@@ -17,7 +17,7 @@ htmldir=@htmldir@
 INSTALL_PROG=@INSTALL@ 
 
 all:   install
-	
+
 uninstall: 
 	rm -f $(mandir)/man1/hypermail.1
 	rm -f $(mandir)/man4/hmrc.4
@@ -30,10 +30,11 @@ uninstall:
 		rm -f $(htmldir)/hypermail-faq.html; \
 		rm -f $(htmldir)/customizing.html; \
 		rm -f $(htmldir)/hmrc.html; \
+		rm -f $(htmldir)/hypermail.css; \
 		rmdir $(htmldir); \
 	fi)
 
-install: install.man install.html
+install: install.man install.html install.css
 
 install.man:
 	@(if [ ! -d $(mandir) ]; then mkdir -p $(mandir); fi)
@@ -52,6 +53,10 @@ install.html:
 	$(INSTALL_PROG) -c -m 0644 hypermail-faq.html $(htmldir)
 	$(INSTALL_PROG) -c -m 0644 customizing.html $(htmldir)
 	$(INSTALL_PROG) -c -m 0644 hmrc.html $(htmldir)
+
+install.css:
+	@(if [ ! -d $(htmldir) ]; then mkdir -p $(htmldir); fi)
+	$(INSTALL_PROG) -c -m 0644 hypermail.css $(htmldir)
 
 clean:
 clobber:
