@@ -295,13 +295,13 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
 	}
 	if (level == 0) {
             fprintf(fp, "<h2%s class=\"theading\"><a id=\"%s%d\" href=\"%s\">%s</a> "
-                    "<em>%s</em> <em>(%s)</em></h2>\n", 
+                    "<span class=\"messages-list-author\">%s</span> <span class=\"messages-list-date\">(%s)</span></h2>\n", 
                     first_attributes,
                     set_fragment_prefix, email->msgnum, href,
                     subj, tmpname, getindexdatestr(email->date));
 	} else {
             fprintf(fp, "<li><a id=\"%s%d\" href=\"%s\">%s</a> "
-                    "<em>%s</em> <em>(%s)</em>\n", 
+                    "<span class=\"messages-list-author\">%s</span> <span class=\"messages-list-date\">(%s)</span>\n", 
                     set_fragment_prefix, email->msgnum, href,
                     subj, tmpname, getindexdatestr(email->date));
 	}

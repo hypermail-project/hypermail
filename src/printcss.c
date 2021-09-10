@@ -115,6 +115,17 @@ void print_default_css_file(char *filename)
     fprintf(fp, "  border-bottom:thin solid black;\n");
     fprintf(fp, "}\n");
     fprintf(fp, "\n");
+    fprintf(fp, ".messages-list-author {\n");
+    fprintf(fp, "    font-style: italic;\n");
+    fprintf(fp, "}\n");
+    fprintf(fp, ".messages-list-date {\n");
+    fprintf(fp, "    font-style: italic;\n");
+    fprintf(fp, "}\n");
+    fprintf(fp, "\n");
+    fprintf(fp, ".colophon {\n");
+    fprintf(fp, "    font-style: italic;\n");
+    fprintf(fp, "}\n");
+    fprintf(fp, "\n");
     fprintf(fp, "/*\n");
     fprintf(fp, "**  accessible breadcrumbs \n");
     fprintf(fp, "*/\n");
