@@ -53,7 +53,8 @@
 #endif
 #endif /* HAVE_LIBFNV */
 
-extern int snprintf(char *str, size_t size, const  char  *format, ...);
+/* JK: Not sure why we had this extern here 10/Sep/2021 */
+/* extern int snprintf(char *str, size_t size, const  char  *format, ...); */
 
 
 /*
