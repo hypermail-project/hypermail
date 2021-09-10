@@ -9,10 +9,11 @@ been updated to HTML5.
 
 - WAI enhancements / deprecation of text-only browser support
 
-The generated markup was reviewed for better WAI compatibility. Due to
-the need to use HTML5 and CSS to achieve this goal, we unfortunately
-had to stop generating markup that could be readable and look good in
-text-only browsers, such as lynx and w3m.
+The generated markup was reviewed and improved for better screen
+reader user experience as well as for the overall accessiblity of
+hypermail. Due to the need to use HTML5 and CSS to achieve this goal,
+we unfortunately had to stop generating markup that could be readable
+and look good in text-only browsers, such as lynx and w3m.
 
 - CSS and hypermail
 
@@ -34,6 +35,10 @@ If "default_css_url" is not defined and is needed, hypermail will use
 the name hypermail.css and will generate this file by itself with some
 pre-defined rules, unless this file already exists in the archive
 directory.
+
+Hypermail's default css file is also available under
+docs/hypermail.css and will be installed with the other documentation
+files.
 
 - Navigation bar for messages
 
@@ -66,11 +71,15 @@ code will be removed from the code base in a future release.
 
 ** ACKNOWLEDGMENTS
 
-Many thanks to W3C for their contributions to this version of hypermail.
-In particular Daniel Montalvo, Josh O'Connor, and Shadi Abou-Zahr from
-the WAI Team for their evaluation and feedback on how to improve 
-hypermail's accesibility; thanks to Vivien Lacourba and Gerald Oskoboiny
-from the Systems Team for their testing and feedback of 2.5.0's beta.
+Many thanks to W3C for their contributions to this version of
+hypermail.  In particular Josh O'Connor, Daniel Montalvo, and Shadi
+Abou-Zahr from the WAI Team for their evaluation and feedback on how
+to improve hypermail's accesibility; thanks to Vivien Lacourba and
+Gerald Oskoboiny from the Systems Team for their testing and feedback
+of the pre-release version of hypermail.  Many thanks too to Judy
+Brewer of the W3C WAI Team as well as Vivien Lacourba of the W3C
+Systems Team for their involvement and for facilitation disccusions
+and work on this version of hypermail.
 
-Thanks to Baptiste Daroussin, @cacsar for their bug reports and
+Thanks to Baptiste Daroussin and @cacsar for their bug reports and
 code contributions.
