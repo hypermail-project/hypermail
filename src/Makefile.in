@@ -92,7 +92,8 @@ getdate.c: getdate.y getdate.h
 	$(YACC) getdate.y
 	@mv -f y.tab.c getdate.c
 
-update_css: ../docs/hypermail.css ../contrib/css_to_c.pl
+convert-css: ../docs/hypermail.css ../contrib/css_to_c.pl
+	@echo "Converting ../docs/hypermail.css to printcss.c"
 	@perl ../contrib/css_to_c.pl ../docs/hypermail.css > printcss.c
 
 install: all
