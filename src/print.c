@@ -836,7 +836,7 @@ void printdates(FILE *fp, struct header *hp, int year, int month, struct emailin
 	subj_end_tag = "";
       }
 
-      fprintf(fp,"%s<a id=\"%s%d\" href=\"%s\">%s%s%s</a>%s<em>%s</em>%s%s%s\n",
+      fprintf(fp,"%s<a id=\"%s%d\" href=\"%s\">%s%s%s</a>%s<span class=\"messages-list-author\">%s</span>%s%s%s\n",
 	      startline, 
 	      set_fragment_prefix, em->msgnum,
               msg_href(em, subdir_email, FALSE),
@@ -2696,7 +2696,7 @@ void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
 	else {
             startline = "<li>";
 	    break_str = "";
-	    snprintf(date_str, sizeof(date_str), "<em>(%s)</em>", getindexdatestr(hp->data->date));
+	    snprintf(date_str, sizeof(date_str), "<span class=\"messages-list-date\">(%s)</span>", getindexdatestr(hp->data->date));
 	    endline = "</li>";
 	}
 	fprintf(fp,
@@ -2853,7 +2853,7 @@ void printauthors(FILE *fp, struct header *hp, char **oldname,
       else {
         startline = "<li>";
 	break_str = "";
-	snprintf(date_str, sizeof(date_str), "<em>(%s)</em>", getindexdatestr(hp->data->date));
+	snprintf(date_str, sizeof(date_str), "<span class=\"messages-list-date\">(%s)</span>", getindexdatestr(hp->data->date));
 	endline = "</li>";
       }
 

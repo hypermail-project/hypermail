@@ -418,11 +418,11 @@ void printfooter(FILE *fp, char *htmlfooter, char *label, char *dir,
 	printfile(fp, htmlfooter, label, subject,
 		  dir, NULL, NULL, NULL, NULL, NULL, filename);
     else if (set_hypermail_colophon) {
-	fprintf(fp, "<p class=\"colophon\"><em>\n");
+	fprintf(fp, "<p class=\"colophon\">\n");
 	fprintf(fp, "%s ", lang[MSG_ARCHIVE_GENERATED_BY]);
 	fprintf(fp, "<a href=\"%s\">%s %s</a>", HMURL, PROGNAME, VERSION);
 	fprintf(fp, ": %s\n", getlocaltime());
-	fprintf(fp, "</em></p>\n");
+	fprintf(fp, "</p>\n");
     }
     if (close_div) {
         fprintf (fp, "</footer>\n");

@@ -79,6 +79,17 @@ address { font-style:inherit;}
   border-bottom:thin solid black;
 }
 
+.messages-list-author {
+    font-style: italic;
+}
+.messages-list-date {
+    font-style: italic;
+}
+
+.colophon {
+    font-style: italic;
+}
+
 /*
 **  accessible breadcrumbs 
 */
