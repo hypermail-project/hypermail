@@ -33,9 +33,12 @@ body {
     color: black;
 }
 
-#body {background-color:#fff;}
-
 pre {
+    font-family: monospace;
+}
+
+/* for displaying a message's body */
+pre, .body {
     color: black;
     background-color: white; 
     padding: 0.5em;
@@ -43,19 +46,12 @@ pre {
     overflow-wrap: break-word;
 }
 
-.mail, .head { border-bottom:1px solid black;}
-#body {background-color:#fff;}
-
 /* Not too big on the heading - they can be long */
 h1 { font-size: 150% }
 
 /* use the following rule if you want to add some style to the
 archive's name as displayed in the h1 of each index */
-/* .archive-label  {  } */
-
-/* for displaying the headers */
-#message-id { font-size: small;}
-address { font-style:inherit ;}
+.archive-label  { }
 
 /* don't print the navbars pointing to the next message and indexes */
 @media print {
@@ -64,18 +60,24 @@ address { font-style:inherit ;}
   }
 }
 
-.heading {font-weight: bold; }
-.head { border-bottom:1px solid black;}
-.foot { border-top:1px solid black;}
-table { margin-left:2em;}nav ul {list-style:none;}
-#mid { font-size:0.9em;}
-address { font-style:inherit;}
 
-.quotelev1 {color : #990099;}
-.quotelev2 {color : #ff7700;}
-.quotelev3 {color : #007799;}
-.quotelev4 {color : #95c500;}
-.period {font-weight: bold;}
+/* for displaying the headers */
+.heading {font-weight: bold; }
+#message-id { font-size: small; }
+
+.mail, .head { border-bottom: 1px solid black; }
+
+p.received { margin-bottom: 0; }
+
+table { margin-left:2em; }nav ul {list-style:none; }
+#mid { font-size:0.9em; }
+address { font-style:inherit; }
+
+.quotelev1 {color : #990099; }
+.quotelev2 {color : #ff7700; }
+.quotelev3 {color : #007799; }
+.quotelev4 {color : #95c500; }
+.period {font-weight: bold; }
 
 .messages-list {
   border-top:thin solid black;
@@ -96,10 +98,10 @@ address { font-style:inherit;}
 /*
 **  accessible breadcrumbs 
 */
-nav ul {list-style:none;}
+nav ul {list-style:none; }
 
 nav.breadcrumb ul { padding: 0; }
-nav.breadcrumb ul li { display: inline;}
+nav.breadcrumb ul li { display: inline; }
 nav.breadcrumb ul li+li::before { content: " > "; }
 
 /*
