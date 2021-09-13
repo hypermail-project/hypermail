@@ -556,7 +556,7 @@ void txt2html(FILE *fp, struct emailinfo *email, const struct body *bp, bool rep
     }
 
 	if (!islist && !in_pre_block && !is_blank_line && !inquote && !is_blank_prev && prev_line_length < short_line_length && !was_hrule && !was_par && !islist && !was_break) {
-	fprintf(fp, "<br>\n");
+	fprintf(fp, "<br />\n");
 	was_break = 1;
     }
 
@@ -573,13 +573,13 @@ void txt2html(FILE *fp, struct emailinfo *email, const struct body *bp, bool rep
 
     if (isquote(line)) {
 	if (!was_quote_prefix && !was_break && !was_par && !was_hrule) {
-	    fprintf(fp, "<br>\n");
+	    fprintf(fp, "<br />\n");
 	    was_break = 1;
 	}
 	if (!set_linkquotes) {
 	    fprintf(fp, "<i class=\"%s\">", find_quote_class(line));
 	    ConvURLs(fp, chomp(line), email->msgid, email->subject, email->charset);
-	    fprintf(fp, "</i><br>\n");
+	    fprintf(fp, "</i><br />\n");
 	}
 		else if (handle_quoted_text(fp, email, bp, line, inquote, quote_num, replace_quoted, maybe_reply)) {
 	    ++quote_num;
