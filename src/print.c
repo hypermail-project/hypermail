@@ -2273,7 +2273,7 @@ void writearticles(int startnum, int maxnum)
 	fprintf (fp, "<main class=\"mail\">\n");
 	print_headers(fp, email, FALSE);
 	printbody(fp, email, maybe_reply, is_reply);
-	fprintf (fp, "<span id=\"received\"><span class=\"heading\">%s</span> %s</span>\n", 
+	fprintf (fp, "<p class=\"received\"><span class=\"heading\">%s</span> %s</p>\n", 
 		 lang[MSG_RECEIVED_ON],  getdatestr(email->fromdate));
 	fprintf (fp, "</main>\n");
 	printcomment(fp, "body", "end");
