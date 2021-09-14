@@ -48,6 +48,23 @@ include in hypermail generated messages more specific HTML formatting
 statement giving links to the hierarchy of your archive. By default,
 this option uses the value of "ihtmlnavbar2upfile".
 
+- Switch to PCRE2
+
+Up to now hypermail had been using PCRE behind the scenes of its
+message filtering options (docs/hmrc.html#filters). PCRE being now
+at end of life, and is no longer being actively maintained, we have now
+updated hypermail to support its successor, PCRE2. If you were using any
+of Hypermail's filtering options, we advise you to check out PCRE2's
+doc to see if there have been any changes there that may impact you:
+
+  https://www.pcre.org/current/doc/html/pcre2pattern.html
+
+As before, we're shipping the latest source of PCRE2 with hypermail.
+However if your system has PCRE2 installed, hypermail will use that
+one when being compiled. At this point of time we're not sure if
+shipping this library source is a practice that will be continued in
+the future.
+
 - Other configuration option changes
 
 Two new configuration options, "archive_date" and "hypermail_colophon",
@@ -69,6 +86,23 @@ generate message indexes using tables has been deprecated in favor of
 using HTML and CSS. This option has been disabled.  The pertaining
 code will be removed from the code base in a future release.
 
+** HYPERMAIL FEATURES THAT NEED MORE LOVE in 2.5
+
+This is a list of features that have not been updated much in this version.
+We are unsure if people are using them and if they should be preserved or
+deprecated. If you're using any of these features, please check that this
+new version of hypermail is still working on your archive as expected.
+If that's not the case, please stick to the 2.4 version for the moment.
+Feedback or code patches (better) are welcome.
+
+- Compilation: windows LCC support (not updated, seems very old)
+- showhtml option (only bare minimum of markup update done)
+- linkquotes (no updates done)
+- inline html (no specific updates done)
+- yearly and monthly summaries (just bare markup updates. This features
+  seem to not have been updated since long time ago and missing some
+  links to make them more useful).
+
 ** ACKNOWLEDGMENTS
 
 Many thanks to W3C for their contributions to this version of
@@ -76,10 +110,11 @@ hypermail.  In particular Josh O'Connor, Daniel Montalvo, and Shadi
 Abou-Zahr from the WAI Team for their evaluation and feedback on how
 to improve hypermail's accessibility; thanks to Vivien Lacourba and
 Gerald Oskoboiny from the Systems Team for their testing and feedback
-of the pre-release version of hypermail.  Many thanks too to Judy
-Brewer of the W3C WAI Team as well as Vivien Lacourba of the W3C
-Systems Team for their involvement and facilitating discussions
-and work on this version of hypermail.
+of the pre-release version of hypermail.
+
+Many thanks too to Judy Brewer of the W3C WAI Team as well as Vivien
+Lacourba of the W3C Systems Team for their involvement and
+facilitating discussions and work on this version of hypermail.
 
 Thanks to Baptiste Daroussin and @cacsar for their bug reports and
 code contributions.

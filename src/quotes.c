@@ -21,7 +21,7 @@
 #include "string.h"
 #include <ctype.h>
 #if ! HAVE_MEMMOVE
-#include "pcre/internal.h"
+#include "pcre2/src/pcre2_internal.h"
 #endif
 
 #define MAX_QPREFIX_GUESSES 8

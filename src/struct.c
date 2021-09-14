@@ -31,12 +31,13 @@ int rbs_bigtime = 0;
 #include "parse.h"
 #include "getname.h"
 
-#define HAVE_PCRE
-#ifdef HAVE_PCRE
+#define HAVE_PCRE2
+#ifdef HAVE_PCRE2
 #ifdef __LCC__
 #include "../lcc/pcre.h"
 #else
-#include <pcre.h>
+#define PCRE2_CODE_UNIT_WIDTH 8
+#include <pcre2.h>
 #endif
 #endif
 
@@ -1409,41 +1410,39 @@ int inlist_regex_pos(struct hmlist *listname, char *str)
     int i;
 
     for (i = 0, tlist = listname; tlist != NULL; i++, tlist = tlist->next) {
-#ifdef HAVE_PCRE
-	int r;
-	const char *errptr;
-	int epos;
+#ifdef HAVE_PCRE2
+	int rc;
+        int enumber;
+	PCRE2_SIZE epos;
 	int index = regex_index(listname, i);
-	static pcre *p, **pcre_list;
-	static pcre_extra *extra, **extra_list;
+	static pcre2_code *p, **pcre_list;
+	static pcre2_match_data *match_data, **match_data_list;
 	if (!pcre_list) {
 	    int n = regex_index(NULL, -1);
 	    int i;
-			pcre_list = (pcre **) emalloc(n * sizeof(pcre *));
-			extra_list = (pcre_extra **) emalloc(n * sizeof(pcre_extra *));
+            pcre_list = (pcre2_code **) emalloc(n * sizeof(pcre2_code *));
+			match_data_list = (pcre2_match_data **) emalloc(n * sizeof(pcre2_match_data *));
 	    for (i = 0; i < n; ++i) {
 	        pcre_list[i] = NULL;
-	        extra_list[i] = NULL;
+	        match_data_list[i] = NULL;
 	    }
 	}
 	if ((p = pcre_list[index]) == NULL) {
-	    p = pcre_compile(tlist->val, 0, &errptr, &epos, NULL);
+            p = pcre2_compile(tlist->val, PCRE2_ZERO_TERMINATED, 0, &enumber, &epos, NULL);
 	    if (!p) {
-		snprintf(errmsg, sizeof(errmsg), "Error at position %d of regular expression '%s': %s", epos, tlist->val, errptr);
+                PCRE2_UCHAR buffer[256];
+                pcre2_get_error_message(enumber, buffer, sizeof(buffer));
+		snprintf(errmsg, sizeof(errmsg), "Error at position %d of regular expression '%s': %s", epos, tlist->val, buffer);
 		progerr(errmsg);
 	    }
-	    extra = pcre_study(p, 0, &errptr);
-	    if (errptr) {
-		snprintf(errmsg, sizeof(errmsg), "Error studying regular expression '%s': %s", tlist->val, errptr);
-		progerr(errmsg);
-	    }
+	    match_data = pcre2_match_data_create_from_pattern(p, NULL);
 	    pcre_list[index] = p;
-	    extra_list[index] = extra;
+	    match_data_list[index] = match_data;
 	}
-	extra = extra_list[index];
-	r = pcre_exec(p, extra, str, strlen(str), 0, 0, NULL, 0);
+	match_data = match_data_list[index];
+	rc = pcre2_match(p, str, strlen(str), 0, 0, match_data, 0);
 	
-	if (r >= 0)
+	if (rc >= 0)
 	    return i;
 #else
 	static int warned = 0;

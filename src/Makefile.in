@@ -28,7 +28,7 @@ INSTALL_PROG=@INSTALL@
 
 SPLINTFLAGS=@INCLUDES@
 
-PCRE_DEP=@PCRE_DEP@
+PCRE2_DEP=@PCRE2_DEP@
 TRIO_DEP=@TRIO_DEP@
 FNV_DEP=@FNV_DEP@
 
@@ -40,7 +40,7 @@ CPPFLAGS=@CPPFLAGS@ @INCLUDES@
 YACC=@YACC@
 NETLIBS=@LIBS@
 LDFLAGS=@LDFLAGS@
-MISC_LIBS= -lpcre -ltrio -lm
+MISC_LIBS= -lpcre2-8 -ltrio -lm
 OPT_LIBS=@EXTRA_LIBS@
 
 INCS=		domains.h hypermail.h lang.h proto.h \
@@ -62,10 +62,10 @@ MAILOBJS=	mail.o ../libcgi/libcgi.a
 .c.o:
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) $<
 
-all:    @PCRE_DEP@ @TRIO_DEP@ @FNV_DEP@ hypermail$(SUFFIX) mail$(SUFFIX) lang$(SUFFIX)
+all:    @PCRE2_DEP@ @TRIO_DEP@ @FNV_DEP@ hypermail$(SUFFIX) mail$(SUFFIX) lang$(SUFFIX)
 
-pcre/.libs/libpcre.a:
-	@cd pcre; $(MAKE) CC="$(CC)" ; rm -f .libs/lib*.so*
+pcre2/.libs/libpcre2-8.a:
+	@cd pcre2; $(MAKE) CC="$(CC)" ; rm -f .libs/lib*.so*
 
 trio/libtrio.a:
 	@cd trio; $(MAKE) CC="$(CC)"
@@ -135,19 +135,19 @@ clean:
 	rm -f *.o .pure *qx *qv *.ln core
 	rm -f .inslog tca.map lint.out splint.out
 	rm -f getdate.c
-	@(if test "$(PCRE_DEP)" != "" ; then cd pcre; $(MAKE) clean; fi)
+	@(if test "$(PCRE2_DEP)" != "" ; then cd pcre2; $(MAKE) clean; fi)
 	@(if test "$(TRIO_DEP)" != "" ; then cd trio; $(MAKE) clean; fi)
 	@(if test "$(FNV_DEP)" != "" ; then cd fnv; $(MAKE) clean; fi)
 	@cd ../libcgi; $(MAKE) clean
 
 clobber: clean
-	@(if test "$(PCRE_DEP)" != "" ; then cd pcre; rm -f *.lock; fi)
+	@(if test "$(PCRE_DEP2)" != "" ; then cd pcre2; rm -f *.lock; fi)
 	@(if test "$(TRIO_DEP)" != ""; then cd trio; rm -f *.lock; fi)
 	@(if test "$(FNV_DEP)" != "" ; then cd fnv; $(MAKE) clobber; fi)
 	@cd ../libcgi; $(MAKE) clobber
 
 distclean: clobber
-	@(if test "$(PCRE_DEP)" != "" ; then cd pcre; $(MAKE) distclean; fi)
+	@(if test "$(PCRE2_DEP)" != "" ; then cd pcre2; $(MAKE) distclean; fi)
 	@(if test "$(TRIO_DEP)" != ""; then cd trio; $(MAKE) clean; fi)
 	@(if test "$(FNV_DEP)" != "" ; then cd fnv; $(MAKE) distclean; fi)
 	@cd ../libcgi; $(MAKE) distclean
@@ -181,6 +181,8 @@ parse.o: parse.c hypermail.h ../config.h ../patchlevel.h proto.h lang.h \
 print.o: print.c hypermail.h ../config.h ../patchlevel.h proto.h lang.h \
  setup.h struct.h printfile.h print.h parse.h txt2html.h finelink.h \
  threadprint.h
+printcss.o: printcss.c hypermail.h ../config.h ../patchlevel.h proto.h \
+ lang.h setup.h
 printfile.o: printfile.c hypermail.h ../config.h ../patchlevel.h proto.h \
  lang.h setup.h print.h printfile.h struct.h
 printcss.o: printcss.c hypermail.h ../config.h ../patchlevel.h proto.h \
