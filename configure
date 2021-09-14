@@ -689,8 +689,8 @@ EXTRA_LIBS
 HAVE_STRERROR
 HAVE_MEMMOVE
 FNV_DEP
-PCRE_DEP
-PCRE_CONFIG
+PCRE2_DEP
+PCRE2_CONFIG
 TRIO_DEP
 EGREP
 GREP
@@ -786,7 +786,7 @@ with_gdbm
 enable_i18n
 enable_system_libtrio
 enable_bundled_pcre
-with_external_pcre
+with_external_pcre2
 enable_libfnv
 '
       ac_precious_vars='build_alias
@@ -1428,8 +1428,8 @@ Optional Features:
   --disable-i18n           Disable I18N support
   --enable-system-libtrio Use the system libtrio instead of compiling the
                           bundled one
-  --enable-bundled-pcre   Force the use of the bundled PCRE library instead of
-                          the system one
+  --enable-bundled-pcre2  Force the use of the bundled PCRE2 library instead
+                          of the system one
 	      --enable-libfnv         use the fnv hash library for generating
                           non-sequential filenames [no]
 
@@ -1444,8 +1444,8 @@ Optional Packages:
   --with-htmlsuffix=xx	  two character language indicator html
   --with-domainaddr=YOURDOMAIN	  domain address of local domain
   --with-gdbm=DIR         Include GDBM support
-  --with-external-pcre=PATH_TO_PCRE_DIR|PATH_TO_PCRE_CONFIG_SCRIPT
-                          Use an external PCRE library instead of the system
+  --with-external-pcre2=PATH_TO_PCRE2_DIR|PATH_TO_PCRE2_CONFIG_SCRIPT
+                          Use an external PCRE2 library instead of the system
                           or the bundled one
 
 Some influential environment variables:
@@ -2310,8 +2310,8 @@ GDBM_INCLUDE=""
 GDBM_LIB=""
 FNV_DEP=""
 TRIO_DEP=""
-PCRE_DEP=""
-PCRE_MIN_VERSION="8.39"
+PCRE2_DEP=""
+PCRE2_MIN_VERSION="10.32"
 
 
 ac_aux_dir=
@@ -5061,7 +5061,7 @@ rm -f confcache
   for apr_configure_arg in $ac_configure_args
   do
     case "$apr_configure_arg" in
-      --with-pcre=*|\'--with-pcre=*)
+      --with-pcre2=*|\'--with-pcre2=*)
         continue ;;
     esac
     apr_configure_args="$apr_configure_args$apr_sep'$apr_configure_arg'"
@@ -5113,46 +5113,46 @@ fi
 
 
 
-# Check whether --with-external_pcre was given.
-if test "${with_external_pcre+set}" = set; then :
-  withval=$with_external_pcre;
+# Check whether --with-external_pcre2 was given.
+if test "${with_external_pcre2+set}" = set; then :
+  withval=$with_external_pcre2;
 fi
 
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for PCRE regular expressions library" >&5
-$as_echo "$as_me: checking for PCRE regular expressions library" >&6;}
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for PCRE2 regular expressions library" >&5
+$as_echo "$as_me: checking for PCRE2 regular expressions library" >&6;}
 
-if test ! -z ${enable_bundled_pcre}; then
-   with_external_pcre=""
+if test ! -z ${enable_bundled_pcre2}; then
+   with_external_pcre2=""
 fi
 
-case $with_external_pcre in
- /*) { $as_echo "$as_me:${as_lineno-$LINENO}: --with-external-pcre => checking for an external libpcre" >&5
-$as_echo "$as_me: --with-external-pcre => checking for an external libpcre" >&6;}
-     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for pcre-config" >&5
-$as_echo_n "checking for pcre-config... " >&6; }
-     if test -d "$with_external_pcre" && test -x "$with_external_pcre/pcre-config"; then
-       PCRE_CONFIG=$with_external_pcre/pcre-config
-     elif test -x "$with_external_pcre"; then
-       PCRE_CONFIG=$with_external_pcre
+case $with_external_pcre2 in
+ /*) { $as_echo "$as_me:${as_lineno-$LINENO}: --with-external-pcre2 => checking for an external libpcre2" >&5
+$as_echo "$as_me: --with-external-pcre2 => checking for an external libpcre2" >&6;}
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for pcre2-config" >&5
+$as_echo_n "checking for pcre2-config... " >&6; }
+     if test -d "$with_external_pcre" && test -x "$with_external_pcre2/pcre2-config"; then
+       PCRE2_CONFIG=$with_external_pcre2/pcre2-config
+     elif test -x "$with_external_pcre2"; then
+       PCRE2_CONFIG=$with_external_pcre2
      else
        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-       as_fn_error $? "${PCRE_CONFIG} does not point to a directory or pcre-config" "$LINENO" 5
+       as_fn_error $? "${PCRE2_CONFIG} does not point to a directory or pcre2-config" "$LINENO" 5
      fi
-     { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${PCRE_CONFIG}" >&5
-$as_echo "${PCRE_CONFIG}" >&6; }
+     { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${PCRE2_CONFIG}" >&5
+$as_echo "${PCRE2_CONFIG}" >&6; }
 
-     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for pcre version equal or greater than ${PCRE_MIN_VERSION}" >&5
-$as_echo_n "checking for pcre version equal or greater than ${PCRE_MIN_VERSION}... " >&6; }
-     if test -f "${PCRE_CONFIG}" && test -x "${PCRE_CONFIG}"; then
-        PCRE_VERSION=$(${PCRE_CONFIG} --version)
-        as_arg_v1="${PCRE_VERSION}"
-as_arg_v2="${PCRE_MIN_VERSION}"
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for pcre2 version equal or greater than ${PCRE2_MIN_VERSION}" >&5
+$as_echo_n "checking for pcre2 version equal or greater than ${PCRE2_MIN_VERSION}... " >&6; }
+     if test -f "${PCRE2_CONFIG}" && test -x "${PCRE2_CONFIG}"; then
+        PCRE2_VERSION=$(${PCRE2_CONFIG} --version)
+        as_arg_v1="${PCRE2_VERSION}"
+as_arg_v2="${PCRE2_MIN_VERSION}"
 awk "$as_awk_strverscmp" v1="$as_arg_v1" v2="$as_arg_v2" /dev/null
 case $? in #(
   1) :
-    PCRE_CONFIG=false ;; #(
+    PCRE2_CONFIG=false ;; #(
   0) :
      ;; #(
   2) :
@@ -5160,38 +5160,38 @@ case $? in #(
   *) :
      ;;
 esac
-        if test "${PCRE_CONFIG}" != false; then
+        if test "${PCRE2_CONFIG}" != false; then
            { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
         else
            { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-           as_fn_error $? "the PCRE library version must be equal or greater than ${PCRE_MIN_VERSION}" "$LINENO" 5
+           as_fn_error $? "the PCRE2 library version must be equal or greater than ${PCRE2_MIN_VERSION}" "$LINENO" 5
         fi
      else
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-        as_fn_error $? "${PCRE_CONFIG} does not point to a script" "$LINENO" 5
+        as_fn_error $? "${PCRE2_CONFIG} does not point to a script" "$LINENO" 5
      fi
      ;;
 
-  *) PCRE_CONFIG=false
+  *) PCRE2_CONFIG=false
      ;;
 esac
 
-if test -z "${enable_bundled_pcre}" && test -z "${PCRE_CONFIG}" -o "${PCRE_CONFIG}" = "false"; then
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for a system libpcre" >&5
-$as_echo "$as_me: checking for a system libpcre" >&6;}
-   # Extract the first word of "pcre-config", so it can be a program name with args.
-set dummy pcre-config; ac_word=$2
+if test -z "${enable_bundled_pcre2}" && test -z "${PCRE2_CONFIG}" -o "${PCRE2_CONFIG}" = "false"; then
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for a system libpcre2" >&5
+$as_echo "$as_me: checking for a system libpcre2" >&6;}
+   # Extract the first word of "pcre2-config", so it can be a program name with args.
+set dummy pcre2-config; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_path_PCRE_CONFIG+:} false; then :
+if ${ac_cv_path_PCRE2_CONFIG+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  case $PCRE_CONFIG in
+  case $PCRE2_CONFIG in
   [\\/]* | ?:[\\/]*)
-  ac_cv_path_PCRE_CONFIG="$PCRE_CONFIG" # Let the user override the test with a path.
+  ac_cv_path_PCRE2_CONFIG="$PCRE2_CONFIG" # Let the user override the test with a path.
   ;;
   *)
   as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
@@ -5201,7 +5201,7 @@ do
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_path_PCRE_CONFIG="$as_dir/$ac_word$ac_exec_ext"
+    ac_cv_path_PCRE2_CONFIG="$as_dir/$ac_word$ac_exec_ext"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -5212,26 +5212,26 @@ IFS=$as_save_IFS
   ;;
 esac
 fi
-PCRE_CONFIG=$ac_cv_path_PCRE_CONFIG
-if test -n "$PCRE_CONFIG"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PCRE_CONFIG" >&5
-$as_echo "$PCRE_CONFIG" >&6; }
+PCRE2_CONFIG=$ac_cv_path_PCRE2_CONFIG
+if test -n "$PCRE2_CONFIG"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PCRE2_CONFIG" >&5
+$as_echo "$PCRE2_CONFIG" >&6; }
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 fi
 
 
-   if test ! -z "${PCRE_CONFIG}"; then
-      { $as_echo "$as_me:${as_lineno-$LINENO}: checking checking pcre version equal or greater than ${PCRE_MIN_VERSION}" >&5
-$as_echo_n "checking checking pcre version equal or greater than ${PCRE_MIN_VERSION}... " >&6; }
-      PCRE_VERSION=$(${PCRE_CONFIG} --version)
-      as_arg_v1="${PCRE_VERSION}"
-as_arg_v2="${PCRE_MIN_VERSION}"
+   if test ! -z "${PCRE2_CONFIG}"; then
+      { $as_echo "$as_me:${as_lineno-$LINENO}: checking checking pcre2 version equal or greater than ${PCRE2_MIN_VERSION}" >&5
+$as_echo_n "checking checking pcre2 version equal or greater than ${PCRE2_MIN_VERSION}... " >&6; }
+      PCRE2_VERSION=$(${PCRE2_CONFIG} --version)
+      as_arg_v1="${PCRE2_VERSION}"
+as_arg_v2="${PCRE2_MIN_VERSION}"
 awk "$as_awk_strverscmp" v1="$as_arg_v1" v2="$as_arg_v2" /dev/null
 case $? in #(
   1) :
-    PCRE_CONFIG=false ;; #(
+    PCRE2_CONFIG=false ;; #(
   0) :
      ;; #(
   2) :
@@ -5239,7 +5239,7 @@ case $? in #(
   *) :
      ;;
 esac
-      if test "${PCRE_CONFIG}" != false; then
+      if test "${PCRE2_CONFIG}" != false; then
          { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
       else
@@ -5247,32 +5247,33 @@ $as_echo "yes" >&6; }
 $as_echo "no" >&6; }
       fi
    else
-      PCRE_CONFIG=false
+      PCRE2_CONFIG=false
    fi
 fi
 
-if test "${PCRE_CONFIG}" != false; then
-  PCRE_PATH=$(${PCRE_CONFIG} --prefix)
-  as_ac_Header=`$as_echo "ac_cv_header_"$PCRE_PATH/include/pcre.h"" | $as_tr_sh`
-ac_fn_c_check_header_mongrel "$LINENO" ""$PCRE_PATH/include/pcre.h"" "$as_ac_Header" "$ac_includes_default"
+if test "${PCRE2_CONFIG}" != false; then
+  PCRE2_PATH=$(${PCRE2_CONFIG} --prefix)
+  as_ac_Header=`$as_echo "ac_cv_header_"$PCRE2_PATH/include/pcre2.h"" | $as_tr_sh`
+ac_fn_c_check_header_compile "$LINENO" ""$PCRE2_PATH/include/pcre2.h"" "$as_ac_Header" "#define PCRE2_CODE_UNIT_WIDTH 8
+"
 if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
 
 else
-  PCRE_CONFIG=false
+  PCRE2_CONFIG=false
 fi
 
 
 fi
 
-if test "$PCRE_CONFIG" != "false"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: using system PCRE regular expressions library" >&5
-$as_echo "$as_me: using system PCRE regular expressions library" >&6;}
+if test "$PCRE2_CONFIG" != "false"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: using system PCRE2 regular expressions library" >&5
+$as_echo "$as_me: using system PCRE2 regular expressions library" >&6;}
 
   if test "x$CFLAGS" = "x"; then
-    test "x$silent" != "xyes" && echo "  setting CFLAGS to \"`$PCRE_CONFIG --cflags`\""
-    CFLAGS="`$PCRE_CONFIG --cflags`"
+    test "x$silent" != "xyes" && echo "  setting CFLAGS to \"`$PCRE2_CONFIG --cflags`\""
+    CFLAGS="`$PCRE2_CONFIG --cflags`"
   else
-    apr_addto_bugger="`$PCRE_CONFIG --cflags`"
+    apr_addto_bugger="`$PCRE2_CONFIG --cflags`"
     for i in $apr_addto_bugger; do
       apr_addto_duplicate="0"
       for j in $CFLAGS; do
@@ -5290,10 +5291,10 @@ $as_echo "$as_me: using system PCRE regular expressions library" >&6;}
 
 
   if test "x$LIBS" = "x"; then
-    test "x$silent" != "xyes" && echo "  setting LIBS to \"`$PCRE_CONFIG --libs`\""
-    LIBS="`$PCRE_CONFIG --libs`"
+    test "x$silent" != "xyes" && echo "  setting LIBS to \"`$PCRE2_CONFIG --libs8`\""
+    LIBS="`$PCRE2_CONFIG --libs8`"
   else
-    apr_addto_bugger="`$PCRE_CONFIG --libs`"
+    apr_addto_bugger="`$PCRE2_CONFIG --libs8`"
     for i in $apr_addto_bugger; do
       apr_addto_duplicate="0"
       for j in $LIBS; do
@@ -5310,14 +5311,14 @@ $as_echo "$as_me: using system PCRE regular expressions library" >&6;}
   fi
 
 else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: using bundled PCRE regular expressions library" >&5
-$as_echo "$as_me: using bundled PCRE regular expressions library" >&6;}
+  { $as_echo "$as_me:${as_lineno-$LINENO}: using bundled PCRE2 regular expressions library" >&5
+$as_echo "$as_me: using bundled PCRE2 regular expressions library" >&6;}
 
   if test "x$INCLUDES" = "x"; then
-    test "x$silent" != "xyes" && echo "  setting INCLUDES to \"-Ipcre\""
-    INCLUDES="-Ipcre"
+    test "x$silent" != "xyes" && echo "  setting INCLUDES to \"-Ipcre2\""
+    INCLUDES="-Ipcre2"
   else
-    apr_addto_bugger="-Ipcre"
+    apr_addto_bugger="-Ipcre2"
     for i in $apr_addto_bugger; do
       apr_addto_duplicate="0"
       for j in $INCLUDES; do
@@ -5335,10 +5336,10 @@ $as_echo "$as_me: using bundled PCRE regular expressions library" >&6;}
 
 
   if test "x$LDFLAGS" = "x"; then
-    test "x$silent" != "xyes" && echo "  setting LDFLAGS to \""-Lpcre/.libs"\""
-    LDFLAGS=""-Lpcre/.libs""
+    test "x$silent" != "xyes" && echo "  setting LDFLAGS to \""-Lpcre2/.libs"\""
+    LDFLAGS=""-Lpcre2/.libs""
   else
-    apr_addto_bugger=""-Lpcre/.libs""
+    apr_addto_bugger=""-Lpcre2/.libs""
     for i in $apr_addto_bugger; do
       apr_addto_duplicate="0"
       for j in $LDFLAGS; do
@@ -5354,7 +5355,7 @@ $as_echo "$as_me: using bundled PCRE regular expressions library" >&6;}
     done
   fi
 
-  PCRE_DEP="pcre/.libs/libpcre.a"
+  PCRE2_DEP="pcre2/.libs/libpcre2-8.a"
 
   # save our work to this point; this allows the sub-package to use it
   cat >confcache <<\_ACEOF
@@ -5443,12 +5444,12 @@ $as_echo "$as_me: not updating unwritable cache $cache_file" >&6;}
 fi
 rm -f confcache
 
-  echo "configuring package in src/pcre now"
+  echo "configuring package in src/pcre2 now"
   ac_popdir=`pwd`
-  apr_config_subdirs="src/pcre"
-  test -d src/pcre || $mkdir_p src/pcre
-  ac_abs_srcdir=`(cd $srcdir/src/pcre && pwd)`
-  cd src/pcre
+  apr_config_subdirs="src/pcre2"
+  test -d src/pcre2 || $mkdir_p src/pcre2
+  ac_abs_srcdir=`(cd $srcdir/src/pcre2 && pwd)`
+  cd src/pcre2
 
       # A "../" for each directory in /$config_subdirs.
       ac_dots=`echo $apr_config_subdirs|sed -e 's%^\./%%' -e 's%[^/]$%&/%' -e 's%[^/]*/%../%g'`
@@ -5469,7 +5470,7 @@ rm -f confcache
   for apr_configure_arg in $ac_configure_args
   do
     case "$apr_configure_arg" in
-      --with-pcre=*|\'--with-pcre=*)
+      --with-pcre2=*|\'--with-pcre2=*)
         continue ;;
     esac
     apr_configure_args="$apr_configure_args$apr_sep'$apr_configure_arg'"
@@ -5483,9 +5484,9 @@ rm -f confcache
 
               if eval $SHELL $ac_abs_srcdir/configure $apr_configure_args --cache-file=$ac_sub_cache_file --srcdir=$ac_abs_srcdir
   then :
-    echo "src/pcre configured properly"
+    echo "src/pcre2 configured properly"
   else
-    echo "configure failed for src/pcre"
+    echo "configure failed for src/pcre2"
     exit 1
   fi
 

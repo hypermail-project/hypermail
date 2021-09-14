@@ -5,6 +5,10 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.5.0
 ============================
 
+2021-09-14 Jose Kahan
+	* src/struct.c src/quotes.c configure.ac src/Makefile.in pcre2/
+	Support for PCRE2. Updating shipped PCRE2 lib to upstream v10.37.
+
 2021-09-10 Jose Kahan
 	* src/Makefile.in
 	Add convert-css rule to use contrib/csstoc.pl to convert

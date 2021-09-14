@@ -15,8 +15,8 @@ GDBM_INCLUDE=""
 GDBM_LIB=""
 FNV_DEP=""
 TRIO_DEP=""
-PCRE_DEP=""
-PCRE_MIN_VERSION="8.39"
+PCRE2_DEP=""
+PCRE2_MIN_VERSION="10.32"
 
 dnl ===========================================================================
 dnl Get host, target and build variables filled with appropriate info.
@@ -374,105 +374,106 @@ else
   TRIO_DEP="trio/libtrio.a"
   APR_SUBDIR_CONFIG([src/trio],
                       [CFLAGS=[-DTRIO_MINIMAL]],
-  		      [--with-pcre=*|\'--with-pcre=*])
+  		      [--with-pcre2=*|\'--with-pcre2=*])
   AC_SUBST([TRIO_DEP])
 fi
 
 dnl
-dnl PCRE: select whether to use an external, the system, or the bundled PCRE lib
+dnl PCRE2: select whether to use an external, the system, or the bundled PCRE2 lib
 dnl partially borrowed from Apache's configure.in
 dnl
 
 dnl bundled pcre lib
 AC_ARG_ENABLE(bundled_pcre, 
-	    AS_HELP_STRING([--enable-bundled-pcre],
-                           [Force the use of the bundled PCRE library instead of the system one]))
+	    AS_HELP_STRING([--enable-bundled-pcre2],
+                           [Force the use of the bundled PCRE2 library instead of the system one]))
 
-dnl external PCRE lib
-AC_ARG_WITH(external_pcre, 
-	    AS_HELP_STRING([--with-external-pcre=PATH_TO_PCRE_DIR|PATH_TO_PCRE_CONFIG_SCRIPT],
-                           [Use an external PCRE library instead of the system or the bundled one]))
+dnl external PCRE2 lib
+AC_ARG_WITH(external_pcre2, 
+	    AS_HELP_STRING([--with-external-pcre2=PATH_TO_PCRE2_DIR|PATH_TO_PCRE2_CONFIG_SCRIPT],
+                           [Use an external PCRE2 library instead of the system or the bundled one]))
 
-AC_MSG_NOTICE(checking for PCRE regular expressions library)
+AC_MSG_NOTICE(checking for PCRE2 regular expressions library)
 
 dnl if user selected the bundled one, give it priority over the bundled one
-if test ! -z ${enable_bundled_pcre}; then
-   with_external_pcre=""
+if test ! -z ${enable_bundled_pcre2}; then
+   with_external_pcre2=""
 fi   
 
-case $with_external_pcre in
- /*) AC_MSG_NOTICE(--with-external-pcre => checking for an external libpcre)
-     AC_MSG_CHECKING(for pcre-config)
-     if test -d "$with_external_pcre" && test -x "$with_external_pcre/pcre-config"; then
-       PCRE_CONFIG=$with_external_pcre/pcre-config
-     elif test -x "$with_external_pcre"; then
-       PCRE_CONFIG=$with_external_pcre
+case $with_external_pcre2 in
+ /*) AC_MSG_NOTICE(--with-external-pcre2 => checking for an external libpcre2)
+     AC_MSG_CHECKING(for pcre2-config)
+     if test -d "$with_external_pcre" && test -x "$with_external_pcre2/pcre2-config"; then
+       PCRE2_CONFIG=$with_external_pcre2/pcre2-config
+     elif test -x "$with_external_pcre2"; then
+       PCRE2_CONFIG=$with_external_pcre2
      else
        AC_MSG_RESULT(no)
-       AC_MSG_ERROR(${PCRE_CONFIG} does not point to a directory or pcre-config)
+       AC_MSG_ERROR(${PCRE2_CONFIG} does not point to a directory or pcre2-config)
      fi
-     AC_MSG_RESULT(${PCRE_CONFIG})
+     AC_MSG_RESULT(${PCRE2_CONFIG})
      
-     AC_MSG_CHECKING(for pcre version equal or greater than ${PCRE_MIN_VERSION})
-     if test -f "${PCRE_CONFIG}" && test -x "${PCRE_CONFIG}"; then
-        PCRE_VERSION=$(${PCRE_CONFIG} --version)
-        AS_VERSION_COMPARE("${PCRE_VERSION}", "${PCRE_MIN_VERSION}",
-                           [PCRE_CONFIG=false], [], [])
-        if test "${PCRE_CONFIG}" != false; then
+     AC_MSG_CHECKING(for pcre2 version equal or greater than ${PCRE2_MIN_VERSION})
+     if test -f "${PCRE2_CONFIG}" && test -x "${PCRE2_CONFIG}"; then
+        PCRE2_VERSION=$(${PCRE2_CONFIG} --version)
+        AS_VERSION_COMPARE("${PCRE2_VERSION}", "${PCRE2_MIN_VERSION}",
+                           [PCRE2_CONFIG=false], [], [])
+        if test "${PCRE2_CONFIG}" != false; then
            AC_MSG_RESULT(yes)
         else
            AC_MSG_RESULT(no)
-           AC_MSG_ERROR(the PCRE library version must be equal or greater than ${PCRE_MIN_VERSION})
+           AC_MSG_ERROR(the PCRE2 library version must be equal or greater than ${PCRE2_MIN_VERSION})
         fi
      else
         AC_MSG_RESULT(no)
-        AC_MSG_ERROR(${PCRE_CONFIG} does not point to a script)
+        AC_MSG_ERROR(${PCRE2_CONFIG} does not point to a script)
      fi
      ;;
      
-  *) PCRE_CONFIG=false
+  *) PCRE2_CONFIG=false
      ;;
 esac
 
 dnl nope; do we have a system PCRE lib?
-if test -z "${enable_bundled_pcre}" && test -z "${PCRE_CONFIG}" -o "${PCRE_CONFIG}" = "false"; then
-   AC_MSG_NOTICE(checking for a system libpcre)
-   AC_PATH_PROG([PCRE_CONFIG], [pcre-config], [])
-   if test ! -z "${PCRE_CONFIG}"; then
-      AC_MSG_CHECKING(checking pcre version equal or greater than ${PCRE_MIN_VERSION})
-      PCRE_VERSION=$(${PCRE_CONFIG} --version)
-      AS_VERSION_COMPARE("${PCRE_VERSION}", "${PCRE_MIN_VERSION}",
-                         [PCRE_CONFIG=false], [], [])
-      if test "${PCRE_CONFIG}" != false; then
+if test -z "${enable_bundled_pcre2}" && test -z "${PCRE2_CONFIG}" -o "${PCRE2_CONFIG}" = "false"; then
+   AC_MSG_NOTICE(checking for a system libpcre2)
+   AC_PATH_PROG([PCRE2_CONFIG], [pcre2-config], [])
+   if test ! -z "${PCRE2_CONFIG}"; then
+      AC_MSG_CHECKING(checking pcre2 version equal or greater than ${PCRE2_MIN_VERSION})
+      PCRE2_VERSION=$(${PCRE2_CONFIG} --version)
+      AS_VERSION_COMPARE("${PCRE2_VERSION}", "${PCRE2_MIN_VERSION}",
+                         [PCRE2_CONFIG=false], [], [])
+      if test "${PCRE2_CONFIG}" != false; then
          AC_MSG_RESULT(yes)
       else
          AC_MSG_RESULT(no)
       fi
    else
-      PCRE_CONFIG=false
+      PCRE2_CONFIG=false
    fi
 fi
 
 dnl found a library, do we have compilation headers?
-if test "${PCRE_CONFIG}" != false; then
-  PCRE_PATH=$(${PCRE_CONFIG} --prefix)
-  AC_CHECK_HEADER(["$PCRE_PATH/include/pcre.h"], [ ],[PCRE_CONFIG=false])
+if test "${PCRE2_CONFIG}" != false; then
+  PCRE2_PATH=$(${PCRE2_CONFIG} --prefix)
+  AC_CHECK_HEADER(["$PCRE2_PATH/include/pcre2.h"], [ ],[PCRE2_CONFIG=false],
+  [#define PCRE2_CODE_UNIT_WIDTH 8])
 fi
 
 dnl PCRE conclusion
-if test "$PCRE_CONFIG" != "false"; then
-  AC_MSG_NOTICE([using system PCRE regular expressions library])
-  APR_ADDTO(CFLAGS, [`$PCRE_CONFIG --cflags`])
-  APR_ADDTO(LIBS, [`$PCRE_CONFIG --libs`])
+if test "$PCRE2_CONFIG" != "false"; then
+  AC_MSG_NOTICE([using system PCRE2 regular expressions library])
+  APR_ADDTO(CFLAGS, [`$PCRE2_CONFIG --cflags`])
+  APR_ADDTO(LIBS, [`$PCRE2_CONFIG --libs8`])
 else
-  AC_MSG_NOTICE([using bundled PCRE regular expressions library])
-  APR_ADDTO(INCLUDES, [-Ipcre])
-  APR_ADDTO(LDFLAGS, "[-Lpcre/.libs]")
-  PCRE_DEP="pcre/.libs/libpcre.a"
-  APR_SUBDIR_CONFIG([src/pcre], 
+  AC_MSG_NOTICE([using bundled PCRE2 regular expressions library])
+  APR_ADDTO(INCLUDES, [-Ipcre2])
+  APR_ADDTO(LDFLAGS, "[-Lpcre2/.libs]")
+  PCRE2_DEP="pcre2/.libs/libpcre2-8.a"
+  APR_SUBDIR_CONFIG([src/pcre2], 
                     [],
-  		    [--with-pcre=*|\'--with-pcre=*])
-  AC_SUBST([PCRE_DEP])
+  		    [--with-pcre2=*|\'--with-pcre2=*])
+  AC_SUBST([PCRE2_DEP])
 fi
 
 dnl
