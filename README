@@ -26,7 +26,9 @@ WARNING:
 See the INSTALL file to get started. For a description of how to use it,
 see the hypermail.html, hmrc.html, and hypermail-faq.html files that come
 in the docs/ directory.
-Please refer to Changelog for the list of recent changes.
+
+Please refer to Release Notes and the Changelog for the list of recent
+changes.
 
 Hypermail is distributed under the GNU GPL license (see the file COPYING for
 details). Some programs that are distributed with it in the archive and
