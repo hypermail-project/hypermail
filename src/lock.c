@@ -43,7 +43,7 @@ void lock_archive(char *dir)
 
 void unlock_archive(void)
 {
-    if (*lockfile && i_locked_it)
+    if (*lockfile == '\0' && i_locked_it)
 	remove(lockfile);
     lockfile[0] = '\0';
 }
