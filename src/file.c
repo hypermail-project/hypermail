@@ -53,10 +53,6 @@
 #endif
 #endif /* HAVE_LIBFNV */
 
-/* JK: Not sure why we had this extern here 10/Sep/2021 */
-/* extern int snprintf(char *str, size_t size, const  char  *format, ...); */
-
-
 /*
 ** Does a file exist?
 */
