@@ -5315,10 +5315,10 @@ else
 $as_echo "$as_me: using bundled PCRE2 regular expressions library" >&6;}
 
   if test "x$INCLUDES" = "x"; then
-    test "x$silent" != "xyes" && echo "  setting INCLUDES to \"-Ipcre2\""
-    INCLUDES="-Ipcre2"
+    test "x$silent" != "xyes" && echo "  setting INCLUDES to \"-Ipcre2/src\""
+    INCLUDES="-Ipcre2/src"
   else
-    apr_addto_bugger="-Ipcre2"
+    apr_addto_bugger="-Ipcre2/src"
     for i in $apr_addto_bugger; do
       apr_addto_duplicate="0"
       for j in $INCLUDES; do
