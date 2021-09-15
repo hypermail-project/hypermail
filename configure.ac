@@ -467,7 +467,7 @@ if test "$PCRE2_CONFIG" != "false"; then
   APR_ADDTO(LIBS, [`$PCRE2_CONFIG --libs8`])
 else
   AC_MSG_NOTICE([using bundled PCRE2 regular expressions library])
-  APR_ADDTO(INCLUDES, [-Ipcre2])
+  APR_ADDTO(INCLUDES, [-Ipcre2/src])
   APR_ADDTO(LDFLAGS, "[-Lpcre2/.libs]")
   PCRE2_DEP="pcre2/.libs/libpcre2-8.a"
   APR_SUBDIR_CONFIG([src/pcre2], 
