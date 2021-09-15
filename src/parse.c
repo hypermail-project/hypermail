@@ -453,7 +453,7 @@ void crossindexthread2(int num)
     struct emailinfo *ep;
     if(!hashnumlookup(num, &ep)) {
 	char errmsg[512];
-        snprintf(errmsg, sizeof(errmsg), 
+        trio_snprintf(errmsg, sizeof(errmsg), 
                  "internal error crossindexthread2 %d", num);
 	progerr(errmsg);
     }
@@ -1650,7 +1650,7 @@ int parsemail(char *mbox,	/* file name */
     if (use_stdin || !mbox || !strcasecmp(mbox, "NONE"))
 	fp = stdin;
     else if ((fp = fopen(mbox, "rb")) == NULL) {
-        snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", 
+        trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", 
                  lang[MSG_CANNOT_OPEN_MAIL_ARCHIVE], mbox);
 	progerr(errmsg);
     }
@@ -2473,9 +2473,9 @@ int parsemail(char *mbox,	/* file name */
 			    /* is there any value for content-encoding or is it missing? */
 			    if (sscanf(ptr, "%63s", code) != EOF) {
 			      
-			      snprintf(line, sizeof(line_buf) - set_ietf_mbox,
-				       " ('%s' %s)\n", code, 
-				       lang[MSG_ENCODING_IS_NOT_SUPPORTED]);
+			      trio_snprintf(line, sizeof(line_buf) - set_ietf_mbox,
+					    " ('%s' %s)\n", code, 
+					    lang[MSG_ENCODING_IS_NOT_SUPPORTED]);
 
 			      bp = addbody(bp, &lp, line,
 					   BODY_HTMLIZED | bodyflags);
@@ -2630,10 +2630,10 @@ int parsemail(char *mbox,	/* file name */
 		    && max_msgnum >= set_startmsgnum) {
 		    emp = hashlookupbymsgid(msgid);
 		    if (!emp) {
-		      snprintf(errmsg, sizeof(errmsg),
-			       "Message with msgid '%s' not found in .hm2index",
-msgid);
-		      progerr(errmsg);
+                        trio_snprintf(errmsg, sizeof(errmsg),
+                                      "Message with msgid '%s' not found in .hm2index",
+                                      msgid);
+                        progerr(errmsg);
 		    }
 		    num = emp->msgnum;
 		    num_added = insert_older_msgs(num);
@@ -2643,8 +2643,8 @@ msgid);
 		    if (hashnumlookup(num, &emp)) {
 			if(strcmp(msgid, emp->msgid)
 			   && !strstr(emp->msgid, "hypermail.dummy")) {
-			    snprintf(errmsg, sizeof(errmsg),
-				     "msgid mismatch %s %s", msgid, emp->msgid);
+			    trio_snprintf(errmsg, sizeof(errmsg),
+                                          "msgid mismatch %s %s", msgid, emp->msgid);
 			    progerr(errmsg);
 			}
 		    }
@@ -3719,20 +3719,20 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
       return 0;
 
     if (set_linkquotes) {
-        snprintf(inreply_start, sizeof(inreply_start), 
-                "<span class=\"heading\">%s</span>: <a href=\"", lang[MSG_IN_REPLY_TO]);
+        trio_snprintf(inreply_start, sizeof(inreply_start), 
+                      "<span class=\"heading\">%s</span>: <a href=\"", lang[MSG_IN_REPLY_TO]);
     }
 
     /* prepare the name of the file that stores the message */
     if (set_nonsequential)
-      trio_asprintf(&filename, "%s%s%s.%s", set_dir,
-		    subdir ? subdir->subdir : "", 
-		    msgnum_id_table[num],
-		    set_htmlsuffix);
+        trio_asprintf(&filename, "%s%s%s.%s", set_dir,
+                      subdir ? subdir->subdir : "", 
+                      msgnum_id_table[num],
+                      set_htmlsuffix);
     else
-      trio_asprintf(&filename, "%s%s%.4d.%s", set_dir,
-		    subdir ? subdir->subdir : "", num, set_htmlsuffix);
-
+        trio_asprintf(&filename, "%s%s%.4d.%s", set_dir,
+                      subdir ? subdir->subdir : "", num, set_htmlsuffix);
+    
     /*
      * fromdate == <!-- received="Wed Jun  3 10:12:00 1998 CDT" -->
      * date     == <!-- sent="Wed, 3 Jun 1998 10:12:07 -0500 (CDT)" -->
@@ -4025,29 +4025,29 @@ static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
 	        if (num_from_gdbm == -1) {
 		    if (is_empty_archive())
 		        return 0;
-                    snprintf(errmsg, sizeof(errmsg),
-			    "Error: This archive does not appear to be empty, "
-			    "and it has no gdbm file\n(%s). If you want to "
-			    "use incremental updates with the folder_by_date\n"
-			    "option, you must start with an empty archive or "
-			    "with an archive\nthat was generated using the "
-			    "usegdbm option.", GDBM_INDEX_NAME);
+                    trio_snprintf(errmsg, sizeof(errmsg),
+                                  "Error: This archive does not appear to be empty, "
+                                  "and it has no gdbm file\n(%s). If you want to "
+                                  "use incremental updates with the folder_by_date\n"
+                                  "option, you must start with an empty archive or "
+                                  "with an archive\nthat was generated using the "
+                                  "usegdbm option.", GDBM_INDEX_NAME);
 		}
 		else
-                    snprintf(errmsg, sizeof(errmsg),
-			    "Error set_folder_by_date msg %d num_from_gdbm %d",
-			    first_read_body, num_from_gdbm);
+                    trio_snprintf(errmsg, sizeof(errmsg),
+                                  "Error set_folder_by_date msg %d num_from_gdbm %d",
+                                  first_read_body, num_from_gdbm);
 	    }
 	    else
-                snprintf(errmsg, sizeof(errmsg), "folder_by_date with incremental update requires usegdbm option");
+                trio_snprintf(errmsg, sizeof(errmsg), "folder_by_date with incremental update requires usegdbm option");
 #else
-                snprintf(errmsg, sizeof(errmsg),
-	                "folder_by_date requires usegdbm option"
-			". gdbm support has not been compiled into this"
-			" copy of hypermail. You probably need to install"
-			"gdbm and rerun configure.");
+                trio_snprintf(errmsg, sizeof(errmsg),
+                              "folder_by_date requires usegdbm option"
+                              ". gdbm support has not been compiled into this"
+                              " copy of hypermail. You probably need to install"
+                              "gdbm and rerun configure.");
 #endif
-	    progerr(errmsg);
+                progerr(errmsg);
 	}
     }
 
@@ -4503,32 +4503,32 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 	return;
 
     if (remove_maybes || set_linkquotes) {
-        snprintf(current_maybe_pattern, sizeof(current_maybe_pattern), 
-                "<li><span class=\"heading\">%s</span>: <a href=", lang[MSG_MAYBE_REPLY]);
-        snprintf(current_link_maybe_pattern, sizeof(current_maybe_pattern), 
-                "<li><a id=\"replies\"></a><span class=\"heading\">%s</span>: <a href=", 
-		 lang[MSG_MAYBE_REPLY]);
-        snprintf(current_reply_pattern, sizeof(current_reply_pattern), 
-                "<li><span class=\"heading\">%s</span>: <a href=", lang[MSG_REPLY]);
-        snprintf(current_link_reply_pattern, sizeof(current_reply_pattern), 
-                "<li><a id=\"replies\"></a><span class=\"heading\">%s</span>: <a href=",
-		 lang[MSG_REPLY]);
-        snprintf(current_nextinthread_pattern, 
-                sizeof(current_nextinthread_pattern), 
-                "<li><span class=\"heading\">%s</span>: <a href=", lang[MSG_NEXT_IN_THREAD]);
-        snprintf(current_next_pattern, sizeof(current_next_pattern), 
-                "<li><class span=\"heading\">%s</span>: <a href=", lang[MSG_NEXT_MESSAGE]);
+        trio_snprintf(current_maybe_pattern, sizeof(current_maybe_pattern), 
+                      "<li><span class=\"heading\">%s</span>: <a href=", lang[MSG_MAYBE_REPLY]);
+        trio_snprintf(current_link_maybe_pattern, sizeof(current_maybe_pattern), 
+                      "<li><a id=\"replies\"></a><span class=\"heading\">%s</span>: <a href=", 
+                      lang[MSG_MAYBE_REPLY]);
+        trio_snprintf(current_reply_pattern, sizeof(current_reply_pattern), 
+                      "<li><span class=\"heading\">%s</span>: <a href=", lang[MSG_REPLY]);
+        trio_snprintf(current_link_reply_pattern, sizeof(current_reply_pattern), 
+                      "<li><a id=\"replies\"></a><span class=\"heading\">%s</span>: <a href=",
+                      lang[MSG_REPLY]);
+        trio_snprintf(current_nextinthread_pattern, 
+                      sizeof(current_nextinthread_pattern), 
+                      "<li><span class=\"heading\">%s</span>: <a href=", lang[MSG_NEXT_IN_THREAD]);
+        trio_snprintf(current_next_pattern, sizeof(current_next_pattern), 
+                      "<li><class span=\"heading\">%s</span>: <a href=", lang[MSG_NEXT_MESSAGE]);
 
 	/* backwards compatiblity */
-	snprintf(old2_maybe_pattern, sizeof(old2_maybe_pattern), 
-                "<li><strong>%s:</strong> <a href=", lang[MSG_MAYBE_REPLY]);
-        snprintf(old2_reply_pattern, sizeof(old2_reply_pattern), 
-                "<li><strong>%s:</strong> <a href=", lang[MSG_REPLY]);
-        snprintf(old2_nextinthread_pattern, 
-                sizeof(old2_nextinthread_pattern), 
-                "<li><strong>%s:</strong> <a href=", lang[MSG_NEXT_IN_THREAD]);
-        snprintf(old2_next_pattern, sizeof(old2_next_pattern), 
-                "<li><strong>%s:</strong> <a href=", lang[MSG_NEXT_MESSAGE]);
+	trio_snprintf(old2_maybe_pattern, sizeof(old2_maybe_pattern), 
+                      "<li><strong>%s:</strong> <a href=", lang[MSG_MAYBE_REPLY]);
+        trio_snprintf(old2_reply_pattern, sizeof(old2_reply_pattern), 
+                      "<li><strong>%s:</strong> <a href=", lang[MSG_REPLY]);
+        trio_snprintf(old2_nextinthread_pattern, 
+                      sizeof(old2_nextinthread_pattern), 
+                      "<li><strong>%s:</strong> <a href=", lang[MSG_NEXT_IN_THREAD]);
+        trio_snprintf(old2_next_pattern, sizeof(old2_next_pattern), 
+                      "<li><strong>%s:</strong> <a href=", lang[MSG_NEXT_MESSAGE]);
     }
 
     if (set_linkquotes) {

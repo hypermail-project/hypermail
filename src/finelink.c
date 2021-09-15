@@ -168,7 +168,7 @@ static int add_anchor(int msgnum, int quoting_msgnum, int quote_num, const char 
     }
     tmpfilename = htmlfilename("tmp", ep, "tmp");	/* AUDIT biege: where is the tmp-file created? cwd? what about checking the return-value */
     if ((fp2 = fopen(tmpfilename, "w")) == NULL) {
-	snprintf(errmsg, sizeof(errmsg), "Couldn't write \"%s\".", tmpfilename);
+	trio_snprintf(errmsg, sizeof(errmsg), "Couldn't write \"%s\".", tmpfilename);
 	progerr(errmsg);
     }
     while (fgets(buffer, sizeof(buffer), fp1)) {
@@ -242,11 +242,11 @@ static int add_anchor(int msgnum, int quoting_msgnum, int quote_num, const char 
 	remove(tmpfilename);
     else {
 	if (rename(tmpfilename, filename) == -1) {
-	    snprintf(errmsg, sizeof(errmsg), "Couldn't rename \"%s\" to %s.", tmpfilename, filename);
+	    trio_snprintf(errmsg, sizeof(errmsg), "Couldn't rename \"%s\" to %s.", tmpfilename, filename);
 	    progerr(errmsg);
 	}
 	if (chmod(filename, set_filemode) == -1) {
-	    snprintf(errmsg, sizeof(errmsg), "Couldn't chmod \"%s\" to %o.", filename, set_filemode);
+	    trio_snprintf(errmsg, sizeof(errmsg), "Couldn't chmod \"%s\" to %o.", filename, set_filemode);
 	    progerr(errmsg);
 	}
     }
@@ -522,13 +522,13 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
 
     if (!hashnumlookup(new_reply_to, &ep2))
 	return;
-    snprintf(tmpfilename, sizeof(tmpfilename), "%s/aaaa.tmp", set_dir);	/* AUDIT biege: poss. BOF. */
+    trio_snprintf(tmpfilename, sizeof(tmpfilename), "%s/aaaa.tmp", set_dir);	/* AUDIT biege: poss. BOF. */
     if ((fp1 = fopen(filename, "r")) == NULL) {
-        snprintf(errmsg, sizeof(errmsg), "Couldn't read \"%s\".", filename);
+        trio_snprintf(errmsg, sizeof(errmsg), "Couldn't read \"%s\".", filename);
 	progerr(errmsg);
     }
     if ((fp2 = fopen(tmpfilename, "w")) == NULL) {
-        snprintf(errmsg, sizeof(errmsg), "Couldn't write \"%s\".", tmpfilename);
+        trio_snprintf(errmsg, sizeof(errmsg), "Couldn't write \"%s\".", tmpfilename);
 	progerr(errmsg);
     }
     while (fgets(buffer, sizeof(buffer), fp1)) {
@@ -596,7 +596,7 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
 		int suppress = 0;
 		for (i = 0; patts[i]; ++i) {
 		    char temp[256];
-		    snprintf(temp,sizeof(temp), patts[i], lang[indices[i]]);
+		    trio_snprintf(temp,sizeof(temp), patts[i], lang[indices[i]]);
 		    if ((ptr = strcasestr(buffer, temp))
 			&& (i < 4 || new_reply_to == atoi(ptr + strlen(temp)))) {
 			suppress = 1;
@@ -619,7 +619,7 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
     fclose(fp2);
 
     if (rename(tmpfilename, filename) == -1) {
-	snprintf(errmsg, sizeof(errmsg), "Couldn't rename \"%s\" to %s.", tmpfilename, filename);
+	trio_snprintf(errmsg, sizeof(errmsg), "Couldn't rename \"%s\" to %s.", tmpfilename, filename);
 	progerr(errmsg);
     }
 }

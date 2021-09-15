@@ -13,7 +13,7 @@ void lock_archive(char *dir)
     int count = 0;		/* # minutes waited */
     i_locked_it = 0;		/* guilty until proven innocent */
 
-    snprintf(lockfile, sizeof(lockfile), "%s/%s", dir, LOCKBASE);
+    trio_snprintf(lockfile, sizeof(lockfile), "%s/%s", dir, LOCKBASE);
 
     while ((fp = fopen(lockfile, "r")) != NULL) {
 	fgets(buffer, MAXLINE-1, fp);
@@ -36,14 +36,14 @@ void lock_archive(char *dir)
 	fclose(fp);
     }
     else if (dir[0]) {
-	snprintf(errmsg, sizeof(errmsg), "Couldn't create lock file \"%s\".", lockfile);
+	trio_snprintf(errmsg, sizeof(errmsg), "Couldn't create lock file \"%s\".", lockfile);
 	progerr(errmsg);
     }
 }
 
 void unlock_archive(void)
 {
-    if (lockfile[0] && i_locked_it)
+    if (*lockfile && i_locked_it)
 	remove(lockfile);
     lockfile[0] = '\0';
 }

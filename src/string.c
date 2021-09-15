@@ -279,7 +279,7 @@ char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *
         printf("I18N: libiconv open error.\n");
       }
     }
-    origlen=snprintf(origconvbuf,origbuflen, "(unknown charset) %s",string);
+    origlen=trio_snprintf(origconvbuf,origbuflen, "(unknown charset) %s",string);
     origconvbuf[origlen]=0x0;
     *len=origlen;
     return origconvbuf;
@@ -294,21 +294,21 @@ char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *
       if(set_showprogress){
 	printf("I18N: buffer overflow.\n");
       }
-      origlen=snprintf(origconvbuf, origbuflen,"(buffer overflow) %s",string);
+      origlen=trio_snprintf(origconvbuf, origbuflen,"(buffer overflow) %s",string);
       error = 1;
       break;
     case EILSEQ:
       if(set_showprogress){
 	printf("I18N: invalid multibyte sequence, from %s to %s: %s.\n",fromcharset,tocharset,string);
       }
-      origlen=snprintf(origconvbuf, origbuflen,"(wrong string) %s",string);
+      origlen=trio_snprintf(origconvbuf, origbuflen,"(wrong string) %s",string);
       error = 1;
       break;
     case EINVAL:
       if(set_showprogress){
 	printf("I18N: incomplete multibyte sequence, from %s to %s: %s.\n",fromcharset,tocharset,string);
       }
-      origlen=snprintf(origconvbuf, origbuflen,"(wrong string) %s",string);
+      origlen=trio_snprintf(origconvbuf, origbuflen,"(wrong string) %s",string);
       error = 1;
       break;
     }
@@ -392,7 +392,7 @@ char *i18n_utf2numref(char *instr,int escape){
         PushByte(&buff,p);
       }
     }else{
-      snprintf(strbuf,10,"&#%04d;",p);
+      trio_snprintf(strbuf,10,"&#%04d;",p);
       PushString(&buff,strbuf);
     }
     ucs+=2;
@@ -1335,7 +1335,7 @@ static char *translateurl(char *line, int in_mailcommand)
       default:
 	/* URIs MUST NOT have non-ascii characters */
 	/* otherwise, we must use IRI */
-	hexbuflen=snprintf(hexbuf,4,"%%%02X",*line);
+	hexbuflen=trio_snprintf(hexbuf,4,"%%%02X",*line);
 	PushString(&buff,hexbuf);
 	break;
       }

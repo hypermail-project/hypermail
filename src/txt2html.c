@@ -270,9 +270,9 @@ static void endlist(FILE *fp, int n)
 	    fprintf(fp, "\n%s</ol>\n", list_indent);
 	}
 	else {
-            snprintf(errmsg, sizeof(errmsg),
-                "Encountered list of unknown type %d\n", list[listnum - 1]);
-	    progerr(errmsg);
+            trio_snprintf(errmsg, sizeof(errmsg),
+                          "Encountered list of unknown type %d\n", list[listnum - 1]);
+            progerr(errmsg);
 	}
     }
     islist = (listnum != 0);
