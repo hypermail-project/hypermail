@@ -194,7 +194,7 @@ typedef enum {
 /* conversions supported by string.c:parseemail() */
 typedef enum {
   MAKEMAILCOMMAND = 1, /* makes links clickable */
-  REPLACE_DOMAIN = 2,  /* replaces domain by antispamdomain */
+  REPLACE_DOMAIN = 2  /* replaces domain by antispamdomain */
 } parseemail_conversion_t;
 
 /* 

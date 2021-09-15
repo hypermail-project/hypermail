@@ -366,7 +366,7 @@ int main(int argc, char **argv)
 
 #ifdef HAVE_LOCALE_H
 	if (!setlocale(LC_ALL, locale_code)) {
-            char *rv;
+            char *rv = NULL;
             
             if (!strcmp(locale_code, "en_US")) {
                 /* many systems now install by defualt en_US.UTF-8.
