@@ -242,7 +242,7 @@ static int addb(const char *token, struct body *bp)
     if (!text_tree) {
 	next_token = (struct search_text *)malloc(max_tokens * sizeof(struct search_text));
 	if (!next_token) {
-	    snprintf(errmsg, sizeof(errmsg), "Couldn't allocate %d bytes of memory.", max_tokens * sizeof(struct search_text));
+	    trio_snprintf(errmsg, sizeof(errmsg), "Couldn't allocate %d bytes of memory.", max_tokens * sizeof(struct search_text));
 	    progerr(errmsg);
 	}
 	memset(next_token, 0, max_tokens * sizeof(struct search_text));
@@ -254,7 +254,7 @@ static int addb(const char *token, struct body *bp)
 	if (!p) {
 	    *pp = p = next_token++;
 	    if (next_token >= text_tree + max_tokens) {
-		snprintf(errmsg, sizeof(errmsg), "Too many distinct tokens(%d)", max_tokens);
+		trio_snprintf(errmsg, sizeof(errmsg), "Too many distinct tokens(%d)", max_tokens);
 		progerr(errmsg);
 	    }
 	    p->left = p->right = NULL;
@@ -270,7 +270,7 @@ static int addb(const char *token, struct body *bp)
 	    p->count = 1;
 #endif
 	    if (!next_itoken >= max_tokens) {
-		snprintf(errmsg, sizeof(errmsg), "Internal error - too many distinct tokens.");
+		trio_snprintf(errmsg, sizeof(errmsg), "Internal error - too many distinct tokens.");
 		progerr(errmsg);
 	    }
 	    return p->itok;
@@ -303,10 +303,10 @@ static void add_bigram(BIGRAM_TYPE b1, BIGRAM_TYPE b2, struct body *bp, char *pt
 	    printf("bigram_count %d\n\n", bigram_count);
 		bigram_tree = (struct bigram_tree_entry *)malloc(bigram_count * sizeof(struct bigram_tree_entry));
 	if (!bigram_tree) {
-			snprintf(errmsg, sizeof(errmsg), "Couldn't allocate %d bytes of memory.", bigram_count * sizeof(struct bigram_tree_entry));
+            trio_snprintf(errmsg, sizeof(errmsg), "Couldn't allocate %d bytes of memory.", bigram_count * sizeof(struct bigram_tree_entry));
 	    progerr(errmsg);
 	}
-		memset(bigram_tree, 0, bigram_count * sizeof(struct bigram_tree_entry));
+        memset(bigram_tree, 0, bigram_count * sizeof(struct bigram_tree_entry));
 	next_bigram = bigram_tree;
     }
     ++bi_times_entered;

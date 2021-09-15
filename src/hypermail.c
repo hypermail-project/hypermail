@@ -360,7 +360,7 @@ int main(int argc, char **argv)
 	locale_code = NULL;
 
     if ((tlang = valid_language(set_language, &locale_code)) == NULL) {
-	snprintf(errmsg, sizeof(errmsg), "\"%s\" %s.", set_language, lang[MSG_LANGUAGE_NOT_SUPPORTED]);
+	trio_snprintf(errmsg, sizeof(errmsg), "\"%s\" %s.", set_language, lang[MSG_LANGUAGE_NOT_SUPPORTED]);
 	cmderr(errmsg);
     }
 
@@ -376,7 +376,7 @@ int main(int argc, char **argv)
                 rv = setlocale(LC_ALL, "en_US.UTF-8");
             }
             if (!rv) {
-                snprintf(errmsg, sizeof(errmsg), "WARNING: locale \"%s\", not supported.\n", locale_code);
+                trio_snprintf(errmsg, sizeof(errmsg), "WARNING: locale \"%s\", not supported.\n", locale_code);
                 fprintf(stderr, "%s", errmsg);/* AUDIT biege: avoid format-bug warning */
             }
     }

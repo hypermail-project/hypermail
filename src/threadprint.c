@@ -117,8 +117,8 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 		    unlink(filename);	/* so chmod won't fail if someone else owned it */
 		    fp_stack[level - 1] = fp;
 		    if ((fp = fopen(filename, "w")) == NULL) {
-                        snprintf(errmsg,sizeof(errmsg),"Couldn't write \"%s\".",
-				 filename);
+                        trio_snprintf(errmsg,sizeof(errmsg),"Couldn't write \"%s\".",
+				      filename);
 			progerr(errmsg);
 		    }
 		    sprintf(subject, "thread index level %d", level + 1);
@@ -206,8 +206,8 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 	    sprintf(thread_id, "thread_body%d", ++threadnum);
 	    filenameb = htmlfilename(thread_id, email, set_htmlsuffix);
 	    if ((fp_body = fopen(filenameb, "w")) == NULL) {
-                 snprintf(errmsg, sizeof(errmsg), "Couldn't write \"%s\".", 
-                          filenameb);
+                 trio_snprintf(errmsg, sizeof(errmsg), "Couldn't write \"%s\".", 
+			       filenameb);
 		progerr(errmsg);
 	    }
 	    print_index_header(fp_body, set_label, set_dir,
@@ -340,8 +340,8 @@ finish_thread_file(FILE *fp_body, struct emailinfo *email, char *filenameb)
 		    email->subject, filenameb, TRUE);
 	fclose(fp_body);
 	if (chmod(filenameb, set_filemode) == -1) {
-            snprintf(errmsg, sizeof(errmsg), "Couldn't chmod \"%s\" to %o.", 
-                     filenameb, set_filemode);
+            trio_snprintf(errmsg, sizeof(errmsg), "Couldn't chmod \"%s\" to %o.", 
+			  filenameb, set_filemode);
 	    progerr(errmsg);
 	}
 	free(filenameb);
@@ -393,9 +393,9 @@ static int finish_thread_levels(FILE **fp, int level, int newlevel,
 				"<ul><li><a href=\"%s\">%u replies</a></ul>\n",
 				filename_stack[level], num_replies[level]);
 			if (chmod(filename, set_filemode) == -1) {
-                            snprintf(errmsg, sizeof(errmsg), 
-                                     "Couldn't chmod \"%s\" to %o.", 
-                                     filename, set_filemode);
+                            trio_snprintf(errmsg, sizeof(errmsg), 
+					  "Couldn't chmod \"%s\" to %o.", 
+					  filename, set_filemode);
 			    progerr(errmsg);
 			}
 			num_open_li[level]++;

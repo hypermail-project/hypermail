@@ -823,8 +823,8 @@ void printdates(FILE *fp, struct header *hp, int year, int month, struct emailin
 	  }
 	  else
 	    is_first = TRUE;
-	  snprintf(date_str, sizeof(date_str), "<h2%s class=\"heading\">%s</h2>\n<ul>\n", 
-		  (is_first) ? first_attributes : "", tmp);
+	  trio_snprintf(date_str, sizeof(date_str), "<h2%s class=\"heading\">%s</h2>\n<ul>\n", 
+			(is_first) ? first_attributes : "", tmp);
 	  fprintf (fp, "%s", date_str);
 	  strcpy (prev_date_str, tmp);
 	}
@@ -1984,15 +1984,15 @@ static GDBM_FILE gdbm_init()
     char indexname[MAXFILELEN];
     static GDBM_FILE gp = NULL;
     if (set_usegdbm) {
-	snprintf(indexname, sizeof(indexname), (set_dir[strlen(set_dir) - 1] == '/')
-			 ? "%s%s" : "%s/%s", set_dir, GDBM_INDEX_NAME);
+	trio_snprintf(indexname, sizeof(indexname), (set_dir[strlen(set_dir) - 1] == '/')
+                      ? "%s%s" : "%s/%s", set_dir, GDBM_INDEX_NAME);
 
       /* open the database, creating it if necessary */
 	    
 	if (!(gp = gdbm_open(indexname, 0, GDBM_WRCREAT, 0664, 0))) {
 
 	    if (set_folder_by_date && set_increment && !is_empty_archive()) {
-	        snprintf(errmsg, sizeof(errmsg), "Cannot open or create file \"%s\". Unable to " "do\nincremental updates with the folder_by_date " "option without using that file.", indexname);
+	        trio_snprintf(errmsg, sizeof(errmsg), "Cannot open or create file \"%s\". Unable to " "do\nincremental updates with the folder_by_date " "option without using that file.", indexname);
 		progerr(errmsg);
 	    }
 	/* couldn't open; unlink it rather than risk running
@@ -2169,7 +2169,7 @@ void writearticles(int startnum, int maxnum)
 	}
 	else {
 	  if ((fp = fopen(filename, "w")) == NULL) { /* AUDIT biege:where? */
-	        snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
+	        trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
 		progerr(errmsg);
 	  }
 	  if (set_report_new_file) {
@@ -2345,7 +2345,7 @@ void writearticles(int startnum, int maxnum)
 	}
 	
 	if (newfile && chmod(filename, set_filemode) == -1) {
-	    snprintf(errmsg, sizeof(errmsg), "%s \"%s\": %o.", lang[MSG_CANNOT_CHMOD], filename, set_filemode);
+	    trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\": %o.", lang[MSG_CANNOT_CHMOD], filename, set_filemode);
 	    progerr(errmsg);
 	}
 
@@ -2408,7 +2408,7 @@ void writedates(int amountmsgs, struct emailinfo *email)
 	newfile = 1;
 
     if ((fp = fopen(filename, "w")) == NULL) { /* AUDIT biege: where? */
-	snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
+	trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
 	progerr(errmsg);
     }
 
@@ -2463,7 +2463,7 @@ void writedates(int amountmsgs, struct emailinfo *email)
 
     /* AUDIT biege: depending on the direc. it better to use fchmod(). */
     if (newfile && chmod(filename, set_filemode) == -1) {
-	snprintf(errmsg, sizeof(errmsg), "%s \"%s\": %o.", lang[MSG_CANNOT_CHMOD], filename, set_filemode);
+	trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\": %o.", lang[MSG_CANNOT_CHMOD], filename, set_filemode);
 	progerr(errmsg);
     }
     free(filename);
@@ -2494,8 +2494,8 @@ void writeattachments(int amountmsgs, struct emailinfo *email)
 	newfile = 1;
 
     if ((fp = fopen(filename, "w")) == NULL) {	/* AUDIT biege: where? */
-	 snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
-	progerr(errmsg);
+        trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
+        progerr(errmsg);
     }
 
     if (set_showprogress)
@@ -2548,7 +2548,7 @@ void writeattachments(int amountmsgs, struct emailinfo *email)
     fclose(fp);
 
     if (newfile && chmod(filename, set_filemode) == -1) {
-		snprintf(errmsg, sizeof(errmsg), "%s \"%s\": %o.", lang[MSG_CANNOT_CHMOD], filename, set_filemode);
+        trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\": %o.", lang[MSG_CANNOT_CHMOD], filename, set_filemode);
 	progerr(errmsg);
     }
     free(filename);
@@ -2588,7 +2588,7 @@ void writethreads(int amountmsgs, struct emailinfo *email)
 	newfile = 1;
 
     if ((fp = fopen(filename, "w")) == NULL) {	/* AUDIT biege: where? */
-	snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
+	trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
 	progerr(errmsg);
     }
 
@@ -2629,7 +2629,7 @@ void writethreads(int amountmsgs, struct emailinfo *email)
     fclose(fp);
 
     if (newfile && chmod(filename, set_filemode) == -1) {
-		snprintf(errmsg, sizeof(errmsg), "%s \"%s\": %o.", lang[MSG_CANNOT_CHMOD], filename, set_filemode);
+        trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\": %o.", lang[MSG_CANNOT_CHMOD], filename, set_filemode);
 	progerr(errmsg);
     }
     free(filename);
@@ -2696,7 +2696,7 @@ void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
 	else {
             startline = "<li>";
 	    break_str = "";
-	    snprintf(date_str, sizeof(date_str), "<span class=\"messages-list-date\">(%s)</span>", getindexdatestr(hp->data->date));
+	    trio_snprintf(date_str, sizeof(date_str), "<span class=\"messages-list-date\">(%s)</span>", getindexdatestr(hp->data->date));
 	    endline = "</li>";
 	}
 	fprintf(fp,
@@ -2736,8 +2736,8 @@ void writesubjects(int amountmsgs, struct emailinfo *email)
 	newfile = 1;
 
 	if ((fp = fopen(filename, "w")) == NULL) { /* AUDIT biege: where? */
-	    snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
-	progerr(errmsg);
+	    trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
+            progerr(errmsg);
     }
 
     if (set_showprogress)
@@ -2785,7 +2785,7 @@ void writesubjects(int amountmsgs, struct emailinfo *email)
     fclose(fp);
 
     if (newfile && chmod(filename, set_filemode) == -1) {
-		snprintf(errmsg, sizeof(errmsg), "%s \"%s\": %o.", lang[MSG_CANNOT_CHMOD], filename, set_filemode);
+        trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\": %o.", lang[MSG_CANNOT_CHMOD], filename, set_filemode);
 	progerr(errmsg);
     }
     free(filename);
@@ -2853,7 +2853,7 @@ void printauthors(FILE *fp, struct header *hp, char **oldname,
       else {
         startline = "<li>";
 	break_str = "";
-	snprintf(date_str, sizeof(date_str), "<span class=\"messages-list-date\">(%s)</span>", getindexdatestr(hp->data->date));
+	trio_snprintf(date_str, sizeof(date_str), "<span class=\"messages-list-date\">(%s)</span>", getindexdatestr(hp->data->date));
 	endline = "</li>";
       }
 
@@ -2894,8 +2894,8 @@ void writeauthors(int amountmsgs, struct emailinfo *email)
 	newfile = 1;
 
 	if ((fp = fopen(filename, "w")) == NULL) { /* AUDIT biege: where? */
-	     snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
-	progerr(errmsg);
+            trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
+            progerr(errmsg);
     }
 
     if (set_showprogress)
@@ -2944,7 +2944,7 @@ void writeauthors(int amountmsgs, struct emailinfo *email)
     fclose(fp);
 
     if (newfile && chmod(filename, set_filemode) == -1) {
-	snprintf(errmsg, sizeof(errmsg), "%s \"%s\": %o.", lang[MSG_CANNOT_CHMOD], filename, set_filemode);
+	trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\": %o.", lang[MSG_CANNOT_CHMOD], filename, set_filemode);
 	progerr(errmsg);
     }
     free(filename);
@@ -3005,8 +3005,8 @@ void writehaof(int amountmsgs, struct emailinfo *email)
 	newfile = 1;
 
 	if ((fp = fopen(filename, "w")) == NULL) { /* AUDIT biege: where? */
-	    snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
-	progerr(errmsg);
+	    trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
+            progerr(errmsg);
     }
 
     if (set_showprogress)
@@ -3031,7 +3031,7 @@ void writehaof(int amountmsgs, struct emailinfo *email)
     fclose(fp);
 
     if (newfile && chmod(filename, set_filemode) == -1) {
-	snprintf(errmsg, sizeof(errmsg), "%s \"%s\": %o.", lang[MSG_CANNOT_CHMOD], filename, set_filemode);
+	trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\": %o.", lang[MSG_CANNOT_CHMOD], filename, set_filemode);
 	progerr(errmsg);
     }
     free(filename);
@@ -3119,14 +3119,14 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
 		char subject_title[128];
 		if (!show_index[0][j])
 		    continue;
-		snprintf(buf1, sizeof(buf1), "%sby%s", month_str, save_name[j]);
+		trio_snprintf(buf1, sizeof(buf1), "%sby%s", month_str, save_name[j]);
 		filename = htmlfilename(buf1, NULL, "");
 		fp1 = fopen(filename, "w");
 		if (!fp1) {
-	    	    snprintf(errmsg, sizeof(errmsg), "can't open %s", filename);
+	    	    trio_snprintf(errmsg, sizeof(errmsg), "can't open %s", filename);
 		    progerr(errmsg);
 		}
-		snprintf(subject_title, sizeof(subject_title), "%s %s", month_str_pub, indextypename[j]);
+		trio_snprintf(subject_title, sizeof(subject_title), "%s %s", month_str_pub, indextypename[j]);
 		print_index_header(fp1, set_label, set_dir, subject_title, filename);
 		/* 
 		 * Print out the index page links 
@@ -3235,8 +3235,8 @@ void write_summary_indices(int amount_new)
 		filename = htmlfilename("summary", NULL, set_htmlsuffix);
 		fp = fopen(filename, "w");	/* AUDIT biege: where? */
 		if (!fp) {
-			snprintf(errmsg, sizeof(errmsg), "Couldn't write \"%s\".", filename);
-			progerr(errmsg);
+                    trio_snprintf(errmsg, sizeof(errmsg), "Couldn't write \"%s\".", filename);
+                    progerr(errmsg);
 		}
 		printmonths(fp, filename, amount_new);
 		fclose(fp);
@@ -3274,7 +3274,7 @@ void write_toplevel_indices(int amountmsgs)
     if (!show_index[0][FOLDERS_INDEX])
 	fp = NULL;
     else if ((fp = fopen(filename, "w")) == NULL) {
-        snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
+        trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
 	progerr(errmsg);
     }
     if (fp) {
@@ -3420,9 +3420,9 @@ void write_toplevel_indices(int amountmsgs)
       fclose(fp);
       
       if (newfile && chmod(filename, set_filemode) == -1) {
-	snprintf(errmsg, sizeof(errmsg), "%s \"%s\": %o.", lang[MSG_CANNOT_CHMOD], filename,
+          trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\": %o.", lang[MSG_CANNOT_CHMOD], filename,
 		 set_filemode);
-	progerr(errmsg);
+          progerr(errmsg);
 	}
     }
     free(filename);

@@ -1432,7 +1432,7 @@ int inlist_regex_pos(struct hmlist *listname, char *str)
 	    if (!p) {
                 PCRE2_UCHAR buffer[256];
                 pcre2_get_error_message(enumber, buffer, sizeof(buffer));
-		snprintf(errmsg, sizeof(errmsg), "Error at position %d of regular expression '%s': %s", epos, tlist->val, buffer);
+		trio_snprintf(errmsg, sizeof(errmsg), "Error at position %d of regular expression '%s': %s", epos, tlist->val, buffer);
 		progerr(errmsg);
 	    }
 	    match_data = pcre2_match_data_create_from_pattern(p, NULL);

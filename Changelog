@@ -19,6 +19,12 @@ HYPERMAIL VERSION 2.5.0
 	(monthly or yearly for example)
 
 2021-09-14 Jose Kahan
+	* various files
+	Replaced the few remaining calls to snprintf with
+	trio_snprintf, a more portable snprintf. Those snprint functions were
+	supposed to be trio_snprintf ones since the beginning.
+
+2021-09-14 Jose Kahan
 	* src/struct.c src/quotes.c configure.ac src/Makefile.in pcre2/
 	Support for PCRE2. Updating shipped PCRE2 lib to upstream v10.37.
 
