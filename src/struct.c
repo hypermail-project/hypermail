@@ -34,7 +34,7 @@ int rbs_bigtime = 0;
 #define HAVE_PCRE2
 #ifdef HAVE_PCRE2
 #ifdef __LCC__
-#include "../lcc/pcre.h"
+#include "../lcc/pcre2.h"
 #else
 #define PCRE2_CODE_UNIT_WIDTH 8
 #include <pcre2.h>
