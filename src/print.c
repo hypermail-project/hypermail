@@ -1148,12 +1148,14 @@ void printheaders (FILE *fp, struct emailinfo *email)
     char *header_content;
 
     if (REMOVE_MESSAGE(email)) {
+#if 0
       int d_index = MSG_DELETED;
       if (email->is_deleted == 2)
 	d_index = MSG_EXPIRED;
       if (email->is_deleted == 4 || email->is_deleted == 8)
 	d_index = MSG_FILTERED_OUT;
-      fprintf(fp, "<span id=\"start\" class=\"deleted\">(%s)</span>\n", lang[d_index]);
+      fprintf(fp, "<span id=\"start\" class=\"message-deleted\">(%s)</span>\n", lang[d_index]);
+#endif
       return;
     }
     
@@ -1279,7 +1281,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
 	  break;
 	}
       default:
-	fprintf(fp, "<p id=\"start\">%s</p>\n", lang[d_index]);
+	fprintf(fp, "<p id=\"start\" class=\"message-deleted\">%s</p>\n", lang[d_index]);
       }
       return;
     }
