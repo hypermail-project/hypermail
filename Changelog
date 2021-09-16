@@ -5,11 +5,19 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.5.0
 ============================
 
+2021-09-16 Jose Kahan
+	* src/print.c
+	The default MESSAGE_DELETE text was being displayed twice in deleted
+	messages, once in the header, and again in the body. This message will
+	now only be displayed in the body and is now associated with the CSS
+	class "message-deleted".
+
 2021-09-14 Jose Kahan
 	* various files
-	Replaced the few remaining calls to snprintf with
-	trio_snprintf, a more portable snprintf. Those snprint functions were
-	supposed to be trio_snprintf ones since the beginning.
+	Replaced the few remaining calls to snprintf with trio_snprintf, a more
+	portable snprintf. Those snprint functions were supposed to be
+	trio_snprintf ones since the beginning. This was also indirectly
+	causing problems when compiling under MacOs (issue #66).
 
 2021-09-14 Jose Kahan
 	* src/struct.c src/quotes.c configure.ac src/Makefile.in pcre2/
