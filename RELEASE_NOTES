@@ -96,13 +96,14 @@ working on your archive as expected.  If that's not the case, please
 stick to the 2.4 version for the moment.  Feedback or code patches
 (better) are welcome.
 
-- Compilation: windows LCC support (not updated, seems very old)
+- compilation: windows LCC support (not updated, seems very old)
 - showhtml option (only bare minimum of markup update done)
 - linkquotes (no updates done)
 - inline html (no specific updates done)
 - yearly and monthly summaries (just bare markup updates. This features
   seem to not have been updated since long time ago and missing some
   links to make them more useful).
+- translation of messages (some languagess are behind since years)
 
 *** ACKNOWLEDGMENTS
 
