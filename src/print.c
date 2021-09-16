@@ -429,7 +429,7 @@ void print_index_header_links (FILE *fp, mindex_t called_from, long startdatenum
 	fprintf (fp, "<li><span class=\"heading\">%s</span>: <a href=\"#end\">%s</a></li>\n", lang[MSG_THIS_PERIOD],
 		 lang[MSG_MOST_RECENT_MESSAGES]);
 
-      fprintf (fp, "<li><span class=\"heading\">%s</span>: <ul class=\"hmenu\">", lang[MSG_SORT_BY]);
+      fprintf (fp, "<li><span class=\"heading\">%s</span>: <ul class=\"hmenu\">", lang[MSG_CSORT_BY]);
     }
 
     /* print the links to the other indexes */

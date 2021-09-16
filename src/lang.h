@@ -232,6 +232,7 @@ struct language_entry {
 #define MSG_SENDER_DELETED                       167
 #define MSG_SUBJECT_DELETED                      168
 #define MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION      169
+#define MSG_CSORT_BY                             170
 
 #ifdef MAIN_FILE
 
@@ -426,6 +427,7 @@ char *de[] = {       /* German */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
+  "Sortieren nach", /* CSort by - HTML*/
   NULL,                              /* End Of Message Table - NOWHERE*/
 };
 
@@ -606,6 +608,7 @@ char *pl[] = {                      /* English */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
+  "Sort by", /* CSort by - HTML*/
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -787,6 +790,7 @@ char *en[] = {       /* English */
   "deleted", /* MSG_SENDER_DELETED - HTML */
   "deleted", /* MSG_SUBJECT_DELETED - HTML */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
+  "Sort by", /* CSort by - HTML*/
   NULL,                         /* End Of Message Table      - NOWHERE*/
 };
 
@@ -979,6 +983,7 @@ char *es[] = {       /* Espanol/Spanish */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
+  "Sort by", /* CSort by - HTML*/
   NULL,                               /* End Of Message Table */
 };
 
@@ -1162,6 +1167,7 @@ char *pt[] = {                     /* Brazilian Portuguese */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
+  "Ordenar por",                       /* CSort by - HTML*/
   NULL,                                /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1341,6 +1347,7 @@ char *fi[] = {       /* Finnish */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
+  "Sort by", /* CSort by - HTML*/
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1523,6 +1530,7 @@ char *it[] = {       /* Italian */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
+  "Sort by", /* CSort by - HTML*/
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1678,7 +1686,7 @@ char *fr[] = {       /* French */
   "Messages r&eacute;cents par fichier attach&eacute;", /* Contemporary messages by attachments - HTML*/
   "Barre de navigation vers le niveau sup&eacute;rieur", /* Navigation bar, upper levels - HTML*/
   "Barre de navigation", /* Navigation bar - HTML*/
-  "Trier par", /* Sort by - HTML*/
+  "trier par", /* Sort by - HTML*/
   "Autres p&eacute;riodes", /* Other periods - HTML */
   "Suivant", /* Next folder - HTML */
   "Messages archives dans la p&eacute;riode suivante, tri&eacute;s par date", /* Next folder, by date - HTML link */
@@ -1704,6 +1712,7 @@ char *fr[] = {       /* French */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
+  "Trier par", /* CSort by - HTML*/
   NULL,                                    /* End Of Message Table  - NOWHERE*/
 };
 
@@ -1887,6 +1896,7 @@ char *is[] = {       /* Icelandic */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
+  "Sort by", /* CSort by - HTML*/
   NULL,                               /* End Of Message Table      - NOWHERE*/
 };
 
@@ -2073,6 +2083,7 @@ char *sv[] = {
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
+  "Sort by", /* CSort by - HTML*/
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 
@@ -2259,6 +2270,7 @@ char *no[] = {
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
+  "Sort by", /* CSort by - HTML*/
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 
@@ -2446,6 +2458,7 @@ char *gr[] = {       /* Greek */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
+  "Sort by", /* CSort by - HTML*/
   NULL,                           	/* End Of Message Table - NOWHERE*/
 };
 
@@ -2625,6 +2638,7 @@ char *ru[] = {     /* Russian */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
+  "Sort by", /* CSort by - HTML*/
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 
