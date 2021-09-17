@@ -1281,7 +1281,9 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
 	  break;
 	}
       default:
-	fprintf(fp, "<p id=\"start\" class=\"message-deleted\">%s</p>\n", lang[d_index]);
+	fprintf(fp, "<pre id=\"start\" class=\"body\">\n");
+	fprintf(fp, "<span class=\"message-deleted\">%s</span>\n", lang[d_index]);
+	fprintf(fp, "</pre>");
       }
       return;
     }
@@ -1290,7 +1292,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
       if (set_htmlmessage_edited)
 	fprintf(fp,"%s\n",set_htmlmessage_edited);
       else
-	fprintf(fp, "<p>%s</p>\n", lang[MSG_EDITED]);
+	fprintf(fp, "<p class=\"message-edited\">%s</p>\n", lang[MSG_EDITED]);
     }
 
     if (!set_showhtml) {
