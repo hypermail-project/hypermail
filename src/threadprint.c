@@ -312,7 +312,7 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
                         first_attributes, lang[MSG_DEL_SHORT]);
 
             } else {
-                fprintf(fp, "<li>>%s\n",
+                fprintf(fp, "<li>%s\n",
                         lang[MSG_DEL_SHORT]);
             }
         }
