@@ -216,8 +216,7 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 	}
 	/* Now print this mail */
 	if ((year == -1 || year_of_datenum(rp->data->date) == year)
-	    && (month == -1 || month_of_datenum(rp->data->date) == month)
-	    && !rp->data->is_deleted) {
+	    && (month == -1 || month_of_datenum(rp->data->date) == month)) {
 	    format_thread_info(fp, rp->data, level, num_replies,
 			       email, fp_body, threadnum, is_first);
 	    if (is_first)
@@ -293,18 +292,30 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
             }
             num_open_li[level]--;
 	}
-	if (level == 0) {
-            fprintf(fp, "<h2%s class=\"theading\"><a id=\"%s%d\" href=\"%s\">%s</a> "
-                    "<span class=\"messages-list-author\">%s</span> <span class=\"messages-list-date\">(%s)</span></h2>\n", 
-                    first_attributes,
-                    set_fragment_prefix, email->msgnum, href,
-                    subj, tmpname, getindexdatestr(email->date));
-	} else {
-            fprintf(fp, "<li><a id=\"%s%d\" href=\"%s\">%s</a> "
-                    "<span class=\"messages-list-author\">%s</span> <span class=\"messages-list-date\">(%s)</span>\n", 
-                    set_fragment_prefix, email->msgnum, href,
-                    subj, tmpname, getindexdatestr(email->date));
-	}
+        if (!email->is_deleted) {
+            if (level == 0) {
+                fprintf(fp, "<h2%s class=\"theading\"><a id=\"%s%d\" href=\"%s\">%s</a> "
+                        "<span class=\"messages-list-author\">%s</span> <span class=\"messages-list-date\">(%s)</span></h2>\n", 
+                        first_attributes,
+                        set_fragment_prefix, email->msgnum, href,
+                        subj, tmpname, getindexdatestr(email->date));
+            } else {
+                fprintf(fp, "<li><a id=\"%s%d\" href=\"%s\">%s</a> "
+                        "<span class=\"messages-list-author\">%s</span> <span class=\"messages-list-date\">(%s)</span>\n", 
+                        set_fragment_prefix, email->msgnum, href,
+                        subj, tmpname, getindexdatestr(email->date));
+            }
+        } else {
+            /* display msg saying message was deleted */
+            if (level == 0) {
+                fprintf(fp, "<h2%s class=\"theading\">%s</h2>\n",
+                        first_attributes, lang[MSG_DEL_SHORT]);
+
+            } else {
+                fprintf(fp, "<li>>%s\n",
+                        lang[MSG_DEL_SHORT]);
+            }
+        }
     }
     if (subj)
       free(subj);
