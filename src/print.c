@@ -1742,11 +1742,12 @@ int print_links_up(FILE *fp, struct emailinfo *email, int pos, int in_thread_fil
 	      email2 = hashreplylookup(email->msgnum, email->inreplyto, email->subject, &subjmatch);
 	      if (email2) {
 		is_reply = 1;
-
-		fprintf(fp, "<li><a href=\"%s\">%s</a></li>\n", 
-			 href01(email, email2, in_thread_file, FALSE), 
-			(subjmatch) ? lang[MSG_MAYBE_IN_REPLY_TO] : lang[MSG_IN_REPLY_TO]);
-
+ 
+		if (!email2->is_deleted) {
+                    fprintf(fp, "<li><a href=\"%s\">%s</a></li>\n", 
+                            href01(email, email2, in_thread_file, FALSE), 
+                            (subjmatch) ? lang[MSG_MAYBE_IN_REPLY_TO] : lang[MSG_IN_REPLY_TO]);
+                }
 	      } else if (set_inreplyto_command) {
 		char *tmpptr;
 
@@ -1809,7 +1810,7 @@ int print_links(FILE *fp, struct emailinfo *email, int pos, int in_thread_file)
 	int subjmatch;
 	struct emailinfo *email2;
 	struct emailinfo *email_next_in_thread = nextinthread(email->msgnum);
-	char *ptr,*ptr2,*ptr3;
+	char *ptr,*ptr2;
 	int is_reply = 0;
 	int loc_cmp = (pos == PAGE_BOTTOM ? 3 : 4);
 
@@ -1886,8 +1887,6 @@ int print_links(FILE *fp, struct emailinfo *email, int pos, int in_thread_file)
 	if (email->inreplyto[0]) {
 	  email2 = hashreplylookup(email->msgnum, email->inreplyto, email->subject, &subjmatch);
 	  if (email2) {
-	    char *del_msg = (email2->is_deleted ? lang[MSG_DEL_SHORT]
-			     : "");
 	    is_reply = 1;
 #ifdef HAVE_ICONV
 	    ptr = i18n_utf2numref(email2->subject,1);
@@ -1896,13 +1895,17 @@ int print_links(FILE *fp, struct emailinfo *email, int pos, int in_thread_file)
 	    ptr = convchars(email2->subject, email2->charset);
 	    ptr2 = convchars(email2->name, email2->charset);
 #endif
-	    if (subjmatch)
-	      fprintf(fp, "<li><span class=\"heading\">%s</span>: ", lang[MSG_MAYBE_IN_REPLY_TO]);
-	    else
-	      fprintf(fp, "<li><span class=\"heading\">%s</span>: ", lang[MSG_IN_REPLY_TO]);
-	    fprintf(fp, "%s <a href=\"%s\">%s: \"%s\"</a></li>\n", 
-		    del_msg, href01(email, email2, in_thread_file, FALSE), 
-		    ptr2, ptr);
+
+            if (!email2->is_deleted) {
+                if (subjmatch)
+                    fprintf(fp, "<li><span class=\"heading\">%s</span>: ", lang[MSG_MAYBE_IN_REPLY_TO]);
+                else
+                    fprintf(fp, "<li><span class=\"heading\">%s</span>: ", lang[MSG_IN_REPLY_TO]);
+
+                fprintf(fp, "<a href=\"%s\">%s: \"%s\"</a></li>\n", 
+                        href01(email, email2, in_thread_file, FALSE), 
+                        ptr2, ptr);
+            }
 	    if (ptr)
 	      free(ptr);
 	    if (ptr2)
