@@ -1104,6 +1104,60 @@ struct reply *addreply2(struct reply *rp, struct emailinfo *from_email, struct e
 }
 
 /*
+** Returns true if a thread can be deleted,
+** that is, it has no children or all of
+** its children are also marked as deleted
+*/
+
+/* how deep threads can be */
+#define MAX_THREAD_LEVELS 200
+
+bool thread_can_be_deleted(struct emailinfo *data)
+{
+    struct reply *stack[MAX_THREAD_LEVELS + 1];
+    int stack_index = 0;
+    
+    struct reply *rp;
+    struct emailinfo *eip = data;
+    
+    bool rv = TRUE;
+
+    /* @@ put conditions that detect that an message is closed to return TRUE */
+    if (!eip->is_deleted) {
+        return FALSE;
+    }
+
+    rp = eip->replylist;
+    while (rp) {
+        eip = rp->data;
+        
+        if (!eip->is_deleted) {
+            rv = FALSE;
+            break;
+        }
+
+        if (eip->replylist) {
+            stack_index++;
+            /* beyond MAXSTACK, we stop exploring and just return true */
+            if (stack_index > MAX_THREAD_LEVELS) {
+                rv = FALSE;
+                break;
+            }            
+            stack[stack_index] = rp;
+            rp = eip->replylist;
+            
+        } else {
+            if (stack_index > 0) {
+                rp = stack[stack_index--];
+            }
+            rp = rp->next;
+        }
+    }
+
+  return rv;
+}
+
+/*
 ** Mark an article number as having been printed.
 */
 
@@ -1428,7 +1482,7 @@ int inlist_regex_pos(struct hmlist *listname, char *str)
 	    }
 	}
 	if ((p = pcre_list[index]) == NULL) {
-            p = pcre2_compile(tlist->val, PCRE2_ZERO_TERMINATED, 0, &enumber, &epos, NULL);
+            p = pcre2_compile((PCRE2_SPTR8) tlist->val, PCRE2_ZERO_TERMINATED, 0, &enumber, &epos, NULL);
 	    if (!p) {
                 PCRE2_UCHAR buffer[256];
                 pcre2_get_error_message(enumber, buffer, sizeof(buffer));
@@ -1440,7 +1494,7 @@ int inlist_regex_pos(struct hmlist *listname, char *str)
 	    match_data_list[index] = match_data;
 	}
 	match_data = match_data_list[index];
-	rc = pcre2_match(p, str, strlen(str), 0, 0, match_data, 0);
+	rc = pcre2_match(p, (PCRE2_SPTR8) str, strlen(str), 0, 0, match_data, 0);
 	
 	if (rc >= 0)
 	    return i;
