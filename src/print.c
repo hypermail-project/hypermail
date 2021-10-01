@@ -141,8 +141,11 @@ int togdbm(void *gp, struct emailinfo *ep)
  * msgnum in the thread containing msgnum.
  * Returns NULL if there are no more messages in 
  * the thread.
+ * The skip_deleted argument instructs the function to
+ * skip all deleted mails in a thread until it finds
+ * a non-deleted one.
  */
-struct emailinfo *nextinthread(int msgnum)
+static struct emailinfo *nextinthread_common(int msgnum, bool skip_deleted)
 {
     struct reply *rp = threadlist;
 
@@ -162,11 +165,35 @@ struct emailinfo *nextinthread(int msgnum)
 
     rp = rp->next;
 
+    if (skip_deleted) {
+        while (rp && rp->frommsgnum != -1 && rp->data->is_deleted) {
+            rp = rp->next;
+        }
+    }
+    
     if ((rp == NULL) || (rp->frommsgnum == -1)) {	
         /*end of thread - no next msg */
 	return NULL;
     }
     return rp->data;
+}
+
+/* Uses threadlist to find the next message after
+ * msgnum in the thread containing msgnum.
+ * Returns NULL if there are no more messages in 
+ * the thread.
+ */
+struct emailinfo *nextinthread(int msgnum)
+{
+    return nextinthread_common(msgnum, FALSE);
+}
+
+/* similar to nextinthread but skips all deleted messages 
+** in the thread
+*/
+static struct emailinfo *nextinthread_skip_deleted(int msgnum)
+{
+    return nextinthread_common(msgnum, TRUE);
 }
 
 #if 0
@@ -1607,7 +1634,9 @@ print_replies(FILE *fp, struct emailinfo *email, int num, int in_thread_file)
     for (rp = replylist; rp != NULL; rp = rp->next) {
         if (rp->frommsgnum == num && hashnumlookup(rp->msgnum, &email2)) {
 #endif
-	    char *del_msg = (email2->is_deleted ? lang[MSG_DEL_SHORT] : "");
+            if (email2->is_deleted)
+                continue;
+            
 	    if (!list_started) {
 	        list_started = TRUE;
 		fprintf (fp, "<li id=\"replies\">\n");
@@ -1619,7 +1648,7 @@ print_replies(FILE *fp, struct emailinfo *email, int num, int in_thread_file)
 		fprintf(fp, "<span class=\"heading\">%s</span>: ", lang[MSG_MAYBE_REPLY]);
 	    else
 	        fprintf(fp, "<span class=\"heading\">%s</span>: ", lang[MSG_REPLY]);
-	    fprintf(fp, "%s <a href=\"%s\">", del_msg, 
+	    fprintf(fp, "<a href=\"%s\">",
 		    href01(email, email2, in_thread_file, FALSE));
 #ifdef HAVE_ICONV
 	    char *tmpptr;
@@ -1763,14 +1792,17 @@ int print_links_up(FILE *fp, struct emailinfo *email, int pos, int in_thread_fil
 	    }
 	
 	    /*
-	     * Is there a message next in the thread?
+	     * Is there a non-deleted message next in the thread?
 	     */
 	    printcomment(fp, "unextthread", "start");
 	    if (email_next_in_thread) {
-	      fprintf(fp, "<li><a href=\"%s\">%s</a></li>\n", 
-		      href01(email, email_next_in_thread, in_thread_file, FALSE),
-		      lang[MSG_NEXT_IN_THREAD]);
-	      email->initial_next_in_thread = email_next_in_thread->msgnum;
+                struct emailinfo *email_next_in_thread_sd = nextinthread_skip_deleted(email->msgnum);
+                if (email_next_in_thread_sd) {
+                    fprintf(fp, "<li><a href=\"%s\">%s</a></li>\n", 
+                            href01(email, email_next_in_thread_sd, in_thread_file, FALSE),
+                            lang[MSG_NEXT_IN_THREAD]);
+                }
+                email->initial_next_in_thread = email_next_in_thread->msgnum;
 	    }
 	
 	    /*
@@ -1931,24 +1963,28 @@ int print_links(FILE *fp, struct emailinfo *email, int pos, int in_thread_file)
 	 */
 	printcomment(fp, "lnextthread", "start");
 	if (email_next_in_thread) {
+            struct emailinfo *email_next_in_thread_sd = nextinthread_skip_deleted(email->msgnum);
+            
+            if (email_next_in_thread_sd) {
 #ifdef HAVE_ICONV
-	  ptr = i18n_utf2numref(email_next_in_thread->subject, 1);
-	  ptr2 = i18n_utf2numref(email_next_in_thread->name,1);
+                ptr = i18n_utf2numref(email_next_in_thread_sd->subject, 1);
+                ptr2 = i18n_utf2numref(email_next_in_thread_sd->name,1);
 #else
-	  ptr = convchars(email_next_in_thread->subject, email_next_in_thread->charset);
-	  ptr2 = convchars(email_next_in_thread->name, email_next_in_thread->charset);
+                ptr = convchars(email_next_in_thread_sd->subject, email_next_in_thread_sd->charset);
+                ptr2 = convchars(email_next_in_thread_sd->name, email_next_in_thread_sd->charset);
 #endif
-	  fprintf(fp, "<li><span class=\"heading\">%s</span>: ", lang[MSG_NEXT_IN_THREAD]);
-	  fprintf(fp, "<a href=\"%s\">%s: \"%s\"</a></li>\n", 
-		  href01(email, email_next_in_thread, in_thread_file, FALSE), 
-		  ptr2, ptr);
-	  if (ptr)
-	    free(ptr);
-	  if (ptr2)
-	    free(ptr2);
-	  email->initial_next_in_thread = email_next_in_thread->msgnum;
-	}
-
+                fprintf(fp, "<li><span class=\"heading\">%s</span>: ", lang[MSG_NEXT_IN_THREAD]);
+                fprintf(fp, "<a href=\"%s\">%s: \"%s\"</a></li>\n", 
+                        href01(email, email_next_in_thread_sd, in_thread_file, FALSE), 
+                        ptr2, ptr);
+                if (ptr)
+                    free(ptr);
+                if (ptr2)
+                    free(ptr2);
+                email->initial_next_in_thread = email_next_in_thread->msgnum;
+            }
+        }
+        
 	/*
 	 * Does this message have replies? If so, print them all!
 	 */

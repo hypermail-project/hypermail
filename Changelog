@@ -18,6 +18,13 @@ HYPERMAIL VERSION 2.5.0
 	option to allow for archived messages to be split over multiple directories
 	(monthly or yearly for example)
 
+2021-10-01 Jose Kahan
+	* src/threadprint.c src/print.c src/lang.h
+	Improve the thread index and next in thread links. If a thread's node
+	is deleted, don't display it unless it has non-deleted children.
+	In this case, display it using MSG_DEL_SHORT for its name.
+	Make the next in thread links skip deleted nodes.
+
 2021-09-16 Jose Kahan
 	* src/print.c
 	The default MESSAGE_DELETE text was being displayed twice in deleted
