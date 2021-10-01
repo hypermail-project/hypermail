@@ -216,7 +216,11 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 	}
 	/* Now print this mail */
 	if ((year == -1 || year_of_datenum(rp->data->date) == year)
-	    && (month == -1 || month_of_datenum(rp->data->date) == month)) {
+	    && (month == -1 || month_of_datenum(rp->data->date) == month)
+#ifdef FASTREPLYCODE            
+            && !thread_can_be_deleted(rp->data)
+#endif
+            ) {
 	    format_thread_info(fp, rp->data, level, num_replies,
 			       email, fp_body, threadnum, is_first);
 	    if (is_first)
@@ -224,7 +228,7 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 	}
 
 	prev = rp->msgnum;
-	hide_level = (rp->data->is_deleted && rp->frommsgnum != rp->msgnum);
+	/* hide_level = (rp->data->is_deleted && rp->frommsgnum != rp->msgnum); */
 	last_email = rp->data;
 	rp = rp->next;
     }
