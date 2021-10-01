@@ -312,11 +312,11 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
         } else {
             /* display msg saying message was deleted */
             if (level == 0) {
-                fprintf(fp, "<h2%s class=\"theading\">%s</h2>\n",
+                fprintf(fp, "<h2%s class=\"theading\"><span class=\"deleted-message\">%s</span></h2>\n",
                         first_attributes, lang[MSG_DEL_SHORT]);
 
             } else {
-                fprintf(fp, "<li>%s\n",
+                fprintf(fp, "<li><span class=\"deleted-message\">%s</span>\n",
                         lang[MSG_DEL_SHORT]);
             }
         }
