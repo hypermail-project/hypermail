@@ -1118,25 +1118,30 @@ bool thread_can_be_deleted(struct emailinfo *data)
     int stack_index = 0;
     
     struct reply *rp;
-    struct emailinfo *eip = data;
+    struct emailinfo *ep = data;
     
     bool rv = TRUE;
 
-    /* @@ put conditions that detect that an message is closed to return TRUE */
-    if (!eip->is_deleted) {
+    if (!ep || !ep->is_deleted) {
         return FALSE;
     }
-
-    rp = eip->replylist;
+    
+    rp = ep->replylist;
     while (rp) {
-        eip = rp->data;
         
-        if (!eip->is_deleted) {
+        ep = rp->data;
+        
+        if (!rp->data || (rp->msgnum != ep->msgnum)) {
+            rp = rp->next;
+            continue;
+        }
+
+        if (!ep->is_deleted) {
             rv = FALSE;
             break;
         }
 
-        if (eip->replylist) {
+        if (ep->replylist) {
             stack_index++;
             /* beyond MAXSTACK, we stop exploring and just return true */
             if (stack_index > MAX_THREAD_LEVELS) {
@@ -1144,7 +1149,7 @@ bool thread_can_be_deleted(struct emailinfo *data)
                 break;
             }            
             stack[stack_index] = rp;
-            rp = eip->replylist;
+            rp = ep->replylist;
             
         } else {
             if (stack_index > 0) {
