@@ -373,7 +373,7 @@ char *de[] = {       /* German */
   "Verzeichnisliste",  /* MSG_FOLDERS_INDEX                     -HTML */
   "Diese Nachricht wurde aus dem Archiv entfernt",/* MSG_DELETED -HTML */
   "Diese Nachricht ist abgelaufen",              /* MSG_EXPIRED -HTML */
-  "(gelˆschte Nachricht)",          /* MSG_DEL_SHORT            -HTML */
+  "gelˆschte Nachricht",          /* MSG_DEL_SHORT            -HTML */
   "Urspr¸nglicher Text dieser Nachricht", /* MSG_TXT_VERSION    -HTML */
   "Diese Nachricht wurde herausgefiltert",  /* MSG_FILTERED_OUT -HTML */
   "Autor",                              /* MSG_FROM              -HTML*/
@@ -554,7 +554,7 @@ char *pl[] = {                      /* English */
   "Lista KatalogÛw",                 /* MSG_FOLDERS_INDEX   -HTML */
   "Ta wiadomo∂Ê zosta≥a usuniÍta z archiwum", /* MSG_DELETED  -HTML */
   "Ta wiadomo∂Ê jest przedawniona",  /*MSG_EXPIRED -HTML */
-  "(usuniÍta wiadomo∂Ê)",            /* MSG_DEL_SHORT     -HTML */
+  "usuniÍta wiadomo∂Ê",            /* MSG_DEL_SHORT     -HTML */
   "Tekst tej zawarto∂ci",            /* MSG_TXT_VERSION     -HTML */
   "Ta wiadomo∂Ê zosta≥a odfiltrowana",        /* MSG_FILTERED_OUT -HTML */
   "Autor",                          /* MSG_FROM              -HTML*/
@@ -736,7 +736,7 @@ char *en[] = {       /* English */
   "List of Folders",  /* MSG_FOLDERS_INDEX                      -HTML */
   "This message has been deleted from the archive", /* MSG_DELETED -HTML */
   "This message has expired",                       /* MSG_EXPIRED -HTML */
-  "(deleted message)", /* MSG_DEL_SHORT                            -HTML */
+  "deleted message", /* MSG_DEL_SHORT                            -HTML */
   "Original text of this message", /* MSG_TXT_VERSION                          -HTML */
   "This message has been filtered out",        /* MSG_FILTERED_OUT -HTML */
   "From",                       /* MSG_FROM                    	 -HTML*/
@@ -928,7 +928,7 @@ char *es[] = {       /* Espanol/Spanish */
   "El mensaje ha sido borrado del archivo",
   				      /* MSG_DELETED 		      - HTML  */
   "El mensaje ha caducado",           /* MSG_EXPIRED 		      - HTML  */
-  "(mensaje borrado)",		      /* MSG_DEL_SHORT                - HTML  */
+  "mensaje borrado",		      /* MSG_DEL_SHORT                - HTML  */
   "Texto original del mensaje",       /* MSG_TXT_VERSION   	      - HTML  */
   "El mensaje ha sido filtrado",      /* MSG_FILTERED_OUT 	      - HTML  */
   "Autor",                            /* MSG_FROM 		      - HTML  */
@@ -1113,7 +1113,7 @@ char *pt[] = {                     /* Brazilian Portuguese */
   "Lista de DiretÛrios",               /* MSG_FOLDERS_INDEX                      -HTML */
   "Esta mensagem foi removida do arquivo", /* MSG_DELETED -HTML */
   "Esta mensagem expirou",             /* MSG_EXPIRED -HTML */
-  "(mensagem removida)",               /* MSG_DEL_SHORT                            -HTML */
+  "mensagem removida",               /* MSG_DEL_SHORT                            -HTML */
   "Texto original desta mensagem",     /* MSG_TXT_VERSION                          -HTML */
   "Esta mensagem foi filtrada",        /* MSG_FILTERED_OUT -HTML */
   "De",                                /* MSG_FROM                    	 -HTML*/
@@ -1293,7 +1293,7 @@ char *fi[] = {       /* Finnish */
   "List of Folders",  /* MSG_FOLDERS_INDEX                      -HTML */
   "This message has been deleted from the archive", /* MSG_DELETED -HTML */
   "This message has expired",                       /* MSG_EXPIRED -HTML */
-  "(deleted message)", /* MSG_DEL_SHORT                            -HTML */
+  "deleted message", /* MSG_DEL_SHORT                            -HTML */
   "Original text of this message", /* MSG_TXT_VERSION                          -HTML */
   "This message has been filtered out",        /* MSG_FILTERED_OUT -HTML */
   "Kirjoittajan mukaan",                 /* MSG_FROM                  -HTML*/
@@ -1476,7 +1476,7 @@ char *it[] = {       /* Italian */
   "Lista delle cartelle",  /* MSG_FOLDERS_INDEX                      -HTML */
   "Questo messaggio Ë stato cancellato dall'archivio", /* MSG_DELETED -HTML */
   "Il messaggio Ë scaduto",                       /* MSG_EXPIRED -HTML */
-  "(messaggio cancellato)", /* MSG_DEL_SHORT                            -HTML */
+  "messaggio cancellato", /* MSG_DEL_SHORT                            -HTML */
   "Testo originale di questo messaggio", /* MSG_TXT_VERSION                          -HTML */
   "Questo messaggio Ë stato filtrato",        /* MSG_FILTERED_OUT -HTML */
   "From",                       /* MSG_FROM                    	 -HTML*/
@@ -1658,7 +1658,7 @@ char *fr[] = {       /* French */
   "Liste des dossiers",                    /* MSG_FOLDERS_INDEX                      -HTML */
   "Ce message a &eacute;t&eacute; supprim&eacute; de l'archive", /* MSG_DELETED -HTML */
   "Ce message est trop vieux",             /* MSG_EXPIRED -HTML */
-  "(message supprim&eacute;)",              /* MSG_DEL_SHORT                            -HTML */
+  "message supprim&eacute;",              /* MSG_DEL_SHORT                            -HTML */
   "Texte original de ce message",          /* MSG_TXT_VERSION                          -HTML */
   "Ce message a &eacute;t&eacute; supprimÈ par filtrage",    /* MSG_FILTERED_OUT -HTML */
   "Auteur",                                /* MSG_FROM              -HTML*/
@@ -1842,7 +1842,7 @@ char *is[] = {       /* Icelandic */
   "List of Folders",  /* MSG_FOLDERS_INDEX                      -HTML */
   "This message has been deleted from the archive", /* MSG_DELETED -HTML */
   "This message has expired",                       /* MSG_EXPIRED -HTML */
-  "(deleted message)", /* MSG_DEL_SHORT                            -HTML */
+  "deleted message", /* MSG_DEL_SHORT                            -HTML */
   "Original text of this message", /* MSG_TXT_VERSION                          -HTML */
   "This message has been filtered out",        /* MSG_FILTERED_OUT -HTML */
   "Hˆfundur",                         /* MSG_FROM              -HTML*/
@@ -2029,7 +2029,7 @@ char *sv[] = {
   "Mapplista",  /* MSG_FOLDERS_INDEX                      -HTML */
   "Detta brev har tagits bort fr&aring;n arkivet", /* MSG_DELETED -HTML */
   "Detta brev har utg&aring;tt",                       /* MSG_EXPIRED -HTML */
-  "(borttaget brev)", /* MSG_DEL_SHORT                            -HTML */
+  "borttaget brev", /* MSG_DEL_SHORT                            -HTML */
   "Ursprunglig brevtext", /* MSG_TXT_VERSION                          -HTML */
   "Detta brev har filtrerats",        /* MSG_FILTERED_OUT -HTML */
   "F&ouml;rfattare",                     /* MSG_FROM             -HTML*/
@@ -2216,7 +2216,7 @@ char *no[] = {
   "Mappeliste",  /* MSG_FOLDERS_INDEX                      -HTML */
   "Denne meldingen er fjernet fra arkivet", /* MSG_DELETED -HTML */
   "Dette meldingen har utgÂtt",                       /* MSG_EXPIRED -HTML */
-  "(slettet melding)", /* MSG_DEL_SHORT                            -HTML */
+  "slettet melding", /* MSG_DEL_SHORT                            -HTML */
   "Opprinnelig brevtekst", /* MSG_TXT_VERSION                          -HTML */
   "Denne meldingen har blitt filtrert bort",        /* MSG_FILTERED_OUT -HTML */
   "Forfatter",                     /* MSG_FROM             -HTML*/
@@ -2406,7 +2406,7 @@ char *gr[] = {       /* Greek */
   "ÀﬂÛÙ· Í·Ù·Î¸„˘Ì",  			/* MSG_FOLDERS_INDEX                      -HTML */
   "¡ıÙ¸ ÙÔ ÏﬁÌıÏ· ›˜ÂÈ Û‚ÁÛÙÂﬂ ·Ô ÙÔ ·Ò˜ÂﬂÔ", /* MSG_DELETED -HTML */
   "¡ıÙ¸ ÙÔ ÏﬁÌıÏ· ›˜ÂÈ ÎﬁÓÂÈ",      	/* MSG_EXPIRED -HTML */
-  "(Û‚ÁÛÏ›ÌÔ ÏﬁÌıÏ·)", 			/* MSG_DEL_SHORT                            -HTML */
+  "Û‚ÁÛÏ›ÌÔ ÏﬁÌıÏ·", 			/* MSG_DEL_SHORT                            -HTML */
   "–Ò¸ÙıÔ ÍÂﬂÏÂÌÔ ÙÔı ÏÁÌ˝Ï·ÙÔÚ", 	/* MSG_TXT_VERSION                          -HTML */
   "¡ıÙ¸ ÙÔ ÏﬁÌıÏ· ›˜ÂÈ ˆÈÎÙÒ·ÒÈÛÙÂﬂ ",  /* MSG_FILTERED_OUT -HTML */
   "”ı„„Ò·ˆ›·Ú",       			/* MSG_FROM              -HTML*/
@@ -2584,7 +2584,7 @@ char *ru[] = {     /* Russian */
   "Û–…”œÀ ƒ…“≈À‘œ“… ",  /* MSG_FOLDERS_INDEX                      -HTML */
   "¸‘œ ”œœ¬›≈Œ…≈ ¬ŸÃœ ’ƒ¡Ã≈Œœ …» ¡“»…◊¡", /* MSG_DELETED -HTML */
   "¸‘œ ”œœ¬›≈Œ…≈ –“œ”“œﬁ≈Œœ",                       /* MSG_EXPIRED -HTML */
-  "(’ƒ¡Ã≈ŒŒœ≈ ”œœ¬›≈Œ…≈)", /* MSG_DEL_SHORT                            -HTML */
+  "’ƒ¡Ã≈ŒŒœ≈ ”œœ¬›≈Œ…≈", /* MSG_DEL_SHORT                            -HTML */
   "È”»œƒŒŸ  ‘≈À”‘ ƒ¡ŒŒœ«œ ”œœ¬›≈Œ…—", /* MSG_TXT_VERSION                          -HTML */
   "¸‘œ ”œœ¬›≈Œ…≈ ¬ŸÃœ œ‘∆…Ãÿ‘“œ◊¡Œœ",        /* MSG_FILTERED_OUT -HTML */
   "Ô‘",                        /* MSG_FROM                      -HTML*/
