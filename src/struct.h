@@ -29,6 +29,7 @@ struct reply *addreply(struct reply *, int, struct emailinfo *, int,
 		       struct reply **);
 struct reply *addreply2(struct reply *, struct emailinfo *, struct emailinfo *,
 			int, struct reply **);
+bool thread_can_be_deleted(struct emailinfo *);
 int rmlastlines(struct body *);
 
 struct emailsubdir *new_subdir(char *, struct emailsubdir *, char *, time_t);
