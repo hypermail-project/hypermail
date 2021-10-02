@@ -191,7 +191,7 @@ struct emailinfo *nextinthread(int msgnum)
 /* similar to nextinthread but skips all deleted messages 
 ** in the thread
 */
-static struct emailinfo *nextinthread_skip_deleted(int msgnum)
+struct emailinfo *nextinthread_skip_deleted(int msgnum)
 {
     return nextinthread_common(msgnum, TRUE);
 }

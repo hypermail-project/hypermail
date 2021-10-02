@@ -46,6 +46,7 @@ char *ConvURLsString(char *, char *, char *, char *);
 void write_summary_indices(int);
 void write_toplevel_indices(int);
 struct emailinfo *nextinthread(int);
+struct emailinfo *nextinthread_skip_deleted(int);
 void init_index_names(void);
 
 void write_messageindex(int, int);
