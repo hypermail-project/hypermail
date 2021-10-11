@@ -465,44 +465,53 @@ unsigned char *i18n_numref2utf(char *string){
 #endif
 /* end of I18N hack */
 
-/* replaces all unicode spaces with ascii spaces.
-** input must be in utf-8. Both input and output must be
-** strings of equal size sz bytes returns the number of replacements
-** or -1 in case of error */
-int i18n_replace_unicode_spaces(char *input, char *output, size_t sz)
+/* replaces all unicode spaces in string with ascii spaces.
+** input must be in utf-8.  Returns the number of replacements or -1
+** in case of error */
+int i18n_replace_unicode_spaces(char *string, size_t sz)
 {
 #ifdef HAVE_PCRE2
     int rv;
-    const pcre2_code *re;
+
+    /* compile the re only once */
+    static const pcre2_code *re;
   
     /* PCRE2_SPTR is a pointer to unsigned code units of */
     PCRE2_SPTR8 pattern = (PCRE2_SPTR8) "\\h";
-    
-    /* the appropriate width (in this case, 8 bits). */
-    PCRE2_SPTR8 subject = (PCRE2_SPTR8) input;
-    PCRE2_SPTR8 replacement = (PCRE2_SPTR8) " ";
-    PCRE2_UCHAR *outputbuffer = (PCRE2_UCHAR *) output;
 
-    PCRE2_SIZE outputbuffer_length = sz;
+    /* the appropriate width (in this case, 8 bits). */
+    PCRE2_SPTR8 subject = (PCRE2_SPTR8) string;
+    PCRE2_SPTR8 replacement = (PCRE2_SPTR8) " ";
+    static PCRE2_UCHAR outputbuffer[MAXLINE];
+
+    PCRE2_SIZE outputbuffer_length = MAXLINE;
     
     int errornumber;
     PCRE2_SIZE erroroffset;
     /* PCRE2_SIZE *ovector; */
-  
-    re = pcre2_compile(
-        pattern,               /* the pattern */
-        PCRE2_ZERO_TERMINATED, /* indicates pattern is zero-terminated */
-        PCRE2_UTF,                     /* default options */
-        &errornumber,          /* for error number */
-        &erroroffset,          /* for error offset */
-        0);                    /* use default compile context */;
 
+    return -1;
+    
+    if (sz > MAXLINE) {
+        return -1;
+    }
+    
     if (!re) {
-        PCRE2_UCHAR buffer[256];
-        char errmsg[512];
-        pcre2_get_error_message(errornumber, buffer, sizeof(buffer));
-        trio_snprintf(errmsg, sizeof(errmsg), "Error at position %d of regular expression '%s': %s", erroroffset, pattern, buffer);
-        progerr(errmsg);
+        re = pcre2_compile(
+            pattern,               /* the pattern */
+            PCRE2_ZERO_TERMINATED, /* indicates pattern is zero-terminated */
+            PCRE2_UTF,                     /* default options */
+            &errornumber,          /* for error number */
+            &erroroffset,          /* for error offset */
+            0);                    /* use default compile context */;
+
+        if (!re) {
+            PCRE2_UCHAR buffer[256];
+            char errmsg[512];
+            pcre2_get_error_message(errornumber, buffer, sizeof(buffer));
+            trio_snprintf(errmsg, sizeof(errmsg), "Error at position %d of regular expression '%s': %s", erroroffset, pattern, buffer);
+            progerr(errmsg);
+        }
     }
 
     rv = pcre2_substitute(
@@ -526,6 +535,14 @@ int i18n_replace_unicode_spaces(char *input, char *output, size_t sz)
         fprintf (stderr, "replace_unicode_spaces: new string %s\n", outputbuffer);
     }
 #endif /* DEBUG_UNICODE_SPACES */
+
+    if (rv > 0) {
+        int i = 0;
+        for (i=0; outputbuffer[i]; i++) {
+            string[i] = outputbuffer[i];
+        }
+        string[i] = '\0';
+    }
     
     return rv;
 #else
