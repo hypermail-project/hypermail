@@ -1639,7 +1639,7 @@ print_replies(FILE *fp, struct emailinfo *email, int num, int in_thread_file)
             
 	    if (!list_started) {
 	        list_started = TRUE;
-		fprintf (fp, "<li id=\"replies\">\n");
+		fprintf (fp, "<li id=\"replies\">");
 	    }
 	    else
 	        fprintf (fp, "<li>");
