@@ -510,8 +510,6 @@ int i18n_replace_unicode_spaces(char *string, size_t sz)
     PCRE2_SIZE erroroffset;
     /* PCRE2_SIZE *ovector; */
 
-    return -1;
-    
     if (sz > MAXLINE) {
         return -1;
     }
