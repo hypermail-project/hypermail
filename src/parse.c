@@ -3036,6 +3036,17 @@ int parsemail(char *mbox,	/* file name */
 		printf("LINE %s\n", (content != CONTENT_BINARY) ? data : "<binary>");
 #endif
 		if (data) {
+                    if (content == CONTENT_TEXT &&
+                        charset && !strncasecmp (charset, "UTF-8", 5)) {
+                        /* replace all unicode spaces with  ascii spaces,
+                        ** as hypermail is using C-lib functions that don't 
+                        ** understand them (like isspace() and sscanf() ) */
+                        i18n_replace_unicode_spaces(data, strlen(data));
+#if DEBUG_PARSE
+                        printf("LINE with ascii spaces: %s\n", data);
+#endif                        
+                    }
+		  
 		    if ((content == CONTENT_TEXT) ||
 			(content == CONTENT_HTML)) {
 			if (decode > ENCODE_MULTILINED) {
