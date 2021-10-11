@@ -4387,62 +4387,55 @@ void fixnextheader(char *dir, int num, int direction)
 	    fprintf(fp, "%s", bp->line);
 
 	    if (!strncmp(bp->line, "<!-- unext=", 11)) {
-#ifdef HAVE_ICONV
-	      ptr = strsav(numsubject);
-#else
-	      ptr = convchars(email->subject, email->charset);
-#endif
-	      fprintf(fp, "[ <a href=\"%s\" title=\"%s: &quot;%s&quot;\">%s</a> ]\n", 
-		       msg_href (email, e3, FALSE), 
-#ifdef HAVE_ICONV
-		      numname, ptr ? ptr : "", 
-#else
-		      email->name, ptr ? ptr : "", 
-#endif
-		      lang[MSG_NEXT_MESSAGE]);
-	      if (ptr)
-		free(ptr);
+                if (email) {
+                    fprintf(fp, "<li><a href=\"%s\">%s</a></li>\n", 
+                            msg_href (email, e3, FALSE), 
+                            lang[MSG_NEXT_MESSAGE]);
+                }
 	    }
 	    else if (!strncmp(bp->line, "<!-- lnext=", 11)) {
 #ifdef HAVE_ICONV
-	      ptr = strsav(numsubject);
+                ptr = strsav(numsubject);
 #else
-	      ptr = convchars(email->subject, email->charset);
+                ptr = convchars(email->subject, email->charset);
 #endif
-	      fprintf(fp, "<li><span class=\"heading\">%s</span>: ", lang[MSG_NEXT_MESSAGE]);
-	      fprintf(fp, "<a href=\"%s\" title=\"%s\">%s: \"%s\"</a></li>\n", 
-		      msg_href(email, e3, FALSE), lang[MSG_LTITLE_NEXT],
+                fprintf(fp, "<li><span class=\"heading\">%s</span>: ", lang[MSG_NEXT_MESSAGE]);
+                fprintf(fp, "<a href=\"%s\" title=\"%s\">%s: \"%s\"</a></li>\n", 
+                        msg_href(email, e3, FALSE), lang[MSG_LTITLE_NEXT],
 #ifdef HAVE_ICONV
-		      numname, ptr ? ptr : "");
+                        numname, ptr ? ptr : "");
 #else
-		      email->name, ptr ? ptr : "");
+                        email->name, ptr ? ptr : "");
 #endif
-	      if (ptr)
-		free(ptr);
-	    }
-	    else if (!strncmp(bp->line, "<!-- next=", 10)) {
-	      dp = bp->next;
-	      if (!strncmp(dp->line, "<ul", 3)) {
-		fprintf(fp, "%s", dp->line);
-		ul = 1;
-	      }
-	      fprintf(fp, "<li><strong>%s:</strong> ",
-		      lang[MSG_NEXT_MESSAGE]);
-	      fprintf(fp, "%s%s: \"%s\"</a></li>\n", msg_href(email, e3, TRUE),
+                if (ptr)
+                    free(ptr);
+            }
+            /* 2021/10/04: this one seems to be here for retro-compatiblity with
+            ** pre 2.4. (as old as 2.1). Probably good to deprecate / delete
+            ** as we're not generating this comment anymore since some time */
+            else if (!strncmp(bp->line, "<!-- next=", 10)) {
+                dp = bp->next;
+                if (!strncmp(dp->line, "<ul", 3)) {
+                    fprintf(fp, "%s", dp->line);
+                    ul = 1;
+                }
+                fprintf(fp, "<li><strong>%s:</strong> ",
+                        lang[MSG_NEXT_MESSAGE]);
+                fprintf(fp, "%s%s: \"%s\"</a></li>\n", msg_href(email, e3, TRUE),
 #ifdef HAVE_ICONV
-		      numname, numsubject);
+                        numname, numsubject);
 #else
-		      email->name, ptr = convchars(email->subject, email->charset));
-	      free(ptr);
+                        email->name, ptr = convchars(email->subject, email->charset));
+                free(ptr);
 #endif	      
-	      if (ul) {
-		bp = dp;
-		ul = 0;
-	      }
+                if (ul) {
+                    bp = dp;
+                    ul = 0;
+                }
 	      
-	    }
-	    bp = bp->next;
-	}
+            }
+            bp = bp->next;
+       }
     }
     fclose(fp);
 
