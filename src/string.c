@@ -33,6 +33,16 @@
 #include "parse.h"
 #include "uconvert.h"
 
+#define HAVE_PCRE2
+#ifdef HAVE_PCRE2
+#ifdef __LCC__
+#include "../lcc/pcre2.h"
+#else
+#define PCRE2_CODE_UNIT_WIDTH 8
+#include <pcre2.h>
+#endif
+#endif
+
 #ifdef HAVE_STRING_H
 #include <string.h>
 #endif
@@ -474,6 +484,75 @@ int i18n_replace_non_ascii_chars(char *string)
 
 #endif
 /* end of I18N hack */
+
+/* replaces all unicode spaces with ascii spaces.
+** input must be in utf-8. Both input and output must be
+** strings of equal size sz bytes returns the number of replacements
+** or -1 in case of error */
+int i18n_replace_unicode_spaces(char *input, char *output, size_t sz)
+{
+#ifdef HAVE_PCRE2
+    int rv;
+    const pcre2_code *re;
+  
+    /* PCRE2_SPTR is a pointer to unsigned code units of */
+    PCRE2_SPTR8 pattern = (PCRE2_SPTR8) "\\h";
+    
+    /* the appropriate width (in this case, 8 bits). */
+    PCRE2_SPTR8 subject = (PCRE2_SPTR8) input;
+    PCRE2_SPTR8 replacement = (PCRE2_SPTR8) " ";
+    PCRE2_UCHAR *outputbuffer = (PCRE2_UCHAR *) output;
+
+    PCRE2_SIZE outputbuffer_length = sz;
+    
+    int errornumber;
+    PCRE2_SIZE erroroffset;
+    /* PCRE2_SIZE *ovector; */
+  
+    re = pcre2_compile(
+        pattern,               /* the pattern */
+        PCRE2_ZERO_TERMINATED, /* indicates pattern is zero-terminated */
+        PCRE2_UTF,                     /* default options */
+        &errornumber,          /* for error number */
+        &erroroffset,          /* for error offset */
+        0);                    /* use default compile context */;
+
+    if (!re) {
+        PCRE2_UCHAR buffer[256];
+        char errmsg[512];
+        pcre2_get_error_message(errornumber, buffer, sizeof(buffer));
+        trio_snprintf(errmsg, sizeof(errmsg), "Error at position %d of regular expression '%s': %s", erroroffset, pattern, buffer);
+        progerr(errmsg);
+    }
+
+    rv = pcre2_substitute(
+        re, /* pointer to compiled re */
+        subject, /* pointer to subject */
+        PCRE2_ZERO_TERMINATED, /* subject length */
+        0, /* start offset */
+        PCRE2_SUBSTITUTE_GLOBAL,  /* options, */
+        NULL,  /* match_data */
+        NULL, /*match_context */
+        replacement, /* replacement */
+        PCRE2_ZERO_TERMINATED|PCRE2_LITERAL, /* replacement length */
+        outputbuffer,  /* outputbuffer */
+        &outputbuffer_length);  /* outputbutter length ptr */
+
+#ifdef DEBUG_UNICODE_SPACES
+    if (rv < 0) {
+        fprintf(stderr, "replace_unicode_spaces: substitution failed: %s\n", "ovector", stderr);
+    } else {
+        fprintf (stderr, "replace_unicode_spaces: %d substitutions\n", rv);
+        fprintf (stderr, "replace_unicode_spaces: new string %s\n", outputbuffer);
+    }
+#endif /* DEBUG_UNICODE_SPACES */
+    
+    return rv;
+#else
+    return -1;
+#endif /* HAVE_PCRE2 */
+    
+} /* i18n_replace_unicode_spaces */
 
 /*
 ** Push byte onto a buffer realloc the buffer if needed.

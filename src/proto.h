@@ -105,7 +105,8 @@ char *i18n_convstring(char *, char *, char *, size_t *);
 char *i18n_utf2numref(char *, int);
 unsigned char *i18n_numref2utf(char *);
 int i18n_replace_non_ascii_chars(char *);
-
+int i18n_replace_unicode_spaces(char *, char *, size_t);
+  
 char *PushByte(struct Push *, char);
 char *PushString(struct Push *, const char *);
 char *PushNString(struct Push *, const char *, int);
