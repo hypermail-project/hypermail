@@ -4805,44 +4805,37 @@ void fixthreadheader(char *dir, int num, int max_update)
 	      bp = bp->next;
 	      continue;
 	    }
-	   /* @@ JK: don't I have the charset here? */
 	    fprintf(fp, "%s", bp->line);
 	    if (!strncmp(bp->line, "<!-- unextthr", 13)) {
-	      struct emailinfo *e3;
-	      if (hashnumlookup(num, &e3)) {
-		fprintf (fp, " [ <a href=\"%s\" title=\"%s: &quot;%s&quot;\">%s</a> ]\n",
-			 msg_href (e3, rp->data, FALSE), 
-#ifdef HAVE_ICONV
-			 numname, numsubject,
-#else
-			 name, ptr = convchars(subject, NULL),
-#endif
-			 lang[MSG_NEXT_IN_THREAD]);
-		if (ptr)
-		  free (ptr);
-		if (bp->next && strstr(bp->next->line, lang[MSG_NEXT_IN_THREAD]))
-		  bp = bp->next; /* skip old copy of this line */
-	      }
+                struct emailinfo *e3;
+                if (hashnumlookup(num, &e3)) {
+                    fprintf (fp, "<li><a href=\"%s\">%s</a></li>\n",
+                             msg_href (e3, rp->data, FALSE), 
+                             lang[MSG_NEXT_IN_THREAD]);
+                    if (bp->next && strstr(bp->next->line, lang[MSG_NEXT_IN_THREAD]))
+                        bp = bp->next; /* skip old copy of this line */
+                }
 	    }
 	    else if (!strncmp(bp->line, "<!-- lnextthr", 13)) {
 	      struct emailinfo *e3;
 	      if (hashnumlookup(num, &e3)) {
 		fprintf(fp, "<li><span class=\"heading\">%s</span>: ",
 			lang[MSG_NEXT_IN_THREAD]);
-		fprintf(fp, "<a href=\"%s\" title=\"\%s\">%s: \"%s\"</a></li>\n", 
-			msg_href(e3, rp->data, FALSE), lang[MSG_LTITLE_NEXT_IN_THREAD],
+                fprintf(fp, "<a href=\"%s\">%s: \"%s\"</a></li>\n", 
+                        msg_href(e3, rp->data, FALSE),
 #ifdef HAVE_ICONV
-		  numname, numsubject);
+                        numname, numsubject);
                 ptr=NULL;
 #else
 			name, ptr = convchars(subject, NULL));
 #endif
-		if (ptr)
-		  free(ptr);
+                if (ptr)
+                    free(ptr);
 		if (bp->next && strstr(bp->next->line, lang[MSG_NEXT_IN_THREAD]))
-		  bp = bp->next; /* skip old copy of this line */
+                    bp = bp->next; /* skip old copy of this line */
 	      }
 	    }
+            /* this seems like old pre-WAI code we could remove */
 	    else if (!strncmp(bp->line, "<!-- nextthr", 12)) {
 		struct emailinfo *e3;
 		if(hashnumlookup(num, &e3)) {
