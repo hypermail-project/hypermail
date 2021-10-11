@@ -4496,15 +4496,16 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 	return;
 
     if (remove_maybes || set_linkquotes) {
+        /* these are the patterns that may appear in lreply, with and without
+           the replies anchor */
         trio_snprintf(current_maybe_pattern, sizeof(current_maybe_pattern), 
                       "<li><span class=\"heading\">%s</span>: <a href=", lang[MSG_MAYBE_REPLY]);
-        trio_snprintf(current_link_maybe_pattern, sizeof(current_maybe_pattern), 
-                      "<li><a id=\"replies\"></a><span class=\"heading\">%s</span>: <a href=", 
-                      lang[MSG_MAYBE_REPLY]);
+        trio_snprintf(current_link_maybe_pattern, sizeof(current_maybe_pattern),
+                      "<li id=\"replies\"><span class=\"heading\">%s</span>: <a href=", lang[MSG_MAYBE_REPLY]);
         trio_snprintf(current_reply_pattern, sizeof(current_reply_pattern), 
                       "<li><span class=\"heading\">%s</span>: <a href=", lang[MSG_REPLY]);
         trio_snprintf(current_link_reply_pattern, sizeof(current_reply_pattern), 
-                      "<li><a id=\"replies\"></a><span class=\"heading\">%s</span>: <a href=",
+                      "<li id=\"replies\"><span class=\"heading\">%s</span>: <a href=",
                       lang[MSG_REPLY]);
         trio_snprintf(current_nextinthread_pattern, 
                       sizeof(current_nextinthread_pattern), 
@@ -4612,19 +4613,21 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 	      bp = bp->next;
 	      continue;
 	    }
-	    if (!strncmp(bp->line, " [ <a href=\"#replies\">", 22)) {
+            /* this is the top anchor that points to the lower #replies */
+            if (!strncmp(bp->line, "<li><a href=\"#replies\">", 23)) {
 	      list_started = TRUE; 
 	      fprintf (fp, "%s", bp->line);
 	      bp = bp->next;
 	      continue;
 	    }
 	    if (!strncmp(bp->line, "<!-- ureply", 11)) {
-	      if (list_started == FALSE)
-		fprintf (fp, " [ <a href=\"#replies\">%s</a> ]\n", 
-			 lang[MSG_REPLIES]);
-	      fprintf (fp, "%s", bp->line);
-	      bp = bp->next;
-	      continue;
+                /* we reached the end of ureply, if we don't see the link, we add it */
+                if (list_started == FALSE)
+                    fprintf (fp, "<li><a href=\"#replies\">%s</a></li>\n", 
+                             lang[MSG_REPLIES]);
+                fprintf (fp, "%s", bp->line);
+                bp = bp->next;
+                continue;
 	    }
 	    if (!strncmp(bp->line, "<!-- lreply", 11)) {
 	        char *del_msg = (email2->is_deleted ? lang[MSG_DEL_SHORT] : "");
@@ -4635,27 +4638,17 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 		ptr = convchars(email->subject, email->charset);
 #endif
 		if (list_started == FALSE) {
-		  list_started = TRUE;
-		  trio_asprintf(&ptr1,
-				"<li><a id=\"replies\"></a>"
-				"<span class=\"heading\">%s</span>: %s <a href=\"%s\" title=\"%s\">"
+                    list_started = TRUE;
+                    fprintf (fp, "<li id=\"replies\">");
+                } else {
+                    fprintf (fp, "<li>");
+                }
+                
+                trio_asprintf(&ptr1,
+				"<span class=\"heading\">%s</span>: %s <a href=\"%s\">"
 				"%s: \"%s\"</a></li>\n",
 				lang[subjmatch ? MSG_MAYBE_REPLY : MSG_REPLY],
 				del_msg, msg_href(email, email2, FALSE), 
-				lang[MSG_LTITLE_REPLIES],
-#ifdef HAVE_ICONV
-				numname, ptr);
-#else
-				email->name, ptr);
-#endif
-		}
-		else
-		  trio_asprintf(&ptr1,
-				"<li><span class=\"heading\">%s</span>: %s <a href=\"%s\" title=\"%s\">"
-				"%s: \"%s\"</a></li>\n",
-				lang[subjmatch ? MSG_MAYBE_REPLY : MSG_REPLY],
-				del_msg, msg_href(email, email2, FALSE), 
-				lang[MSG_LTITLE_REPLIES],
 #ifdef HAVE_ICONV
 				numname, ptr);
 #else
@@ -4668,7 +4661,7 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 		free(ptr1);
 	    }
 	    else if (!strncmp(bp->line, "<!-- reply", 10)) {
-	      /* backwards compatiblity with the pre-WAI code */
+                /* backwards compatiblity with the pre-WAI code */
 	        char *del_msg = (email2->is_deleted ? lang[MSG_DEL_SHORT] : "");
 		char *ptr1;
 #ifdef HAVE_ICONV
