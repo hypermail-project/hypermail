@@ -5,6 +5,14 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.5.0
 ============================
 
+2021-10-11 Jose Kahan
+	* src/string.c src/proto.h src/parse.c
+	Hypermail uses C-lib functions, such as isspace() and sscanf(),
+	that  don't understand unicode spaces. As a workaround, we're
+	converting those spaces to ascii ones so that the parts of hypermail
+	that depend on those functions, such as link scanning will continue
+	to work.
+
 2021-10-01 Jose Kahan
 	* src/threadprint.c src/print.c src/lang.h
 	Improve the thread index and next in thread links. If a thread's node
