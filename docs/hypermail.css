@@ -17,7 +17,7 @@
 /*
 ** Default stylesheet for hypermail archives
 ** 
-** Last revised: 10/Sep/2021
+** Last revised: 13/Oct/2021
 **/
 
 html {
@@ -51,7 +51,7 @@ h1 { font-size: 150% }
 
 /* use the following rule if you want to add some style to the
 archive's name as displayed in the h1 of each index */
-.archive-label  { }
+/* .archive-label  { } */
 
 /* don't print the navbars pointing to the next message and indexes */
 @media print {
@@ -60,18 +60,16 @@ archive's name as displayed in the h1 of each index */
   }
 }
 
-
 /* for displaying the headers */
 .heading {font-weight: bold; }
 #message-id { font-size: small; }
 
-.mail, .head { border-bottom: 1px solid black; }
-
 p.received { margin-bottom: 0; }
 
-table { margin-left:2em; }nav ul {list-style:none; }
-#mid { font-size:0.9em; }
-address { font-style:inherit; }
+table { margin-left: 2em; }
+nav ul {list-style: none; }
+#mid { font-size: 0.9em; }
+address { font-style: inherit; }
 
 .quotelev1 {color : #990099; }
 .quotelev2 {color : #ff7700; }
@@ -79,9 +77,9 @@ address { font-style:inherit; }
 .quotelev4 {color : #95c500; }
 .period {font-weight: bold; }
 
-.messages-list {
-  border-top:thin solid black;
-  border-bottom:thin solid black;
+.messages-list, .mail  {
+  border-top:    thin solid black;
+  border-bottom: thin solid black;
 }
 
 .messages-list-author {
@@ -138,65 +136,79 @@ h2.heading, h2.theading {
 ** rules for the thread view
 */
 h2.theading:before  {
-    width:10px;
-    height:10px;
-    border-radius:50%;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
     background: #b83b3b;
-    display:inline-block;
+    display: inline-block;
 }
 
 h2.theading + ul {
     list-style-type: disc;
 }
 
-/* decreasing indent levels for deeply-nested threads (8 levels) */
+/*
+** default settings for narrow screens (smaller headings and padding)
+*/
+body {
+    margin: 1em;
+}
+
+h1 {
+    font-size: 1.5em;
+}
+
+h2 {
+    font-size: 1.25em;
+}
+
+h3 {
+    font-size: 1.125em;
+}
+
 .messages-list {
-    padding-top: 1.5em;
-    margin-left: 2.5em;
+    padding-top: 1em;
+    margin-left: 1em;
 }
 
 .messages-list ul {
-    margin-top: 0;
-    margin-bottom: 0;
-    margin-left: 2em;
-    padding-left: 0;
+    margin: 0;
+    padding-left: 1em;
     list-style-type: disc;
 }
 
-.messages-list ul ul {
-    margin-left: 0;
-    padding-left: 2em;
-    list-style-type: inherit;
-}
-
-.messages-list ul ul ul {
-    padding-left: 1.75em;
-    list-style-type: inherit;
-}
-
-.messages-list ul ul ul ul {
-    padding-left: 1.5em;
-    list-style-type: inherit;
-}
-
-.messages-list ul ul ul ul ul {
-    padding-left: 1.25em;
-    list-style-type: inherit;
-}
-
-.messages-list ul ul ul ul ul ul {
-    padding-left: 1em;
-    list-style-type: inherit;
-}
-
-.messages-list ul ul ul ul ul ul ul {
-    padding-left: 0.75em;
-    list-style-type: inherit;
-}
-
-.messages-list ul ul ul ul ul ul ul ul {
-    padding-left: 0.5em;
-    list-style-type: inherit;
+/*
+**  bigger headings and padding on wider screens (desktops, tablets) 
+*/
+@media screen and (min-width: 48em) {
+    body {
+	margin: 1em 2.5em;
+    }
+    
+    h1 {
+	font-size: 2em;
+    }
+    
+    h2 {
+	font-size: 1.5em;
+    }
+    
+    h3 {
+	font-size: 1.25em;
+    }
+    
+    ul.hmenu_container {
+	padding-left: 1.5em;
+    }
+    
+    .messages-list {
+	padding-top: 1.5em;
+	margin-left: 2.5em;
+    }
+    
+    .messages-list ul {
+	padding-left: 2em;
+    }
 }
 
 /*
@@ -206,10 +218,11 @@ h2.theading + ul {
 /* make links visible thru focus or hover */
 a:link {
     text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
 }
 
 a:visited {
-    color:#754675
+    color: #754675
 }
 
 a:focus {
@@ -217,12 +230,12 @@ a:focus {
     outline-offset: 1px;
     text-decoration: underline;
     text-decoration-thickness: 1px;
-    outline-color:#005A9C;
-    cursor :pointer;
+    outline-color: #005A9C;
+    cursor: pointer;
 }
 
 a:hover {
-    color:#930;
+    color: #930;
     text-decoration: underline;
     text-decoration-thickness: 2px;
 }
