@@ -436,11 +436,12 @@ void printfooter(FILE *fp, char *htmlfooter, char *label, char *dir,
 
 void printlaststats (FILE *fp, long lastdatenum)
 {
-  fprintf (fp, "<p id=\"end\"><span class=\"heading\">%s</span>: %s</p>\n",
-	   lang[MSG_LAST_MESSAGE_DATE], getdatestr(lastdatenum));
+    fprintf (fp, "<p id=\"end\" class=\"last-message-date\"><span class=\"heading\">%s</span>: %s</p>\n",
+             lang[MSG_LAST_MESSAGE_DATE], getdatestr(lastdatenum));
 
   if (set_archived_on) {
-      fprintf (fp, "<p><span class=\"heading\">%s</span>: %s</p>\n",  lang[MSG_ARCHIVED_ON], getlocaltime());
-    }
+      fprintf (fp, "<p class=\"archived-on\"><span class=\"heading\">%s</span>: %s</p>\n",  lang[MSG_ARCHIVED_ON], getlocaltime());
+  }
+
 }
 
