@@ -40,7 +40,7 @@ CPPFLAGS=@CPPFLAGS@ @INCLUDES@
 YACC=@YACC@
 NETLIBS=@LIBS@
 LDFLAGS=@LDFLAGS@
-MISC_LIBS= -lm -lpcre2-8 -ltrio
+MISC_LIBS= -lpcre2-8 -ltrio -lm
 OPT_LIBS=@EXTRA_LIBS@
 
 INCS=		domains.h hypermail.h lang.h proto.h \
