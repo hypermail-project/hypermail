@@ -347,9 +347,9 @@ char *de[] = {       /* German */
   "Aktionsmöglichkeiten",                 /* Mail actions (MA) header -HTML*/
   "Sende E-Mail mit neuen Titel",         /* MA New Message      -HTML*/
   "Antworte auf die E-Mail",              /* MA Reply            -HTML*/
-  "Zusammenfassung der monatlichen Index-Dateien", 
+  "zusammenfassung der monatlichen index-dateien", 
   					  /* monthly             -HTML*/
-  "Zusammenfassung der jährlichen Index-Dateien",        
+  "zusammenfassung der jährlichen index-dateien",        
   					  /* yearly              -HTML*/
   "Lege GDBM-Zwischenspeicher für Kopfzeilen an", 
   				/* Build a GDBM header cache   -STDOUT*/
@@ -534,8 +534,8 @@ char *pl[] = {                      /* English */
   "Wybierz",                        /* Mail actions (MA) header -HTML*/
   "wy¶lij nowy temat",              /* MA New Message      -HTML*/
   "odpowiedz na t± wiadomo¶æ",      /* MA Reply            -HTML*/
-  "Zestawienie miesiêcy",           /* monthly             -HTML*/
-  "Zestawienie lat",                /* yearly              -HTML*/
+  "zestawienie miesiêcy",           /* monthly             -HTML*/
+  "zestawienie lat",                /* yearly              -HTML*/
   "Utwórz cache nag³owków GDBM",    /* Build a GDBM header cache -STDOUT*/
   "GDBM header cache option not build in",
   		      /* GDBM header cache option not build in  -STDERR*/
@@ -716,8 +716,8 @@ char *en[] = {       /* English */
   "Mail actions",                /* Mail actions (MA) header -HTML*/
   "mail a new topic",            /* MA New Message      -HTML*/
   "respond to this message",     /* MA Reply            -HTML*/
-  "Summary of Monthly Index Files",       /* monthly             -HTML*/
-  "Summary of Yearly Index Files",        /* yearly              -HTML*/
+  "summary of monthly index files",       /* monthly             -HTML*/
+  "summary of yearly index files",        /* yearly              -HTML*/
   "Build a GDBM header cache",   /* Build a GDBM header cache   -STDOUT*/
   "GDBM header cache option not build in",
   		      /* GDBM header cache option not build in  -STDERR*/
@@ -908,8 +908,8 @@ char *es[] = {       /* Espanol/Spanish */
   "Cabecera MA (Mail actions)",       /* Mail actions (MA) header     - HTML  */
   "Enviar un nuevo tema",             /* MA New Message     	      - HTML  */
   "responder a este mensaje",         /* MA Reply       	      - HTML  */
-  "Resumen de índices mensuales",     /* monthly            	      - HTML  */
-  "Resumen de índices anuales",       /* yearly              	      - HTML  */
+  "resumen de índices mensuales",     /* monthly            	      - HTML  */
+  "resumen de índices anuales",       /* yearly              	      - HTML  */
   "Costruir cabecera para caché GDBM",/* Build a GDBM header cache    - STDOUT*/
   "Creando índice gdbm... ",          /* Creating gdbm index          - STDOUT*/
   "No pudo crearse fichero gdbm... ", /* Can't create gdbm index      - STDOUT*/
@@ -1093,8 +1093,8 @@ char *pt[] = {                     /* Brazilian Portuguese */
   "Ações de E-Mail",                  /* Mail actions (MA) header -HTML*/
   "Novo tópico de E-Mail",            /* MA New Message      -HTML*/
   "Responder à esta mensagem",        /* MA Reply            -HTML*/
-  "Sumário dos Arquivos Mensais de Índice", /* monthly             -HTML*/
-  "Sumário dos Arquivos Anuais de Índice",  /* yearly              -HTML*/
+  "sumário dos arquivos mensais de índice", /* monthly             -HTML*/
+  "sumário dos arquivos anuais de índice",  /* yearly              -HTML*/
   "Compilar cache de cabeçalho GDBM",       /* Build a GDBM header cache   -STDOUT*/
   "Opção de cabeçalho GDBM não compilada",  /* GDBM header cache option not build in  -STDERR*/
   "Criando índice gdbm... ",                /* Creating gdbm index         -STDOUT*/
@@ -1273,8 +1273,8 @@ char *fi[] = {       /* Finnish */
   "Mail actions",                    /* Mail actions (MA) header -HTML*/
   "mail a new topic",                /* MA New Message      -HTML*/
   "respond to this message",         /* MA Reply            -HTML*/
-  "Summary of Monthly Index Files",      /* monthly             -HTML*/
-  "Summary of Yearly Index Files",       /* yearly              -HTML*/
+  "summary of monthly index files",      /* monthly             -HTML*/
+  "summary of yearly index files",       /* yearly              -HTML*/
   "Build a GDBM header cache",   /* Build a GDBM header cache   -STDOUT*/
   "GDBM header cache option not build in",
    		      /* GDBM header cache option not build in  -STDERR*/
@@ -1458,8 +1458,8 @@ char *it[] = {       /* Italian */
   "Azioni di posta",                /* Mail actions (MA) header -HTML*/
   "spedisci un nuovo argomento",            /* MA New Message      -HTML*/
   "rispondi a questo messaggio",     /* MA Reply            -HTML*/
-  "Riepilogo dei file di indice mensili",       /* monthly             -HTML*/
-  "Riepilogo dei file di indice annuali",        /* yearly              -HTML*/
+  "riepilogo dei file di indice mensili",       /* monthly             -HTML*/
+  "riepilogo dei file di indice annuali",        /* yearly              -HTML*/
   "Costruisci una cache degli header in GDBM",   /* Build a GDBM header cache   -STDOUT*/
   "Creazione dell'indice gdbm ... ",     /* Creating gdbm index         -STDOUT*/
   "Impossibile creare l'indice gdbm ... ",  /* Can't create gdbm index     -STDOUT*/
@@ -1638,8 +1638,8 @@ char *fr[] = {       /* French */
   "Actions sur les mails",                 /* Mail actions (MA) header -HTML*/
   "cr&eacute;er un nouveau th&egrave;me",  /* MA New Message      -HTML*/
   "r&eacute;pondre &agrave; ce message",   /* MA Reply            -HTML*/
-  "R&eacute;capitulatif des fichiers Index mensuels",   /* monthly             -HTML*/
-  "R&eacute;capitulatif des fichiers Index annuels",         /* yearly              -HTML*/
+  "r&eacute;capitulatif des fichiers index mensuels",   /* monthly             -HTML*/
+  "r&eacute;capitulatif des fichiers index annuels",         /* yearly              -HTML*/
   "Creation d'un cache GDBM pour les en-têtes",  /* Build a GDBM header cache   -STDOUT*/
   "GDBM header cache option not build in",
   		      /* GDBM header cache option not build in  -STDERR*/
@@ -1820,8 +1820,8 @@ char *is[] = {       /* Icelandic */
   "Mail actions",                     /* Mail actions (MA) header -HTML*/
   "mail a new topic",                 /* MA New Message      -HTML*/
   "respond to this message",          /* MA Reply            -HTML*/
-  "Summary of Monthly Index Files",   /* monthly             -HTML*/
-  "Summary of Yearly Index Files",    /* yearly              -HTML*/
+  "summary of monthly index files",   /* monthly             -HTML*/
+  "summary of yearly index files",    /* yearly              -HTML*/
   "Build a GDBM header cache",   /* Build a GDBM header cache   -STDOUT*/
   "GDBM header cache option not build in",
   		      /* GDBM header cache option not build in  -STDERR*/
@@ -2009,8 +2009,8 @@ char *sv[] = {
   "E-postfunktioner",                   /* Mail actions (MA) header -HTML*/
   "s&auml;nd ett nytt &auml;mne",               /* MA New Message      -HTML*/
   "svara p&aring; brevet",        /* MA Reply            -HTML*/
-  "Sammanfattning &ouml;ver m&aring;natliga indexfiler", /* monthly             -HTML*/
-  "Sammanfattning &ouml;ver &aring;rliga indexfiler",  /* yearly              -HTML*/
+  "sammanfattning &ouml;ver m&aring;natliga indexfiler", /* monthly             -HTML*/
+  "sammanfattning &ouml;ver &aring;rliga indexfiler",  /* yearly              -HTML*/
   "Bygger en GDBM-huvudcache",   /* Build a GDBM header cache   -STDOUT*/
   "Tillval för GDBM-huvudcache inte inkompilerat",
   		      /* GDBM header cache option not build in  -STDERR*/
@@ -2196,8 +2196,8 @@ char *no[] = {
   "E-postfunksjoner",                   /* Mail actions (MA) header -HTML*/
   "Lag ny tråd",               /* MA New Message      -HTML*/
   "besvare meldingen",        /* MA Reply            -HTML*/
-  "Sammenfatning over månedlige indeksfiler", /* monthly             -HTML*/
-  "Sammenfatning over årlige indeksfiler",  /* yearly              -HTML*/
+  "sammenfatning over månedlige indeksfiler", /* monthly             -HTML*/
+  "sammenfatning over årlige indeksfiler",  /* yearly              -HTML*/
   "Bygger en GDBM-headercache",   /* Build a GDBM header cache   -STDOUT*/
   "GDBM header cache opsjon ikke innebygget",
   		      /* GDBM header cache option not build in  -STDERR*/
@@ -2388,8 +2388,8 @@ char *gr[] = {       /* Greek */
   "Mail åíİñãåéåò",                  	/* Mail actions (MA) header -HTML*/
   "Óôåßëå åíá êáéíïıñéï ìŞíõìá ",    	/* MA New Message      -HTML*/
   "ÁğÜíôçóå óå áõôü ôï ìŞíõìá",      	/* MA Reply            -HTML*/
-  "Ğåñßëçøç ôùí ìçíéáßùí åõñåôŞñéùí",  	/* monthly             -HTML*/
-  "Ğåñßëçøç ôùí åôŞóéùí åõñåôŞñéùí",  	/* yearly              -HTML*/
+  "ğåñßëçøç ôùí ìçíéáßùí åõñåôŞñéùí",  	/* monthly             -HTML*/
+  "ğåñßëçøç ôùí åôŞóéùí åõñåôŞñéùí",  	/* yearly              -HTML*/
   "Build a GDBM header cache",   	/* Build a GDBM header cache   -STDOUT*/
   "Äçìéïõñãş ôï gdbm åõñåôŞñéï... ",   	/* Creating gdbm index         -STDOUT*/
   "Äåí ìğïñş íá äçìéïõñãŞóù ôï gdbm áñ÷åßï... ",  /* Can't create gdbm index     -STDOUT*/
@@ -2565,8 +2565,8 @@ char *ru[] = {     /* Russian */
   "äÅÊÓÔ×ÉÑ Ó ĞÏŞÔÏÊ",                /* Mail actions (MA) header -HTML*/
   "ğÏÓÌÁÔØ ÎÏ×ÕÀ ÓÔÁÔØÀ",            /* MA New Message      -HTML*/
   "ïÔ×ÅÔÉÔØ ÎÁ ÜÔÏ ÓÏÏÂİÅÎÉÅ",     /* MA Reply            -HTML*/
-  "óÕÍÍÁÒÎÏ ÚÁ ÍÅÓÑÃ ÉÎÄÅËÓÎÙÈ ÆÁÊÌÏ×",       /* monthly             -HTML*/
-  "óÕÍÍÁÒÎÏ ÚÁ ÇÏÄ ÉÎÄÅËÓÎÙÈ ÆÁÊÌÏ×",        /* yearly              -HTML*/
+  "óõííáòîï úá íåóñã éîäåëóîùè æáêìï×",       /* monthly             -HTML*/
+  "óõííáòîï úá çïä éîäåëóîùè æáêìï×",        /* yearly              -HTML*/
   "ğÏÓÔÒÏÅÎÉÅ GDBM ÚÁÇÏÌÏ×ËÁ ËÜÛÁ",   /* Build a GDBM header cache   -STDOUT*/
   "ïĞÃÉÑ GDBM header cache ÎÅ ×ÓÔÒÏÅÎÁ",/* GDBM header cache option not build in  -STDERR*/
   "óÔÒÏÀ gdbm ÉÎÄÅËÓ... ",     /* Creating gdbm index         -STDOUT*/
