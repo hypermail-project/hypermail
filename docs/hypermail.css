@@ -78,8 +78,8 @@ address { font-style: inherit; }
 .period {font-weight: bold; }
 
 .messages-list, .mail  {
-  border-top:    thin solid black;
-  border-bottom: thin solid black;
+    border-top:    thin solid black;
+    border-bottom: thin solid black;
 }
 
 .messages-list-author {
@@ -168,6 +168,7 @@ h3 {
 
 .messages-list {
     padding-top: 1em;
+    padding-bottom: 1em;
     margin-left: 1em;
 }
 
@@ -203,6 +204,7 @@ h3 {
     
     .messages-list {
 	padding-top: 1.5em;
+	padding-bottom: 1.5em;
 	margin-left: 2.5em;
     }
     
@@ -238,4 +240,15 @@ a:hover {
     color: #930;
     text-decoration: underline;
     text-decoration-thickness: 2px;
+}
+
+.last-message-date {
+    line-height: 1em;
+    padding-top: 0.25em;
+}
+
+.archived-on {
+    line-height: 0;
+    margin-bottom: 0.5em;
+    padding-bottom: 0.25em;
 }

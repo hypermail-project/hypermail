@@ -114,8 +114,8 @@ void print_default_css_file(char *filename)
     fprintf(fp, ".period {font-weight: bold; }\n");
     fprintf(fp, "\n");
     fprintf(fp, ".messages-list, .mail  {\n");
-    fprintf(fp, "  border-top:    thin solid black;\n");
-    fprintf(fp, "  border-bottom: thin solid black;\n");
+    fprintf(fp, "    border-top:    thin solid black;\n");
+    fprintf(fp, "    border-bottom: thin solid black;\n");
     fprintf(fp, "}\n");
     fprintf(fp, "\n");
     fprintf(fp, ".messages-list-author {\n");
@@ -204,6 +204,7 @@ void print_default_css_file(char *filename)
     fprintf(fp, "\n");
     fprintf(fp, ".messages-list {\n");
     fprintf(fp, "    padding-top: 1em;\n");
+    fprintf(fp, "    padding-bottom: 1em;\n");
     fprintf(fp, "    margin-left: 1em;\n");
     fprintf(fp, "}\n");
     fprintf(fp, "\n");
@@ -239,6 +240,7 @@ void print_default_css_file(char *filename)
     fprintf(fp, "    \n");
     fprintf(fp, "    .messages-list {\n");
     fprintf(fp, "	padding-top: 1.5em;\n");
+    fprintf(fp, "	padding-bottom: 1.5em;\n");
     fprintf(fp, "	margin-left: 2.5em;\n");
     fprintf(fp, "    }\n");
     fprintf(fp, "    \n");
@@ -274,6 +276,17 @@ void print_default_css_file(char *filename)
     fprintf(fp, "    color: #930;\n");
     fprintf(fp, "    text-decoration: underline;\n");
     fprintf(fp, "    text-decoration-thickness: 2px;\n");
+    fprintf(fp, "}\n");
+    fprintf(fp, "\n");
+    fprintf(fp, ".last-message-date {\n");
+    fprintf(fp, "    line-height: 1em;\n");
+    fprintf(fp, "    padding-top: 0.25em;\n");
+    fprintf(fp, "}\n");
+    fprintf(fp, "\n");
+    fprintf(fp, ".archived-on {\n");
+    fprintf(fp, "    line-height: 0;\n");
+    fprintf(fp, "    margin-bottom: 0.5em;\n");
+    fprintf(fp, "    padding-bottom: 0.25em;\n");
     fprintf(fp, "}\n");
      
     fclose(fp);
