@@ -233,6 +233,7 @@ struct language_entry {
 #define MSG_SUBJECT_DELETED                      168
 #define MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION      169
 #define MSG_CSORT_BY                             170
+#define MSG_EMPTY_ARCHIVE                        171
 
 #ifdef MAIN_FILE
 
@@ -427,7 +428,8 @@ char *de[] = {       /* German */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
-  "Sortieren nach", /* CSort by - HTML*/
+  "Sortieren nach", /* CSort by - HTML */
+  "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
   NULL,                              /* End Of Message Table - NOWHERE*/
 };
 
@@ -608,7 +610,8 @@ char *pl[] = {                      /* English */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
-  "Sort by", /* CSort by - HTML*/
+  "Sort by", /* CSort by - HTML */
+  "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -791,6 +794,7 @@ char *en[] = {       /* English */
   "deleted", /* MSG_SUBJECT_DELETED - HTML */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   "Sort by", /* CSort by - HTML*/
+  "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
   NULL,                         /* End Of Message Table      - NOWHERE*/
 };
 
@@ -984,6 +988,7 @@ char *es[] = {       /* Espanol/Spanish */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   "Sort by", /* CSort by - HTML*/
+  "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
   NULL,                               /* End Of Message Table */
 };
 
@@ -1168,6 +1173,7 @@ char *pt[] = {                     /* Brazilian Portuguese */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   "Ordenar por",                       /* CSort by - HTML*/
+  "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
   NULL,                                /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1348,6 +1354,7 @@ char *fi[] = {       /* Finnish */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   "Sort by", /* CSort by - HTML*/
+  "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1531,6 +1538,7 @@ char *it[] = {       /* Italian */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   "Sort by", /* CSort by - HTML*/
+  "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1713,6 +1721,7 @@ char *fr[] = {       /* French */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   "Trier par", /* CSort by - HTML*/
+  "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
   NULL,                                    /* End Of Message Table  - NOWHERE*/
 };
 
@@ -1897,6 +1906,7 @@ char *is[] = {       /* Icelandic */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   "Sort by", /* CSort by - HTML*/
+  "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
   NULL,                               /* End Of Message Table      - NOWHERE*/
 };
 
@@ -2084,6 +2094,7 @@ char *sv[] = {
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   "Sort by", /* CSort by - HTML*/
+  "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 
@@ -2271,6 +2282,7 @@ char *no[] = {
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   "Sort by", /* CSort by - HTML*/
+  "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 
@@ -2459,6 +2471,7 @@ char *gr[] = {       /* Greek */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   "Sort by", /* CSort by - HTML*/
+  "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
   NULL,                           	/* End Of Message Table - NOWHERE*/
 };
 
@@ -2639,6 +2652,7 @@ char *ru[] = {     /* Russian */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   "Sort by", /* CSort by - HTML*/
+  "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 
