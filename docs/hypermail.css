@@ -77,7 +77,7 @@ address { font-style: inherit; }
 .quotelev4 {color : #95c500; }
 .period {font-weight: bold; }
 
-.messages-list, .mail  {
+.messages-list, .mail, .summary-year  {
     border-top:    thin solid black;
     border-bottom: thin solid black;
 }
@@ -164,6 +164,16 @@ h2 {
 
 h3 {
     font-size: 1.125em;
+}
+
+.summary-year {
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
+
+main.summary-year th.cell_period + th,
+main.summary-year td.cell_message + td {
+    padding-left: 0.5em;
 }
 
 .messages-list {

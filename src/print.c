@@ -3117,7 +3117,7 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
 	save_name[j] = index_name[0][j];
     print_index_header(fp, set_label, set_dir, subject, summary_filename);
     fprintf(fp, "</header>\n");
-    fprintf(fp, "<main class=\"summary\">\n");    
+    fprintf(fp, "<main class=\"summary-year\">\n");    
     fprintf(fp, "<table>\n");
     fprintf(fp, "<caption>%s</caption>\n", lang[MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION]);
     fprintf(fp, "<thead>\n");

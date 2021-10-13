@@ -113,7 +113,7 @@ void print_default_css_file(char *filename)
     fprintf(fp, ".quotelev4 {color : #95c500; }\n");
     fprintf(fp, ".period {font-weight: bold; }\n");
     fprintf(fp, "\n");
-    fprintf(fp, ".messages-list, .mail  {\n");
+    fprintf(fp, ".messages-list, .mail, .summary-year  {\n");
     fprintf(fp, "    border-top:    thin solid black;\n");
     fprintf(fp, "    border-bottom: thin solid black;\n");
     fprintf(fp, "}\n");
@@ -200,6 +200,16 @@ void print_default_css_file(char *filename)
     fprintf(fp, "\n");
     fprintf(fp, "h3 {\n");
     fprintf(fp, "    font-size: 1.125em;\n");
+    fprintf(fp, "}\n");
+    fprintf(fp, "\n");
+    fprintf(fp, ".summary-year {\n");
+    fprintf(fp, "    padding-top: 1em;\n");
+    fprintf(fp, "    padding-bottom: 1em;\n");
+    fprintf(fp, "}\n");
+    fprintf(fp, "\n");
+    fprintf(fp, "main.summary-year th.cell_period + th,\n");
+    fprintf(fp, "main.summary-year td.cell_message + td {\n");
+    fprintf(fp, "    padding-left: 0.5em;\n");
     fprintf(fp, "}\n");
     fprintf(fp, "\n");
     fprintf(fp, ".messages-list {\n");
