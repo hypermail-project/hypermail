@@ -941,7 +941,7 @@ int printattachments(FILE *fp, struct header *hp, struct emailinfo *subdir_email
 			nb_attach++;
 			if (first_time && !set_indextable) {
 			    first_time = 0;
-			    fprintf(fp, "<ol>\n");
+			    fprintf(fp, "<ol class=\"messageslist-attachments\">\n");
 			}
 			trio_asprintf(&filename, "%s%c%s", attdir, PATH_SEPARATOR, entry->d_name);
 			if (!stat(filename, &fileinfo))
