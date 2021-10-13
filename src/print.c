@@ -2239,7 +2239,7 @@ void writearticles(int startnum, int maxnum)
 
 	/* print the navigation bar to upper levels */
 	if (mhtmlnavbar2upfile)
-	  fprintf(fp, "<nav style=\"\" class=\"breadcrumb\" id=\"upper\">\n%s</nav>\n", 
+	  fprintf(fp, "<nav class=\"breadcrumb\" id=\"upper\">\n%s</nav>\n", 
 		  mhtmlnavbar2upfile);
 
 	/* reset the value of ptr before we actually start using it,
@@ -2570,7 +2570,7 @@ void writeattachments(int amountmsgs, struct emailinfo *email)
     else {
         fprintf (fp, "<main class=\"messages-list\">\n");
 	if (printattachments(fp, datelist, email, &is_first) == 0) {
-            fprintf(fp, "<h2 style=\"display: none\">Nothing received yet!</h2>\n");
+	  fprintf(fp, "<h2 class=\"empty-archive\">%s</h2>\n", lang[MSG_EMPTY_ARCHIVE]);
         } else {
 	  printlaststats (fp, end_date_num);
 	}
