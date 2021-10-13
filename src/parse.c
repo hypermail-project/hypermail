@@ -2637,7 +2637,7 @@ int parsemail(char *mbox,	/* file name */
 		if (append_bp && append_bp != bp) {
                     /* if we had attachments, close the structure */
                     append_bp = 
-                        addbody(append_bp, &append_lp, "</div>\n",
+                        addbody(append_bp, &append_lp, "</ul>\n</section>\n",
                                 BODY_HTMLIZED | bodyflags);
                     bp = append_body(bp, &lp, append_bp);
 		    append_bp = append_lp = NULL;
@@ -3145,7 +3145,7 @@ int parsemail(char *mbox,	/* file name */
 			    char *fname;
 			    char *binname;
 			    char *file = NULL;
-			    char buffer[512];
+			    char buffer[1024];
 
 			    file_created = MADE_FILE;	/* we have, or at least we tried */
 
@@ -3355,22 +3355,29 @@ int parsemail(char *mbox,	/* file name */
 							      + 1],
 						     file, num, type);
  					trio_snprintf(buffer, sizeof(buffer),
-						      "<p><img src=\"%s%s%c%s\" alt=\"%s\" />\n<br />\n(%s %s: <a href=\"%s%s\">%s</a>)</p>\n",
+						      "<li>%s %s: <a href=\"%s%s\">%s</a><br />\n"
+						      "<img src=\"%s%s%c%s\" alt=\"%s\" />\n"
+						      "</li>\n",
+						      type,
+						      lang[MSG_ATTACHMENT],
+						      subdir ? subdir->rel_path_to_top : "",
+						      created_link, file,
 						      subdir ? subdir->rel_path_to_top : "",
 						      &att_dir[strlen(dir) + 1],
 						      PATH_SEPARATOR, file,
-						      desc, type,
+						      desc);
+ 					free(created_link);
+ 				      } else {
+					trio_snprintf(buffer, sizeof(buffer),
+						      "<li>%s %s:<br />\n"
+						      "<img src=\"%s%s%c%s\" alt=\"%s\" />\n"
+						      "</li>\n",
+						      type,
 						      lang[MSG_ATTACHMENT],
 						      subdir ? subdir->rel_path_to_top : "",
-						      created_link, file);
- 					free(created_link);
- 				      }else {
-					trio_snprintf(buffer, sizeof(buffer),
-						 "<img src=\"%s%s%c%s\" alt=\"%s\" />\n",
-						 subdir ? subdir->rel_path_to_top : "",
-						 &att_dir[strlen(dir) + 1],
-						 PATH_SEPARATOR, file,
-						 desc);
+						      &att_dir[strlen(dir) + 1],
+						      PATH_SEPARATOR, file,
+						      desc);
 				      }
 				    } else {
 					char *created_link =
@@ -3383,7 +3390,7 @@ int parsemail(char *mbox,	/* file name */
 					    NULL) *sp = '\0';
 
 					trio_snprintf(buffer, sizeof(buffer),
-						 "<ul>\n<li>%s %s: <a href=\"%s%s\">%s</a></li>\n</ul>\n",
+						 "<li>%s %s: <a href=\"%s%s\">%s</a></li>\n",
 						 type,
 						 lang[MSG_ATTACHMENT],
 						 subdir ? subdir->rel_path_to_top : "",
@@ -3393,10 +3400,12 @@ int parsemail(char *mbox,	/* file name */
 				    }
 
 				    /* Print attachment comment before attachment */
-				    /* add a DIV to store all this info first */
+				    /* add a SECTION to store all this info first */
 				    if (!append_bp)
 				      append_bp = 
-					addbody(append_bp, &append_lp, "<div>\n",
+					addbody(append_bp, &append_lp,
+						"<section class=\"message-attachments\" "
+						"aria-label=\"attachments\">\n<ul>\n",
 						BODY_HTMLIZED | bodyflags);
 				    append_bp =
 					addbody(append_bp, &append_lp, buffer,
@@ -3496,7 +3505,7 @@ int parsemail(char *mbox,	/* file name */
 	if (append_bp && append_bp != bp) {
             /* close the DIV */
             append_bp = 
-                addbody(append_bp, &append_lp, "</div>\n",
+                addbody(append_bp, &append_lp, "</ul>\n</section>\n",
                         BODY_HTMLIZED | bodyflags);
             bp = append_body(bp, &lp, append_bp);
 	    append_bp = append_lp = NULL;
