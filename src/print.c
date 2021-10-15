@@ -1328,7 +1328,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
 	pre = TRUE;
     } else {
         /* tag the start of the message body */
-        fprintf(fp, "<a id=\"start\"></a>");
+        fprintf(fp, "<div id=\"start\" class=\"converted-html-body\">\n");
     }
     
     if (set_showhtml == 2)
@@ -1404,7 +1404,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
 	    continue;
 	}
 
-        if (bp->header && set_showheaders && !pre) {
+        if (bp->header && set_showheaders && !set_showhtml && !pre) {
 	  fprintf(fp, "<pre>\n");
 	  pre = TRUE;
 	}
@@ -1420,7 +1420,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
 	  if (is_sig_start(bp->line)) {
 	    insig = 1;
 	    if (!pre) {
-	      fprintf(fp, "<pre>\n");
+                fprintf(fp, "<pre>\n");
 	      pre = TRUE;
 	    }
 	  }
@@ -1506,6 +1506,9 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
       fprintf(fp, "</pre>\n");
     else if (set_showhtml == 2)
       end_txt2html(fp);
+    if (set_showhtml) {
+        fprintf(fp, "</div>\n");
+    }
 }
 
 char *print_leading_whitespace(FILE *fp, char *sp)
