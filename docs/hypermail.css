@@ -46,10 +46,10 @@ pre, .body {
     overflow-wrap: break-word;
 }
 
-/* a div.converted-html-body encapsulates
+/* a div.showhtml-body encapsulates
 ** the body of a message when using the
 ** showhtml option */
-div.converted-html-body {
+div.showhtml-body {
     margin-top: 1em;
     padding-left: 0.5em;
     padding-right: 0.5em;
@@ -57,12 +57,12 @@ div.converted-html-body {
     background-color: white;
 }
 
-div.converted-html-body p {
+div.showhtml-body p {
     padding-top: 0em;
     margin-top: 0.5em;
 }
 
-div.converted-html-body pre {
+div.showhtml-body pre {
     padding-top: 0em;
     margin-top: 0em;
     padding-left: 0em;

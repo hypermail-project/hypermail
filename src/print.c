@@ -1328,7 +1328,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
 	pre = TRUE;
     } else {
         /* tag the start of the message body */
-        fprintf(fp, "<div id=\"start\" class=\"converted-html-body\">\n");
+        fprintf(fp, "<div id=\"start\" class=\"showhtml-body\">\n");
     }
     
     if (set_showhtml == 2)
