@@ -30,10 +30,10 @@ in the docs/ directory.
 Please refer to Release Notes and the Changelog for the list of recent
 changes.
 
-Hypermail is distributed under the GNU GPL license (see the file COPYING for
-details). Some programs that are distributed with it in the archive and
-contrib directories have different licenses - check the individual files for
-details.
+Hypermail is distributed under the GNU GPL license (see the file
+LICENSE.txt for details). Some programs that are distributed with it
+in the archive and contrib directories have different licenses - check
+the individual files for details.
 
 Hypermail Background:
 =====================
