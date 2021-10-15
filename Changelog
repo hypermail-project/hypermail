@@ -18,6 +18,14 @@ HYPERMAIL VERSION 2.5.0
 	option to allow for archived messages to be split over multiple directories
 	(monthly or yearly for example)
 
+2021-10-15 Jose Kahan
+	* Added the css class showhtml-body to help customize displayed
+	messages when using the showhtml option.
+
+2021-10-13 @AverageGuy
+	* Hypermail wasn't compiling under ubuntu due to the order of
+	where -lm appeared when linking libraries.
+
 2021-10-11 Jose Kahan
 	* src/string.c src/proto.h src/parse.c
 	Hypermail uses C-lib functions, such as isspace() and sscanf(),
