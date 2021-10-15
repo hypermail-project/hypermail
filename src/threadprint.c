@@ -124,7 +124,7 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 		    sprintf(subject, "thread index level %d", level + 1);
 		    subject_stack[level] = strsav(subject);
 		    print_index_header(fp, set_label, set_dir,
-				       subject, filename);
+				       subject, filename, rp->data);
 		    fprintf(fp, "<ul>\n");
 		    free(filename);
 		    ++reply_list_count;
@@ -211,7 +211,7 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 		progerr(errmsg);
 	    }
 	    print_index_header(fp_body, set_label, set_dir,
-			       lang[MSG_BY_THREAD], filenameb);
+			       lang[MSG_BY_THREAD], filenameb, rp->data);
 	    fprint_menu0(fp_body, rp->data, PAGE_TOP);
 	}
 	/* Now print this mail */
