@@ -82,10 +82,10 @@ void print_default_css_file(char *filename)
     fprintf(fp, "    overflow-wrap: break-word;\n");
     fprintf(fp, "}\n");
     fprintf(fp, "\n");
-    fprintf(fp, "/* a div.converted-html-body encapsulates\n");
+    fprintf(fp, "/* a div.showhtml-body encapsulates\n");
     fprintf(fp, "** the body of a message when using the\n");
     fprintf(fp, "** showhtml option */\n");
-    fprintf(fp, "div.converted-html-body {\n");
+    fprintf(fp, "div.showhtml-body {\n");
     fprintf(fp, "    margin-top: 1em;\n");
     fprintf(fp, "    padding-left: 0.5em;\n");
     fprintf(fp, "    padding-right: 0.5em;\n");
@@ -93,12 +93,12 @@ void print_default_css_file(char *filename)
     fprintf(fp, "    background-color: white;\n");
     fprintf(fp, "}\n");
     fprintf(fp, "\n");
-    fprintf(fp, "div.converted-html-body p {\n");
+    fprintf(fp, "div.showhtml-body p {\n");
     fprintf(fp, "    padding-top: 0em;\n");
     fprintf(fp, "    margin-top: 0.5em;\n");
     fprintf(fp, "}\n");
     fprintf(fp, "\n");
-    fprintf(fp, "div.converted-html-body pre {\n");
+    fprintf(fp, "div.showhtml-body pre {\n");
     fprintf(fp, "    padding-top: 0em;\n");
     fprintf(fp, "    margin-top: 0em;\n");
     fprintf(fp, "    padding-left: 0em;\n");
