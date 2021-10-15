@@ -222,12 +222,14 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 
 void print_main_header(FILE *fp, bool index_header, char *label, char *name,
 		       char *email, char *subject, char *charset,
-		       char *date, char *filename, int is_deleted, int annotation_robot)
+		       char *date, char *filename, char *rel_path_to_top,
+		       int is_deleted, int annotation_robot)
 {
     char *title;
     char *rp;
     char *rp2;
     char *css_url;
+    char *buffer;
     
     /* JK: Don't know what to do with US-ASCII. If there's no charset,
        assume the default one is ISO-8859-1 */
@@ -336,9 +338,22 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
         css_url = set_default_css_url;
     }
 
+    /* concatenate rel_path_to_top if we are using a non-absolute css URL */
+    if (rel_path_to_top && !strchr(css_url, ':')  /* urls with : */
+        && css_url[0] != '/' && css_url[1] != '/' /* relative protocol urls //foo  */
+        && css_url[0] != PATH_SEPARATOR) {        /* absolute local path */
+        
+        trio_asprintf (&buffer, "%s%s", rel_path_to_top, css_url);
+    } else {
+        buffer = NULL;
+    }
+    
     fprintf(fp, "<link rel=\"stylesheet\" href=\"%s\" />\n",
-              css_url);
-
+            (buffer) ? buffer: css_url);
+    if (buffer) {
+        free(buffer);
+    }
+    
     if (ihtmlheadfile)
       fprintf (fp, "%s", ihtmlheadfile);
 
@@ -351,17 +366,26 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
 */
 
 void print_msg_header(FILE *fp, char *label, char *subject,
-		      char *dir, char *name, char *email, char *msgid,
-		      char *charset, time_t date, char *filename,int is_deleted, 
-		      int annotation_robot)
+		      char *dir, char *name,
+                      struct emailinfo *email, 
+		      char *filename, int is_deleted)
 {
-    if (mhtmlheaderfile)
-	printfile(fp, mhtmlheaderfile, set_label, subject, set_dir, name, 
-		  email, msgid, charset, secs_to_iso_meta(date), filename);
-    else {
-	print_main_header(fp, FALSE, set_label, name, email, subject,
-			  charset, secs_to_iso_meta(date), filename, is_deleted, 
-			  annotation_robot);
+    char *rel_path_to_top;
+    char *email_date;
+    
+    rel_path_to_top = (email->subdir) ? email->subdir->rel_path_to_top : NULL;
+    email_date = secs_to_iso_meta(email->date);
+    
+    if (mhtmlheaderfile) {
+	printfile(fp, mhtmlheaderfile, label, subject, dir, name, 
+		  email->emailaddr, email->msgid, email->charset,
+                  email_date, filename);
+    } else {
+	print_main_header(fp, FALSE, label, name,
+                          email->emailaddr, subject,
+			  email->charset, email_date,
+                          filename, rel_path_to_top,
+			  is_deleted, email->annotation_robot);
     }
 }
 
@@ -370,31 +394,38 @@ void print_msg_header(FILE *fp, char *label, char *subject,
 */
 
 void print_index_header(FILE *fp, char *label, char *dir, char *subject,
-			char *filename)
+			char *filename, struct emailinfo *email)
 {
+    char *rel_path_to_top;
+
+    rel_path_to_top = (email && email->subdir) ? email->subdir->rel_path_to_top : NULL;
+  
     if (ihtmlheaderfile)
 #ifdef HAVE_ICONV
       if (set_i18n){
-	printfile(fp, ihtmlheaderfile, label, subject, dir, NULL, NULL,
-		  "UTF-8", NULL, NULL, filename);
-      }else{
-	printfile(fp, ihtmlheaderfile, label, subject, dir, NULL, NULL,
-		  NULL, NULL, NULL, filename);
+          printfile(fp, ihtmlheaderfile, label, subject, dir, NULL, NULL,
+                    "UTF-8", NULL, NULL, filename);
+      }else {
+          printfile(fp, ihtmlheaderfile, label, subject, dir, NULL, NULL,
+                    NULL, NULL, NULL, filename);
       }
 #else
-	printfile(fp, ihtmlheaderfile, label, subject, dir, NULL, NULL,
-		  NULL, NULL, NULL, filename);
+       printfile(fp, ihtmlheaderfile, label, subject, dir, NULL, NULL,
+                 NULL, NULL, NULL, filename);
 #endif
     else {
 	/* print the navigation bar to upper levels */
 #ifdef HAVE_ICONV
         if (set_i18n){
-	  print_main_header(fp, TRUE, label, NULL, NULL, subject, "UTF-8", NULL, NULL, 0, 0);
-	} else{
-	  print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL, NULL, 0, 0);
+            print_main_header(fp, TRUE, label, NULL, NULL, subject, "UTF-8", NULL, NULL,
+                              rel_path_to_top, 0, 0);
+	} else {
+            print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL, NULL,
+                              rel_path_to_top, 0, 0);
 	}
 #else
-        print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL, NULL, 0, 0);
+        print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL, NULL,
+                          rel_path_to_top, 0, 0);
 #endif
 	fprintf (fp, "<header class=\"head\">\n");
 	if (ihtmlnavbar2upfile)

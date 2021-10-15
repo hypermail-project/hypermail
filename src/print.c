@@ -2227,13 +2227,13 @@ void writearticles(int startnum, int maxnum)
 	 * Create the comment fields necessary for incremental updating
 	 */
 #ifdef HAVE_ICONV
-	print_msg_header(fp, set_label, localsubject, set_dir, localname, email->emailaddr, 
-			 email->msgid, email->charset, email->date, filename, 
-			 REMOVE_MESSAGE(email), email->annotation_robot);
+	print_msg_header(fp, set_label, localsubject, set_dir,
+			 localname, email, filename,
+			 REMOVE_MESSAGE(email));
 #else
-	print_msg_header(fp, set_label, email->subject, set_dir, email->name, email->emailaddr, 
-			 email->msgid, email->charset, email->date, filename, 
-			 REMOVE_MESSAGE(email), email->annotation_robot);
+	print_msg_header(fp, set_label, email->subject, set_dir,
+			 email->name, email, filename,
+			 REMOVE_MESSAGE(email));
 #endif
 	fprintf (fp, "<header class=\"head\">\n");
 
@@ -2461,7 +2461,7 @@ void writedates(int amountmsgs, struct emailinfo *email)
     /*
      * Print out the index file header 
      */
-    print_index_header(fp, set_label, set_dir, lang[MSG_BY_DATE], datename);
+    print_index_header(fp, set_label, set_dir, lang[MSG_BY_DATE], datename, email);
 
     /* 
      * Print out archive information links at the top of the index
@@ -2547,7 +2547,7 @@ void writeattachments(int amountmsgs, struct emailinfo *email)
     /*
      * Print out the index file header 
      */
-    print_index_header(fp, set_label, set_dir, lang[MSG_BY_ATTACHMENT], attname);
+    print_index_header(fp, set_label, set_dir, lang[MSG_BY_ATTACHMENT], attname, email);
 
     /* 
      * Print out archive information links at the top of the index
@@ -2638,7 +2638,7 @@ void writethreads(int amountmsgs, struct emailinfo *email)
     if (set_showprogress)
 	printf("%s \"%s\"...", lang[MSG_WRITING_THREAD_INDEX], filename);
 
-    print_index_header(fp, set_label, set_dir, lang[MSG_BY_THREAD], thrdname);
+    print_index_header(fp, set_label, set_dir, lang[MSG_BY_THREAD], thrdname, email);
 
     /* 
      * Print out the index page links 
@@ -2778,23 +2778,23 @@ void writesubjects(int amountmsgs, struct emailinfo *email)
     else
 	newfile = 1;
 
-	if ((fp = fopen(filename, "w")) == NULL) { /* AUDIT biege: where? */
-	    trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
-            progerr(errmsg);
+    if ((fp = fopen(filename, "w")) == NULL) { /* AUDIT biege: where? */
+        trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
+        progerr(errmsg);
     }
 
     if (set_showprogress)
 	printf("%s \"%s\"...", lang[MSG_WRITING_SUBJECT_INDEX], filename);
 
-	print_index_header(fp, set_label, set_dir, lang[MSG_BY_SUBJECT], subjname);
-
-	/* 
-	 * Print out the index page links 
-	 */
-	print_index_header_links(fp, SUBJECT_INDEX, start_date_num, end_date_num,
-				 amountmsgs, email ? email->subdir : NULL);
-
-	fprintf (fp, "</header>\n");
+    print_index_header(fp, set_label, set_dir, lang[MSG_BY_SUBJECT], subjname, email);
+    
+    /* 
+     * Print out the index page links 
+     */
+    print_index_header_links(fp, SUBJECT_INDEX, start_date_num, end_date_num,
+			     amountmsgs, email ? email->subdir : NULL);
+    
+    fprintf (fp, "</header>\n");
 
     if (set_indextable) {
 	fprintf(fp, "<div class=\"center\">\n<table>\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong> %s</strong></td></tr>\n", lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
@@ -2936,15 +2936,15 @@ void writeauthors(int amountmsgs, struct emailinfo *email)
     else
 	newfile = 1;
 
-	if ((fp = fopen(filename, "w")) == NULL) { /* AUDIT biege: where? */
-            trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
-            progerr(errmsg);
+    if ((fp = fopen(filename, "w")) == NULL) { /* AUDIT biege: where? */
+        trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
+        progerr(errmsg);
     }
 
     if (set_showprogress)
 	printf("%s \"%s\"...", lang[MSG_WRITING_AUTHOR_INDEX], filename);
 
-    print_index_header(fp, set_label, set_dir, lang[MSG_BY_AUTHOR], authname);
+    print_index_header(fp, set_label, set_dir, lang[MSG_BY_AUTHOR], authname, email);
 
     /* 
      * Print out the index page links 
@@ -3115,7 +3115,7 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
 
     for (j = 0; j <= AUTHOR_INDEX; ++j)
 	save_name[j] = index_name[0][j];
-    print_index_header(fp, set_label, set_dir, subject, summary_filename);
+    print_index_header(fp, set_label, set_dir, subject, summary_filename, NULL);
     fprintf(fp, "</header>\n");
     fprintf(fp, "<main class=\"summary-year\">\n");    
     fprintf(fp, "<table>\n");
@@ -3170,7 +3170,7 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
 		    progerr(errmsg);
 		}
 		trio_snprintf(subject_title, sizeof(subject_title), "%s %s", month_str_pub, indextypename[j]);
-		print_index_header(fp1, set_label, set_dir, subject_title, filename);
+		print_index_header(fp1, set_label, set_dir, subject_title, filename, NULL);
 		/* 
 		 * Print out the index page links 
 		 */
@@ -3321,37 +3321,37 @@ void write_toplevel_indices(int amountmsgs)
 	progerr(errmsg);
     }
     if (fp) {
-      print_index_header(fp, set_label, set_dir, subject, filename);
-      print_index_header_links(fp, FOLDERS_INDEX, firstdatenum, lastdatenum, amountmsgs, NULL);
-      fprintf (fp, "</div>\n");
-      fprintf(fp, "<table>\n");
+        print_index_header(fp, set_label, set_dir, subject, filename, NULL);
+        print_index_header_links(fp, FOLDERS_INDEX, firstdatenum, lastdatenum, amountmsgs, NULL);
+        fprintf (fp, "</div>\n");
+        fprintf(fp, "<table>\n");
 
-      /* find which element of index_name is the default index */
-      offset = 0;
-      if (set_defaultindex) {
-	tmpstr = setindex(INDEXNAME, INDEXNAME, set_htmlsuffix);
-	for (j = 0; j <= ATTACHMENT_INDEX; ++j) {
-	  if (0 == strcmp(tmpstr, index_name[1][j])) {
-	    offset = j;
-	    break;
-	  }
-	}
-      }
+        /* find which element of index_name is the default index */
+        offset = 0;
+        if (set_defaultindex) {
+            tmpstr = setindex(INDEXNAME, INDEXNAME, set_htmlsuffix);
+            for (j = 0; j <= ATTACHMENT_INDEX; ++j) {
+                if (0 == strcmp(tmpstr, index_name[1][j])) {
+                    offset = j;
+                    break;
+                }
+            }
+        }
 
-      for (i = 0, j = 0; j <= ATTACHMENT_INDEX; ++j) {
-	if (show_index[1][j])
-	  i++;
-      }
-      /* not sure if the following -- for computing the colspan is correct will work
-	 with all configurations. */
-      if (i > 0)
-	i--;
-      fprintf(fp, "<thead>\n  <tr>\n"
-	      "    <th>%s</th>\n    <th colspan=\"%d\">%s</th>\n"
-	      "    <th align=\"right\" class=\"count\">%s</th>\n"
-	      "  </tr>\n</thead>\n"
-	      "<tbody>\n", lang[MSG_PERIOD], i, lang[MSG_RESORTED], 
-	      lang[MSG_ARTICLES]);
+        for (i = 0, j = 0; j <= ATTACHMENT_INDEX; ++j) {
+            if (show_index[1][j])
+                i++;
+        }
+        /* not sure if the following -- for computing the colspan is correct will work
+           with all configurations. */
+        if (i > 0)
+            i--;
+        fprintf(fp, "<thead>\n  <tr>\n"
+                "    <th>%s</th>\n    <th colspan=\"%d\">%s</th>\n"
+                "    <th align=\"right\" class=\"count\">%s</th>\n"
+                "  </tr>\n</thead>\n"
+                "<tbody>\n", lang[MSG_PERIOD], i, lang[MSG_RESORTED], 
+                lang[MSG_ARTICLES]);
     }
     sd = folders;
     if (set_reverse_folders)
