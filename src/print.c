@@ -1953,7 +1953,7 @@ int print_links(FILE *fp, struct emailinfo *email, int pos, int in_thread_file)
 	    if (tmpptr) {		
 	      /* use an msgid resolver */
 	      fprintf(fp, "<li><span class=\"heading\">%s</span>: ", lang[MSG_IN_REPLY_TO]);
-	      fprintf(fp, " [ <a href=\"%s\">%s</a> ]</li>\n", 
+	      fprintf(fp, "<a href=\"%s\">%s</a></li>\n", 
 		      tmpptr,
 		      lang[MSG_UNKNOWN_IN_REPLY_TO]);
 	      free (tmpptr);
