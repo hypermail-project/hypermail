@@ -2637,8 +2637,8 @@ int parsemail(char *mbox,	/* file name */
 		if (append_bp && append_bp != bp) {
                     /* if we had attachments, close the structure */
                     append_bp = 
-                        addbody(append_bp, &append_lp, "</ul>\n</section>\n",
-                                BODY_HTMLIZED | bodyflags);
+                        addbody(append_bp, &append_lp, "</ul>\n",
+                                BODY_HTMLIZED | BODY_ATTACHMENT_LINKS | bodyflags);
                     bp = append_body(bp, &lp, append_bp);
 		    append_bp = append_lp = NULL;
 		}
@@ -3404,18 +3404,17 @@ int parsemail(char *mbox,	/* file name */
 				    if (!append_bp)
 				      append_bp = 
 					addbody(append_bp, &append_lp,
-						"<section class=\"message-attachments\" "
-						"aria-label=\"attachments\">\n<ul>\n",
-						BODY_HTMLIZED | bodyflags);
+						"<ul>\n",
+						BODY_HTMLIZED | BODY_ATTACHMENT_LINKS | bodyflags);
 				    append_bp =
 					addbody(append_bp, &append_lp, buffer,
-						BODY_HTMLIZED | bodyflags);
+						BODY_HTMLIZED | BODY_ATTACHMENT_LINKS | bodyflags);
 				    trio_snprintf(buffer, sizeof(buffer),
 					     "<!-- attachment=\"%.80s\" -->\n",
 					     file);
 				    append_bp =
 					addbody(append_bp, &append_lp, buffer,
-						BODY_HTMLIZED | bodyflags);
+						BODY_HTMLIZED | BODY_ATTACHMENT_LINKS | bodyflags);
 				}
 			    }
 
@@ -3505,8 +3504,8 @@ int parsemail(char *mbox,	/* file name */
 	if (append_bp && append_bp != bp) {
             /* close the DIV */
             append_bp = 
-                addbody(append_bp, &append_lp, "</ul>\n</section>\n",
-                        BODY_HTMLIZED | bodyflags);
+                addbody(append_bp, &append_lp, "</ul>\n",
+                        BODY_HTMLIZED | BODY_ATTACHMENT_LINKS | bodyflags);
             bp = append_body(bp, &lp, append_bp);
 	    append_bp = append_lp = NULL;
 	}
