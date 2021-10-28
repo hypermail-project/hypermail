@@ -527,7 +527,7 @@ void txt2html(FILE *fp, struct emailinfo *email, const struct body *bp, bool rep
 	fprintf(fp, "</pre>\n");
     }
     if (!in_pre_block && convert_to_hrule(line)) {
-	fprintf(fp, "<hr>\n");
+	fprintf(fp, "<hr />\n");
 	line[0] = 0;
 	was_hrule = 1;
     }
