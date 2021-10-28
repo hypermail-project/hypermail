@@ -944,6 +944,7 @@ struct body *addbody(struct body *bp, struct body **lp,	/* points to the last po
 	newnode->html = (flags & BODY_HTMLIZED) ? 1 : 0;
 	newnode->header = (flags & BODY_HEADER) ? 1 : 0;
 	newnode->attached = (flags & BODY_ATTACHED) ? 1 : 0;
+	newnode->attachment_links = (flags & BODY_ATTACHMENT_LINKS) ? 1 : 0;
         newnode->format_flowed = (flags & BODY_FORMAT_FLOWED) ? 1 : 0;
 	newnode->next = NULL;
     }
@@ -1020,7 +1021,10 @@ struct body *append_body(struct body *origbp, struct body **origlp, struct body 
 	struct body *next;
 		origbp = addbody(origbp, origlp, bp->line, (bp->header ? BODY_HEADER : 0)
 			 | (bp->html ? BODY_HTMLIZED : 0)
-			 | (bp->attached ? BODY_ATTACHED : 0));
+			 | (bp->attached ? BODY_ATTACHED : 0)
+			 | (bp->attachment_links ? BODY_ATTACHMENT_LINKS : 0)
+			 | (bp->format_flowed ? BODY_FORMAT_FLOWED : 0));
+
 	next = bp->next;
 	free(bp->line);
 	free(bp);
