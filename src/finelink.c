@@ -541,9 +541,9 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
 		char *tmpptr = convchars(ep2->subject, ep2->charset);
 		if (tmpptr) {
 		    char *path = get_path(ep, ep2);
-                    fprintf(fp2,"[ <a href=\"%s%.4d.%s\" title=\"%s: &quot;%s&quot;\">%s</a> ]\n", 
-			    path, new_reply_to, set_htmlsuffix, lang[MSG_LTITLE_IN_REPLY_TO], 
-			    ep2->name, tmpptr ? tmpptr : "");
+                    fprintf(fp2,"<li><a href=\"%s%.4d.%s\">%s</a></li>\n", 
+			    path, new_reply_to, set_htmlsuffix,
+			    tmpptr ? tmpptr : "");
 		    free(tmpptr);
 		}
 	  }
@@ -553,9 +553,9 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
 		if (tmpptr) {
 		    char *path = get_path(ep, ep2);
                     fprintf(fp2, "<li><span class=\"heading\">%s</span> " 
-			    "<a href=\"%s%.4d.%s\" title=\"%s\">%s: \"%s\"</a></li>\n", 
+			    "<a href=\"%s%.4d.%s\">%s: \"%s\"</a></li>\n", 
 			    lang[MSG_IN_REPLY_TO], path, 
-			    new_reply_to, set_htmlsuffix, lang[MSG_LTITLE_IN_REPLY_TO], 
+			    new_reply_to, set_htmlsuffix,
 			    ep2->name, tmpptr ? tmpptr : "");
 		    free(tmpptr);
 		}
