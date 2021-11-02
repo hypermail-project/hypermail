@@ -235,6 +235,7 @@ struct body {
     char parsedheader;		/* this header line has been parsed once */
     char attached;		/* part of attachment */
     char attachment_links;      /* part of generated links to attachments */
+    char attachment_rfc822;     /* first line of a message/rfc822 attachment */
     char demimed;		/* if this is a header, this is set to TRUE if
 				   it has passed the decoderfc2047() function */
     int format_flowed;          /* TRUE if this a text/plain f=f line */
@@ -334,8 +335,10 @@ struct attach {
 #define BODY_ATTACHED (1<<3)	/* this line was attached */
 #define BODY_ATTACHMENT_LINKS (1<<4)   /* this line is part of the generated links 
 				       ** to attachments */
-#define BODY_FORMAT_FLOWED   (1<<5) /* this line is format-flowed */
-#define BODY_DEL_SSQ  (1<<6)    /* remove both space stuffing and
+#define BODY_ATTACHMENT_RFC822 (1<<5)   /* this line is the beginning of an message/rfc822
+					** attachment */
+#define BODY_FORMAT_FLOWED   (1<<6) /* this line is format-flowed */
+#define BODY_DEL_SSQ  (1<<7)    /* remove both space stuffing and
                                  * quotes where applicable for f=f */
 
 
