@@ -2257,7 +2257,7 @@ int parsemail(char *mbox,	/* file name */
 			     */
 			    bp = addbody(bp, &lp,
 					 "<p><strong>attached mail follows:</strong></p><hr />",
-					 BODY_HTMLIZED | bodyflags);
+					 BODY_ATTACHMENT_RFC822 | BODY_HTMLIZED | bodyflags);
 			    bodyflags |= BODY_ATTACHED;
 			    /* @@ should it be 1 or 2 ?? should we use another method? */
 #if 0
