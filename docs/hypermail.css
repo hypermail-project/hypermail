@@ -232,6 +232,11 @@ section.message-attachments pre.body {
     margin-top: 0px;
 }
 
+section.message-attachments div.showhtml-body {
+    margin-top: -0.7em;
+    padding-top: 1em;
+}
+
 /*
 **  bigger headings and padding on wider screens (desktops, tablets) 
 */
