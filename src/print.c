@@ -1446,6 +1446,8 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
               
               /* @@ check for duplicate ids */
               bp = print_headers_rfc822_att(fp, email, bp);
+	      /* reset this flag to as we just printed the attachment headers */
+	      inblank = 1;
 	      if (bp)
                   bp = bp->next;
               continue;
