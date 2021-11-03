@@ -85,13 +85,13 @@ archive's name as displayed in the h1 of each index */
 
 /* for displaying the headers */
 .heading {font-weight: bold; }
-.message-id { font-size: small; }
+.message-id { font-size: 0.9em; }
+span.message-id > span.heading { font-size: revert; }
 
 p.received { margin-bottom: 0; }
 
 table { margin-left: 2em; }
 nav ul {list-style: none; }
-#mid { font-size: 0.9em; }
 address { font-style: inherit; }
 
 .quotelev1 {color : #990099; }
