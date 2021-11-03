@@ -53,7 +53,7 @@ void print_default_css_file(char *filename)
     fprintf(fp, "/*\n");
     fprintf(fp, "** Default stylesheet for hypermail archives\n");
     fprintf(fp, "** \n");
-    fprintf(fp, "** Last revised: 13/Oct/2021\n");
+    fprintf(fp, "** Last revised: 03/Nov/2021\n");
     fprintf(fp, "**/\n");
     fprintf(fp, "\n");
     fprintf(fp, "html {\n");
@@ -280,6 +280,11 @@ void print_default_css_file(char *filename)
     fprintf(fp, "}\n");
     fprintf(fp, "\n");
     fprintf(fp, "section.message-attachments div.showhtml-body {\n");
+    fprintf(fp, "    margin-top: -0.7em;\n");
+    fprintf(fp, "    padding-top: 1em;\n");
+    fprintf(fp, "}\n");
+    fprintf(fp, "\n");
+    fprintf(fp, "section.message-attachments div.inlinehtml-body {\n");
     fprintf(fp, "    margin-top: -0.7em;\n");
     fprintf(fp, "    padding-top: 1em;\n");
     fprintf(fp, "}\n");
