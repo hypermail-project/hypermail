@@ -8,6 +8,7 @@ int togdbm(void *gp, struct emailinfo *);
 
 void printcomment(FILE *, char *, char *);
 void print_headers(FILE *, struct emailinfo *, int);
+struct body *print_headers_rfc822_att(FILE *, struct emailinfo *, struct body *);
 int print_links(FILE *, struct emailinfo *, int, int);
 void printbody(FILE *, struct emailinfo *, int, int);
 char *print_leading_whitespace(FILE *, char *);

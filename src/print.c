@@ -31,6 +31,7 @@
 #include "parse.h"
 #include "txt2html.h"
 #include "finelink.h"
+#include "getname.h"
 
 #include "threadprint.h"
 
@@ -1120,8 +1121,13 @@ char *ConvURLsString(char *line, char *mailid, char *mailsubject, char *charset)
     if (set_href_detection) {
       if ((c = strcasestr(line, "<A HREF=\"")) != NULL && !strcasestr(c + 9, "mailto")) {
 	parsed = ConvURLsWithHrefs(line, mailid, mailsubject, c, charset);
-	if (parsed)
-	  return parsed;
+	if (parsed) {
+#ifdef HAVE_ICONV
+            if (tmpptr)
+                free(tmpptr);
+#endif
+            return parsed;
+        }
       }
     }
 
@@ -1130,8 +1136,13 @@ char *ConvURLsString(char *line, char *mailid, char *mailsubject, char *charset)
 	if (inreply) {
 	    parsed = ConvMsgid(line, inreply, mailid, mailsubject, charset);
 	    free(inreply);
-	    if (parsed)
+	    if (parsed) {
+#ifdef HAVE_ICONV
+                if (tmpptr)
+                    free(tmpptr);
+#endif                
 	        return parsed;
+            }
 	}
     }
 
@@ -1140,9 +1151,14 @@ char *ConvURLsString(char *line, char *mailid, char *mailsubject, char *charset)
     /* as at this point we don't know how to separate the href convertions from mailto
        ones in the same line, we keep frmo doing the mailto convertion if we find a
        complete href */
-    if (parsed && strcasestr(parsed, "</a>"))
+    if (parsed && strcasestr(parsed, "</a>")) {
+#ifdef HAVE_ICONV            
+        if (tmpptr)
+            free(tmpptr);
+#endif                        
       return parsed;
-
+    }
+    
     /* we didn't find any previous href convertion, we try to do a mailto: convertion */
     if (use_mailcommand) {
 	/* Exclude headers that are not mail type headers */
@@ -1158,14 +1174,14 @@ char *ConvURLsString(char *line, char *mailid, char *mailsubject, char *charset)
     }
 #ifdef HAVE_ICONV
     if(tmpptr)
-      free(tmpptr);
+        free(tmpptr);
 #endif
 
     return parsed;
 }
 
 
-void printheaders (FILE *fp, struct emailinfo *email)
+struct body *printheaders (FILE *fp, struct emailinfo *email, struct body *from_bp)
 {
     struct body *bp;
     char *id = email->msgid;
@@ -1175,6 +1191,8 @@ void printheaders (FILE *fp, struct emailinfo *email)
     char *header_content;
 
     if (REMOVE_MESSAGE(email)) {
+      /* the following message is now shown when printing the body; we
+      ** only need to return */
 #if 0
       int d_index = MSG_DELETED;
       if (email->is_deleted == 2)
@@ -1183,7 +1201,7 @@ void printheaders (FILE *fp, struct emailinfo *email)
 	d_index = MSG_FILTERED_OUT;
       fprintf(fp, "<span id=\"start\" class=\"message-deleted\">(%s)</span>\n", lang[d_index]);
 #endif
-      return;
+      return NULL;
     }
     
     if (set_show_headers) {
@@ -1191,16 +1209,36 @@ void printheaders (FILE *fp, struct emailinfo *email)
         
         for (shp = set_show_headers; shp != NULL; shp = shp->next) {
 
+            /* if from_bp is initialized, we are dealing with an attachment, 
+            ** we want to print out the headers we usually skip */
             if (inlist(set_skip_headers, shp->val)) {
                 continue;
             }
+
+            if (from_bp) {
+                bp = from_bp;
+            }
+            else {
+                bp = email->bodylist;
+            }
             
-            bp = email->bodylist;
             while (bp != NULL && bp->header) {
                 if ((bp->line)[0] == '\n') {   /* don't try to convert newline */
                     break;
                 }
-
+                
+#ifdef PRINTBODY_DEBUG
+                if (from_bp) {
+                    fprintf(stderr, "========================\n");
+                    fprintf(stderr, "%s\n", bp->line);
+                    fprintf(stderr, "header: %d\n", bp->header);
+                    fprintf(stderr, "parsed: %d\n", bp->parsedheader);
+                    fprintf(stderr, "attached: %d\n", bp->attached);
+                    fprintf(stderr, "demimed: %d\n", bp->demimed);
+                    fprintf(stderr, "html: %d\n", bp->html);
+                }
+#endif
+                
                 if (sscanf(bp->line, "%127[^:]", head) == 1 && showheader_match(head, shp->val)) {
                     /* this is a header we want to show */
                     
@@ -1210,7 +1248,7 @@ void printheaders (FILE *fp, struct emailinfo *email)
                     /* we print the header, escaping it as needed */
 
                     header_content = bp->line + strlen (head) + 2;
-                    fprintf (fp, "<span id=\"%s\"><span class=\"heading\">%s</span>: ",
+                    fprintf (fp, "<span class=\"%s\"><span class=\"heading\">%s</span>: ",
                              head_lower, head);
 
 
@@ -1246,6 +1284,10 @@ void printheaders (FILE *fp, struct emailinfo *email)
             }
         }
     }
+    
+    /* returns last line that was processed */
+    return bp;
+    
 } /* printheaders */
 
 /*
@@ -1266,249 +1308,324 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
     char *id = email->msgid;
     char *subject = email->subject;
     int msgnum = email->msgnum;
+    char *body_start_attribute = " id=\"start\"";
     char inheader = FALSE;	/* we always start in a mail header */
-    int pre = FALSE;
-
+    int body_start = TRUE;      /* used to put the anchor to the first line of the body */
+    int pre_open = FALSE;       /* controls if a <pre> is open */
+    int showhtml_open = FALSE;  /* if using showhtml controls if the special 
+				** <div> surrounding that content is open */
+    int inlinehtml_open = FALSE;  /* if using inline_html controls if
+				  ** the special <div> surrounding that content is open */
+    int attachment_open = FALSE; /* if we generated a list of attachments, controls if the
+                                 ** the <section> surrounding the list is open */
     int inquote;
     int quote_num;
     int quoted_percent;
     bool replace_quoted;
 
     if (set_linkquotes || set_showhtml == 2)
-      /* should be changed to unconditional after tested for a while?
-	 - pcm@rahul.net 1999-09-09 */
-      find_quote_prefix(email->bodylist, is_reply);
+        /* should be changed to unconditional after tested for a while?
+           - pcm@rahul.net 1999-09-09 */
+        find_quote_prefix(email->bodylist, is_reply);
     
     if (set_quote_hide_threshold <= 100)
 	quoted_percent = compute_quoted_percent(bp);
     else
-      quoted_percent = 100;
+        quoted_percent = 100;
     replace_quoted = (quoted_percent > set_quote_hide_threshold);
 
     if (set_showprogress && replace_quoted)
-      printf("\nMessage %d quoted text (%d %%) replaced by links\n", msgnum, quoted_percent);
-    
+        printf("\nMessage %d quoted text (%d %%) replaced by links\n", msgnum, quoted_percent);
+
+    /* for deleted messages, print a specific message, either default
+    ** or configuration given */
     if (email->is_deleted && set_delete_level != DELETE_LEAVES_TEXT && !(email->is_deleted == 2 && set_delete_level == DELETE_LEAVES_EXPIRED_TEXT)) {
-      int d_index = MSG_DELETED;
-      if (email->is_deleted == 2)
-	d_index = MSG_EXPIRED;
-      if (email->is_deleted == 4 || email->is_deleted == 8)
-	d_index = MSG_FILTERED_OUT;
-      if (email->is_deleted == 64)
-	d_index = MSG_DELETED_OTHER;
-      switch(d_index) {
-      case MSG_DELETED:
-	if(set_htmlmessage_deleted_spam){
-	  fprintf(fp,"%s\n",set_htmlmessage_deleted_spam);
-	  break;
+        int d_index = MSG_DELETED;
+        if (email->is_deleted == 2)
+            d_index = MSG_EXPIRED;
+        if (email->is_deleted == 4 || email->is_deleted == 8)
+            d_index = MSG_FILTERED_OUT;
+        if (email->is_deleted == 64)
+            d_index = MSG_DELETED_OTHER;
+        switch(d_index) {
+        case MSG_DELETED:
+            if(set_htmlmessage_deleted_spam){
+                fprintf(fp,"%s\n",set_htmlmessage_deleted_spam);
+                break;
+            }
+        case MSG_DELETED_OTHER:
+            if(set_htmlmessage_deleted_other){
+                fprintf(fp,"%s\n",set_htmlmessage_deleted_other);
+                break;
 	}
-      case MSG_DELETED_OTHER:
-	if(set_htmlmessage_deleted_other){
-	  fprintf(fp,"%s\n",set_htmlmessage_deleted_other);
-	  break;
-	}
-      default:
-	fprintf(fp, "<pre id=\"start\" class=\"body\">\n");
-	fprintf(fp, "<span class=\"message-deleted\">%s</span>\n", lang[d_index]);
-	fprintf(fp, "</pre>");
-      }
-      return;
+        default:
+            fprintf(fp, "<pre%s class=\"body\">\n", body_start_attribute);
+            fprintf(fp, "<span class=\"message-deleted\">%s</span>\n", lang[d_index]);
+            fprintf(fp, "</pre>");
+        }
+        return;
     }
-    
+
+    /* deal with messages that were edited */
     if (email->annotation_content == ANNOTATION_CONTENT_EDITED) {
-      if (set_htmlmessage_edited)
-	fprintf(fp,"%s\n",set_htmlmessage_edited);
-      else
-	fprintf(fp, "<p class=\"message-edited\">%s</p>\n", lang[MSG_EDITED]);
+        if (set_htmlmessage_edited)
+            fprintf(fp,"%s\n",set_htmlmessage_edited);
+        else {
+            fprintf(fp, "<p%s class=\"message-edited\">%s</p>\n", body_start_attribute,
+                    lang[MSG_EDITED]);
+            body_start = FALSE;
+        }
     }
-
-    if (!set_showhtml) {
-        /* tag the start of the message body */
-	fprintf(fp, "<pre id=\"start\" class=\"body\">\n");
-	pre = TRUE;
-    } else {
-        /* tag the start of the message body */
-        fprintf(fp, "<div id=\"start\" class=\"showhtml-body\">\n");
-    }
-    
-    if (set_showhtml == 2)
-      init_txt2html();
-    inquote = 0;
-    quote_num = 0;
-
-    inblank = 1;
-    insig = 0;
 
     while (bp != NULL) {
-	if (bp->html) {
-	  /* already in HTML, don't touch */
-  	  if (pre) {
-	    fprintf(fp, "</pre>\n");
-	    pre = FALSE;
-	  }
-	  printhtml(fp, bp->line);
-	  inheader = FALSE;	/* this can't be a header if already in HTML */
-	  bp = bp->next;
-	  continue;
-	}
 
-	if (bp->header) {
-	    char head[128];
-	    if (!inheader) {
-              /* JK: I'm not sure why, but I had a !set_showhtml here */
-	      if (!set_showhtml && !pre && set_showheaders) {
-		fprintf(fp, "<pre>\n");
-		pre = TRUE;
-	      }
-	      inheader = TRUE;
-	    }
-	    if (sscanf(bp->line, "%127[^:]", head) == 1 && set_show_headers && !showheader_list(head)) {
-	      /* the show header keyword has been used, then we skip all those
-		 that aren't mentioned! */
-	      if (isalnum(*head) || !set_showheaders) {
-		/* this check is only to make sure that the last line among 
-		   the headers (the "\n" one) won't be filtered off */
-		bp = bp->next;
-		continue;
-	      }
-	    }
-	}
-	else {
-	  if (inheader) {
-	    insig = 0;
-	    if (set_showhtml) {
-	      if (pre) {
-		fprintf(fp, "</pre>\n");
-		pre = FALSE;
-	      }
-	      fprintf(fp, "<br />\n");
-	    }
-	    else {
-	      if (!pre) {
-		fprintf(fp, "<pre>\n");
-		pre = TRUE;
-	      }
-	    }
-	    inheader = FALSE;
-	  }
-	}
+#ifdef PRINTBODY_DEBUG
+        fprintf(stderr, "========================\n");
+        fprintf(stderr, "%s\n", bp->line);
+        fprintf(stderr, "header: %d\n", bp->header);
+        fprintf(stderr, "parsed: %d\n", bp->parsedheader);
+        fprintf(stderr, "attached: %d\n", bp->attached);
+	fprintf(stderr, "attachment_rfc822: %d\n", bp->attachment_rfc822);
+        fprintf(stderr, "demimed: %d\n", bp->demimed);
+        fprintf(stderr, "html: %d\n", bp->html);
+#endif
+        
+        /* skip all headers */
+        if (bp->header) {
+            
+            if (!inheader) {
+                inheader= TRUE;
 
-	if (((bp->line)[0] != '\n') && (bp->header && !set_showheaders)) {
-	    bp = bp->next;
-	    continue;
-	}
+                /* close open sections */
+                if (pre_open) {
+                    fprintf(fp, "</pre>\n");
+                    pre_open = FALSE;
+                }
 
-	if (set_showhtml == 2 && !inheader) {
-	    txt2html(fp, email, bp, replace_quoted, maybe_reply);
-	    bp = bp->next;
-	    continue;
-	}
+                if (set_showhtml == 2 && !inlinehtml_open) {
+                    end_txt2html(fp);
+                }
 
-        if (bp->header && set_showheaders && !set_showhtml && !pre) {
-	  fprintf(fp, "<pre>\n");
-	  pre = TRUE;
-	}
- 
+                if (showhtml_open || inlinehtml_open) {
+                    fprintf(fp, "</div>\n");
+                    showhtml_open = FALSE;
+                    inlinehtml_open = FALSE;
+                }
+
+                if (attachment_open) {
+                    fprintf(fp, "</section>\n");
+                    attachment_open = FALSE;
+                }
+            }
+            bp = bp->next;
+            continue;
+        }
+
+        /* we're not in a header anymore */
+        
+        if (inheader) {
+            inheader = FALSE;
+            /* initialize the variables used for each attachment */
+            inquote = 0;
+            quote_num = 0;
+            inblank = 1;
+            insig = 0;
+        }
+
+        /* skip any trailing newlines at the beginning of the attachment */
 	if ((bp->line)[0] == '\n' && inblank) {
-	  bp = bp->next;
-	  continue;
+            bp = bp->next;
+            continue;
 	}
 	else
-	  inblank = 0;
+            inblank = 0;
+        
 	
-	if (set_showhtml) {
-	  if (is_sig_start(bp->line)) {
-	    insig = 1;
-	    if (!pre) {
-                fprintf(fp, "<pre>\n");
-	      pre = TRUE;
-	    }
-	  }
-	  
-	  if (!inheader && (bp->line)[0] == '\n')
-	    /* within the <pre></pre> statements you do not need to
-	       insert <p> statements since text is already preformated.
-	       the W3C HTML validation script fails for such pages 
-	       Akis Karnouskos <akis@ceid.upatras.gr>     */
-	    {
-	      if (!pre)
-		fprintf(fp, "<br />");
-	    }
-	  else {
-	    if (insig) {
-	      ConvURLs(fp, bp->line, id, subject, email->charset);
-	    }
-	    else if (isquote(bp->line)) {
-	      if (set_linkquotes) {
-		if (handle_quoted_text(fp, email, bp, bp->line, inquote, quote_num, replace_quoted, maybe_reply)) {
-		  ++quote_num;
-		  inquote = 1;
-		}
-	      }
-	      else {
-		fprintf(fp, "<%s class=\"%s\">", set_iquotes ? "em" : "span", find_quote_class(bp->line));
-
-		ConvURLs(fp, bp->line, id, subject, email->charset);
-		
-		fprintf(fp, "%s<br />\n", (set_iquotes) ? "</em>" : "</span>");
-	      }
-	    }
-	    else if ((bp->line)[0] != '\0' && !bp->header) {
-	      char *sp;
-	      sp = print_leading_whitespace(fp, bp->line);
-	      
-	      /* JK: avoid converting Message-Id: headers */
-	      if (bp->header && bp->parsedheader && !strncasecmp(bp->line, "Message-Id:", 11)
-		  && use_mailcommand) {
-		/* we desactivate it just during this conversion */
-		use_mailcommand = 0;
-		ConvURLs(fp, sp, id, subject, email->charset);
-		use_mailcommand = 1;
-	      }
-	      else
-		ConvURLs(fp, sp, id, subject, email->charset);
-	      
-	      /*
-	       * Determine whether we should break.
-	       * We could check for leading spaces
-	       * or quote lines, but in general,
-	       * non-alphanumeric lines should be
-	       * broken before.
-	       */
-	      
-	      if ((set_showbr && !bp->header) || ((bp->next != NULL) && !isalnum(bp->next->line[0])))
-		fprintf(fp, "<br />");
-	      if (!bp->header) {
-		fprintf(fp, "\n");
-	      }
-	    }
+	/* if we have headers that are inside an rfc822, they
+	**   are marked as headers and attached, we print them out
+            ** in that case */
+	if (bp->attachment_rfc822 && set_show_headers && bp->next) {
+	  char head[128];
+          fprintf(fp, "<section%s class=\"message-attachments\" "
+                  "aria-label=\"attachments\">\n",
+                  (body_start) ? body_start_attribute : "");
+          fprintf(fp, "%s\n", bp->line);
+          attachment_open = TRUE;
+          bp = bp->next;
+	  if (sscanf(bp->line, "%127[^:]", head) == 1) {
+              /* if it's a header and the user wants to show them,  then print it 
+                 and all the other headers that follow */
+              
+              /* @@ check for duplicate ids */
+              bp = print_headers_rfc822_att(fp, email, bp);
+	      if (bp)
+                  bp = bp->next;
+              continue;
+          }
+        }
 	    
-	  }
+	if (bp->html) {
+            /* already in HTML, don't touch. It may be either inline
+             * html or an attachment list */
+            
+            if (bp->attachment_links) {
+                if (!attachment_open) {
+                    fprintf(fp, "<section%s class=\"message-attachments\" "
+                            "aria-label=\"attachments\">\n",
+                            (body_start) ? body_start_attribute : "");
+                    attachment_open = TRUE;
+                }
+            }
+
+            else if (!inlinehtml_open) {
+                fprintf(fp, "<div%s class=\"inlinehtml-body\">\n",
+                        (body_start) ? body_start_attribute : "");
+                inlinehtml_open = TRUE;
+            }
+            
+            if (body_start) {
+                body_start = FALSE;
+            }
+
+            fprintf(fp, bp->line);
+            bp = bp->next;
+            continue;
+        }
+
+        /* if we get here, decide if we need to convert the body to html or 
+        ** print it inside a pre, with an exception for sigs which are always 
+        ** in pre sections when showhtml == 1*/
+        if (set_showhtml) {
+            if (!showhtml_open) {
+                fprintf(fp, "<div%s class=\"html-body\">\n",
+                        (body_start) ? body_start_attribute : "");
+                if (body_start) {
+                    body_start = FALSE;
+                }
+                if (set_showhtml == 2) {
+                    init_txt2html();
+                }
+                showhtml_open = TRUE;
+            }
 	}
+
+	if (set_showhtml == 2) {
+	    txt2html(fp, email, bp, replace_quoted, maybe_reply);
+            bp = bp->next;
+            continue;
+	}
+
+	if (set_showhtml) {
+            if (is_sig_start(bp->line)) {
+                insig = 1;
+                if (!pre_open) {
+                    fprintf(fp, "<pre>\n");
+                    pre_open = TRUE;
+                }
+            }
+	  
+            if ((bp->line)[0] == '\n')
+                /* within the <pre></pre> statements you do not need to
+                   insert <p> statements since text is already preformated.
+                   the W3C HTML validation script fails for such pages 
+                   Akis Karnouskos <akis@ceid.upatras.gr>     */
+                {
+                    if (!pre_open)
+                        fprintf(fp, "<br />\n");
+                }
+            else {
+                if (insig) {
+                    ConvURLs(fp, bp->line, id, subject, email->charset);
+                }
+                else if (isquote(bp->line)) {
+                    if (set_linkquotes) {
+                        if (handle_quoted_text(fp, email, bp, bp->line, inquote, quote_num, replace_quoted, maybe_reply)) {
+                            ++quote_num;
+                            inquote = 1;
+                        }
+                    }
+                    else {
+                        fprintf(fp, "<%s class=\"%s\">", set_iquotes ? "em" : "span", find_quote_class(bp->line));
+                        
+                        ConvURLs(fp, bp->line, id, subject, email->charset);
+                        
+                        fprintf(fp, "%s<br />\n", (set_iquotes) ? "</em>" : "</span>");
+                    }
+                }
+                else if ((bp->line)[0] != '\0' && !bp->header) {
+                    char *sp;
+                    sp = print_leading_whitespace(fp, bp->line);
+	      
+                    /* JK: avoid converting Message-Id: headers */
+                    /* @@ change this for a strstr */
+                    if (bp->header && bp->parsedheader && !strncasecmp(bp->line, "Message-Id:", 11)
+                        && use_mailcommand) {
+                        /* we desactivate it just during this conversion */
+                        use_mailcommand = 0;
+                        ConvURLs(fp, sp, id, subject, email->charset);
+                        use_mailcommand = 1;
+                    }
+                    else
+                        ConvURLs(fp, sp, id, subject, email->charset);
+	      
+                    /*
+                     * Determine whether we should break.
+                     * We could check for leading spaces
+                     * or quote lines, but in general,
+                     * non-alphanumeric lines should be
+                     * broken before.
+                     */
+	      
+                    if ((set_showbr) || ((bp->next != NULL) && !isalnum(bp->next->line[0])))
+                        fprintf(fp, "<br />");
+                    fprintf(fp, "\n");
+                    }
+            }
+        }
+
+        /* this section prints the text message inside <pre> */
 	else if ((bp->line)[0] != '\0' && !bp->header) {
-	  /* JK: avoid converting Message-Id: headers */
-	  if (bp->header && bp->parsedheader && !strncasecmp(bp->line, "Message-Id:", 11)
-	      && use_mailcommand) {
-	    /* we desactivate it just during this conversion */
-	    use_mailcommand = 0;
-	    ConvURLs(fp, bp->line, id, subject, email->charset);
-	    use_mailcommand = 1;
-	  }
-	  else
-	    ConvURLs(fp, bp->line, id, subject, email->charset);
+            if (!pre_open) {
+                fprintf(fp, "<pre%s class=\"body\">\n", (body_start) ? body_start_attribute : "");
+                pre_open = TRUE;
+                if (body_start) {
+                    body_start = FALSE;
+                }
+            }
+            
+            /* JK: avoid converting Message-Id: headers that may appear in replies */
+            /* @@ add strstr here */
+            if (bp->header && bp->parsedheader && !strncasecmp(bp->line, "Message-Id:", 11)
+                && use_mailcommand) {
+                /* we desactivate it just during this conversion */
+                use_mailcommand = 0;
+                ConvURLs(fp, bp->line, id, subject, email->charset);
+                use_mailcommand = 1;
+            }
+            else
+                ConvURLs(fp, bp->line, id, subject, email->charset);
 	}
+        
 	if (!isquote(bp->line))
-	  inquote = 0;
+            inquote = 0;
+        
 	bp = bp->next;
     }
+                
+    /* close all open tags. A pre is used for signatures even when
+     * showhtml is enabled */
+    if (pre_open)
+        fprintf(fp, "</pre>\n");
 
-    if (pre)
-      fprintf(fp, "</pre>\n");
-    else if (set_showhtml == 2)
-      end_txt2html(fp);
-    if (set_showhtml) {
+    if (set_showhtml == 2 && !inlinehtml_open)
+        end_txt2html(fp);
+
+    if (showhtml_open || inlinehtml_open) {
         fprintf(fp, "</div>\n");
     }
+    if (attachment_open) {
+        fprintf(fp, "</section>\n");
+    } 
 }
 
 char *print_leading_whitespace(FILE *fp, char *sp)
@@ -1542,9 +1659,10 @@ void print_headers(FILE *fp, struct emailinfo *email, int in_thread_file)
   char *tmpsubject=0;
   char *tmpname=convchars(email->name, email->charset);
 #endif
+  char *tmp_oea = obfuscate_email_address(email->emailaddr);
   
   /* the from header */
-  fprintf (fp, "<span id=\"from\">\n");
+  fprintf (fp, "<span class=\"from\">\n");
   fprintf (fp, "<span class=\"heading\">%s</span>: ", lang[MSG_FROM]);
   if (REMOVE_MESSAGE(email)) {
     /* don't show the email address and name if we have deleted the message */
@@ -1560,9 +1678,9 @@ void print_headers(FILE *fp, struct emailinfo *email, int in_thread_file)
 				  email->msgid, email->subject);
 #endif
       fprintf(fp, "&lt;<a href=\"%s\">%s</a>&gt;", ptr ? ptr : "",
-	      obfuscate_email_address(email->emailaddr));
+              tmp_oea);
       if (ptr)
-	free(ptr);
+          free(ptr);
     }
     else
       fprintf(fp, "%s", tmpname);
@@ -1577,7 +1695,7 @@ void print_headers(FILE *fp, struct emailinfo *email, int in_thread_file)
 				    email->msgid, email->subject);
 #endif
 	fprintf(fp, "%s &lt;<a href=\"%s\">%s</a>&gt;", tmpname, ptr ? ptr : "",
-		obfuscate_email_address(email->emailaddr));
+		tmp_oea);
       if (ptr)
 	free(ptr);
     }
@@ -1591,21 +1709,143 @@ void print_headers(FILE *fp, struct emailinfo *email, int in_thread_file)
   /* subject */
   if (in_thread_file)
 #ifdef HAVE_ICONV
-    fprintf(fp, "<span id=\"subject\"><span class=\"heading\">%s</span>: %s</span><br />\n", lang[MSG_SUBJECT], tmpsubject);
+    fprintf(fp, "<span class=\"subject\"><span class=\"heading\">%s</span>: %s</span><br />\n", lang[MSG_SUBJECT], tmpsubject);
 #else
-    fprintf(fp, "<span id=\"subject\"><span class=\"heading\">%s</span>: %s</span><br />\n", lang[MSG_SUBJECT], tmpsubject=convchars(email->subject,email->charset));
+    fprintf(fp, "<span class=\"subject\"><span class=\"heading\">%s</span>: %s</span><br />\n", lang[MSG_SUBJECT], tmpsubject=convchars(email->subject,email->charset));
 #endif
   /* date */
-  fprintf(fp, "<span id=\"date\"><span class=\"heading\">%s</span>: %s</span><br />\n", lang[MSG_CDATE], email->datestr);
+  fprintf(fp, "<span class=\"date\"><span class=\"heading\">%s</span>: %s</span><br />\n", lang[MSG_CDATE], email->datestr);
 
-  printheaders(fp, email);
+  printheaders(fp, email, NULL);
 
   fprintf(fp, "</address>\n");
+
+  if (set_email_address_obfuscation && tmp_oea) 
+      free(tmp_oea);
 
     if(tmpsubject)
      free(tmpsubject);
     if(tmpname)
      free(tmpname);
+}
+
+struct body *print_headers_rfc822_att(FILE *fp, struct emailinfo *email, struct body *bp)
+{
+    struct body *head;
+    char *date = NULL;
+    char *namep = NULL;
+    char *emailp = NULL;
+    char *subject = NULL;
+    bool hasdate = FALSE;
+    bool hasfrom = FALSE;
+    bool hassubject = FALSE;
+
+    size_t tmplen;
+    char *tmpsubject = NULL;
+    char *tmpname = NULL;
+    
+    /* find the date, author, and subject, from an message/rfc822 attachment */
+  
+    for (head = bp; head->header; head = head->next) {
+        char head_name[128];
+        
+        /*
+        if (head->header && !head->demimed) {
+            head->line =
+                mdecodeRFC2047(head->line, strlen(head->line),charsetsave);
+        */
+        if (!sscanf(head->line, "%127[^:]", head_name))
+            continue;
+
+        if (!strncasecmp(head->line, "Date:", 5)) {
+            date = getmaildate(head->line);
+            hasdate = TRUE;
+        }
+        else if (!strncasecmp(head->line, "From:", 5)) {
+            getname(head->line, &namep, &emailp);
+            head->parsedheader = TRUE;
+            if (set_spamprotect) {
+                emailp = spamify(strsav(emailp));
+                /* we need to "fix" the name as well, as sometimes
+                   the email ends up in the name part */
+                namep = spamify(strsav(namep));
+            }
+            hasfrom = TRUE;
+        }
+        else if (!strncasecmp(head->line, "Subject:", 8)) {
+            subject = getsubject(head->line);
+            hassubject = TRUE;
+            head->parsedheader = TRUE;
+        }
+        
+        if (hassubject && hasfrom && hasdate) {
+            break;
+        }
+    }
+
+    /*
+   * Print the message's author info and date.
+   * General form: <span class=\"heading\">from:<span class=\"heading\">: name <email></span><br /> 
+   */
+
+    fprintf(fp, "<address class=\"headers\">\n");
+
+#ifdef HAVE_ICONV
+    if (subject) 
+        tmpsubject = i18n_convstring( subject, "UTF-8", email->charset, &tmplen);
+    if (namep) {
+        char *tmptmpname;
+        
+        tmptmpname = i18n_convstring(namep, "UTF-8" ,email->charset, &tmplen); 
+        tmpname = convchars(tmptmpname, "utf-8");
+        free(tmptmpname);
+    }
+#else
+    tmpsubject = NULL;
+    tmpname = convchars(namep, email->charset); 
+#endif
+  
+    /* the from header */
+    fprintf (fp, "<span class=\"from\">\n");
+    fprintf (fp, "<span class=\"heading\">%s</span>: ", lang[MSG_FROM]);
+    fprintf (fp, "%s &lt;<em>%s</em>&gt;",
+             (tmpname) ? tmpname : "",
+             (emailp) ? emailp : NOEMAIL);
+    fprintf (fp, "\n</span><br />\n");
+
+    /* date */
+    fprintf(fp, "<span class=\"date\"><span class=\"heading\">%s</span>: %s</span><br />\n",
+            lang[MSG_CDATE], (date) ? date : NODATE);
+
+    /* subject */
+#ifdef HAVE_ICONV
+    fprintf(fp, "<span class=\"subject\"><span class=\"heading\">%s</span>: %s</span><br />\n",
+            lang[MSG_CSUBJECT], (tmpsubject) ? tmpsubject : NOSUBJECT);
+#else
+    fprintf(fp, "<span class=\"subject\"><span class=\"heading\">%s</span>: %s</span><br />\n",
+            lang[MSG_CSUBJECT], tmpsubject=convchars((subject) ? subject : NOSUBJECT,
+                                                     email->charset));
+#endif
+    
+    /* print the rest of the headers the user wants */
+    bp = printheaders(fp, email, bp);
+
+    fprintf(fp, "</address>\n");
+
+    if (namep)
+        free(namep);
+    if (emailp)
+        free(emailp);
+    if (date)
+        free(date);
+    if (subject)
+        free(subject);
+    if (tmpsubject)
+        free(tmpsubject);
+    if (tmpname)
+        free(tmpname);
+
+    return bp;
 }
 
 static char *href01(struct emailinfo *email, struct emailinfo *email2, int in_thread_file, 
@@ -2270,7 +2510,9 @@ void writearticles(int startnum, int maxnum)
 #else
 	printcomment(fp, "name", email->name);
 #endif
-	printcomment(fp, "email", obfuscate_email_address(email->emailaddr));
+	printcomment(fp, "email", ptr = obfuscate_email_address(email->emailaddr));
+        if (set_email_address_obfuscation && ptr)
+            free(ptr);
 #ifdef HAVE_ICONV
 	ptr = convcharsnospamprotect(localsubject, email->charset);
 #else
