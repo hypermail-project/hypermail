@@ -2255,10 +2255,13 @@ int parsemail(char *mbox,	/* file name */
 			     * will have its own boundary separator that *might*
 			     * be used.
 			     */
-			    bp = addbody(bp, &lp,
-					 "<p><strong>attached mail follows:</strong></p><hr />",
+			    char *notice;
+			    trio_asprintf(&notice,
+					  "<p class=\"attached-message-notice\">%s:</p>",
+					  lang[MSG_ATTACHED_MESSAGE_NOTICE]);				 		        bp = addbody(bp, &lp, notice,
 					 BODY_ATTACHMENT_RFC822 | BODY_HTMLIZED | bodyflags);
 			    bodyflags |= BODY_ATTACHED;
+			    free(notice);
 			    /* @@ should it be 1 or 2 ?? should we use another method? */
 #if 0
 			    isinheader = 2;

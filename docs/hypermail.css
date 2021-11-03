@@ -211,6 +211,15 @@ main.summary-year td.cell_message + td {
     list-style-type: disc;
 }
 
+/* 
+** inline attachments
+*/
+.attached-message-notice {
+    font-weight: bold;
+    border-bottom: thin solid black;
+    padding-bottom: 1em;
+}
+
 /*
 **  bigger headings and padding on wider screens (desktops, tablets) 
 */
