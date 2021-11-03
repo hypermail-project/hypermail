@@ -1796,7 +1796,7 @@ struct body *print_headers_rfc822_att(FILE *fp, struct emailinfo *email, struct 
     /* the from header */
     fprintf (fp, "<span class=\"from\">\n");
     fprintf (fp, "<span class=\"heading\">%s</span>: ", lang[MSG_FROM]);
-    fprintf (fp, "%s &lt;<em>%s</em>&gt;",
+    fprintf (fp, "%s &lt;%s&gt;",
              (tmpname) ? tmpname : "",
              (emailp) ? emailp : NOEMAIL);
     fprintf (fp, "\n</span><br />\n");
