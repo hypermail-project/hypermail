@@ -69,6 +69,20 @@ div.showhtml-body pre {
     margin-left: 0em;
 }
 
+/* a div.inline-body encapsulates
+** the body of a message when using the
+** inlinehtml option */
+div.inlinehtml-body {
+    margin-top: 1em;
+    padding-top: 0.74em;
+    padding-bottom: 0.74em;
+    padding-right: 0.5em;
+    padding-left: 0.5em;
+    color: black;
+    background-color: white;
+}
+
+
 /* Not too big on the heading - they can be long */
 h1 { font-size: 150% }
 
