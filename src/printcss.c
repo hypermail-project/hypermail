@@ -247,6 +247,15 @@ void print_default_css_file(char *filename)
     fprintf(fp, "    list-style-type: disc;\n");
     fprintf(fp, "}\n");
     fprintf(fp, "\n");
+    fprintf(fp, "/* \n");
+    fprintf(fp, "** inline attachments\n");
+    fprintf(fp, "*/\n");
+    fprintf(fp, ".attached-message-notice {\n");
+    fprintf(fp, "    font-weight: bold;\n");
+    fprintf(fp, "    border-bottom: thin solid black;\n");
+    fprintf(fp, "    padding-bottom: 1em;\n");
+    fprintf(fp, "}\n");
+    fprintf(fp, "\n");
     fprintf(fp, "/*\n");
     fprintf(fp, "**  bigger headings and padding on wider screens (desktops, tablets) \n");
     fprintf(fp, "*/\n");
