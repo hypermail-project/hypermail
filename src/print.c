@@ -1227,18 +1227,6 @@ struct body *printheaders (FILE *fp, struct emailinfo *email, struct body *from_
                     break;
                 }
                 
-#ifdef PRINTBODY_DEBUG
-                if (from_bp) {
-                    fprintf(stderr, "========================\n");
-                    fprintf(stderr, "%s\n", bp->line);
-                    fprintf(stderr, "header: %d\n", bp->header);
-                    fprintf(stderr, "parsed: %d\n", bp->parsedheader);
-                    fprintf(stderr, "attached: %d\n", bp->attached);
-                    fprintf(stderr, "demimed: %d\n", bp->demimed);
-                    fprintf(stderr, "html: %d\n", bp->html);
-                }
-#endif
-                
                 if (sscanf(bp->line, "%127[^:]", head) == 1 && showheader_match(head, shp->val)) {
                     /* this is a header we want to show */
                     
