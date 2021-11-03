@@ -18,6 +18,14 @@ HYPERMAIL VERSION 2.5.0
 	option to allow for archived messages to be split over multiple directories
 	(monthly or yearly for example)
 
+2021-11-03 Jose Kahan
+	* src/print.c src/print.h src/hypermail.h src/parse.c src/struct.c
+	Improved the handling and displaying of message/rfc822
+	attachments (closes #72).
+	Rewrote parts of printbody() to improve how attachments are written
+	when using showhtml and inlinehtml options.
+	Encapsulating attachments within sections.
+
 2021-10-15 Jose Kahan
 	* Added the css class showhtml-body to help customize displayed
 	messages when using the showhtml option.
