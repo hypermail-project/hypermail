@@ -85,7 +85,7 @@ archive's name as displayed in the h1 of each index */
 
 /* for displaying the headers */
 .heading {font-weight: bold; }
-#message-id { font-size: small; }
+.message-id { font-size: small; }
 
 p.received { margin-bottom: 0; }
 

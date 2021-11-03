@@ -121,7 +121,7 @@ void print_default_css_file(char *filename)
     fprintf(fp, "\n");
     fprintf(fp, "/* for displaying the headers */\n");
     fprintf(fp, ".heading {font-weight: bold; }\n");
-    fprintf(fp, "#message-id { font-size: small; }\n");
+    fprintf(fp, ".message-id { font-size: small; }\n");
     fprintf(fp, "\n");
     fprintf(fp, "p.received { margin-bottom: 0; }\n");
     fprintf(fp, "\n");
