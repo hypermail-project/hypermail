@@ -17,7 +17,7 @@
 /*
 ** Default stylesheet for hypermail archives
 ** 
-** Last revised: 13/Oct/2021
+** Last revised: 03/Nov/2021
 **/
 
 html {
@@ -244,6 +244,11 @@ section.message-attachments pre.body {
 }
 
 section.message-attachments div.showhtml-body {
+    margin-top: -0.7em;
+    padding-top: 1em;
+}
+
+section.message-attachments div.inlinehtml-body {
     margin-top: -0.7em;
     padding-top: 1em;
 }
