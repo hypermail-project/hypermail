@@ -220,6 +220,18 @@ main.summary-year td.cell_message + td {
     padding-bottom: 1em;
 }
 
+section.message-attachments address {
+    background-color: white;
+    padding-top: 0.75em;
+    padding-left: 0.75em;
+    padding-bottom: 0em;;
+    margin-bottom: 0px;
+}
+
+section.message-attachments pre.body {
+    margin-top: 0px;
+}
+
 /*
 **  bigger headings and padding on wider screens (desktops, tablets) 
 */

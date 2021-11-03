@@ -256,6 +256,18 @@ void print_default_css_file(char *filename)
     fprintf(fp, "    padding-bottom: 1em;\n");
     fprintf(fp, "}\n");
     fprintf(fp, "\n");
+    fprintf(fp, "section.message-attachments address {\n");
+    fprintf(fp, "    background-color: white;\n");
+    fprintf(fp, "    padding-top: 0.75em;\n");
+    fprintf(fp, "    padding-left: 0.75em;\n");
+    fprintf(fp, "    padding-bottom: 0em;;\n");
+    fprintf(fp, "    margin-bottom: 0px;\n");
+    fprintf(fp, "}\n");
+    fprintf(fp, "\n");
+    fprintf(fp, "section.message-attachments pre.body {\n");
+    fprintf(fp, "    margin-top: 0px;\n");
+    fprintf(fp, "}\n");
+    fprintf(fp, "\n");
     fprintf(fp, "/*\n");
     fprintf(fp, "**  bigger headings and padding on wider screens (desktops, tablets) \n");
     fprintf(fp, "*/\n");
