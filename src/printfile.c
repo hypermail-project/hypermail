@@ -45,7 +45,7 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
     register char *cp;
     register char *aptr;
     char c;
-    char *ptr,*tmpptr=NULL;
+    char *ptr,*tmpptr=NULL, *tmp_oea=NULL;
     size_t tmplen;
 
     aptr = format;
@@ -82,16 +82,18 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 		    free(tmpptr);
 		  fprintf(fp,
 			"<meta name=\"Author\" content=\"%s (%s)\" />",
-			cp, obfuscate_email_address(email));
+			cp, tmp_oea = obfuscate_email_address(email));
 		  if (cp)
 		    free(cp);
 #else
 		fprintf(fp,
 			"<meta name=\"Author\" content=\"%s (%s)\" />",
-			tmpptr=convchars(name,charset), obfuscate_email_address(email));
+			tmpptr=convchars(name,charset), tmp_oea = obfuscate_email_address(email));
 		if (tmpptr)
 		  free(tmpptr);
 #endif
+		if (set_email_address_obfuscation && tmp_oea)
+		  free(tmp_oea);
 		}
 		continue;
 	    case 'a':		/* %a - Other Archives URL */
@@ -230,6 +232,7 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
     char *rp2;
     char *css_url;
     char *buffer;
+    char *tmp_oea=NULL;
     
     /* JK: Don't know what to do with US-ASCII. If there's no charset,
        assume the default one is ISO-8859-1 */
@@ -295,7 +298,10 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
     free(title);
 
     if (name && email){
-      fprintf(fp, "<meta name=\"Author\" content=\"%s (%s)\" />\n",convchars(name,charset),obfuscate_email_address(email));
+      fprintf(fp, "<meta name=\"Author\" content=\"%s (%s)\" />\n",convchars(name,charset),
+	      tmp_oea = obfuscate_email_address(email));
+      if (set_email_address_obfuscation && tmp_oea)
+          free(tmp_oea);
     }
     fprintf(fp, "<meta name=\"Subject\" content=\"%s\" />\n", rp =
 	    convchars(subject, charset));
