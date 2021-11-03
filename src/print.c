@@ -1485,7 +1485,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
         ** in pre sections when showhtml == 1*/
         if (set_showhtml) {
             if (!showhtml_open) {
-                fprintf(fp, "<div%s class=\"html-body\">\n",
+                fprintf(fp, "<div%s class=\"showhtml-body\">\n",
                         (body_start) ? body_start_attribute : "");
                 if (body_start) {
                     body_start = FALSE;

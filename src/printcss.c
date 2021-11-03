@@ -128,7 +128,6 @@ void print_default_css_file(char *filename)
     fprintf(fp, "\n");
     fprintf(fp, "table { margin-left: 2em; }\n");
     fprintf(fp, "nav ul {list-style: none; }\n");
-    fprintf(fp, "#mid { font-size: 0.9em; }\n");
     fprintf(fp, "address { font-style: inherit; }\n");
     fprintf(fp, "\n");
     fprintf(fp, ".quotelev1 {color : #990099; }\n");
@@ -267,6 +266,11 @@ void print_default_css_file(char *filename)
     fprintf(fp, "\n");
     fprintf(fp, "section.message-attachments pre.body {\n");
     fprintf(fp, "    margin-top: 0px;\n");
+    fprintf(fp, "}\n");
+    fprintf(fp, "\n");
+    fprintf(fp, "section.message-attachments div.showhtml-body {\n");
+    fprintf(fp, "    margin-top: -0.7em;\n");
+    fprintf(fp, "    padding-top: 1em;\n");
     fprintf(fp, "}\n");
     fprintf(fp, "\n");
     fprintf(fp, "/*\n");
