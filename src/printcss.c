@@ -110,10 +110,7 @@ void print_default_css_file(char *filename)
     fprintf(fp, "** inlinehtml option */\n");
     fprintf(fp, "div.inlinehtml-body {\n");
     fprintf(fp, "    margin-top: 1em;\n");
-    fprintf(fp, "    padding-top: 0.74em;\n");
-    fprintf(fp, "    padding-bottom: 0.74em;\n");
-    fprintf(fp, "    padding-right: 0.5em;\n");
-    fprintf(fp, "    padding-left: 0.5em;\n");
+    fprintf(fp, "    padding: 0.74em;\n");
     fprintf(fp, "    color: black;\n");
     fprintf(fp, "    background-color: white;\n");
     fprintf(fp, "}\n");
