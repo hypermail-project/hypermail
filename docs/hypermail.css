@@ -17,7 +17,7 @@
 /*
 ** Default stylesheet for hypermail archives
 ** 
-** Last revised: 03/Nov/2021
+** Last revised: 04/Nov/2021
 **/
 
 html {
@@ -50,20 +50,30 @@ pre, .body {
 ** the body of a message when using the
 ** showhtml option */
 div.showhtml-body {
-    margin-top: 1em;
-    padding-left: 0.5em;
-    padding-right: 0.5em;
-    color: black;
+    margin-top: 0.5em;
+    padding-top: 0.5em;
+    padding-left: 0.75em;
+    padding-right: 1em;
     background-color: white;
+}
+
+/* in 2.5.0, txt2html() is generating a <br> as the first element; we
+   ignore it until we can fix the code  */
+div.showhtml-body > br:first-child {
+    display: none;
 }
 
 div.showhtml-body p {
     padding-top: 0em;
-    margin-top: 0.5em;
+    padding-bottom: 0em;
+    margin-bottom: 0em;
+    margin-top: 0.75em;
+
 }
 
+/* used for signatures when using showhtml */
 div.showhtml-body pre {
-    padding-top: 0em;
+    padding-top: 0.75em;
     margin-top: 0em;
     padding-left: 0em;
     margin-left: 0em;
@@ -79,6 +89,12 @@ div.inlinehtml-body {
     background-color: white;
 }
 
+div.inlinehtml-body p {
+    padding-top: 0em;
+    padding-bottom: 0em;
+    margin-bottom: 0em;
+    margin-top: 0.75em;
+}
 
 /* Not too big on the heading - they can be long */
 h1 { font-size: 150% }
@@ -235,7 +251,7 @@ section.message-attachments address {
     background-color: white;
     padding-top: 0.75em;
     padding-left: 0.75em;
-    padding-bottom: 0em;;
+    padding-bottom: 1.25em;;
     margin-bottom: 0px;
 }
 
@@ -245,12 +261,12 @@ section.message-attachments pre.body {
 
 section.message-attachments div.showhtml-body {
     margin-top: -0.7em;
-    padding-top: 1em;
+    padding-top: 0em;
 }
 
 section.message-attachments div.inlinehtml-body {
-    margin-top: -0.7em;
-    padding-top: 1em;
+    margin-top: -1.25em;
+    padding-top: 0em;
 }
 
 /*
