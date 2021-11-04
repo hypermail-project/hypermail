@@ -22,7 +22,11 @@
 
 html {
     color: black;
-    background-color:  #FFF6E0; /* was: #FFEEC2 */
+    background-color: #FFF6E0;
+    /** you may also try #FFFFF6 and #FFEEC2.
+     ** For other color combinations, make sure you choices pass
+     ** the WAI contrast criteria
+     ** by using https://webaim.org/resources/contrastchecker/ */
 }
 
 body {

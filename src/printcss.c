@@ -58,7 +58,11 @@ void print_default_css_file(char *filename)
     fprintf(fp, "\n");
     fprintf(fp, "html {\n");
     fprintf(fp, "    color: black;\n");
-    fprintf(fp, "    background-color:  #FFF6E0; /* was: #FFEEC2 */\n");
+    fprintf(fp, "    background-color: #FFF6E0;\n");
+    fprintf(fp, "    /** you may also try #FFFFF6 and #FFEEC2.\n");
+    fprintf(fp, "     ** For other color combinations, make sure you choices pass\n");
+    fprintf(fp, "     ** the WAI contrast criteria\n");
+    fprintf(fp, "     ** by using https://webaim.org/resources/contrastchecker/ */\n");
     fprintf(fp, "}\n");
     fprintf(fp, "\n");
     fprintf(fp, "body {\n");
