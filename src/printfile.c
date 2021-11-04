@@ -339,8 +339,7 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
         css_url = set_mcss_url;
 
     } else {
-        /* no custom css. Use hypermail's own CSS. We consider it is
-	   relative to messages */
+        /* no custom css. Use the default css */
         css_url = set_default_css_url;
     }
 

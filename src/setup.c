@@ -492,9 +492,9 @@ struct Config cfg[] = {
     , FALSE},
 
     {"default_css_url", &set_default_css_url, "hypermail.css", CFG_STRING,
-     "# Specifies the name for the CSS file used by hypermail if either\n"
+     "# Specifies the default URL for the CSS file used by hypermail if either\n"
      "# icss_url or mcss_url are not declared.\n"
-     "# The defaul name is hypermail.css.\n"
+     "# The default URL is hypermail.css, a relative URL to the archive.\n"
     , FALSE},
     
     {"text_types", &set_text_types, NULL, CFG_LIST,
