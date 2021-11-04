@@ -605,12 +605,14 @@ int main(int argc, char **argv)
         ! (set_mcss_url && *set_mcss_url)) {
         
         char *filename;
-        
-        trio_asprintf(&filename, "%s%s", set_dir, "hypermail.css");
-        if (!isfile(filename)) {
-            print_default_css_file (filename);
-        }
-        free(filename);
+
+	if (set_default_css_url && !strcmp (set_default_css_url, "hypermail.css")) {
+            trio_asprintf(&filename, "%s%s", set_dir, "hypermail.css");
+            if (!isfile(filename)) {
+                print_default_css_file (filename);
+            }
+            free(filename);
+	}
     }
 	
     /*
