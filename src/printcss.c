@@ -104,7 +104,6 @@ void print_default_css_file(char *filename)
     fprintf(fp, "    padding-bottom: 0em;\n");
     fprintf(fp, "    margin-bottom: 0em;\n");
     fprintf(fp, "    margin-top: 0.75em;\n");
-    fprintf(fp, "\n");
     fprintf(fp, "}\n");
     fprintf(fp, "\n");
     fprintf(fp, "/* used for signatures when using showhtml */\n");
@@ -121,6 +120,7 @@ void print_default_css_file(char *filename)
     fprintf(fp, "div.inlinehtml-body {\n");
     fprintf(fp, "    margin-top: 1em;\n");
     fprintf(fp, "    padding: 0.74em;\n");
+    fprintf(fp, "    padding-top: 0.2em;\n");
     fprintf(fp, "    color: black;\n");
     fprintf(fp, "    background-color: white;\n");
     fprintf(fp, "}\n");

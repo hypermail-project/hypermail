@@ -68,7 +68,6 @@ div.showhtml-body p {
     padding-bottom: 0em;
     margin-bottom: 0em;
     margin-top: 0.75em;
-
 }
 
 /* used for signatures when using showhtml */
@@ -85,6 +84,7 @@ div.showhtml-body pre {
 div.inlinehtml-body {
     margin-top: 1em;
     padding: 0.74em;
+    padding-top: 0.2em;
     color: black;
     background-color: white;
 }
