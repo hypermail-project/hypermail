@@ -5,6 +5,13 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.5.0
 ============================
 
+2021-11-08 Jose Kahan
+	* src/print.c
+	Restoring in-reply-to and next-in-thread links to deleted messages.
+	Removing them caused confusing in the archives. One small change
+	w3t to 2.4.3: links now only display "deleted message" and not
+	"(deleted message) subject" as previously.
+
 2021-11-03 Jose Kahan
 	* src/print.c src/print.h src/hypermail.h src/parse.c src/struct.c
 	Improved the handling and displaying of message/rfc822

@@ -51,6 +51,15 @@ include in hypermail generated messages more specific HTML formatting
 statement giving links to the hierarchy of your archive. By default,
 this option uses the value of "ihtmlnavbar2upfile".
 
+- Deleted messages
+
+If a message has been marked as deleted by means of an annotation, the
+thread view will display a "deleted" message, but not remove the
+deleted node to avoid having a misinterpreation of threads.  A related
+change. the in-reply-to and next in thread messages will display
+"deleted message" but won't display the subject of the deleted message
+anymore.
+
 - Switch to PCRE2
 
 Up to now hypermail had been using PCRE behind the scenes of its
@@ -125,5 +134,5 @@ Many thanks too to Judy Brewer of the W3C WAI Team as well as Vivien
 Lacourba of the W3C Systems Team for their involvement and
 facilitating discussions and work on this version of hypermail.
 
-Thanks to Baptiste Daroussin, Jim (@AverageGuy),  and @cacsar for their bug reports and
-code contributions.
+Thanks to Baptiste Daroussin, Jim (@AverageGuy), and @cacsar for their
+bug reports and code contributions.
