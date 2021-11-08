@@ -137,7 +137,6 @@ int togdbm(void *gp, struct emailinfo *ep)
 
 #endif
 
-
 /* Uses threadlist to find the next message after
  * msgnum in the thread containing msgnum.
  * Returns NULL if there are no more messages in 
@@ -1278,6 +1277,41 @@ struct body *printheaders (FILE *fp, struct emailinfo *email, struct body *from_
     
 } /* printheaders */
 
+/* Closes all open sections and resets the flags. This
+** function factorizes code that is used in multiple places
+** in printbody()
+*/
+static void close_open_sections(FILE *fp, int *pre_open, int *showhtml_open,
+                                int *inlinehtml_open, int *attachment_open)
+{
+    /* close all open tag sections */
+
+    /* pre is used for signatures even when
+    ** showhtml is enabled 
+    */
+    if (*pre_open) {
+        fprintf(fp, "</pre>\n");
+        *pre_open = FALSE;
+    }
+    
+    if (set_showhtml == 2 && !*inlinehtml_open) {
+        end_txt2html(fp);
+    }
+    
+    if (*showhtml_open || *inlinehtml_open) {
+        fprintf(fp, "</div>\n");
+        *showhtml_open = FALSE;
+        *inlinehtml_open = FALSE;
+    }
+    
+    if (*attachment_open) {
+        fprintf(fp, "</section>\n");
+        *attachment_open = FALSE;
+    }
+}
+
+    
+
 /*
 ** The heuristics for displaying an otherwise ordinary line (a non-quote,
 ** non-sig, non-inhtml, non-blank line) if 'showhtml' is 1 (which really means
@@ -1385,25 +1419,8 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
                 inheader= TRUE;
 
                 /* close open sections */
-                if (pre_open) {
-                    fprintf(fp, "</pre>\n");
-                    pre_open = FALSE;
-                }
-
-                if (set_showhtml == 2 && !inlinehtml_open) {
-                    end_txt2html(fp);
-                }
-
-                if (showhtml_open || inlinehtml_open) {
-                    fprintf(fp, "</div>\n");
-                    showhtml_open = FALSE;
-                    inlinehtml_open = FALSE;
-                }
-
-                if (attachment_open) {
-                    fprintf(fp, "</section>\n");
-                    attachment_open = FALSE;
-                }
+                close_open_sections(fp, &pre_open, &showhtml_open,
+                                    &inlinehtml_open, &attachment_open);
             }
             bp = bp->next;
             continue;
@@ -1434,6 +1451,11 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
             ** in that case */
 	if (bp->attachment_rfc822 && set_show_headers && bp->next) {
 	  char head[128];
+
+          /* close open sections */
+          close_open_sections(fp, &pre_open, &showhtml_open,
+                              &inlinehtml_open, &attachment_open);
+		
           fprintf(fp, "<section%s class=\"message-attachments\" "
                   "aria-label=\"attachments\">\n",
                   (body_start) ? body_start_attribute : "");
@@ -1457,9 +1479,13 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
 	if (bp->html) {
             /* already in HTML, don't touch. It may be either inline
              * html or an attachment list */
-            
+
             if (bp->attachment_links) {
                 if (!attachment_open) {
+                    /* close open sections */
+                    close_open_sections(fp, &pre_open, &showhtml_open,
+                                        &inlinehtml_open, &attachment_open);
+                    
                     fprintf(fp, "<section%s class=\"message-attachments\" "
                             "aria-label=\"attachments\">\n",
                             (body_start) ? body_start_attribute : "");
@@ -1468,6 +1494,9 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
             }
 
             else if (!inlinehtml_open) {
+                /* close open sections */
+                close_open_sections(fp, &pre_open, &showhtml_open,
+                                    &inlinehtml_open, &attachment_open);
                 fprintf(fp, "<div%s class=\"inlinehtml-body\">\n",
                         (body_start) ? body_start_attribute : "");
                 inlinehtml_open = TRUE;
@@ -1602,20 +1631,9 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
 	bp = bp->next;
     }
                 
-    /* close all open tags. A pre is used for signatures even when
-     * showhtml is enabled */
-    if (pre_open)
-        fprintf(fp, "</pre>\n");
-
-    if (set_showhtml == 2 && !inlinehtml_open)
-        end_txt2html(fp);
-
-    if (showhtml_open || inlinehtml_open) {
-        fprintf(fp, "</div>\n");
-    }
-    if (attachment_open) {
-        fprintf(fp, "</section>\n");
-    } 
+    /* close all open tags */
+    close_open_sections(fp, &pre_open, &showhtml_open,
+                        &inlinehtml_open, &attachment_open);
 }
 
 char *print_leading_whitespace(FILE *fp, char *sp)
