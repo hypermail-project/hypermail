@@ -1746,7 +1746,7 @@ int parsemail(char *mbox,	/* file name */
 	line = line_buf + set_ietf_mbox;
 
         if (skip_mime_epilogue) {
-            if (line[0] == '\n') {
+            if (strncmp(line, "--", 2)) {
                 continue;
             } else {
                 skip_mime_epilogue = FALSE;

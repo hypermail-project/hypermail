@@ -5,6 +5,11 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.5.0
 ============================
 
+2021-11-09 Jose Kahan
+	* src/parse.c
+	MIME RFC1341 epilogues were not being ignored when they were made of
+	more than newlines
+
 2021-11-08 Jose Kahan
 	* src/print.c
 	Restoring in-reply-to and next-in-thread links to deleted messages.
