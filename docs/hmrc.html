@@ -1301,9 +1301,7 @@ name defaults to mbox in the directory specified by -d or dir.<br>
 <i>append = 1</i></dd>
 <dd><a name="append_filename" id="append_filename"></a></dd>
 <dt><strong>append_filename = [ string ]</strong></dt>
-<dd>Specifies the filename to be used by the append option. $DIR
-may be used to specify a name relative to the directory specified
-in the -d or dir option.<br>
+<dd>Specifies the filename to be used by the append option. $DIR may be used to specify a name relative to the directory specified in the -d or dir option.  The string will be passed to strftime(3) to allow splitting the mailbox into yearly or monthy files, such as "%Y-%m.mbox". <br>
 <br>
 <i>append_filename = $DIR/INBOX</i></dd>
 <dd><a name="txtsuffix" id="txtsuffix"></a></dd>

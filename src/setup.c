@@ -412,7 +412,9 @@ struct Config cfg[] = {
     {"append_filename", &set_append_filename, NULL, CFG_STRING,
      "# Specifies the filename to be used by the append option.\n"
      "# $DIR may be used to specify a name relative to the directory\n"
-     "# specified in the -d or dir option.\n", FALSE},
+     "# specified in the -d or dir option.\n"
+     "# The string will be passed to strftime(3) to allow splitting the\n"
+     "# mailbox into yearly or monthy files, such as \"%Y-%m.mbox\".\n" , FALSE},
 
     {"nonsequential",  &set_nonsequential,  BFALSE,    CFG_SWITCH,
      "# Set this to On to generate filenames that are not sequential, but\n"
