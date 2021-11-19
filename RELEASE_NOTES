@@ -104,22 +104,40 @@ This is a list of features that have only been partially updated in
 this version.  We are unsure if people are using them and if they
 should be preserved or deprecated. If you're using any of these
 features, please check that this new version of hypermail is still
-working on your archive as expected.  If that's not the case, please
-stick to the 2.4 version for the moment.  Feedback or code patches
-(better) are welcome.
+working on your archive as expected. If that's not the case, please
+stick to the 2.4 version for the moment. Feedback to know if people
+are using these features and/or code patches (better) are welcome.
 
-- compilation: windows LCC support (not updated, seems very old)
-- showhtml option: only bare minimum of markup update done. CSS
-  and generated markup could be improved.
-- linkquotes: this piece of code seems to have stopped working
-  at least since 2.4.0. It risks being deprecated in the next
-  version of hypermail unless someone updates it.
-- inline html: no specific updates done
+All of these features now have a corresponding issue on hypermail's
+github repository, labelled with "support requested", for tracking
+their status. If we don't get code patches or feedback, we will
+consider deprecating them in the next version of hypermail. Please use
+those issue trackers to send your feedback.
+
+- showhtml option: only bare minimum of markup update done. CSS and
+  generated markup could be improved. Issue #74 on github.
+  
+- linkquotes: this piece of code seems to have stopped working at
+  least since 2.4.0. This feature has been downgrated to experimental
+  and risks being deprecated in the next version of
+  hypermail unless someone updates it. Issue #75 on github.
+  
+- inline html: no specific updates done. The way inline HTML is added
+  is very simple (just cut and paste of the attachment's body), and often
+  breaks the valid markup that hypermail added. Issue #76 on github.
+
 - yearly and monthly summaries. This features seem to not have been
   updated since long time ago and missing some links letting navigate
   back from a message to the summariess to make them more useful.
-  Note that you could add those links with the navbar options.
-- translation of messages: some languagess are behind since years/
+  Note that you could add those links with the navbar options. Issue
+  #77 on github.
+  
+- translation of messages: some languagess are behind since years and
+  need update. Unmaintained languages risk being dropped out in a
+  future version of hypermail. Issue #78 on github.
+
+- compilation: windows LCC support (not updated, seems very
+  old). Issue #79 on github.
 
 *** ACKNOWLEDGMENTS
 
