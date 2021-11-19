@@ -1,0 +1,50 @@
+Here are the priorities I see for the next versions of hypermail:
+
+- Clean the code.
+
+Hypermail has many features, but not all of them have been maintained
+and updated through the years. Some really need to be revised, like
+the txt2html() and finequotes() modules. If people are not using those
+features, I'd like to deprecate them.
+
+In many parts of the code we have commented code with #ifdef 0. Those
+are very old parts which made sense to keep when new code was being
+introduced to replace old one, but could safely be removed now.
+
+We have started tracking some potential features to be removed using
+github issues labelled with "support request".
+
+- Support for UTF-8
+
+We have some partial support. However, there are many C lib functions
+that don't understand UTF-8, such as isspace() and scanf(). These
+functions are used in important parts of hypermail, such as parsing
+messages and scanning lines for URLs. In order to increase the use of
+UTF-8 inside hypermail, we need to:
+
+  - Complete the support for RFC2246 format=flowed. This RFC allows to
+    break long lines in the body of a message into multi-lines for
+    transmission. Due to UTF-8 having the potential to be multi-char,
+    we need to reconstitute the original unbroken line before
+    processing it for UTF-8.
+
+  - Add support for RFC2231 data format. This is similar to RFC2246
+    but applies to multi-line header parameter values.
+
+-- Convert the message body into UTF-8. We are already using iconv()
+   for converting headers. What is missing is converting the parts of
+   the message that will be further processed (like when scanning for
+   links, removing extra space from subjects, ...) into UCS-4 so that
+   we can use unicode-aware library functions.  glib seems to be a
+   good candidate for providing the last part of these functions. I'm
+   not sure at this point if we should convert all message body into
+   UCS-4 and just output UTF-8 when writing the converted message.
+
+- Support for a json output
+
+The idea here is to add an option to be able to output a headless
+archive, formatted into json and let other applications transform this
+data into markup. This would help separate the parsing and updating of
+messages from their presentation and probably help ease the
+customization of markup into something more modern or reactive as
+needed.
