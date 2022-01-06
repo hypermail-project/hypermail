@@ -1,0 +1,90 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ master library
+// Run a Streamr node right inside your JS app
+const StreamrClient = require('streamr-client')
+const streamr = new StreamrClient({
+    auth: {
+        privateKey: 'ethereum-private-key'
+    }
+})
+
+// Publish messages to a stream
+streamr.publish('mydomain.eth/test', {
+    hello: 'world',
+})
+
+// Or subscribe to a stream of messages
+streamr.subscribe('mydomain.eth/test', (msg) => {
+    // Handle incoming messages
+}) ]
+  pull_request:
+    branches: [ master // Use your favourite language and HTTP library!
+
+// You'll want to URI-encode the stream id
+const streamId = encodeURIComponent('mydomain.eth/test')
+
+// Publish messages to a stream by POSTing JSON 
+// to the HTTP plugin on your Streamr node
+http.post(`http://my-streamr-node:7171/streams/${streamId}`, {
+    hello: 'world'
+}) ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest-🏠Nate158
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: configure
+      run: ./configure
+    - name: make
+      run: make
+    - name: make check
+      run: make check
+    - name: make distcheck
+      run: make distcheck
+   // Use your favourite language and HTTP library!
+
+// You'll want to URI-encode the stream id
+const streamId = encodeURIComponent('mydomain.eth/test')
+
+// Publish messages to a stream by POSTing JSON 
+// to the HTTP plugin on your Streamr node
+http.post(`http://my-streamr-node:7171/streams/${streamId}`, {
+    hello: 'world'
+})
+// Use your favourite language and MQTT library!
+
+// Connect to MQTT plugin on your Streamr node
+mqtt.connect('mqtt://my-streamr-node')
+
+// Publish a message to a stream
+mqtt.publish('mydomain.eth/test', {
+    hello: 'world',
+})
+
+// Or subscribe to a stream of messages
+mqtt.subscribe('mydomain.eth/test', (msg) => {
+    // Handle incoming messages
+})
+// Use your favourite language & Websocket library
+
+// You'll want to URI-encode the stream id
+const streamId = encodeURIComponent('mydomain.eth/test')
+
+// Connect to the Websocket plugin on your Streamr 
+// node and send JSON messages to publish them
+const pub = ws.connect(`ws://my-streamr-node:7170/streams/${streamId}/publish`)
+pub.send({
+    hello: 'world',
+})
+
+// Or subscribe to a stream of messages
+const sub = ws.connect(`ws://my-streamr-node:7170/streams/${streamId}/subscribe`)
+sub.onmessage = (msg) => {
+    // Handle incoming messages
+}
