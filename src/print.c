@@ -1506,7 +1506,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
                 body_start = FALSE;
             }
 
-            fprintf(fp, bp->line);
+            fprintf(fp, "%s", bp->line);
             bp = bp->next;
             continue;
         }
