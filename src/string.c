@@ -461,7 +461,8 @@ int i18n_replace_non_ascii_chars(char *string)
     int count = 0;
   
     while (*ptr) {
-        if (!isascii(*ptr) || *ptr < 0x20) {
+        if (!isascii(*ptr) ||
+            (*ptr < 0x20 && *ptr != 0x0a && *ptr != 0x0d)) {
             *ptr = '?';
             count++;
         }
