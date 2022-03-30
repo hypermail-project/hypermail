@@ -462,7 +462,27 @@ unsigned char *i18n_numref2utf(char *string){
   return headofutfstr;
 }
 
+/* replaces all non 7-bit ascii chars in string by a ? 
+** returns the number of replaced chars
+*/
+int i18n_replace_non_ascii_chars(char *string)
+{
+    char *ptr = string;
+    int count = 0;
+  
+    while (*ptr) {
+        if (!isascii(*ptr) ||
+            (*ptr < 0x20 && *ptr != 0x0a && *ptr != 0x0d)) {	  
+            *ptr = '?';
+            count++;
+        }
+        ptr++;
+    }
+    
+    return count;
+}
 #endif
+
 /* end of I18N hack */
 
 /* replaces all unicode spaces in string with ascii spaces.

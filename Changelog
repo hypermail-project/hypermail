@@ -5,6 +5,18 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.5.0
 ============================
 
+2022-03-30 Jose Kahan
+	* src/parse.c
+	The demimed flag was not being updated when decoding RFC2047 lines
+
+	* src/hypermail.h
+	Increase NAMESTRLEN from 80 to 320 to take into account that a single
+	UTF-8 character may be encoded in up to four bytes.
+
+	* src/string.c, src/parse.c, src/proto.h
+	If a header value is not using RFC2047, make sure its value consists
+	of only US-ASCII printable character plus newline.
+
 2021-11-09 Jose Kahan
 	* src/parse.c
 	MIME RFC1341 epilogues were not being ignored when they were made of
