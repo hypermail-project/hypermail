@@ -481,8 +481,8 @@ int i18n_replace_non_ascii_chars(char *string)
     
     return count;
 }
-
 #endif
+
 /* end of I18N hack */
 
 /* replaces all unicode spaces in string with ascii spaces.
