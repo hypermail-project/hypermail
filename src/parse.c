@@ -1812,6 +1812,7 @@ int parsemail(char *mbox,	/* file name */
 		    if (head->header && !head->demimed) {
 		      head->line =
 			mdecodeRFC2047(head->line, strlen(head->line),charsetsave);
+		      head->demimed = TRUE;
 		    }
 
 		    if (head->parsedheader || head->attached ||
