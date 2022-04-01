@@ -170,6 +170,7 @@ src/threadprint.h
 src/txt2html.c
 src/txt2html.h
 src/uconvert.h
+src/utf8.h
 src/uudecode.c
 src/uudecode.h
 # 

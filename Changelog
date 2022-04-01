@@ -5,6 +5,14 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.5.0
 ============================
 
+2022-04-01 Jose Kahan
+	* src/string.c src/utf8.h
+	*Integrated utf8.h to provide validation of UTF-8 strings
+
+	* When i18n_convstring is called to convert from UTF-8 to UTF-8, we
+	skip the convertion, but we now replace all invalid UTF-8 chars
+	with a '?' char.
+
 2022-03-30 Jose Kahan
 	* src/parse.c
 	The demimed flag was not being updated when decoding RFC2047 lines
@@ -13,7 +21,7 @@ HYPERMAIL VERSION 2.5.0
 	Increase NAMESTRLEN from 80 to 320 to take into account that a single
 	UTF-8 character may be encoded in up to four bytes.
 
-	* src/string.c, src/parse.c, src/proto.h
+	* src/string.c src/parse.c src/proto.h
 	If a header value is not using RFC2047, make sure its value consists
 	of only US-ASCII printable character plus newline.
 
