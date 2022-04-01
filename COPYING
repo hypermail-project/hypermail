@@ -9,4 +9,8 @@ Regular expression support is provided by the PCRE library package,
 which is open source software, written by Philip Hazel, and copyright
 by the University of Cambridge, England. See http://www.pcre.org/.
 
+Validation of UTF-8 strings is provided by the utf8.h package, which
+is open source software covered by The Unlicense, written by Neil
+Henning. See https://github.com/sheredom/utf8.h
+
 End

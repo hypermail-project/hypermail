@@ -32,6 +32,7 @@
 #include "setup.h"
 #include "parse.h"
 #include "uconvert.h"
+#include "utf8.h"
 
 #define HAVE_PCRE2
 #ifdef HAVE_PCRE2
@@ -277,6 +278,9 @@ char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *
     *len=origlen;
     memcpy(origconvbuf,string,origlen);
     origconvbuf[origlen]=0x0;
+    if (!strcasecmp(fromcharset, "UTF-8")) {
+        utf8makevalid (origconvbuf, '?');
+    }
     return origconvbuf;
   }
 
