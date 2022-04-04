@@ -259,6 +259,7 @@ char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *
   size_t origlen,strleft,bufleft;
   size_t origbuflen;
   char *convbuf,*origconvbuf;
+  char *tocharset_iconv;
   iconv_t iconvfd;
   size_t ret;
   int error;
@@ -279,12 +280,18 @@ char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *
     memcpy(origconvbuf,string,origlen);
     origconvbuf[origlen]=0x0;
     if (!strcasecmp(fromcharset, "UTF-8")) {
+        /* substitute all invalid UTF-8 chars with a '?' */
         utf8makevalid (origconvbuf, '?');
     }
     return origconvbuf;
   }
 
-  iconvfd=iconv_open(i18n_canonicalize_charset(tocharset),i18n_canonicalize_charset(fromcharset));
+  /* quick patch, add translit to the tocharset if fromcharset == UTF-8 */
+  trio_asprintf (&tocharset_iconv, "%s%s", i18n_canonicalize_charset(tocharset),
+                 (!strcasecmp(fromcharset, "UTF-8")) ? "//TRANSLIT" : "");
+  
+  iconvfd=iconv_open(tocharset_iconv,i18n_canonicalize_charset(fromcharset));
+  free(tocharset_iconv);
   if(iconvfd==(iconv_t)(-1)){
     if(set_showprogress){
       if(errno==EINVAL){
