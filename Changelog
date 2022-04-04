@@ -5,13 +5,20 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.5.0
 ============================
 
+2022-04-04 Jose Kahan
+	* src/string.c
+	* We're now using iconv's transliteration flag when converting a string
+	from UTF-8 to another charset, From the man page: "this means that when
+	a character cannot be represented in the target character set, it can
+	be approximated through one or several similarly looking characters."
+
 2022-04-01 Jose Kahan
 	* src/string.c src/utf8.h
 	*Integrated utf8.h to provide validation of UTF-8 strings
 
 	* When i18n_convstring is called to convert from UTF-8 to UTF-8, we
-	skip the convertion, but we now replace all invalid UTF-8 chars
-	with a '?' char.
+	skip the convertion, but we now replace invalid UTF-8 characters
+	with a '?' character.
 
 2022-03-30 Jose Kahan
 	* src/parse.c
