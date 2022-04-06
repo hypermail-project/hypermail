@@ -53,9 +53,6 @@
 #endif
 #endif /* HAVE_LIBFNV */
 
-extern int snprintf(char *str, size_t size, const  char  *format, ...);
-
-
 /*
 ** Does a file exist?
 */
