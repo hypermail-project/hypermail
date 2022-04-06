@@ -14,14 +14,14 @@ HYPERMAIL VERSION 2.5.0
 
 2022-04-04 Jose Kahan
 	* src/string.c
-	* We're now using iconv's transliteration flag when converting a string
+	 We're now using iconv's transliteration flag when converting a string
 	from UTF-8 to another charset, From the man page: "this means that when
 	a character cannot be represented in the target character set, it can
 	be approximated through one or several similarly looking characters."
 
 2022-04-01 Jose Kahan
 	* src/string.c src/utf8.h
-	*Integrated utf8.h to provide validation of UTF-8 strings
+	Integrated utf8.h to provide validation of UTF-8 strings
 
 	* When i18n_convstring is called to convert from UTF-8 to UTF-8, we
 	skip the convertion, but we now replace invalid UTF-8 characters
@@ -29,7 +29,7 @@ HYPERMAIL VERSION 2.5.0
 
 2022-03-30 Jose Kahan
 	* src/parse.c
-	The demimed flag was not being updated when decoding RFC2047 lines
+ 	The demimed flag was not being updated when decoding RFC2047 lines
 
 	* src/hypermail.h
 	Increase NAMESTRLEN from 80 to 320 to take into account that a single
@@ -38,6 +38,10 @@ HYPERMAIL VERSION 2.5.0
 	* src/string.c src/parse.c src/proto.h
 	If a header value is not using RFC2047, make sure its value consists
 	of only US-ASCII printable character plus newline.
+
+2022-01-15 Christof Meerwald
+	* src/print.c
+	Fixed a format string issue leading to a segfault or worse (fixes #81)
 
 2021-11-17 David Hughes
 	* docs/hmrc.html src/parse.c
