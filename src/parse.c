@@ -1087,9 +1087,11 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
     }
     else {
 	free(storage);
+#ifdef HAVE_ICONV
         /* make sure there are only ascii chars in the string
         ** for messages that don't respect rfc2047 */
         i18n_replace_non_ascii_chars(string);
+#endif
 	return string;
     }
 }
