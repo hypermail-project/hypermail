@@ -12,9 +12,16 @@ HYPERMAIL VERSION 2.5.0
 	-ltrio, where -lm had to be declared after -ltrio.
         (closes # 84)
 
+2022-04-07 Jose Kahan
+	* src/parse.c
+	When parsing a mailbox, the code for skipping MIME epilogues wasn't
+	detecting the start of the next message. Thanks to James Riordon and
+	Christof Meerwald for reporting and pointing out where the issue was
+	(closes #82).
+
 2022-04-04 Jose Kahan
 	* src/string.c
-	 We're now using iconv's transliteration flag when converting a string
+	We're now using iconv's transliteration flag when converting a string
 	from UTF-8 to another charset, From the man page: "this means that when
 	a character cannot be represented in the target character set, it can
 	be approximated through one or several similarly looking characters."

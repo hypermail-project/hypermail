@@ -1768,7 +1768,7 @@ int parsemail(char *mbox,	/* file name */
 	line = line_buf + set_ietf_mbox;
 
         if (skip_mime_epilogue) {
-            if (strncmp(line, "--", 2)) {
+            if (strncmp(line, "--", 2) && strncasecmp(line_buf, "From ", 5)) {
                 continue;
             } else {
                 skip_mime_epilogue = FALSE;
