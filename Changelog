@@ -5,13 +5,6 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.5.0
 ============================
 
-2022-11-04 Jose Kahan
-	* src/Makefile.in
-	Some C linkers require libraries to be declared after functions in that
-	library are called, and not before. This was notably with -lm and
-	-ltrio, where -lm had to be declared after -ltrio.
-        (closes # 84)
-
 2022-04-07 Jose Kahan
 	* src/parse.c
 	When parsing a mailbox, the code for skipping MIME epilogues wasn't
@@ -30,7 +23,7 @@ HYPERMAIL VERSION 2.5.0
 	* src/string.c src/utf8.h
 	Integrated utf8.h to provide validation of UTF-8 strings
 
-	* When i18n_convstring is called to convert from UTF-8 to UTF-8, we
+	When i18n_convstring is called to convert from UTF-8 to UTF-8, we
 	skip the convertion, but we now replace invalid UTF-8 characters
 	with a '?' character.
 
@@ -72,8 +65,10 @@ HYPERMAIL VERSION 2.5.0
 	* src/print.c src/print.h src/hypermail.h src/parse.c src/struct.c
 	Improved the handling and displaying of message/rfc822
 	attachments (closes #72).
+
 	Rewrote parts of printbody() to improve how attachments are written
 	when using showhtml and inlinehtml options.
+
 	Encapsulating attachments within sections.
 
 2021-10-15 Jose Kahan
@@ -82,7 +77,7 @@ HYPERMAIL VERSION 2.5.0
 
 2021-10-13 @AverageGuy
 	* Hypermail wasn't compiling under ubuntu due to the order of
-	where -lm appeared when linking libraries.
+	where -lm appeared when linking libraries. (closes # 84)
 
 2021-10-11 Jose Kahan
 	* src/string.c src/proto.h src/parse.c
