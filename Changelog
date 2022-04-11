@@ -5,6 +5,13 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.4.1:
 ============================
 
+2022-11-04 Jose Kahan
+	* src/Makefile.in
+	Some C linkers require libraries to be declared after functions in that library
+	are called, and not before. This was notably with -lm and -ltrio, where -lm had
+	to be declared after -ltrio.
+        (closes # 84)
+
 2021-06-04 Baptiste Daroussin
 	* src/uudecode.c src/parse.c
 	Fixes for memory issues detected by libasan
