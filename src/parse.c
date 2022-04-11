@@ -1536,7 +1536,6 @@ int parsemail(char *mbox,	/* file name */
     int num, isinheader, hassubject, hasdate;
     int num_added = 0;
     long exp_time = -1;
-    time_t curtime;
     time_t delete_older_than = (set_delete_older ? convtoyearsecs(set_delete_older) : 0);
     time_t delete_newer_than = (set_delete_newer ? convtoyearsecs(set_delete_newer) : 0);
     annotation_robot_t annotation_robot = ANNOTATION_ROBOT_NONE;
@@ -1667,14 +1666,19 @@ int parsemail(char *mbox,	/* file name */
 	*filename = 0;
 	*pathname = 0;
 	if (set_append_filename) {
+            time_t curtime;
+            const struct tm *local_curtime;
+            
 	    time(&curtime);
+            local_curtime = localtime(&curtime);
+            
 	    if(strncmp(set_append_filename, "$DIR/", 5) == 0) {
 	        strncpy(directory, dir, MAXFILELEN - 1);
                 strftime(filename, MAXFILELEN - 1, set_append_filename+5, 
-			    localtime(&curtime));
+                         local_curtime);
             } else {
                 strftime(filename, MAXFILELEN - 1, set_append_filename, 
-			    localtime(&curtime));
+                         local_curtime);
 	    }
 	} else {
 	    strncpy(directory, dir, MAXFILELEN - 1);

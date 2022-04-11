@@ -12,6 +12,12 @@ HYPERMAIL VERSION 2.4.1:
 	-ltrio, where -lm had to be declared after -ltrio.
         (closes # 84)
 
+2021-11-17 David Hughes
+	* docs/hmrc.html src/parse.c
+	Added support for strftime (3) formatting in the append_filename configuration
+	option to allow for archived messages to be split over multiple directories
+	(monthly or yearly for example)
+
 2021-06-04 Baptiste Daroussin
 	* src/uudecode.c src/parse.c
 	Fixes for memory issues detected by libasan
