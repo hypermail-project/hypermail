@@ -1536,6 +1536,7 @@ int parsemail(char *mbox,	/* file name */
     int num, isinheader, hassubject, hasdate;
     int num_added = 0;
     long exp_time = -1;
+    time_t curtime;
     time_t delete_older_than = (set_delete_older ? convtoyearsecs(set_delete_older) : 0);
     time_t delete_newer_than = (set_delete_newer ? convtoyearsecs(set_delete_newer) : 0);
     annotation_robot_t annotation_robot = ANNOTATION_ROBOT_NONE;
@@ -1546,6 +1547,8 @@ int parsemail(char *mbox,	/* file name */
     int require_filter_len, require_filter_full_len;
     struct hmlist *tlist;
     char filename[MAXFILELEN];
+    char directory[MAXFILELEN];
+    char pathname[MAXFILELEN];
     struct emailinfo *emp;
     char *att_dir = NULL;	/* directory name to store attachments in */
     char *meta_dir = NULL;	/* directory name where we're storing the meta data
@@ -1660,21 +1663,31 @@ int parsemail(char *mbox,	/* file name */
     if(set_append) {
     
 	/* add to an mbox as we read */
-
-	if(set_append_filename && strncmp(set_append_filename, "$DIR/", 5)) {
-	    if(strlen(set_append_filename) >= sizeof(filename))
-	        progerr("append_filename too long");
-	    strcpy(filename, set_append_filename);
+	*directory = 0;
+	*filename = 0;
+	*pathname = 0;
+	if (set_append_filename) {
+	    time(&curtime);
+	    if(strncmp(set_append_filename, "$DIR/", 5) == 0) {
+	        strncpy(directory, dir, MAXFILELEN - 1);
+                strftime(filename, MAXFILELEN - 1, set_append_filename+5, 
+			    localtime(&curtime));
+            } else {
+                strftime(filename, MAXFILELEN - 1, set_append_filename, 
+			    localtime(&curtime));
+	    }
+	} else {
+	    strncpy(directory, dir, MAXFILELEN - 1);
+	    strncpy(filename, "mbox", MAXFILELEN - 1);
 	}
-	else if(trio_snprintf(filename, sizeof(filename), "%s%s", dir,
-			      set_append_filename ? set_append_filename + 5
-			      : "mbox") 
-	   == sizeof(filename)) {
+
+	if(trio_snprintf(pathname, sizeof(pathname), "%s%s", directory,
+			filename) == sizeof(pathname)) {
 	    progerr("Can't build mbox filename");
 	}
-	if(!(fpo = fopen(filename, "a"))) {
+	if(!(fpo = fopen(pathname, "a"))) {
 	    trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\".",
-			  lang[MSG_CANNOT_OPEN_MAIL_ARCHIVE], filename);
+			  lang[MSG_CANNOT_OPEN_MAIL_ARCHIVE], pathname);
 	    progerr(errmsg);
 	}
     }
