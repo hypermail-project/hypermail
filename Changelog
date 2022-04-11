@@ -45,9 +45,9 @@ HYPERMAIL VERSION 2.5.0
 
 2021-11-17 David Hughes
 	* docs/hmrc.html src/parse.c
-	Added support for strftime (3) formatting in the append_filename configuration
-	option to allow for archived messages to be split over multiple directories
-	(monthly or yearly for example)
+	Added support for strftime (3) formatting in the append_filename
+	configuration option to allow for archived messages to be split over
+	multiple directories (monthly or yearly for example)
 
 2021-11-09 Jose Kahan
 	* src/parse.c
@@ -81,18 +81,17 @@ HYPERMAIL VERSION 2.5.0
 
 2021-10-11 Jose Kahan
 	* src/string.c src/proto.h src/parse.c
-	Hypermail uses C-lib functions, such as isspace() and sscanf(),
-	that  don't understand unicode spaces. As a workaround, we're
-	converting those spaces to ascii ones so that the parts of hypermail
-	that depend on those functions, such as link scanning will continue
-	to work.
+	Hypermail uses C-lib functions, such as isspace() and sscanf(), that
+	don't understand unicode spaces. As a workaround, we're converting
+	those spaces to ascii ones so that the parts of hypermail that depend
+	on those functions, such as link scanning will continue to work.
 
 2021-10-01 Jose Kahan
 	* src/threadprint.c src/print.c src/lang.h
 	Improve the thread index and next in thread links. If a thread's node
-	is deleted, don't display it unless it has non-deleted children.
-	In this case, display it using MSG_DEL_SHORT for its name.
-	Make the next in thread links skip deleted nodes.
+	is deleted, don't display it unless it has non-deleted children.  In
+	this case, display it using MSG_DEL_SHORT for its name.  Make the next
+	in thread links skip deleted nodes.
 
 2021-09-16 Jose Kahan
 	* src/print.c
@@ -207,7 +206,8 @@ HYPERMAIL VERSION 2.4.0:
 	* src/parse.c
 	parsemail(): a Content-Transfer-Encoding header with a missing value
 	would result in an unitialized variable being used to output an unknown
-	encoding warning message. Hypermail now skips this header if it's empty.
+	encoding warning message. Hypermail now skips this header if it's
+	empty.
 
 2019-11-22 Jose Kahan
 	* src/print.c
@@ -255,51 +255,49 @@ HYPERMAIL VERSION 2.4.0:
 	main(): if the en_US locale is not available, try en_US.UTF-8
 
 2018-10-11 Jose Kahan
-
 	* string.c
 	parseemail(): for some reason if a ',' char was concatenaned to an
 	email address, it was being parsed as part of the email username.
 
 2018-10-10 Jose Kahan
-
 	* string.c
 	parseurl(): remove deprecated URLs. Improve support for URLs that don't
 	have slashes following the 'protocol:' schema. Improve support for tel:
 	URLs.
 
 2018-10-09 Bill Shannon
-
 	* string.c
-	parseurl(): non-URL text can be misinterpreted as a URL, causing segfault
-	Fixes issue #39
+	parseurl(): non-URL text can be misinterpreted as a URL, causing
+	segfault Fixes issue #39
 
 2018-10-08 Jose Kahan
-
 	* print.c, string.c, proto.h
-	The inreplyto_command could generate invalid links if the parser interpolated the
-	in-reply-to from the subject. If a message's in-reply-to is interpolated,
-	hypermail won't honor it anymore for that message.
+	The inreplyto_command could generate invalid links if the parser
+	interpolated the in-reply-to from the subject. If a message's
+	in-reply-to is interpolated, hypermail won't honor it anymore for that
+	message.
 
 2018-10-07 Jose Kahan
-
-	* print.c printauthors(), printthreads(), printsubjects, printdates()
-	Even if set_i18n was enabled, Indexes were written with mixed charsets
-	instead of using utf-8 throughout.
+	* print.c
+	printauthors(), printthreads(), printsubjects, printdates() Even if
+	set_i18n was enabled, Indexes were written with mixed charsets instead
+	of using utf-8 throughout.
 
 	* configure.ac, Makefile.in, src/Makefile.in
 	If the system has a recent libpcre, compile against it instead of using
-	the bundled one. This check is done by default when launching configure.
+	the bundled one. This check is done by default when launching
+	configure.
 
 	New configure options to allow to link against an external pcre library
 	(--with-external-pcre) or to force the build and link against the
 	bundled one (--enable-bundled-pcre).
 
 	New configure option to allow to compile against a system libtrio
-	(--enable-system-libtrio). Contrary to libpcre, it's not possible to find the
-	version of libtrio so we cannot compile automatically against it.
+	(--enable-system-libtrio). Contrary to libpcre, it's not possible to
+	find the version of libtrio so we cannot compile automatically against
+	it.
 
 2018-10-04 Jose Kahan
-
 	* src/pcre
 	Upgraded to upstream version 8.42
 
@@ -307,35 +305,32 @@ HYPERMAIL VERSION 2.4.0:
 	Upgraded to upstream version 1.16
 
 	* parse.c
-	Only use the headers charset for text/plain if its absent. If no charset
-	is available in the other parts, do not add it.
+	Only use the headers charset for text/plain if its absent. If no
+	charset is available in the other parts, do not add it.
 
 2018-10-04 Jose Kahan
-
 	* Updated Changelog format for entries newer than version 2.3.0
 
 	* hypermail.h, parse.c, struct.c, struct.h
 	Charset handling for multipart messages was being handled wrong, giving
-	priority to the headers charset (if found) over that of the displayed body.
-	Sometimes the last found charset was the one being used throughout in the
-	generated body.
+	priority to the headers charset (if found) over that of the displayed
+	body.  Sometimes the last found charset was the one being used
+	throughout in the generated body.
 
-	The metafile for attachments was sometimes inheriting the charset of the whole
-	body, even when not necessary or wrong. Now the meta doesn't include a charset
-	if the attachment doesn't explicitly give one.
+	The metafile for attachments was sometimes inheriting the charset of
+	the whole body, even when not necessary or wrong. Now the meta doesn't
+	include a charset if the attachment doesn't explicitly give one.
 
 	* parse.c
-	References header was processed multiple times as it was not being marked as parsed
-	after being processed.
-	The epilogue of MIME parts was not being ignored.
+	References header was processed multiple times as it was not being
+	marked as parsed after being processed.  The epilogue of MIME parts was
+	not being ignored.
 
 2018-06-19 Jose Kahan
-
 	* Changed mispelled configuration option warn_surpressions to the
 	correct spelling warn_suppressions.
 
 2018-06-14 Jose Kahan
-
 	* Hypermail would segfault or have an incorrect thread view if it was
 	handling an archive with a message (msg1) that was a reply to a message
 	not in the archive, if msg1 had a reply to it in the archive (msg2),
@@ -343,7 +338,6 @@ HYPERMAIL VERSION 2.4.0:
 	subject (regardless of Re: prefixes).
 
 2018-06-07 Bill Shannon
-
 	* Add charset alias for Thai and Chinese
 
 	* The markup for access key "j" to jump to the start of a message was
@@ -362,22 +356,18 @@ HYPERMAIL VERSION 2.4.0:
 	segfault because of a null pointer
 
 2015-04-03 Ivan Kuraj
-
 	* Correct includes for new glibc
 
 2013-06-10 Jose Kahan
-
 	* Even if a message was annotated as spam/deleted, its Attachments were
 	still being created
 
 2013-04-18 Jose Kahan
-
 	* Removed commented out code in printfile.c.
 
 	* Added missing ';' in generated css rules in the same file
 
 2013-04-11 Jose Kahan
-
 	* Extended the configure options so that a user can decide if hypermail
 	should be compiled and statically linked against the bundled pcre lib
 	or if it should be dynamically linked with an external (or system) pcre
@@ -392,44 +382,37 @@ HYPERMAIL VERSION 2.4.0:
 	* The make clean in libfnv wasn't removing the libfnv.a file
 
 2013-03-29 Jose Kahan
-
 	* Updated configure to latest autoconf syntax conventions.
 
 	* Renamed configure.in to configure.ac and cleaned it up partially.
 
 2013-03-20 Jose Kahan
-
 	* Updated pcre to pcre-8.32 from pcre-4.3. This may have broken the
 	Windows lcc compilation but I don't have the means to verify it.
 
 2013-03-15 Jose Kahan
-
 	* Updated trio code to trio version 1.14. Moved all the trio code to
 	src/trio. Now compiling trio as a static library and linking against
 	it, which makes binary a bit smaller. See src/trio/README.hypermail for
 	details.
 
 2013-03-12 Jose Kahan
-
 	* New experimental support for RFC 3676 format=flowed. There are two
 	new related configuration options: format_flowed to enable it and
 	format_flowed_disable_quotes to disable it in specific cases.  See the
 	documentation and the RFC for further info.
 
 2013-03-08 Jose Kahan
-
 	* Error: string.c:parseurl() assumes that all URL motifs it can match
 	end with a :// string. However, the URL match table it uses included
 	some URL motifs that didn't have that string. These have been commented
 	as they may cause parseulr to SIGSEVs in some cases.
 
 2013-02-26 Jose Kahan
-
 	* New configuration option, noindex_onindexes, for associating a
 	"noindex" robot metadata value with hypermail generated indexes.
 
 2013-02-26 Jose Kahan
-
 	* New configuration option, userobotmeta, for Associatating robot
 	annotations with attachments, using the experimental X-Robots-Tag HTTP
 	header
@@ -442,7 +425,6 @@ HYPERMAIL VERSION 2.4.0:
 	option says we're not to preserve the original message body.
 
 2013-01-30 Jose Kahan
-
 	* Migrated source code repository from cvs.hypermail.org to
 	http://sourceforge.net/projects/hypermail/
 
