@@ -483,7 +483,7 @@ int i18n_replace_non_ascii_chars(char *string)
   
     while (*ptr) {
         if (!isascii(*ptr) ||
-            (*ptr < 0x20 && *ptr != 0x0a && *ptr != 0x0d && *ptr != 0x09)) {
+            (*ptr < 0x20 && *ptr != '\n' && *ptr != '\r' && *ptr != '\t')) {
             *ptr = '?';
             count++;
         }
