@@ -1046,6 +1046,62 @@ void free_body(struct body *bp)
     }
 }
 
+/* The following two are two functions used when debugging the code */
+void dump_body(struct body *bp)
+{
+  struct body *cursor = bp;
+  int lc = 0;
+  while (cursor != NULL) {
+      lc++;
+
+      printf("%02d -----\n", lc);
+      if (cursor->line)
+          printf("%40s", cursor->line);
+      /*
+      printf("header %d\n", cursor->header);
+      printf("parsed header %d\n", cursor->header);
+      printf("attached %d\n", cursor->attached);
+      printf("attachment_links %d\n", cursor->attachment_links);
+      printf("attachment_rfc822 %d\n", cursor->attachment_links);
+      printf("demimed %d\n", cursor->demimed);
+      printf("format_flowed %d\n", cursor->format_flowed);
+      printf("msgnum %d\n", cursor->msgnum);
+      */
+      cursor = cursor->next;
+  }
+}
+
+void dump_mail(int startnum, int maxnum)
+{
+    int num;
+    struct emailinfo *ep;
+    struct body *bp;
+    
+    for (num = startnum; num < maxnum; num++) {
+        
+	if ((bp = hashnumlookup(num, &ep)) == NULL) {
+	    continue;
+	}
+
+        printf("------------------------------\n");
+        printf("msgnum %03d\n", ep->msgnum);
+        printf("is deleted %d\n", ep->is_deleted);
+        printf("from %s\n", ep->name);
+        printf("emailaddr %s\n", ep->emailaddr);
+        printf("fromdatestr %s\n", ep->fromdatestr);
+        printf("msgid %s\n", ep->msgid);
+        printf("unre_subject %40s\n", ep->unre_subject);
+        printf("inreplyto %s\n", ep->inreplyto);
+        printf("charset %s\n", ep->charset);
+        
+        /* @@print flags */
+        dump_body(bp);
+    }
+
+    exit(0);
+    
+} /* dump_mail */
+
 /*
 ** If a message is a reply to another, that message's number and the number of
 ** the message it may be referring to is put in this list.  

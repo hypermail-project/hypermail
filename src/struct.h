@@ -25,6 +25,9 @@ struct body *addbody(struct body *, struct body **, char *, int);
 struct body *append_body(struct body *, struct body **, struct body *);
 void free_body(struct body *);
 
+void dump_body(struct body *);
+void dump_mail(int, int);
+
 struct reply *addreply(struct reply *, int, struct emailinfo *, int,
 		       struct reply **);
 struct reply *addreply2(struct reply *, struct emailinfo *, struct emailinfo *,
