@@ -5,6 +5,10 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.5.0
 ============================
 
+2022-10-26 Jose Kahan
+	* src/getname.c
+	Remove a potential writing out of bonds issue
+
 2022-04-07 Jose Kahan
 	* src/parse.c
 	When parsing a mailbox, the code for skipping MIME epilogues wasn't

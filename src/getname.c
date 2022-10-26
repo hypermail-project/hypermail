@@ -204,7 +204,12 @@ void getname(char *line, char **namep, char **emailp)
         for (i = 0, len = NAMESTRLEN - 1; *c && *c != '\"' && *c != '[' && *c != '\n' && i < len; c++)
             name[i++] = *c;
 
-        name[--i] = '\0';
+	if (i > 0) {
+	  --i;
+	} else {
+	  i = 0;
+	}
+        name[i] = '\0';
         comment_fnd = 1;
     }
     else {
