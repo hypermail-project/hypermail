@@ -1183,6 +1183,11 @@ void PostConfig(void)
         exit(0);
         }
     }
+    
+    /* disable locks if we're debugging hypermail */
+    if (set_debug_level > 0) {
+        set_uselock = 0;
+    }
 }
 
 int ConfigAddItem(char *cfg_line)
