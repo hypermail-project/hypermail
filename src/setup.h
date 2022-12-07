@@ -194,5 +194,11 @@ enum { DELETE_REMOVES_FILES,
        DELETE_LEAVES_EXPIRED_TEXT, /* stubs for deleted msgs, full msg for expired */
        DELETE_LEAVES_TEXT /* leave full message */
 };
-
+extern int set_debug_level;
+/* values for debug_level: */
+enum { DEBUG_DISABLED,
+       DEBUG_DUMP_ATT,
+       DEBUG_DUMP_ATT_VERBOSE, /* always replace msg body with lang[MSG_DELETED/MSG_EXPIRED] */
+       DEBUG_DUMP_BODY /* stubs for deleted msgs, full msg for expired */
+};
 #endif
