@@ -327,15 +327,13 @@ int compute_quoted_percent(struct body *bp)
     int insig = 0;
     int count_quoted = 0;
     int count_lines = 0;
-
     while (bp != NULL) {
-        if (!bp->line || inheader) {
-            bp = bp->next;
-            continue;
-        }
-	else if ((bp->line)[0] == '\n')
+	if ((bp->line)[0] == '\n')
 	    inheader = 0;
-
+	else if (inheader) {
+	    bp = bp->next;
+	    continue;
+	}
 	if (is_sig_start(bp->line))
 	    insig = 1;
 
