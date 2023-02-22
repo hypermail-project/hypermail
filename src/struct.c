@@ -939,7 +939,11 @@ struct body *addbody(struct body *bp, struct body **lp,	/* points to the last po
     if (!(flags & BODY_CONTINUE)) {
 	newnode = (struct body *)emalloc(sizeof(struct body));
 	memset(newnode, 0, sizeof(struct body));
-	newnode->line = spamify(strsav(unstuffed_line));
+	if (set_spamprotect) {
+	    newnode->line = spamify(strsav(unstuffed_line));
+	} else {
+	    newnode->line = strsav(unstuffed_line);
+	}
 	newnode->html = (flags & BODY_HTMLIZED) ? 1 : 0;
 	newnode->header = (flags & BODY_HEADER) ? 1 : 0;
 	newnode->attached = (flags & BODY_ATTACHED) ? 1 : 0;
