@@ -2107,7 +2107,7 @@ int parsemail(char *mbox,	/* file name */
 			    if ('\"' == *cp)
 				cp++;	/* pass a quote too if one is there */
 
-			    sscanf(cp, "%128[^;\"\n]", charbuffer);
+			    sscanf(cp, "%128[^;\"\n\r]", charbuffer);
 			    /* save the charset info */
 			    charset = strsav(charbuffer);
 			}
