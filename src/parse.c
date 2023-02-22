@@ -1644,6 +1644,7 @@ int parsemail(char *mbox,	/* file name */
     /* @@@ test for attachment */
     char attach_force;
     /* @@@ */
+    struct base64_state *b64_decoder = NULL;	/* Multi-line base64 decoding */
 
     EncodeType decode = ENCODE_NORMAL;
     ContentType content = CONTENT_TEXT;
@@ -2474,6 +2475,7 @@ int parsemail(char *mbox,	/* file name */
 			}
 			else if (!strncasecmp(ptr, "BASE64", 6)) {
 			    decode = ENCODE_BASE64;
+			    b64_decoder = base64_alloc();
 			}
 			else if (!strncasecmp(ptr, "8BIT", 4)) {
 			    decode = ENCODE_NORMAL;
@@ -2881,6 +2883,15 @@ msgid);
 
                                 charsetsp = NULL;
                             }
+
+			    /*
+			     * This part was base64, so we're now
+			     *  done with the decoding.
+			     */
+			    if (ENCODE_BASE64 == decode) {
+				base64_free(b64_decoder);
+				b64_decoder = NULL;
+			    }
                             
 			    if (alternativeparser
 				&& !has_multipart(multipartp, "multipart/alternative")) {
@@ -3015,7 +3026,7 @@ msgid);
 		    }
 		    break;
 		case ENCODE_BASE64:
-		    base64Decode(line, newbuffer, &datalen);
+		    datalen = base64_decode(b64_decoder, line, newbuffer);
 		    data = newbuffer;
 		    break;
 		case ENCODE_UUENCODE:
@@ -3418,8 +3429,15 @@ msgid);
 		    }
 		}
 
-		if (ENCODE_QP == decode)
+		if (ENCODE_QP == decode) {
 		    free(data);	/* this was allocatd by mdecodeQP() */
+		}
+		/*
+		else if (ENCODE_BASE64 == decode) {
+		    base64_free(b64_decoder);
+		    b64_decoder = NULL;
+		}
+		*/
 	    }
 	}
     }
