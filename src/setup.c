@@ -950,7 +950,7 @@ struct Config cfg[] = {
      "# in the name supplied by the message. This option is mainly for\n"
      "# languages that use different character sets from English.\n", FALSE},
 
-     {"debug_level", &set_debug_level, INT(DEBUG_DISABLED), CFG_INTEGER,
+     {"debug", &set_debug_level, INT(DEBUG_DISABLED), CFG_INTEGER,
      "This option lets you enable different debug options for helping\n"
      "develop and debug hypermail code.\n"
      "1 - dumps the message_node tree after parsing a message\n"
@@ -1151,6 +1151,7 @@ void PostConfig(void)
 	for (i = 0; i <= ATTACHMENT_INDEX; ++i)
 	    show_index[0][i] = show_index[1][i];
     }
+
     if (set_htmlbody != NULL)
 	printf("Warning: the body option has been disabled. See the\n"
 	       "INSTALL file for instructions on replacing it with a style sheet.\n");
@@ -1459,7 +1460,7 @@ void dump_config(void)
     printf("set_applemail_mimehack = %d\n",set_applemail_mimehack);    
     printf("set_archived_on = %d\n",set_archived_on);
     printf("set_hypermail_colophon = %d\n",set_hypermail_colophon);
-    printf("set_debug_level = %d\n",set_debug_level);
+    printf("set_debug = %d\n",set_debug_level);
     
     if (!set_ihtmlheader)
         printf("set_ihtmlheader = Not set\n");
