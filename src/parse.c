@@ -1,22 +1,22 @@
-/* 
+/*
 ** Copyright (C) 1994, 1995 Enterprise Integration Technologies Corp.
 **         VeriFone Inc./Hewlett-Packard. All Rights Reserved.
 ** Kevin Hughes, kev@kevcom.com 3/11/94
 ** Kent Landfield, kent@landfield.com 4/6/97
-** 
-** This program and library is free software; you can redistribute it and/or 
-** modify it under the terms of the GNU (Library) General Public License 
-** as published by the Free Software Foundation; either version 2 
-** of the License, or any later version. 
-** 
-** This program is distributed in the hope that it will be useful, 
-** but WITHOUT ANY WARRANTY; without even the implied warranty of 
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-** GNU (Library) General Public License for more details. 
-** 
+**
+** This program and library is free software; you can redistribute it and/or
+** modify it under the terms of the GNU (Library) General Public License
+** as published by the Free Software Foundation; either version 2
+** of the License, or any later version.
+**
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+** GNU (Library) General Public License for more details.
+**
 ** You should have received a copy of the GNU (Library) General Public License
-** along with this program; if not, write to the Free Software 
-** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA 
+** along with this program; if not, write to the Free Software
+** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
 */
 
 #include <fcntl.h>
@@ -282,9 +282,9 @@ void print_progress(int num, char *msg, char *filename)
     fputs(bufstr, stdout);	/* put out the string */
     len = strlen(bufstr);	/* get length of new string */
 
-    /* 
-     * If there is a new message then erase 
-     * the trailing info from the enw string 
+    /*
+     * If there is a new message then erase
+     * the trailing info from the enw string
      */
 
     if (msg != NULL) {
@@ -380,7 +380,7 @@ void crossindex(void)
 				    &maybereply);
 	if (status != -1) {
 	    struct emailinfo *email2;
-            
+
 	    if (!hashnumlookup(status, &email2)) {
 		++num;
 		continue;
@@ -394,7 +394,7 @@ void crossindex(void)
                 ++num;
                 continue;
             }
-            
+
 	    if (set_linkquotes) {
 	        struct reply *rp;
 		int found_num = 0;
@@ -410,7 +410,7 @@ void crossindex(void)
 #else
 		    replylist = addreply(replylist, status, email, maybereply,
 					 &replylist_end);
-#endif		
+#endif
 	    }
 	    else {
 #ifdef FASTREPLYCODE
@@ -419,7 +419,7 @@ void crossindex(void)
 #else
 		replylist = addreply(replylist, status, email, maybereply,
 				     &replylist_end);
-#endif		
+#endif
 	    }
 	}
 	num++;
@@ -441,7 +441,7 @@ void crossindex(void)
 #endif
 }
 
-/* 
+/*
 ** Recursively checks for replies to replies to a message, etc.
 ** Replies are added to the thread list.
 */
@@ -453,7 +453,7 @@ void crossindexthread2(int num)
     struct emailinfo *ep;
     if(!hashnumlookup(num, &ep)) {
 	char errmsg[512];
-        trio_snprintf(errmsg, sizeof(errmsg), 
+        trio_snprintf(errmsg, sizeof(errmsg),
                  "internal error crossindexthread2 %d", num);
 	progerr(errmsg);
     }
@@ -585,7 +585,7 @@ char *getfromdate(char *line)
 }
 
 
-/* 
+/*
 ** Grabs the message ID, like <...> from the Message-ID: header.
 */
 
@@ -599,9 +599,9 @@ char *getid(char *line)
     INIT_PUSH(buff);
 
     if (strrchr(line, '<') == NULL) {
-	/* 
+	/*
          * bozo alert!
-	 *   msg-id = "<" addr-spec ">" 
+	 *   msg-id = "<" addr-spec ">"
 	 * try to recover as best we can
 	 */
 	c = strchr(line, ':') + 1;	/* we know this exists! */
@@ -691,7 +691,7 @@ char *getsubject(char *line)
 
 /*
 ** Grabs the annotation values given in the annotation user-defined header
-** 
+**
 ** annotation_content is set to the value of the content annotation
 ** annotation_robot is set to the values of the robot annotations
 ** Returns TRUE if an annotation was found, FALSE otherwise.
@@ -705,7 +705,7 @@ getannotation(char *line, annotation_content_t *annotation_content,
 
   *annotation_content = ANNOTATION_CONTENT_NONE;;
   *annotation_robot = ANNOTATION_ROBOT_NONE;
-  
+
   c = strchr(line, ':');
   if (!c)
     return FALSE;
@@ -717,7 +717,7 @@ getannotation(char *line, annotation_content_t *annotation_content,
 
     while (isspace(*c))
       c++;
-  
+
     startp = c;
     while (!isspace (*c) && *c != '\n' && *c != ',') {
       c++;
@@ -745,7 +745,7 @@ getannotation(char *line, annotation_content_t *annotation_content,
   }
 
   /* only return true if at least a valid annotation was found */
-  return (*annotation_content != ANNOTATION_CONTENT_NONE 
+  return (*annotation_content != ANNOTATION_CONTENT_NONE
 	  || *annotation_robot != ANNOTATION_ROBOT_NONE);
 }
 
@@ -753,15 +753,15 @@ getannotation(char *line, annotation_content_t *annotation_content,
 ** Grabs the message ID, or date, from the In-reply-to: header.
 **
 ** Maybe I'm confused but....
-**     What either ? Should it not be consistent and choose to return 
-**     one (the msgid) as the default and fall back to date when a 
+**     What either ? Should it not be consistent and choose to return
+**     one (the msgid) as the default and fall back to date when a
 **     msgid cannot be found ?
 **
 ** Who knows what other formats are out there...
 **
 ** In-Reply-To: <1DD9B854E27@everett.pitt.cc.nc.us>
 ** In-Reply-To: <199709181645.MAA02097@mail.clark.net> from "Marcus J. Ranum" at Sep 18, 97 12:41:40 pm
-** In-Reply-To: <199709181645.MAA02097@mail.clark.net> from 
+** In-Reply-To: <199709181645.MAA02097@mail.clark.net> from
 ** In-Reply-To: "L. Detweiler"'s message of Fri, 04 Feb 94 22:51:22 -0700 <199402050551.WAA16189@longs.lance.colostate.edu>
 **
 ** The message id should always be returned for threading purposes. Mixing
@@ -780,8 +780,8 @@ char *getreply(char *line)
 
     /* Check for blank line */
 
-    /* 
-     * Check for line with " from " and " at ".  Format of the line is 
+    /*
+     * Check for line with " from " and " at ".  Format of the line is
      *     <msgid> from "quoted user name" at date-string
      */
 
@@ -795,20 +795,20 @@ char *getreply(char *line)
 	    }
 	}
 
-	/* 
+	/*
 	 * If no 'at' the line may be a continued line or a truncated line.
 	 * Both will be picked up later.
 	 */
     }
 
-    /* 
-     * Check for line with " message of ".  Format of the line is 
+    /*
+     * Check for line with " message of ".  Format of the line is
      *     "quoted user name"'s message of date-string <msgid>
      */
 
     if ((c = strstr(line, "message of ")) != NULL) {
 	/*
-	 * Check to see if there is a message ID on the line. 
+	 * Check to see if there is a message ID on the line.
 	 * If not this is a continued line and when you add a readline()
 	 * function that concatenates continuation lines collapsing
 	 * white space, you might want to revisit this...
@@ -914,7 +914,7 @@ extract_rfc2047_content(char *iptr)
 **
 ** Should result in "I'm called Daniel" too.
 **
-** Returns the newly allcated string, or the previous if nothing changed 
+** Returns the newly allcated string, or the previous if nothing changed
 */
 
 static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
@@ -1100,11 +1100,11 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
     }
 }
 
-/* 
+/*
 ** RFC 3676 format=flowed parsing routines
 */
 
-/* get_quote_level returns the number of quotes in a line, 
+/* get_quote_level returns the number of quotes in a line,
    following the RFC 3676 section 4.5 criteria.
 */
 static int get_quotelevel (const char *line)
@@ -1139,7 +1139,7 @@ static int get_quotelevel (const char *line)
 ** The function returns true if the current line is flowed.
 **
 */
-static bool rfc3676_handler (char *line, bool delsp_flag, int *quotelevel, 
+static bool rfc3676_handler (char *line, bool delsp_flag, int *quotelevel,
 			     bool *continue_prev_flow_flag)
 {
   int new_quotelevel = 0;
@@ -1160,8 +1160,8 @@ static bool rfc3676_handler (char *line, bool delsp_flag, int *quotelevel,
 
      rules for quotes:
      1. quoted lines always begin with a '>' char. This symbol may depend on the
-        msg charset. 
-     2. They are not ss before the quote symbol but may be after it 
+        msg charset.
+     2. They are not ss before the quote symbol but may be after it
         appears.
 
      rules for seeing if a line should be flowed with the next one:
@@ -1179,7 +1179,7 @@ static bool rfc3676_handler (char *line, bool delsp_flag, int *quotelevel,
   printf("RFC3676: Previous line flow flag: %d\n", *continue_prev_flow_flag);
 #endif
 
-  /* 
+  /*
   ** hard crlf detection.
   */
   if (rfc3676_ishardlb(line)) {
@@ -1191,7 +1191,7 @@ static bool rfc3676_handler (char *line, bool delsp_flag, int *quotelevel,
 #endif
       return FALSE;
   }
-  
+
   /*
   ** quote level detection
   */
@@ -1207,21 +1207,21 @@ static bool rfc3676_handler (char *line, bool delsp_flag, int *quotelevel,
 
 #if DEBUG_PARSE
       printf("RFC3676: different quote levels detected. Stopping ff\n");
-#endif      
+#endif
   }
   tmp_padding = new_quotelevel;
 
-  /* 
-  ** skip space stuffing if any 
+  /*
+  ** skip space stuffing if any
   */
   if (line[tmp_padding] == ' ') {
       tmp_padding++;
 #if DEBUG_PARSE
       printf("RFC3676: space-stuffing detected; skipping space\n");
-#endif            
+#endif
   }
 
-  /* 
+  /*
   ** hard crlf detection after quotes
   */
   if (rfc3676_ishardlb(line+tmp_padding)) {
@@ -1237,7 +1237,7 @@ static bool rfc3676_handler (char *line, bool delsp_flag, int *quotelevel,
   /*
   ** signature detection
   */
-  
+
   /* Is it a signature separator? */
   /* rfc3676 gives "-- \n" and "--\r\n" as signatures. We also add "--\n" to this list,
      as mutt allows it */
@@ -1280,12 +1280,12 @@ static bool rfc3676_handler (char *line, bool delsp_flag, int *quotelevel,
           }
       }
   }
-  
+
   /*
   ** update flags
   */
   *quotelevel = new_quotelevel;
-  
+
 #if DEBUG_PARSE
   if (*continue_prev_flow_flag)
       printf("RFC3676: Continuing previous flow\n");
@@ -1466,7 +1466,7 @@ static int do_uudecode(FILE *fp, char *line, char *line_buf,
 
     if (uudecode(fp, line, line, NULL, &pbuf))
       /*
-       * oh gee, we failed this is chaos 
+       * oh gee, we failed this is chaos
        */
         return 0;
     p2 = PUSH_STRING(pbuf);
@@ -1494,7 +1494,7 @@ static void write_txt_file(struct emailinfo *emp, struct Push *raw_text_buf)
     sprintf(tmp_buf, "%.4d", emp->msgnum);
     txt_filename = htmlfilename(tmp_buf, emp, set_txtsuffix);
     if ((!emp->is_deleted
-	 || ((emp->is_deleted & (FILTERED_DELETE | FILTERED_OLD | FILTERED_NEW 
+	 || ((emp->is_deleted & (FILTERED_DELETE | FILTERED_OLD | FILTERED_NEW
 				 | FILTERED_DELETE_OTHER))
 	     && set_delete_level > 2)
 	 || (emp->is_deleted == FILTERED_EXPIRE && set_delete_level == 2))
@@ -1533,7 +1533,7 @@ int parsemail(char *mbox,	/* file name */
     char *inreply = NULL;
     char *namep = NULL;
     char *emailp = NULL;
-    char *line = NULL; 
+    char *line = NULL;
     char line_buf[MAXLINE], fromdate[DATESTRLEN] = "";
     char *cp;
     char *dp = NULL;
@@ -1580,10 +1580,10 @@ int parsemail(char *mbox,	/* file name */
     int parse_multipart_alternative_force_save_alts = 0; /* used to control if we are parsing alternative as multipart */
     int old_set_save_alts = -1;  /* used to store the set_save_alts when overriding it for apple mail */
     int applemail_ua_header_len = (set_applemail_mimehack) ? strlen (set_applemail_ua_header) : 0; /* code optimization to avoid computing it each time */
-    /* 
-    ** keeps track of attachment file name used so far for this message 
+    /*
+    ** keeps track of attachment file name used so far for this message
     */
-    struct hmlist *att_name_list = NULL; 
+    struct hmlist *att_name_list = NULL;
     struct hmlist *att_name_last = NULL;
 
     /* -- end of alternative parser variables -- */
@@ -1596,12 +1596,12 @@ int parsemail(char *mbox,	/* file name */
     struct body *headp = NULL;	/* stored pointer to the point where we last
 				   scanned the headers of this mail. */
     struct body *content_type_p = NULL;  /* pointer to the Content-Type header */
-        
+
     char Mime_B = FALSE;
     char boundbuffer[256] = "";
 
-    struct boundary *boundp = NULL;	/* This variable is used to store a stack 
-					   of boundary separators in cases with mimed 
+    struct boundary *boundp = NULL;	/* This variable is used to store a stack
+					   of boundary separators in cases with mimed
 					   mails inside mimed mails */
 
     struct boundary *multipartp = NULL; /* This variable is used to store a stack of
@@ -1615,17 +1615,17 @@ int parsemail(char *mbox,	/* file name */
 
     bool skip_mime_epilogue = FALSE;  /* This variable is used to help skip multipart/foo
                                            epilogues */
-    
-    char multilinenoend = FALSE;	/* This variable is set TRUE if we have read 
-					   a partial line off a multiline-encoded line, 
+
+    char multilinenoend = FALSE;	/* This variable is set TRUE if we have read
+					   a partial line off a multiline-encoded line,
 					   and the next line we read is supposed to get
 					   appended to the previous one */
 
-    int bodyflags = 0;		/* This variable is set to extra flags that the 
+    int bodyflags = 0;		/* This variable is set to extra flags that the
 				   addbody() calls should OR in the flag parameter */
 
     /* RFC 3676 related variables, set while parsing the headers and body content */
-    textplain_format_t textplain_format = FORMAT_FIXED;   
+    textplain_format_t textplain_format = FORMAT_FIXED;
     bool flowed_line = FALSE;
     int quotelevel = 0;
     bool continue_previous_flow_flag = FALSE;
@@ -1657,12 +1657,12 @@ int parsemail(char *mbox,	/* file name */
     if (use_stdin || !mbox || !strcasecmp(mbox, "NONE"))
 	fp = stdin;
     else if ((fp = fopen(mbox, "rb")) == NULL) {
-        trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", 
+        trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\".",
                  lang[MSG_CANNOT_OPEN_MAIL_ARCHIVE], mbox);
 	progerr(errmsg);
     }
     if(set_append) {
-    
+
 	/* add to an mbox as we read */
 	*directory = 0;
 	*filename = 0;
@@ -1670,16 +1670,16 @@ int parsemail(char *mbox,	/* file name */
 	if (set_append_filename) {
             time_t curtime;
             const struct tm *local_curtime;
-            
+
 	    time(&curtime);
             local_curtime = localtime(&curtime);
-            
+
 	    if(strncmp(set_append_filename, "$DIR/", 5) == 0) {
 	        strncpy(directory, dir, MAXFILELEN - 1);
-                strftime(filename, MAXFILELEN - 1, set_append_filename+5, 
+                strftime(filename, MAXFILELEN - 1, set_append_filename+5,
                          local_curtime);
             } else {
-                strftime(filename, MAXFILELEN - 1, set_append_filename, 
+                strftime(filename, MAXFILELEN - 1, set_append_filename,
                          local_curtime);
 	    }
 	} else {
@@ -1712,7 +1712,7 @@ int parsemail(char *mbox,	/* file name */
 
     parse_multipart_alternative_force_save_alts = 0;
     old_set_save_alts = -1;
-    
+
     require_filter_len = require_filter_full_len = 0;
     for (tlist = set_filter_require; tlist != NULL; require_filter_len++, tlist = tlist->next)
 	;
@@ -1746,7 +1746,7 @@ int parsemail(char *mbox,	/* file name */
 	}
     }
 
-    for ( ; fgets(line_buf, MAXLINE, fp) != NULL; 
+    for ( ; fgets(line_buf, MAXLINE, fp) != NULL;
 	  set_txtsuffix ? PushString(&raw_text_buf, line_buf) : 0) {
 #if DEBUG_PARSE
         fprintf(stderr,"\n^IN: %s", line_buf);
@@ -1758,8 +1758,8 @@ int parsemail(char *mbox,	/* file name */
                 "alternative_lp", (alternative_lp) ? alternative_lp->line : "",
                 "origbp", (origbp) ? origbp->line : "",
                 "origlp", (origlp) ? origlp->line : "",
-                "headp", (headp) ? headp->line : "");	
-#endif 
+                "headp", (headp) ? headp->line : "");
+#endif
 	if(set_append) {
 	    if(fputs(line_buf, fpo) < 0) {
 	        progerr("Can't write to \"mbox\""); /* revisit me */
@@ -1774,7 +1774,7 @@ int parsemail(char *mbox,	/* file name */
                 skip_mime_epilogue = FALSE;
             }
         }
-        
+
 	if (!is_deleted &&
 	    inlist_regex_pos(set_filter_out_full_body, line) != -1) {
 	    is_deleted = FILTERED_OUT;
@@ -1792,9 +1792,9 @@ int parsemail(char *mbox,	/* file name */
 	    else if (isspace(line[0]) && ('\n' != line[0]) \
 		     && !('\r' == line[0] && '\n' == line[1])) {
 		/*
-		 * since this begins with a whitespace, it means the 
-		 * previous line is continued on this line, leave only 
-		 * one space character and go! 
+		 * since this begins with a whitespace, it means the
+		 * previous line is continued on this line, leave only
+		 * one space character and go!
 		 */
 		char *ptr = line;
 		while (isspace(*ptr))
@@ -1811,9 +1811,9 @@ int parsemail(char *mbox,	/* file name */
 
 		char savealternative;
 
-		/* 
-		 * we mark this as a header-line, and we use it to 
-		 * track end-of-header displays 
+		/*
+		 * we mark this as a header-line, and we use it to
+		 * track end-of-header displays
 		 */
 
 		/* skip the alternate "\n", otherwise, we'll have
@@ -1823,10 +1823,10 @@ int parsemail(char *mbox,	/* file name */
 		isinheader--;
 
 		/*
-		 * This signals us that we are no longer in the header, 
-		 * let's fill in all those fields we are interested in. 
-		 * Parse the headers up to now and copy to the target 
-		 * variables 
+		 * This signals us that we are no longer in the header,
+		 * let's fill in all those fields we are interested in.
+		 * Parse the headers up to now and copy to the target
+		 * variables
 		 */
 
 		for (head = bp; head; head = head->next) {
@@ -1843,7 +1843,7 @@ int parsemail(char *mbox,	/* file name */
 		    }
 		    if (!sscanf(head->line, "%127[^:]", head_name))
 		        continue;
-		    
+
 		    if (inlist(set_deleted, head_name)) {
 		        char *val = getsubject(head->line); /* revisit me */
 			if (!strcasecmp(val, "yes"))
@@ -1909,12 +1909,12 @@ int parsemail(char *mbox,	/* file name */
 		    }
 		    else if (!strncasecmp(head->line, "References:", 11)) {
 			/*
-			 * Adding threading capability for the "References" 
-			 * header, ala RFC 822, used only for messages that 
+			 * Adding threading capability for the "References"
+			 * header, ala RFC 822, used only for messages that
 			 * have "References" but do not have an "In-reply-to"
 			 * field. This is partically a concession for Netscape's
 			 * email composer, which erroneously uses "References"
-			 * when it should use "In-reply-to". 
+			 * when it should use "In-reply-to".
 			 */
 			if (!inreply)
 			    inreply = getid(head->line);
@@ -1937,7 +1937,7 @@ int parsemail(char *mbox,	/* file name */
                             || !set_applemail_mimehack) {
                             continue;
                         }
-                        
+
                         /* If the UA is an apple mail client and we're configured to do the
                          * applemail hack and we're not already configured to
                          * save the alternatives, memorize the old setting and force
@@ -1955,7 +1955,7 @@ int parsemail(char *mbox,	/* file name */
 
                             old_set_save_alts = set_save_alts;
 			    set_save_alts = 2;
-			    
+
 #if DEBUG_PARSE
                             printf("Applemail_hack force save_alts: yes\n");
 			    printf("Applemail_hack set_save_alts changed from %d to %d\n",
@@ -1964,7 +1964,7 @@ int parsemail(char *mbox,	/* file name */
                         }
                     }
                 }
-                
+
 		if (!is_deleted && set_delete_older && (date || fromdate)) {
 		    time_t email_time = convtoyearsecs(date);
 		    if (email_time == -1)
@@ -2007,7 +2007,7 @@ int parsemail(char *mbox,	/* file name */
 			    ptr++;
 			if (!strncasecmp(ptr, "attachment;", 11)
 			    && (content != CONTENT_IGNORE)) {
-			    /* signal we want to attach, rather than embeed this MIME 
+			    /* signal we want to attach, rather than embeed this MIME
 			       attachment */
 			    if (inlist(set_ignore_types, "$NONPLAIN")
 				|| inlist(set_ignore_types, "$BINARY"))
@@ -2045,7 +2045,7 @@ int parsemail(char *mbox,	/* file name */
 
 			else if (!strncasecmp(ptr, "inline;", 7)
 				 && (content != CONTENT_IGNORE)
-				 && (!strncasecmp(type, "image/", 5))) {	
+				 && (!strncasecmp(type, "image/", 5))) {
                           /* @@@ <-- here I should use the inline thingy */
 #endif
 			else if (!strncasecmp(ptr, "inline;", 7)
@@ -2113,7 +2113,7 @@ int parsemail(char *mbox,	/* file name */
 			    /* save the charset info */
 			    charset = strsav(charbuffer);
                         }
-                        
+
 			/* now check if there's a format indicator */
 			if (set_format_flowed) {
 			  cp = strcasestr(ptr, "format=");
@@ -2121,20 +2121,20 @@ int parsemail(char *mbox,	/* file name */
 			    cp += 7;	/* pass charset= */
 			    if ('\"' == *cp)
 			      cp++;	/* pass a quote too if one is there */
-			    
+
 			    sscanf(cp, "%128[^;\"\n]", charbuffer);
 			    /* save the format info */
 			    if (!strcasecmp (charbuffer, "flowed"))
 			      textplain_format = FORMAT_FLOWED;
 			  }
-			  
-			  /* now check if there's a delsp indicator */			
+
+			  /* now check if there's a delsp indicator */
 			  cp = strcasestr(ptr, "delsp=");
 			  if (cp) {
 			    cp += 6;	/* pass charset= */
 			    if ('\"' == *cp)
 			      cp++;	/* pass a quote too if one is there */
-			    
+
 			    sscanf(cp, "%128[^;\"\n]", charbuffer);
 			    /* save the delsp info */
 			    if (!strcasecmp (charbuffer, "yes"))
@@ -2145,7 +2145,7 @@ int parsemail(char *mbox,	/* file name */
 			if (alternativeparser) {
 			    struct body *next;
 			    struct body *temp_bp = NULL;
-                            
+
 			    /* We are parsing alternatives... */
 
                             if (parse_multipart_alternative_force_save_alts
@@ -2153,7 +2153,7 @@ int parsemail(char *mbox,	/* file name */
                                 && !strcasecmp(multipartp->line, "multipart/alternative")
                                 && *last_alternative_type
                                 && !strcasecmp(last_alternative_type, "text/plain")) {
-                            
+
                                 /* if the UA is Apple mail and if the only
                                 ** alternatives are text/plain and
                                 ** text/html and if the preference is
@@ -2168,7 +2168,7 @@ int parsemail(char *mbox,	/* file name */
                                     break;
                                 }
                             }
-                            
+
 			    if (preferedcontent(&alternative_weight, type, decode)) {
 				/* ... this is a prefered type, we want to store
 				   this [instead of the earlier one]. */
@@ -2178,7 +2178,7 @@ int parsemail(char *mbox,	/* file name */
                                 if (prefered_content_charset) {
                                     free(prefered_content_charset);
                                 }
-                                prefered_content_charset = strsav (charset);                                
+                                prefered_content_charset = strsav (charset);
                                 strncpy(last_alternative_type, type,
                                         sizeof(last_alternative_type) - 1);
 #ifdef DEBUG_PARSE
@@ -2213,7 +2213,7 @@ int parsemail(char *mbox,	/* file name */
 				/* we haven't yet created any attachment file, so there's no need
 				   to erase it yet */
                             }
-                            
+
 			    /* free any previous alternative */
 			    while (temp_bp) {
 				next = temp_bp->next;
@@ -2254,7 +2254,7 @@ int parsemail(char *mbox,	/* file name */
 				content = CONTENT_HTML;
 			    else
 				content = CONTENT_TEXT;
-                            
+
 			    if (!alternativeparser && !prefered_content_charset) {
                                 /* there are apparently no
                                    alternatives in this message, let's
@@ -2262,19 +2262,19 @@ int parsemail(char *mbox,	/* file name */
                                    found as the prefered one */
                                 prefered_content_charset = strsav (charset);
                             }
-                            
+
 			    continue;
 			}
 			else if (!strncasecmp(type, "message/rfc822", 14)) {
-			    /* 
-			     * Here comes an attached mail! This can be ugly, 
-			     * since the attached mail may very well itself 
-			     * contain attached binaries, or why not another 
+			    /*
+			     * Here comes an attached mail! This can be ugly,
+			     * since the attached mail may very well itself
+			     * contain attached binaries, or why not another
 			     * attached mail? :-)
 			     *
-			     * We need to store the current boundary separator 
-			     * in order to get it back when we're done parsing 
-			     * this particular mail, since each attached mail 
+			     * We need to store the current boundary separator
+			     * in order to get it back when we're done parsing
+			     * this particular mail, since each attached mail
 			     * will have its own boundary separator that *might*
 			     * be used.
 			     */
@@ -2293,14 +2293,14 @@ int parsemail(char *mbox,	/* file name */
 			    continue;
 			}
 			else if (strncasecmp(type, "multipart/", 10)) {
-			    /* 
-			     * This is not a multipart and not text 
+			    /*
+			     * This is not a multipart and not text
 			     */
 			    char *fname = NULL;	/* attachment filename */
 
-			    /* 
-                             * only do anything here if we're not 
-                             * ignoring this content 
+			    /*
+                             * only do anything here if we're not
+                             * ignoring this content
                              */
 			    if (CONTENT_IGNORE != content) {
 
@@ -2324,12 +2324,12 @@ int parsemail(char *mbox,	/* file name */
 			}
 			else {
 			    /*
-			     * Find the first boundary separator 
+			     * Find the first boundary separator
 			     */
 
 			    struct body *tmpbp;
 			    struct body *tmplp;
-			    
+
 			    boundary_id = strcasestr(ptr, "boundary=");
 #if DEBUG_PARSE
 			    printf("boundary found in %s\n", ptr);
@@ -2352,7 +2352,7 @@ int parsemail(char *mbox,	/* file name */
 
 				/* restart on a new list: */
 				tmpbp = tmplp = NULL;
-			
+
 				while (fgets(line_buf, MAXLINE, fp)) {
 				    if(set_append) {
 				        if(fputs(line_buf, fpo) < 0) {
@@ -2389,20 +2389,20 @@ int parsemail(char *mbox,	/* file name */
 				}
 				free_body(tmpbp);
 
-				/* 
-				 * This stores the boundary string in a stack 
-				 * of strings: 
+				/*
+				 * This stores the boundary string in a stack
+				 * of strings:
 				 */
 				boundp = bound(boundp, boundbuffer);
                                 multipartp = multipart(multipartp, type);
                                 skip_mime_epilogue = FALSE;
-                                
+
 				/* printf("set new boundary: %s\n", boundp->line); */
 
                                 /* @@JK Take into account errors when we abort, malformed mime, etc,
                                  probably put this call up, before detecting errors? */
                                 charsetsp = charsets(charsetsp, charset, charsetsave);
-#ifdef DEBUG_PARSE                                
+#ifdef DEBUG_PARSE
                                 fprintf(stderr, "pushing charset %s and charsetsave %s\n", charset, charsetsave);
 #endif
                                     if (charset) {
@@ -2412,7 +2412,7 @@ int parsemail(char *mbox,	/* file name */
                                     charsetsave[0] = '\0';
 
 #ifdef DEBUG_PARSE
-                                    fprintf(stderr, "restoring parents charset %s and charsetsave %s\n", charset, charsetsave); 
+                                    fprintf(stderr, "restoring parents charset %s and charsetsave %s\n", charset, charsetsave);
 #endif
 
 				/*
@@ -2425,7 +2425,7 @@ int parsemail(char *mbox,	/* file name */
 				 * "multipart/alternative" parser 13th of July
 				 * 1998!  We check if this is a 'multipart/
 				 * alternative' header, in which case we need to
-				 * treat it very special.  
+				 * treat it very special.
 				 */
 
 				if (!strncasecmp
@@ -2438,7 +2438,7 @@ int parsemail(char *mbox,	/* file name */
 				     * the order of the texts to start with pure text
 				     * and then continue with more and more obscure
 				     * formats. (well, it doesn't use those terms but
-				     * that's what it means! ;-)) 
+				     * that's what it means! ;-))
 				     */
 
 				    /* How "we" are gonna deal with them:
@@ -2466,7 +2466,7 @@ int parsemail(char *mbox,	/* file name */
 				boundary_id = NULL;
 			}
 		    }
-		    else 
+		    else
 			if (!strncasecmp
 			    (head->line, "Content-Transfer-Encoding:", 26)) {
 			char *ptr = head->line + 26;
@@ -2498,9 +2498,9 @@ int parsemail(char *mbox,	/* file name */
 
 			    /* is there any value for content-encoding or is it missing? */
 			    if (sscanf(ptr, "%63s", code) != EOF) {
-			      
+
 			      trio_snprintf(line, sizeof(line_buf) - set_ietf_mbox,
-					    " ('%s' %s)\n", code, 
+					    " ('%s' %s)\n", code,
 					    lang[MSG_ENCODING_IS_NOT_SUPPORTED]);
 
 			      bp = addbody(bp, &lp, line,
@@ -2609,7 +2609,7 @@ int parsemail(char *mbox,	/* file name */
 #ifdef DEBUG_PARSE
                 fprintf(stderr, "Message will be stored using charset %s\n", charset);
 #endif
-                
+
 		isinheader = 1;
 		if (!hassubject)
 		    subject = NOSUBJECT;
@@ -2625,7 +2625,7 @@ int parsemail(char *mbox,	/* file name */
 		    inreply = oneunre(subject);
 
 		/* control the use of format and delsp according to RFC 3676 */
-		if (textplain_format == FORMAT_FLOWED 
+		if (textplain_format == FORMAT_FLOWED
 		    && content != CONTENT_TEXT
 		    || (content == CONTENT_TEXT && strcasecmp (type, "text/plain"))) {
 		  /* format flowed only allowed on text/plain */
@@ -2639,7 +2639,7 @@ int parsemail(char *mbox,	/* file name */
 
 		if (append_bp && append_bp != bp) {
                     /* if we had attachments, close the structure */
-                    append_bp = 
+                    append_bp =
                         addbody(append_bp, &append_lp, "</ul>\n",
                                 BODY_HTMLIZED | BODY_ATTACHMENT_LINKS | bodyflags);
                     bp = append_body(bp, &lp, append_bp);
@@ -2679,13 +2679,13 @@ int parsemail(char *mbox,	/* file name */
 		  emp =
 		    addhash(num, date, namep, emailp, msgid, subject,
 			    inreply, fromdate, charset, NULL, NULL, bp);
-                /* 
+                /*
                  * dp, if it has a value, has a date from the "From " line of
-                 * the message after the one we are just finishing. 
+                 * the message after the one we are just finishing.
                  * SMR 19 Oct 99: moved this *after* the addhash() call so it
-                 * isn't erroneously associate with the previous message 
+                 * isn't erroneously associate with the previous message
                  */
-   
+
                 strcpymax(fromdate, dp ? dp : "", DATESTRLEN);
 
 		if (emp) {
@@ -2785,30 +2785,30 @@ int parsemail(char *mbox,	/* file name */
 
 		free_bound (boundp);
 		boundp = NULL;
-		
+
 		free_multipart (multipartp);
 		multipartp = NULL;
 
                 free_charsets (charsetsp);
                 charsetsp = NULL;
-                
+
                 alternativeparser = FALSE; /* there is none anymore */
 
 		if (parse_multipart_alternative_force_save_alts) {
                     parse_multipart_alternative_force_save_alts = 0;
-                    
+
 #if DEBUG_PARSE
                     printf("Applemail_hack resetting parse_multipart_alternative_force_save_alts\n");
 #endif
                     if (old_set_save_alts != -1) {
                         set_save_alts = old_set_save_alts;
                         old_set_save_alts = -1;
-#if DEBUG_PARSE                        
+#if DEBUG_PARSE
                         printf("Applemail_hack resetting save_alts to %d\n", old_set_save_alts);
-#endif                        
+#endif
                     }
 		}
-                
+
 		if (!(num % 10) && set_showprogress && !readone) {
 		    print_progress(num - startnum, NULL, NULL);
 		}
@@ -2826,7 +2826,7 @@ int parsemail(char *mbox,	/* file name */
 		    if (new_inreply && !*new_inreply) free(new_inreply);
 		    else inreply = new_inreply;
 		}
-    
+
 		if (Mime_B) {
 		    if (boundp &&
 			!strncmp(line, "--", 2) &&
@@ -2877,7 +2877,7 @@ int parsemail(char *mbox,	/* file name */
                             }
 #ifdef DEBUG_PARSE
                             fprintf(stderr, "Pulling charset %s and charsetsave %s\n", charset, charsetsave);
-#endif                            
+#endif
                             if (!boundp && charsetsp->prev == NULL) {
 #ifdef DEBUG_PARSE
                                 fprintf(stderr, "No more MIME parts, freeing charsetsp\n");
@@ -2886,13 +2886,13 @@ int parsemail(char *mbox,	/* file name */
 
                                 charsetsp = NULL;
                             }
-                            
+
 			    if (alternativeparser
 				&& !has_multipart(multipartp, "multipart/alternative")) {
 #ifdef NOTUSED
 				struct body *next;
 #endif
-				
+
 #if DEBUG_PARSE
 				printf("We no longer have alternatives\n");
 #endif
@@ -2923,7 +2923,7 @@ int parsemail(char *mbox,	/* file name */
 				printf("back %s\n", boundp->line);
 			    else
 				printf("back to NONE\n");
-                            
+
                             if (multipartp)
                                 printf("current multipart: %s\n", multipartp->line);
 			    else
@@ -2933,11 +2933,11 @@ int parsemail(char *mbox,	/* file name */
 			else {
 			    /* we found the beginning of a new section */
 			    skip_mime_epilogue = FALSE;
-			    
+
 			    if (alternativeparser && !set_save_alts) {
 				/*
 				 * parsing another alternative, so we save the
-				 * precedent values 
+				 * precedent values
 				 */
 				alternative_bp = bp;
 				alternative_lp = lp;
@@ -3000,7 +3000,7 @@ int parsemail(char *mbox,	/* file name */
 			    close(binfile);
 			    binfile = -1;
 			}
-                        
+
 			continue;
 		    }
                 }
@@ -3042,19 +3042,19 @@ int parsemail(char *mbox,	/* file name */
                     if (content == CONTENT_TEXT &&
                         charset && !strncasecmp (charset, "UTF-8", 5)) {
                         /* replace all unicode spaces with  ascii spaces,
-                        ** as hypermail is using C-lib functions that don't 
+                        ** as hypermail is using C-lib functions that don't
                         ** understand them (like isspace() and sscanf() ) */
                         i18n_replace_unicode_spaces(data, strlen(data));
 #if DEBUG_PARSE
                         printf("LINE with ascii spaces: %s\n", data);
-#endif                        
+#endif
                     }
-		  
+
 		    if ((content == CONTENT_TEXT) ||
 			(content == CONTENT_HTML)) {
 			if (decode > ENCODE_MULTILINED) {
-			    /* 
-			     * This can be more than one resulting line, 
+			    /*
+			     * This can be more than one resulting line,
 			     * as the decoded the string may look like:
 			     * "#!/bin/sh\r\n\r\nhelp() {\r\n echo 'Usage: difftree"
 			     */
@@ -3083,10 +3083,10 @@ int parsemail(char *mbox,	/* file name */
 				p = n + 1;
 			    }
 			    if (strlen(p)) {
-				/* 
-				 * This line doesn't really end here, 
-				 * we will get another line soon that 
-				 * should get appended! 
+				/*
+				 * This line doesn't really end here,
+				 * we will get another line soon that
+				 * should get appended!
 				 */
 #if DEBUG_PARSE
 				printf("CONTINUE %s\n", p);
@@ -3109,7 +3109,7 @@ int parsemail(char *mbox,	/* file name */
                               /* remove both space stuffing and quotes
                                * where applicable for f=f */
                               bodyflags |= BODY_DEL_SSQ;
-                              flowed_line = rfc3676_handler (data, delsp_flag, &quotelevel, 
+                              flowed_line = rfc3676_handler (data, delsp_flag, &quotelevel,
                                                              &continue_previous_flow_flag);
                               if (continue_previous_flow_flag) {
                                   bodyflags |= BODY_CONTINUE;
@@ -3168,7 +3168,7 @@ int parsemail(char *mbox,	/* file name */
 				    check1dir(att_dir);
 				/* If this is a repeated run on the same archive we already
 				 * have HTML'ized, we risk extracting the same attachments
-				 * several times and therefore we need to remove all the 
+				 * several times and therefore we need to remove all the
 				 * attachments currently present before we go ahead!
 				 *(Daniel -- August 6, 1999) */
 				/* jk: removed it for a while, as it's not so necessary
@@ -3221,10 +3221,10 @@ int parsemail(char *mbox,	/* file name */
 				/* att_counter++; */
 			    }
 
-			    /* 
-                             * Saving of the attachments is being done 
-                             * inline as they are encountered. The 
-                             * directories must exist first...  
+			    /*
+                             * Saving of the attachments is being done
+                             * inline as they are encountered. The
+                             * directories must exist first...
                              */
 
 #ifdef O_BINARY
@@ -3276,7 +3276,7 @@ int parsemail(char *mbox,	/* file name */
 						 google X-Robots-Tag HTTP header.
 						 See https://developers.google.com/webmasters/control-crawl-index/docs/robots_meta_tag */
 					      char *value;
-					      if (annotation_robot == 1) 
+					      if (annotation_robot == 1)
 						value = "nofollow";
 					      else if (annotation_robot == 2)
 						value = "noindex";
@@ -3294,7 +3294,7 @@ int parsemail(char *mbox,	/* file name */
 					strncpy(alternative_file, binname,
 						sizeof(alternative_file) -
 						1);
-                                        /* save the last mime type to help deal with the 
+                                        /* save the last mime type to help deal with the
                                          * apple mail hack */
 					strncpy(last_alternative_type, type,
 						sizeof(last_alternative_type) - 1);
@@ -3405,7 +3405,7 @@ int parsemail(char *mbox,	/* file name */
 				    /* Print attachment comment before attachment */
 				    /* add a SECTION to store all this info first */
 				    if (!append_bp)
-				      append_bp = 
+				      append_bp =
 					addbody(append_bp, &append_lp,
 						"<ul>\n",
 						BODY_HTMLIZED | BODY_ATTACHMENT_LINKS | bodyflags);
@@ -3492,7 +3492,7 @@ int parsemail(char *mbox,	/* file name */
 	    inreply = oneunre(subject);
 
 	/* control the use of format and delsp according to RFC2646 */
-	if (textplain_format == FORMAT_FLOWED 
+	if (textplain_format == FORMAT_FLOWED
 	    && content != CONTENT_TEXT
 	    || (content == CONTENT_TEXT && strcasecmp (type, "text/plain"))) {
 	  /* format flowed only allowed on text/plain */
@@ -3506,7 +3506,7 @@ int parsemail(char *mbox,	/* file name */
 
 	if (append_bp && append_bp != bp) {
             /* close the DIV */
-            append_bp = 
+            append_bp =
                 addbody(append_bp, &append_lp, "</ul>\n",
                         BODY_HTMLIZED | BODY_ATTACHMENT_LINKS | bodyflags);
             bp = append_body(bp, &lp, append_bp);
@@ -3531,7 +3531,7 @@ int parsemail(char *mbox,	/* file name */
             }
             prefered_content_charset = NULL;
         }
-        
+
 	emp = addhash(num, date, namep, emailp, msgid, subject, inreply,
 		      fromdate, charset, NULL, NULL, bp);
 	if (emp) {
@@ -3592,7 +3592,7 @@ int parsemail(char *mbox,	/* file name */
 	flowed_line = FALSE;
 	quotelevel = 0;
 	continue_previous_flow_flag = FALSE;
-	
+
 	/* go back to default mode: */
 	content = CONTENT_TEXT;
 	decode = ENCODE_NORMAL;
@@ -3620,19 +3620,19 @@ int parsemail(char *mbox,	/* file name */
 
 	if (parse_multipart_alternative_force_save_alts) {
             parse_multipart_alternative_force_save_alts = 0;
-                    
+
 #if DEBUG_PARSE
             printf("Applemail_hack resetting parse_multipart_alternative_force_save_alts\n");
 #endif
             if (old_set_save_alts != -1) {
                 set_save_alts = old_set_save_alts;
                 old_set_save_alts = -1;
-#if DEBUG_PARSE                        
+#if DEBUG_PARSE
                 printf("Applemail_hack resetting save_alts to %d\n", old_set_save_alts);
-#endif                        
+#endif
             }
         }
-		
+
 	/* by default we have none! */
 	hassubject = 0;
 	hasdate = 0;
@@ -3764,20 +3764,20 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
       return 0;
 
     if (set_linkquotes) {
-        trio_snprintf(inreply_start, sizeof(inreply_start), 
+        trio_snprintf(inreply_start, sizeof(inreply_start),
                       "<span class=\"heading\">%s</span>: <a href=\"", lang[MSG_IN_REPLY_TO]);
     }
 
     /* prepare the name of the file that stores the message */
     if (set_nonsequential)
         trio_asprintf(&filename, "%s%s%s.%s", set_dir,
-                      subdir ? subdir->subdir : "", 
+                      subdir ? subdir->subdir : "",
                       msgnum_id_table[num],
                       set_htmlsuffix);
     else
         trio_asprintf(&filename, "%s%s%.4d.%s", set_dir,
                       subdir ? subdir->subdir : "", num, set_htmlsuffix);
-    
+
     /*
      * fromdate == <!-- received="Wed Jun  3 10:12:00 1998 CDT" -->
      * date     == <!-- sent="Wed, 3 Jun 1998 10:12:07 -0500 (CDT)" -->
@@ -4013,7 +4013,7 @@ static int loadoldheadersfrommessages(char *dir, int num_from_gdbm)
 
     struct reply *replylist_tmp = NULL;
     int first_read_body = set_startmsgnum;
-    
+
     if (num_from_gdbm != -1)
       max_num = num_from_gdbm - 1;
     else if (set_nonsequential)
@@ -4236,7 +4236,7 @@ int loadoldheadersfromGDBMindex(char *dir, int get_count_only)
 	  content = gdbm_fetch(gp, key);
 	  if(!(dp = content.dptr)) {
 	      if (max_num == -1) /* old file where gaps in nums not legal */
-		  break;	 /* must be at end */ 
+		  break;	 /* must be at end */
 	      continue;
 	  }
 	  dp_end = dp + content.dsize;
@@ -4295,7 +4295,7 @@ int loadoldheadersfromGDBMindex(char *dir, int get_count_only)
 	  free(inreply);
 #if 0
 	  if(bp) {
-	      if (bp->line) 
+	      if (bp->line)
 		  free(bp->line);
 	      free(bp);
 	  }
@@ -4313,7 +4313,7 @@ int loadoldheadersfromGDBMindex(char *dir, int get_count_only)
 	    loadoldheadersfrommessages(dir, num);
       } /* end case of able to read gdbm index */
 
-      else { 
+      else {
 	struct emailinfo *emp;
 
 	if (get_count_only)
@@ -4323,7 +4323,7 @@ int loadoldheadersfromGDBMindex(char *dir, int get_count_only)
 	if (set_showprogress)
 	  printf(lang[MSG_CREATING_GDBM_INDEX]);
 	num = loadoldheadersfrommessages(dir, -1);
-	
+
 	if(!(gp = gdbm_open(indexname, 0, GDBM_NEWDB, 0600, 0))){
 
 	  /* Serious problem here: can't create! So, just muddle on. */
@@ -4396,7 +4396,7 @@ void fixnextheader(char *dir, int num, int direction)
     dp = NULL;
     ul = 0;
 
-    if ((e3 = neighborlookup(num, direction)) != NULL 
+    if ((e3 = neighborlookup(num, direction)) != NULL
 	&& (email = neighborlookup(num-1, 1)) != NULL)
 	filename = articlehtmlfilename(e3);
     else
@@ -4433,8 +4433,8 @@ void fixnextheader(char *dir, int num, int direction)
 
 	    if (!strncmp(bp->line, "<!-- unext=", 11)) {
                 if (email) {
-                    fprintf(fp, "<li><a href=\"%s\">%s</a></li>\n", 
-                            msg_href (email, e3, FALSE), 
+                    fprintf(fp, "<li><a href=\"%s\">%s</a></li>\n",
+                            msg_href (email, e3, FALSE),
                             lang[MSG_NEXT_MESSAGE]);
                 }
 	    }
@@ -4445,7 +4445,7 @@ void fixnextheader(char *dir, int num, int direction)
                 ptr = convchars(email->subject, email->charset);
 #endif
                 fprintf(fp, "<li><span class=\"heading\">%s</span>: ", lang[MSG_NEXT_MESSAGE]);
-                fprintf(fp, "<a href=\"%s\" title=\"%s\">%s: \"%s\"</a></li>\n", 
+                fprintf(fp, "<a href=\"%s\" title=\"%s\">%s: \"%s\"</a></li>\n",
                         msg_href(email, e3, FALSE), lang[MSG_LTITLE_NEXT],
 #ifdef HAVE_ICONV
                         numname, ptr ? ptr : "");
@@ -4472,12 +4472,12 @@ void fixnextheader(char *dir, int num, int direction)
 #else
                         email->name, ptr = convchars(email->subject, email->charset));
                 free(ptr);
-#endif	      
+#endif
                 if (ul) {
                     bp = dp;
                     ul = 0;
                 }
-	      
+
             }
             bp = bp->next;
        }
@@ -4532,7 +4532,7 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
     char current_link_reply_pattern[MAXLINE];
     char current_nextinthread_pattern[MAXLINE];
     char current_next_pattern[MAXLINE];
-    
+
     bool is_old_format = FALSE;
 
     status = hashnumlookup(num, &email);
@@ -4543,30 +4543,30 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
     if (remove_maybes || set_linkquotes) {
         /* these are the patterns that may appear in lreply, with and without
            the replies anchor */
-        trio_snprintf(current_maybe_pattern, sizeof(current_maybe_pattern), 
+        trio_snprintf(current_maybe_pattern, sizeof(current_maybe_pattern),
                       "<li><span class=\"heading\">%s</span>: <a href=", lang[MSG_MAYBE_REPLY]);
         trio_snprintf(current_link_maybe_pattern, sizeof(current_maybe_pattern),
                       "<li id=\"replies\"><span class=\"heading\">%s</span>: <a href=", lang[MSG_MAYBE_REPLY]);
-        trio_snprintf(current_reply_pattern, sizeof(current_reply_pattern), 
+        trio_snprintf(current_reply_pattern, sizeof(current_reply_pattern),
                       "<li><span class=\"heading\">%s</span>: <a href=", lang[MSG_REPLY]);
-        trio_snprintf(current_link_reply_pattern, sizeof(current_reply_pattern), 
+        trio_snprintf(current_link_reply_pattern, sizeof(current_reply_pattern),
                       "<li id=\"replies\"><span class=\"heading\">%s</span>: <a href=",
                       lang[MSG_REPLY]);
-        trio_snprintf(current_nextinthread_pattern, 
-                      sizeof(current_nextinthread_pattern), 
+        trio_snprintf(current_nextinthread_pattern,
+                      sizeof(current_nextinthread_pattern),
                       "<li><span class=\"heading\">%s</span>: <a href=", lang[MSG_NEXT_IN_THREAD]);
-        trio_snprintf(current_next_pattern, sizeof(current_next_pattern), 
+        trio_snprintf(current_next_pattern, sizeof(current_next_pattern),
                       "<li><class span=\"heading\">%s</span>: <a href=", lang[MSG_NEXT_MESSAGE]);
 
 	/* backwards compatiblity */
-	trio_snprintf(old2_maybe_pattern, sizeof(old2_maybe_pattern), 
+	trio_snprintf(old2_maybe_pattern, sizeof(old2_maybe_pattern),
                       "<li><strong>%s:</strong> <a href=", lang[MSG_MAYBE_REPLY]);
-        trio_snprintf(old2_reply_pattern, sizeof(old2_reply_pattern), 
+        trio_snprintf(old2_reply_pattern, sizeof(old2_reply_pattern),
                       "<li><strong>%s:</strong> <a href=", lang[MSG_REPLY]);
-        trio_snprintf(old2_nextinthread_pattern, 
-                      sizeof(old2_nextinthread_pattern), 
+        trio_snprintf(old2_nextinthread_pattern,
+                      sizeof(old2_nextinthread_pattern),
                       "<li><strong>%s:</strong> <a href=", lang[MSG_NEXT_IN_THREAD]);
-        trio_snprintf(old2_next_pattern, sizeof(old2_next_pattern), 
+        trio_snprintf(old2_next_pattern, sizeof(old2_next_pattern),
                       "<li><strong>%s:</strong> <a href=", lang[MSG_NEXT_MESSAGE]);
     }
 
@@ -4660,7 +4660,7 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 	    }
             /* this is the top anchor that points to the lower #replies */
             if (!strncmp(bp->line, "<li><a href=\"#replies\">", 23)) {
-	      list_started = TRUE; 
+	      list_started = TRUE;
 	      fprintf (fp, "%s", bp->line);
 	      bp = bp->next;
 	      continue;
@@ -4668,7 +4668,7 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 	    if (!strncmp(bp->line, "<!-- ureply", 11)) {
                 /* we reached the end of ureply, if we don't see the link, we add it */
                 if (list_started == FALSE)
-                    fprintf (fp, "<li><a href=\"#replies\">%s</a></li>\n", 
+                    fprintf (fp, "<li><a href=\"#replies\">%s</a></li>\n",
                              lang[MSG_REPLIES]);
                 fprintf (fp, "%s", bp->line);
                 bp = bp->next;
@@ -4688,12 +4688,12 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
                 } else {
                     fprintf (fp, "<li>");
                 }
-                
+
                 trio_asprintf(&ptr1,
 				"<span class=\"heading\">%s</span>: %s <a href=\"%s\">"
 				"%s: \"%s\"</a></li>\n",
 				lang[subjmatch ? MSG_MAYBE_REPLY : MSG_REPLY],
-				del_msg, msg_href(email, email2, FALSE), 
+				del_msg, msg_href(email, email2, FALSE),
 #ifdef HAVE_ICONV
 				numname, ptr);
 #else
@@ -4739,9 +4739,9 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 
 	    if (!remove_maybes
 		|| strncasecmp(bp->line, current_maybe_pattern, strlen(current_maybe_pattern))
-		|| strncasecmp(bp->line, current_link_maybe_pattern, 
+		|| strncasecmp(bp->line, current_link_maybe_pattern,
 			       strlen(current_link_maybe_pattern))
-		|| strncasecmp(bp->line, old2_link_maybe_pattern, 
+		|| strncasecmp(bp->line, old2_link_maybe_pattern,
 			       strlen(old2_link_maybe_pattern))
 		|| strncasecmp(bp->line, old_maybe_pattern, strlen(old_maybe_pattern)))
 	        fprintf(fp, "%s", bp->line); /* not redundant or disproven */
@@ -4832,7 +4832,7 @@ void fixthreadheader(char *dir, int num, int max_update)
                 struct emailinfo *e3;
                 if (hashnumlookup(num, &e3)) {
                     fprintf (fp, "<li><a href=\"%s\">%s</a></li>\n",
-                             msg_href (e3, rp->data, FALSE), 
+                             msg_href (e3, rp->data, FALSE),
                              lang[MSG_NEXT_IN_THREAD]);
                     if (bp->next && strstr(bp->next->line, lang[MSG_NEXT_IN_THREAD]))
                         bp = bp->next; /* skip old copy of this line */
@@ -4843,7 +4843,7 @@ void fixthreadheader(char *dir, int num, int max_update)
 	      if (hashnumlookup(num, &e3)) {
 		fprintf(fp, "<li><span class=\"heading\">%s</span>: ",
 			lang[MSG_NEXT_IN_THREAD]);
-                fprintf(fp, "<a href=\"%s\">%s: \"%s\"</a></li>\n", 
+                fprintf(fp, "<a href=\"%s\">%s: \"%s\"</a></li>\n",
                         msg_href(e3, rp->data, FALSE),
 #ifdef HAVE_ICONV
                         numname, numsubject);
