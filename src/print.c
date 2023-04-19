@@ -1235,7 +1235,7 @@ struct body *printheaders (FILE *fp, struct emailinfo *email, struct body *from_
                     /* we print the header, escaping it as needed */
 
                     header_content = bp->line + strlen (head) + 2;
-                    fprintf (fp, "<span class=\"%s\"><span class=\"heading\">%s</span>: ",
+                    fprintf (fp, "<li><span class=\"%s\"><span class=\"heading\">%s</span>: ",
                              head_lower, head);
 
 
@@ -1257,7 +1257,7 @@ struct body *printheaders (FILE *fp, struct emailinfo *email, struct body *from_
                         ConvURLs(fp, header_content, id, subject, email->charset);
 #endif
                     }
-                    fprintf (fp, "</span><br />\n");
+                    fprintf (fp, "</span></li>\n");
                 }
 	
                 /* go to the next header or stop if we reached the end of the headers 
@@ -1305,12 +1305,10 @@ static void close_open_sections(FILE *fp, int *pre_open, int *showhtml_open,
     }
     
     if (*attachment_open) {
-        fprintf(fp, "</section>\n");
+        /* fprintf(fp, "</section>\n"); */
         *attachment_open = FALSE;
     }
 }
-
-    
 
 /*
 ** The heuristics for displaying an otherwise ordinary line (a non-quote,
@@ -1340,6 +1338,8 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
 				  ** the special <div> surrounding that content is open */
     int attachment_open = FALSE; /* if we generated a list of attachments, controls if the
                                  ** the <section> surrounding the list is open */
+    int attachment_link_open = FALSE; /* set to true if we opened a section for the list pointing
+                                         to external attachments */
     int inquote;
     int quote_num;
     int quoted_percent;
@@ -1437,6 +1437,84 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
             insig = 0;
         }
 
+        if (bp->attachment_flags) {
+            if (bp->attachment_flags & BODY_ATTACHMENT_START) {
+                /* close open sections */
+                close_open_sections(fp, &pre_open, &showhtml_open,
+                                    &inlinehtml_open, &attachment_open);
+                if (bp->attachment_rfc822) {
+                    fprintf(fp, "<section%s class=\"message-body-part\" "
+                            "aria-label=\"%s\">\n",
+                            (body_start) ? body_start_attribute : "",
+                            "forwarded message");
+                    fprintf(fp, "<div class=\"message-forwarded\">\n");
+                } else {
+                    fprintf(fp, "<section%s class=\"message-body-part\">\n",
+                            (body_start) ? body_start_attribute : "");
+                }
+                if (body_start) {
+                    body_start = FALSE;
+                }
+                if (set_debug_level == 4) {
+                    fprintf(fp, "<h2 class=\"attached-message-notice\">%s:</h2>\n",
+                            lang[MSG_ATTACHED_MESSAGE_NOTICE]);
+                }
+
+                if (bp->attachment_rfc822 && set_show_headers && bp->next) {
+                    bp = bp->next;
+                    if (bp->header) {
+                        /* if it's a header and the user wants to show them,  then print it 
+                           and all the other headers that follow */
+              
+                        /* @@ check for duplicate ids */
+                        bp = print_headers_rfc822_att(fp, email, bp);
+                        /* reset this flag to as we just printed the attachment headers */
+                        inblank = 1;
+                        if (bp)
+                            bp = bp->next;
+                        continue;
+                    }
+                }
+            }
+            else if (bp->attachment_flags & BODY_ATTACHMENT_END) {
+                /* close open sections */
+                close_open_sections(fp, &pre_open, &showhtml_open,
+                                    &inlinehtml_open, &attachment_open);
+                if (bp->attachment_rfc822) {
+                    fprintf(fp, "</div>\n");
+                }
+                fprintf(fp, "</section>\n");
+            }
+            
+            bp = bp->next;
+            continue;
+        }
+
+        /* handle start and end markup for list of external attachments.
+           we need to improve this so it is attached to the body or message/rfc822
+           and avoid closing all open sections */
+        else if (bp->attachment_links_flags) {
+            if (bp->attachment_links_flags & BODY_ATTACHMENT_LINKS_START) {
+                /* close open sections */
+                close_open_sections(fp, &pre_open, &showhtml_open,
+                                    &inlinehtml_open, &attachment_open);
+                
+                fprintf(fp, "<section%s class=\"message-body-part\" "
+                        "aria-label=\"list of stored attachments\">\n",
+                        (body_start) ? body_start_attribute : "");
+                fprintf(fp, "<ul>\n");
+                attachment_link_open = TRUE;
+                
+            } else if (bp->attachment_links_flags & BODY_ATTACHMENT_LINKS_END) {
+                /* close open list and open section */
+                fprintf(fp, "</ul>\n"
+                        "</section>\n");
+                attachment_link_open = FALSE;            
+            }
+            bp = bp->next;
+            continue;
+        }
+        
         /* skip any trailing newlines at the beginning of the attachment */
 	if ((bp->line)[0] == '\n' && inblank) {
             bp = bp->next;
@@ -1445,7 +1523,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
 	else
             inblank = 0;
         
-	
+#if 0
 	/* if we have headers that are inside an rfc822, they
 	**   are marked as headers and attached, we print them out
             ** in that case */
@@ -1456,9 +1534,13 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
           close_open_sections(fp, &pre_open, &showhtml_open,
                               &inlinehtml_open, &attachment_open);
 		
-          fprintf(fp, "<section%s class=\"message-attachments\" "
-                  "aria-label=\"attachments\">\n",
+          fprintf(fp, "<section%s class=\"message-body-part\">\n",
                   (body_start) ? body_start_attribute : "");
+          if (set_debug_level == 4) {
+              fprintf(fp, "<h2 class=\"attached-message-notice\">%s:</h2>\n",
+                      lang[MSG_ATTACHED_MESSAGE_NOTICE]);
+          }
+          
           fprintf(fp, "%s\n", bp->line);
           attachment_open = TRUE;
           bp = bp->next;
@@ -1475,21 +1557,28 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
               continue;
           }
         }
-	    
+#endif
+
 	if (bp->html) {
             /* already in HTML, don't touch. It may be either inline
              * html or an attachment list */
 
             if (bp->attachment_links) {
-                if (!attachment_open) {
-                    /* close open sections */
-                    close_open_sections(fp, &pre_open, &showhtml_open,
-                                        &inlinehtml_open, &attachment_open);
-                    
-                    fprintf(fp, "<section%s class=\"message-attachments\" "
-                            "aria-label=\"attachments\">\n",
-                            (body_start) ? body_start_attribute : "");
-                    attachment_open = TRUE;
+                if (!attachment_link_open) {
+                    if (!attachment_open) {
+                        /* close open sections */
+                        close_open_sections(fp, &pre_open, &showhtml_open,
+                                            &inlinehtml_open, &attachment_open);
+                        
+                        fprintf(fp, "<section%s class=\"message-body-part\"\n>",
+                                (body_start) ? body_start_attribute : "");
+                        
+                        if (set_debug_level == 4) {
+                            fprintf(fp, "<h2 class=\"attached-message-notice\">%s:</h2>\n",
+                                    lang[MSG_ATTACHED_MESSAGE_NOTICE]);
+                        }
+                        attachment_link_open = TRUE;
+                    }
                 }
             }
 
@@ -1630,7 +1719,12 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
         
 	bp = bp->next;
     }
-                
+
+    if (attachment_link_open) {
+        fprintf(fp, "</section>\n");
+        attachment_link_open = FALSE;
+    }
+    
     /* close all open tags */
     close_open_sections(fp, &pre_open, &showhtml_open,
                         &inlinehtml_open, &attachment_open);
@@ -1655,7 +1749,7 @@ void print_headers(FILE *fp, struct emailinfo *email, int in_thread_file)
    * General form: <span class=\"heading\">from:<span class=\"heading\">: name <email></span><br /> 
    */
 
-  fprintf(fp, "<address class=\"headers\">\n");
+  fprintf(fp, "<ul class=\"headers\" aria-label=\"message headers\">\n");
 
 #ifdef HAVE_ICONV
   size_t tmplen;
@@ -1670,7 +1764,7 @@ void print_headers(FILE *fp, struct emailinfo *email, int in_thread_file)
   char *tmp_oea = obfuscate_email_address(email->emailaddr);
   
   /* the from header */
-  fprintf (fp, "<span class=\"from\">\n");
+  fprintf (fp, "<li><span class=\"from\">\n");
   fprintf (fp, "<span class=\"heading\">%s</span>: ", lang[MSG_FROM]);
   if (REMOVE_MESSAGE(email)) {
     /* don't show the email address and name if we have deleted the message */
@@ -1712,21 +1806,21 @@ void print_headers(FILE *fp, struct emailinfo *email, int in_thread_file)
 	      (strcmp(email->emailaddr, "(no email)") != 0) ? email->emailaddr : "no email");
     }
   }
-  fprintf (fp, "\n</span><br />\n");
+  fprintf (fp, "\n</span></li>\n");
   
   /* subject */
   if (in_thread_file)
 #ifdef HAVE_ICONV
-    fprintf(fp, "<span class=\"subject\"><span class=\"heading\">%s</span>: %s</span><br />\n", lang[MSG_SUBJECT], tmpsubject);
+    fprintf(fp, "<li><span class=\"subject\"><span class=\"heading\">%s</span>: %s</span></li>\n", lang[MSG_SUBJECT], tmpsubject);
 #else
-    fprintf(fp, "<span class=\"subject\"><span class=\"heading\">%s</span>: %s</span><br />\n", lang[MSG_SUBJECT], tmpsubject=convchars(email->subject,email->charset));
+    fprintf(fp, "<li><span class=\"subject\"><span class=\"heading\">%s</span>: %s</span></li>\n", lang[MSG_SUBJECT], tmpsubject=convchars(email->subject,email->charset));
 #endif
   /* date */
-  fprintf(fp, "<span class=\"date\"><span class=\"heading\">%s</span>: %s</span><br />\n", lang[MSG_CDATE], email->datestr);
+  fprintf(fp, "<li><span class=\"date\"><span class=\"heading\">%s</span>: %s</span></li>\n", lang[MSG_CDATE], email->datestr);
 
   printheaders(fp, email, NULL);
 
-  fprintf(fp, "</address>\n");
+  fprintf(fp, "</ul>\n");
 
   if (set_email_address_obfuscation && tmp_oea) 
       free(tmp_oea);
@@ -1796,7 +1890,7 @@ struct body *print_headers_rfc822_att(FILE *fp, struct emailinfo *email, struct 
    * General form: <span class=\"heading\">from:<span class=\"heading\">: name <email></span><br /> 
    */
 
-    fprintf(fp, "<address class=\"headers\">\n");
+    fprintf(fp, "<ul class=\"headers\" aria-label=\"message headers\">\n");
 
 #ifdef HAVE_ICONV
     if (subject) 
@@ -1814,31 +1908,37 @@ struct body *print_headers_rfc822_att(FILE *fp, struct emailinfo *email, struct 
 #endif
   
     /* the from header */
-    fprintf (fp, "<span class=\"from\">\n");
-    fprintf (fp, "<span class=\"heading\">%s</span>: ", lang[MSG_FROM]);
-    fprintf (fp, "%s &lt;%s&gt;",
-             (tmpname) ? tmpname : "",
-             (emailp) ? emailp : NOEMAIL);
-    fprintf (fp, "\n</span><br />\n");
+    if (hasfrom) {
+        fprintf (fp, "<li><span class=\"from\">\n");
+        fprintf (fp, "<span class=\"heading\">%s</span>: ", lang[MSG_FROM]);
+        fprintf (fp, "%s &lt;%s&gt;",
+                 (tmpname) ? tmpname : "",
+                 (emailp) ? emailp : NOEMAIL);
+        fprintf (fp, "\n</span></li>\n");
+    }
 
-    /* date */
-    fprintf(fp, "<span class=\"date\"><span class=\"heading\">%s</span>: %s</span><br />\n",
-            lang[MSG_CDATE], (date) ? date : NODATE);
+    if (hasdate) {
+        /* date */
+        fprintf(fp, "<li><span class=\"date\"><span class=\"heading\">%s</span>: %s</span></li>\n",
+                lang[MSG_CDATE], (date) ? date : NODATE);
+    }
 
-    /* subject */
+    if (hassubject) {
+        /* subject */
 #ifdef HAVE_ICONV
-    fprintf(fp, "<span class=\"subject\"><span class=\"heading\">%s</span>: %s</span><br />\n",
-            lang[MSG_CSUBJECT], (tmpsubject) ? tmpsubject : NOSUBJECT);
+        fprintf(fp, "<li><span class=\"subject\"><span class=\"heading\">%s</span>: %s</span></li>\n",
+                lang[MSG_CSUBJECT], (tmpsubject) ? tmpsubject : NOSUBJECT);
 #else
-    fprintf(fp, "<span class=\"subject\"><span class=\"heading\">%s</span>: %s</span><br />\n",
-            lang[MSG_CSUBJECT], tmpsubject=convchars((subject) ? subject : NOSUBJECT,
-                                                     email->charset));
+        fprintf(fp, "<li><span class=\"subject\"><span class=\"heading\">%s</span>: %s</span></li>\n",
+                lang[MSG_CSUBJECT], tmpsubject=convchars((subject) ? subject : NOSUBJECT,
+                                                         email->charset));
 #endif
+    }
     
     /* print the rest of the headers the user wants */
     bp = printheaders(fp, email, bp);
 
-    fprintf(fp, "</address>\n");
+    fprintf(fp, "</ul>\n");
 
     if (namep)
         free(namep);
