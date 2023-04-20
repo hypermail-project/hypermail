@@ -235,6 +235,7 @@ struct language_entry {
 #define MSG_CSORT_BY                             170
 #define MSG_EMPTY_ARCHIVE                        171
 #define MSG_ATTACHED_MESSAGE_NOTICE              172
+#define MSG_FORWARDED_MESSAGE_NOTICE             173
 
 #ifdef MAIN_FILE
 
@@ -432,6 +433,7 @@ char *de[] = {       /* German */
   "Sortieren nach", /* CSort by - HTML */
   "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
   "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
+  "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
   NULL,                              /* End Of Message Table - NOWHERE*/
 };
 
@@ -614,7 +616,8 @@ char *pl[] = {                      /* English */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   "Sort by", /* CSort by - HTML */
   "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
-  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */  
+  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
+  "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -798,7 +801,8 @@ char *en[] = {       /* English */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   "Sort by", /* CSort by - HTML*/
   "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
-  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */  
+  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
+  "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
   NULL,                         /* End Of Message Table      - NOWHERE*/
 };
 
@@ -993,7 +997,8 @@ char *es[] = {       /* Espanol/Spanish */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   "Sort by", /* CSort by - HTML*/
   "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
-  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */  
+  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
+  "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */  
   NULL,                               /* End Of Message Table */
 };
 
@@ -1179,7 +1184,8 @@ char *pt[] = {                     /* Brazilian Portuguese */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   "Ordenar por",                       /* CSort by - HTML*/
   "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
-  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */  
+  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
+  "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
   NULL,                                /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1361,7 +1367,8 @@ char *fi[] = {       /* Finnish */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   "Sort by", /* CSort by - HTML*/
   "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
-  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */  
+  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
+  "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1547,6 +1554,7 @@ char *it[] = {       /* Italian */
   "Sort by", /* CSort by - HTML*/
   "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
   "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
+  "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1730,7 +1738,8 @@ char *fr[] = {       /* French */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   "Trier par", /* CSort by - HTML*/
   "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
-  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */  
+  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
+  "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
   NULL,                                    /* End Of Message Table  - NOWHERE*/
 };
 
@@ -1916,7 +1925,8 @@ char *is[] = {       /* Icelandic */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   "Sort by", /* CSort by - HTML*/
   "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
-  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */  
+  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
+  "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
   NULL,                               /* End Of Message Table      - NOWHERE*/
 };
 
@@ -2105,7 +2115,8 @@ char *sv[] = {
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   "Sort by", /* CSort by - HTML*/
   "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
-  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */  
+  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
+  "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 
@@ -2294,7 +2305,8 @@ char *no[] = {
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   "Sort by", /* CSort by - HTML*/
   "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
-  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */  
+  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
+  "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 
@@ -2484,7 +2496,8 @@ char *gr[] = {       /* Greek */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   "Sort by", /* CSort by - HTML*/
   "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
-  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */  
+  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
+  "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
   NULL,                           	/* End Of Message Table - NOWHERE*/
 };
 
@@ -2666,7 +2679,8 @@ char *ru[] = {     /* Russian */
   "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
   "Sort by", /* CSort by - HTML*/
   "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
-  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */  
+  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
+  "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 
