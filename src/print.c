@@ -1508,8 +1508,9 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
                                     &inlinehtml_open, &attachment_open);
                 
                 fprintf(fp, "<section%s class=\"message-body-part\" "
-                        "aria-label=\"list of stored attachments\">\n",
-                        (body_start) ? body_start_attribute : "");
+                        "aria-label=\"%s\">\n",
+                        (body_start) ? body_start_attribute : "",
+                        lang[MSG_LIST_OF_STORED_ATTACHMENTS_NOTICE]);
                 fprintf(fp, "<ul>\n");
                 attachment_link_open = TRUE;
                 
