@@ -1525,7 +1525,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
         }
         
         /* skip any trailing newlines at the beginning of the attachment */
-	if ((bp->line)[0] == '\n' && inblank) {
+	if (!bp->attachment_links  && (bp->line)[0] == '\n' && inblank) {
             bp = bp->next;
             continue;
 	}
@@ -1579,7 +1579,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
                         close_open_sections(fp, &pre_open, &showhtml_open,
                                             &inlinehtml_open, &attachment_open);
                         
-                        fprintf(fp, "<section%s class=\"message-body-part\"\n>",
+                        fprintf(fp, "<section%s class=\"message-body-part\">\n",
                                 (body_start) ? body_start_attribute : "");
                         
                         if (set_debug_level == 4) {
