@@ -925,7 +925,7 @@ bool is_start_boundary(const char *boundary_id, const char *line)
     
     if (*ptr == '\0'
         || (!strncmp(ptr, "\n", 1)
-            || strncmp(ptr, "\r\n", 2))) {
+            || !strncmp(ptr, "\r\n", 2))) {
         return TRUE;
     }
 
