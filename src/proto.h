@@ -116,7 +116,15 @@ char *strsav(const char *);
 char *strreplace(char *, char *);
 void strcpymax(char *, const char *, int);
 void strtolower (char *);
+int strisspace (char *);
+
+int is_start_boundary(const char *, const char *);
+int is_end_boundary(const char *, const char *);
 char *stripzone(char *);
+char *strip_boundary_id(const char *, int);
+
+char *strchomp(char *);
+
 int numstrchr(char *, char);
 char *getvalue(char *);
 char *getconfvalue(char *, char *, char *);

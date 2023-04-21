@@ -863,6 +863,16 @@ ret0:
 #endif
 
 /*
+** Returns true if a string is made of only spaces
+** 
+*/
+bool strisspace(char *p)
+{
+   while(p && *p && isspace(*p++));
+   return (*p ? FALSE : TRUE);
+}
+
+/*
 ** Strips the timezone information from long date strings, so more correct
 ** comparisons can be made between dates when looking for article replies.
 ** Y2K ok.
@@ -889,6 +899,120 @@ char *stripzone(char *date)
 	tmpdate[num++] = '\0';
 
     return (tmpdate);
+}
+
+/* returns true if line is the start boundary_id, 
+   i.e., starts with -- */
+bool is_start_boundary(const char *boundary_id, const char *line)
+{
+    const char *ptr;
+    
+    int bl = strlen(boundary_id);
+    int ll = strlen(line);
+
+    if (ll < bl + 2) {
+        return FALSE;
+    }
+
+    /* starts with -- ? */
+    if (! (!strncmp(line, "--", 2) &&
+           !strncmp(line + 2, boundary_id,
+                    bl))) {
+        return FALSE;
+    }
+        
+    ptr = &line[bl + 2];
+    
+    if (*ptr == '\0'
+        || (!strncmp(ptr, "\n", 1)
+            || strncmp(ptr, "\r\n", 2))) {
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
+/* returns true if line is the end boundary_id, 
+   i.e., starts and terminates with -- */
+bool is_end_boundary(const char *boundary_id, const char *line)
+{
+    bool rv = FALSE;
+
+    int bl = strlen(boundary_id);
+    int ll = strlen(line);
+    const char *ptr;
+
+    if (ll < bl + 4) {
+        return FALSE;
+    }
+
+    /* starts with -- ? */
+    if (! (!strncmp(line, "--", 2) &&
+           !strncmp(line + 2, boundary_id,
+                    bl))) {
+        return FALSE;
+    }
+
+    /* ends with -- ? */
+    ptr = &line[bl + 2];
+    if (*ptr != '\0'
+        && (!strncmp(ptr, "--\n", 3)
+            || strncmp(ptr, "--\r\n", 4))) {
+        rv = TRUE;
+    }
+
+    return rv;
+}
+
+/* returns a boundary_id stripped of -- (prefix)
+** and of ending newline sequence \n | \r\n 
+** caller must free returned string */
+char *strip_boundary_id(const char *boundary_id, int boundary_len)
+{
+    char *stripped_boundary_id;
+    char *ptr;
+    
+    /* remove -- prefix */
+    if (!strncmp(boundary_id, "--", 2)) {
+        stripped_boundary_id = strsav(boundary_id + 2);
+    } else {
+        stripped_boundary_id = strsav(boundary_id);
+    }
+
+    /* broken.. because we need to know the strlen of the boundary.. otherwise
+       we don't know if we remove valid -- or end boundary */
+    /* remove -- suffix && \r\n || \n */
+#if 0
+    /* This doesn't work as -- is a valid can be a valid string inside a boundary,
+    and not the end boundary necessarily.
+    *// 
+    if (boundary_len != 0
+        && !strncmp(stripped_boundary_id + boundary_len, "--", 2)) {
+        *(stripped_boundary_id + boundary_len) = '\0';
+    } else
+#endif
+
+    return (strchomp(stripped_boundary_id));
+}
+
+/* 
+** removes trailing \r\n | \n from a string
+*/
+char *strchomp(char *s) {
+    char *c;
+
+    if (s && *s) {
+        c = strrchr(s, '\r');
+        if (!c) {
+            c = strrchr(s, '\n');
+        }
+        
+        if (c) {
+            *c = '\0';
+        }
+    }
+    
+    return s;
 }
 
 /*
