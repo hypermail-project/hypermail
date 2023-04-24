@@ -1954,10 +1954,15 @@ char *parseemail(char *input,	/* string to parse */
                             char *mailcmd = makemailcommand(set_mailcommand,
                                                             mailaddr, mid,
                                                             msubject);
+                            char *obfuscated_email_address = obfuscate_email_address(mailaddr);
+                            
                             trio_asprintf(&tempbuff, "<a href=\"%s\">%s</a>",
 					  mailcmd,
-                                          obfuscate_email_address(mailaddr));
+                                          obfuscated_email_address);
                             
+                            if (set_email_address_obfuscation){
+                                free(obfuscated_email_address);
+                            }
                             free(mailcmd);
                         }
                         else if (conversion == REPLACE_DOMAIN) {
