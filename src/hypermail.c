@@ -475,8 +475,12 @@ int main(int argc, char **argv)
     if (!set_dir || !strcasecmp(set_dir, "NONE"))
 	set_dir = strreplace(set_dir, (strrchr(set_mbox, '/')) ? strrchr(set_mbox, '/') + 1 : set_mbox);
 
-    if (set_dir[strlen(set_dir) - 1] != PATH_SEPARATOR)
-	trio_asprintf(&set_dir, "%s%c", set_dir, PATH_SEPARATOR);
+    if (set_dir[strlen(set_dir) - 1] != PATH_SEPARATOR) {
+        char *t = set_dir;
+        
+        trio_asprintf(&set_dir, "%s%c", t, PATH_SEPARATOR);
+        free(t);
+    }
 
     if (!set_label || !strcasecmp(set_label, "NONE"))
 	set_label = set_mbox ? (strreplace(set_label, (strrchr(set_mbox, '/')) ? strrchr(set_mbox, '/') + 1 : set_mbox)) : "stdin";
