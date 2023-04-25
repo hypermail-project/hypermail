@@ -1345,8 +1345,12 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
     int quoted_percent;
     bool replace_quoted;
 
-    int forwarded_message_count = 0; /* used to generate unique ids for each
-                                        forwarded-message (message/rfc822) section */
+    /* used to generate unique ids for each forwarded-message
+       (message/rfc822) section */
+    int forwarded_message_count = 0; 
+    /* used to generate unique ids for each list of stored
+       attachments section */
+    int list_of_stored_attachments_count = 0; 
     
     if (set_linkquotes || set_showhtml == 2)
         /* should be changed to unconditional after tested for a while?
@@ -1506,10 +1510,14 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
                 /* close open sections */
                 close_open_sections(fp, &pre_open, &showhtml_open,
                                     &inlinehtml_open, &attachment_open);
-                
-                fprintf(fp, "<section%s class=\"message-body-part\" "
-                        "aria-label=\"%s\">\n",
+
+                list_of_stored_attachments_count++;
+                fprintf(fp, "<section%s class=\"message-body-part attachment-links\" "
+                        "aria-labelledby=\"lsa%d\">\n",
                         (body_start) ? body_start_attribute : "",
+                        list_of_stored_attachments_count);
+                fprintf(fp, "<h2 id=\"lsa%d\">%s</h2>\n",
+                        list_of_stored_attachments_count,
                         lang[MSG_LIST_OF_STORED_ATTACHMENTS_NOTICE]);
                 fprintf(fp, "<ul>\n");
                 attachment_link_open = TRUE;
