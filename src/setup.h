@@ -178,6 +178,8 @@ extern int set_msgsperfolder;
 extern char *set_describe_folder;
 
 extern bool set_iso2022jp;
+extern char *set_default_charset;
+extern int set_replace_us_ascii_with_utf8;
 
 extern bool set_noindex_onindexes;
 extern struct hmlist *set_annotated;

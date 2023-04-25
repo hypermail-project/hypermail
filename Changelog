@@ -6,6 +6,10 @@ HYPERMAIL VERSION 2.5.0
 ============================
 
 2023-00-00 Jose Kahan
+	* src/setup.c
+	Marked config options linkquotes as "deprecated, with intention to
+	remove" ddue to corresponding code not being maintained anymore.
+
 	* src/lock.c
 	unlock_archive() wasn't removing the lockfile
 

@@ -160,6 +160,8 @@ char *set_describe_folder;
 int set_msgsperfolder;
 
 bool set_iso2022jp;
+char *set_default_charset;
+bool set_replace_us_ascii_with_utf8;
 
 bool set_noindex_onindexes;
 struct hmlist *set_annotated = NULL;
@@ -555,9 +557,11 @@ struct Config cfg[] = {
      "# all on a single line.\n", FALSE},
 
     {"format_flowed", &set_format_flowed, BFALSE, CFG_SWITCH,
-     "# Enable support for RFC3676 format=flowed (EXPERIMENTAL)\n", FALSE},
+     "# (EXPERIMENTAL)\n"
+     "# Enable support for RFC3676 format=flowed\n", FALSE},
 
     {"format_flowed_disable_quoted", &set_format_flowed_disable_quoted, BFALSE, CFG_SWITCH,
+     "# (EXPERIMENTAL)\n"
      "# If format_flowed is enabled, this option allows you to disable\n"
      "# format=flowed inside quoted text\n", FALSE},
 
@@ -663,16 +667,16 @@ struct Config cfg[] = {
      "# Set this to  Off to make hypermail not output an index of\n"
      "# messages with attachments.\n", FALSE},
 
-    {"linkquotes", &set_linkquotes, BFALSE, CFG_SWITCH, 
+    {"linkquotes", &set_linkquotes, BFALSE, CFG_SWITCH,
+     "# NOTE: this option has not been working well since 2.4.0 and should\n"
+     "# now be considered experimental. It may be deprecated in \n"
+     "# the next version of hypermail.\n"
+     "# \n"
      "# Set this to On to create fine-grained links from quoted\n"
      "# text to the text where the quote originated. It also improves\n"
      "# the threads index file by more accurately matching messages\n"
      "# with replies. Note that this may be rather cpu intensive (see\n"
-     "# the searchbackmsgnum option to alter the performance).\n"
-     "#\n"
-     "# NOTE: this option has not been working well since 2.4.0 and should\n"
-     "# now be considered experimental. It may be deprecated in \n"
-     "# the next version of hypermail.\n", FALSE},
+     "# the searchbackmsgnum option to alter the performance).\n", FALSE),
 
     {"searchbackmsgnum", &set_searchbackmsgnum, INT(500), CFG_INTEGER,
      "# If the linkquotes option is on and an incremental update is being\n"
@@ -775,6 +779,29 @@ struct Config cfg[] = {
     {"iso2022jp", &set_iso2022jp, BFALSE, CFG_SWITCH,
      "# Set this to On to support ISO-2022-JP messages.\n", FALSE},
 
+    {"override_default_charset", &set_default_charset, "US-ASCII", CFG_STRING,
+     "# (EXPERIMENTAL)\n"
+     "# Set this to to override the default US-ASCII charset you want to associate\n"
+     "# with a message that doesn't explcitly specify any charset.\n"
+     "# Use this only with legacy archives that you know to be in a given\n"
+     "# charset but that have no charset attribute.\n"
+     "# \n"
+     "# Note that the only thing that will be converted are headers,\n"
+     "# the message body won't be affected.\n"
+     "# default value: US-ASCII.\n", FALSE},
+
+    {"replace_us_ascii_with_utf8", &set_replace_us_ascii_with_utf8, BFALSE, CFG_SWITCH,
+     "# (EXPERIMENTAL)\n"
+     "# Setting this to on will tell the parser to explicitly replace a messages\n"
+     "# charset with UTF-8 if the original's message was US-ASCII.\n"
+     "# Note that there will be no convertion of the message's body to UTF-8.\n"
+     "# \n"
+     "# Indeed, US-ASCII is a subset of UTF-8 and directly mappable without need for\n"
+     "# any convertion. However, multipart messages can be complex and each part can\n"
+     "# be associated with a different charset and there's no guarantee the resulting\n"
+     "# message will have a valid charset. Hypermail is lacking in this aspect.\n"
+     "# default value: Off.\n", FALSE},
+        
     {"noindex_onindexes", &set_noindex_onindexes, BFALSE, CFG_SWITCH,
      "# Set to On to inform search engines that you don't want to index\n"
      "# the hypermail generated indexes. See the \"annotated\" configuration"
@@ -791,7 +818,7 @@ struct Config cfg[] = {
      "#   deleted : message deleted, other reasons;\n"
      "#    edited : original received message was manually edited.\n"
      "# You can customize the markup that\'s shown for content annotations\n"
-     "# by means of the htmlmessage_deleted_other, htmlmessage_deleted_spam\n,"
+     "# by means of the htmlmessage_deleted_other, htmlmessage_deleted_spam,\n"
      "# htmlmessage_edited directives.\n\n"
      "# robot annotations can have either one or both of the following values:\n"
      "#  nofollow : do not follow the links on this page;\n"
@@ -801,8 +828,8 @@ struct Config cfg[] = {
      "# should be followed, doing so thru a specific HTML meta tag. You can use one or\n"
      "# both values and combine them with the edited content annotation.\n"
      "# NOTE: Spam or deleted annotation values have an implicit robot \"noindex\"\n"
-     "# annotation In such case, user supplied robot annotations values will be silently\n"
-     "# ignored.\n", FALSE},
+     "# annotation In such case, user supplied robot annotations values will be\n"
+     "# silently ignored.\n", FALSE},
 
     {"deleted", &set_deleted, "X-Hypermail-Deleted X-No-Archive", CFG_LIST,
      "# NOTE: this option has been deprecated by annotated, but it will continue\n"
@@ -956,7 +983,9 @@ struct Config cfg[] = {
      "1 - dumps the message_node tree after parsing a message\n"
      "2 - same as above but also dumps all parsed lines\n"
      "    for each attachment\n"
-     "3 - dumps the bp content and exits\n", FALSE},
+     "3 - dumps the bp content and exits\n"
+     "4 - adds visual markup to each body part section to help identify\n"
+     "    each section without having to examine the source code\n", FALSE},
 };
 
 /* ---------------------------------------------------------------- */
@@ -1179,12 +1208,12 @@ void PostConfig(void)
             exit(0);
         }
         else if (!set_applemail_ua_value) {
-        printf("Error: the applemail_mimehack option is enabled\n"
-               "but the applemail_ua_value configuration variable is empty.\n");
-        exit(0);
+            printf("Error: the applemail_mimehack option is enabled\n"
+                   "but the applemail_ua_value configuration variable is empty.\n");
+            exit(0);
         }
     }
-    
+
     /* disable locks if we're debugging hypermail */
     if (set_debug_level > 0) {
         set_uselock = 0;
@@ -1405,6 +1434,7 @@ void dump_config(void)
     printf("set_latest_folder = %s\n",set_latest_folder ? set_latest_folder : "Not set");
     printf("set_antispamdomain = %s\n",set_antispamdomain ? set_antispamdomain : "Not set");
     printf("set_applemail_ua_header = %s\n",set_applemail_ua_header ? set_applemail_ua_header : "Not set");
+    printf("set_default_charset = %s\n", set_default_charset);
     
     /* Boolean or integer */
 
@@ -1450,6 +1480,7 @@ void dump_config(void)
     printf("set_yearly_index = %d\n",set_yearly_index);
     printf("set_msgsperfolder = %d\n",set_msgsperfolder);
     printf("set_iso2022jp = %d\n",set_iso2022jp);
+    printf("set_replace_us_ascii_with_utf8 = %d\n", set_replace_us_ascii_with_utf8);
     printf("set_delete_incremental = %d\n",set_delete_incremental);
     printf("set_delete_level = %d\n",set_delete_level);
     printf("set_delete_older = %d\n",set_delete_older);
