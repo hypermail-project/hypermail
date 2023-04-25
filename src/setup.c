@@ -676,7 +676,7 @@ struct Config cfg[] = {
      "# text to the text where the quote originated. It also improves\n"
      "# the threads index file by more accurately matching messages\n"
      "# with replies. Note that this may be rather cpu intensive (see\n"
-     "# the searchbackmsgnum option to alter the performance).\n", FALSE),
+     "# the searchbackmsgnum option to alter the performance).\n", FALSE},
 
     {"searchbackmsgnum", &set_searchbackmsgnum, INT(500), CFG_INTEGER,
      "# If the linkquotes option is on and an incremental update is being\n"
