@@ -5,6 +5,13 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.5.0
 ============================
 
+2023-00-00 Jose Kahan
+	* src/lock.c
+	unlock_archive() wasn't removing the lockfile
+
+	* src/string.c
+	fixed a memory leak after calling obfuscated_email_address()
+
 2022-10-26 Jose Kahan
 	* src/getname.c
 	Remove a potential writing out of bonds issue
