@@ -139,6 +139,7 @@ extern struct hmlist *set_inline_types;
 extern struct hmlist *set_prefered_types;
 extern struct hmlist *set_ignore_types;
 extern struct hmlist *set_show_headers;
+extern struct hmlist *set_show_headers_msg_rfc822;
 extern struct hmlist *set_skip_headers;
 extern struct hmlist *set_avoid_indices;
 extern struct hmlist *set_avoid_top_indices;

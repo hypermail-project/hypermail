@@ -194,7 +194,7 @@ all messages in 1 thread</li>
 <li><a href="#links">Links</a>
 <ul>
 <li><a href="#linkquotes">linkquotes</a> fine-grained link to
-source of quoted text</li>
+source of quoted text (<strong>UNMAINTAINED</strong>)</li>
 <li><a href="#searchbackmsgnum">searchbackmsgnum</a> linkquotes
 performance</li>
 <li><a href="#link_to_replies">link_to_replies</a> fine-grained
@@ -215,16 +215,18 @@ ids</li>
 <li><a href="#show_msg_links">show_msg_links</a> next, previous,
 next in thread</li>
 <li><a href="#show_index_links">show_index_links</a> control links
-to index pages</li>
+    to index pages</li>
 <li><a href="#showheaders">showheaders</a> To:, From:,
-Subject:</li>
+    Subject:</li>
 <li><a href="#show_headers">show_headers</a> others (Message-ID,
-etc)</li>
+    etc)</li>
+<li><a href="#show_headers_msg_rfc822">show_headers_msg_rfc822</a> others (Message-ID,
+    etc) but only for message/rfc822 attachments.</li>
 <li><a href="#format_flowed">format_flowed</a> support RFC 3676
-format=flowed</li>
+    format=flowed (<strong>EXPERIMENTAL</strong>)</li>
 <li><a href=
 "#format_flowed_disable_quoted">format_flowed_disable_quoted</a>
-disable support for RFC 3676 format=flowed in quoted text</li>
+    disable support for RFC 3676 format=flowed in quoted text (<strong>EXPERIMENTAL</strong>)</li>
 <li><a href="#mhtmlheaderfile">mhtmlheaderfile</a> template</li>
 <li><a href="#mhtmlfooterfile">mhtmlfooterfile</a> template</li>
 <li><a href="#mhtmlnavbar2up">mhtmlnavbar2upfile</a> template</li>
@@ -795,7 +797,7 @@ If this option is not configured, messages will use the value of the
 <em>mcss_url =
 https://example.org/StyleSheets/message.css</em></dd>
 <dt id="quote_hide_threshold">quote_hide_threshold = percent (integer)</dt>
-<dd>If the <a href="#linkquotes">linkquotes</a> option is on,
+<dd>If the <a href="#linkquotes">linkquotes</a> option is on 
 setting this to an integer less than 100 will cause it to replace
 quoted text with one-line links if the percent of lines in the
 message body (exluding the signature) consisting of quoted text
@@ -813,7 +815,10 @@ this file instead of to a single message.<br />
 <h3><a id="links">Message page links</a></h3>
 <dl>
 <dt id="linkquotes">linkquotes = [ 0 | 1 ]</dt>
-<dd>Set this to On to create fine-grained links from quoted text to
+<dd><strong>NOTE</strong>: this option has not been working 
+well since 2.4.0 and should now be considered <strong>experimental</strong>.<br />
+It may be <strong>deprecated</strong> in the next version of hypermail.<br /><br />
+Set this to On to create fine-grained links from quoted text to
 the text where the quote originated. It also improves the threads
 index file by more accurately matching messages with replies. Note
 that this may be rather cpu intensive (see the <a href=
@@ -921,6 +926,14 @@ hypermail will display all header lines.<br />
 headers.<br />
 <br />
 <em>show_headers = From,Subject,Date,Message-ID</em> (disabled by
+default)</dd>
+<dt id="show_headers_msg_rfc822">show_headers_msg_rfc822 = List of RFC 2822 Headers to
+    display in message/rfc822 attachments</dt>
+<dd>This option is identical to <a href="#show_headers">show_headers</a> but only
+applies to message/rfc822 attachments. If it is not defined, hypermail will use
+    <strong>show_headers</strong> for message/rfc822 attachments.<br />
+<br />
+<em>show_headers_message_rfc822 = From,Subject,Date,Message-ID,Archived-At</em> (disabled by
 default)</dd>
 <dt id="format_flowed">format_flowed [ 0 | 1 ] (EXPERIMENTAL)</dt>
 <dd>Enable this option to support RFC 3676 format=flowed. When this

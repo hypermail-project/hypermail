@@ -10,6 +10,11 @@ HYPERMAIL VERSION 2.5.0
 	Marked config options linkquotes as "deprecated, with intention to
 	remove" ddue to corresponding code not being maintained anymore.
 
+        New directive show_headers_msg_rfc822 useful if you want to
+	fine-tune which headers you want to be displayed in message/rfc822
+	attachments. If not declared, hypermail will use
+	show_headers_msg for message/rfc822 attachments.
+
 	* src/lock.c
 	unlock_archive() wasn't removing the lockfile
 

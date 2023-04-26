@@ -1180,7 +1180,7 @@ char *ConvURLsString(char *line, char *mailid, char *mailsubject, char *charset)
 }
 
 
-struct body *printheaders (FILE *fp, struct emailinfo *email, struct body *from_bp)
+struct body *printheaders(FILE *fp, struct emailinfo *email, struct body *from_bp, bool msg_rfc822)
 {
     struct body *bp;
     char *id = email->msgid;
@@ -1189,6 +1189,8 @@ struct body *printheaders (FILE *fp, struct emailinfo *email, struct body *from_
     char head_lower[128];
     char *header_content;
 
+    struct hmlist *show_headers_list;
+    
     if (REMOVE_MESSAGE(email)) {
       /* the following message is now shown when printing the body; we
       ** only need to return */
@@ -1202,11 +1204,20 @@ struct body *printheaders (FILE *fp, struct emailinfo *email, struct body *from_
 #endif
       return NULL;
     }
+
+    /* if we are dealing with a message/rfc822 attachment, use
+       set_show_msg_rfc_headers if defined, otherwise fall back
+       to set_show_headers */
+    if (msg_rfc822 && set_show_headers_msg_rfc822) {
+        show_headers_list = set_show_headers_msg_rfc822;
+    } else {
+        show_headers_list = set_show_headers;
+    }
     
-    if (set_show_headers) {
+    if (show_headers_list) {
         struct hmlist *shp;
         
-        for (shp = set_show_headers; shp != NULL; shp = shp->next) {
+        for (shp = show_headers_list; shp != NULL; shp = shp->next) {
 
             /* if from_bp is initialized, we are dealing with an attachment, 
             ** we want to print out the headers we usually skip */
@@ -1216,8 +1227,7 @@ struct body *printheaders (FILE *fp, struct emailinfo *email, struct body *from_
 
             if (from_bp) {
                 bp = from_bp;
-            }
-            else {
+            } else {
                 bp = email->bodylist;
             }
             
@@ -1270,8 +1280,12 @@ struct body *printheaders (FILE *fp, struct emailinfo *email, struct body *from_
                     break;
             }
         }
+    } else {
+        /* if we didn't print the main mail headers, caller expects bp to 
+           point to next line that has to be processed */
+        bp = from_bp;
     }
-    
+
     /* returns last line that was processed */
     return bp;
     
@@ -1472,7 +1486,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
                             lang[MSG_ATTACHED_MESSAGE_NOTICE]);
                 }
 
-                if (bp->attachment_rfc822 && set_show_headers && bp->next) {
+                if (bp->attachment_rfc822 && bp->next) {
                     bp = bp->next;
                     if (bp->header) {
                         /* if it's a header and the user wants to show them,  then print it 
@@ -1835,7 +1849,7 @@ void print_headers(FILE *fp, struct emailinfo *email, int in_thread_file)
   /* date */
   fprintf(fp, "<li><span class=\"date\"><span class=\"heading\">%s</span>: %s</span></li>\n", lang[MSG_CDATE], email->datestr);
 
-  printheaders(fp, email, NULL);
+  printheaders(fp, email, NULL, FALSE);
 
   fprintf(fp, "</ul>\n");
 
@@ -1953,7 +1967,7 @@ struct body *print_headers_rfc822_att(FILE *fp, struct emailinfo *email, struct 
     }
     
     /* print the rest of the headers the user wants */
-    bp = printheaders(fp, email, bp);
+    bp = printheaders(fp, email, bp, TRUE);
 
     fprintf(fp, "</ul>\n");
 

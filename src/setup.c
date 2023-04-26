@@ -124,6 +124,7 @@ struct hmlist *set_inline_types = NULL;
 struct hmlist *set_prefered_types = NULL;
 struct hmlist *set_ignore_types = NULL;
 struct hmlist *set_show_headers = NULL;
+struct hmlist *set_show_headers_msg_rfc822 = NULL;
 struct hmlist *set_skip_headers = NULL;
 struct hmlist *set_avoid_indices = NULL;
 struct hmlist *set_avoid_top_indices = NULL;
@@ -553,8 +554,16 @@ struct Config cfg[] = {
 
     {"show_headers", &set_show_headers, NULL, CFG_LIST,
      "# This is the list of headers to be displayed if 'showheaders'\n"
-     "# is set to On). They can be listed comma or space separated\n"
+     "# is set to On. They can be listed comma or space separated\n"
      "# all on a single line.\n", FALSE},
+
+    {"show_headers_msg_rfc822", &set_show_headers_msg_rfc822, NULL, CFG_LIST,
+     "# This is the list of headers to be displayed in an message/rfc822\n"
+     "# attachment if 'showheaders' is set to On. They can be listed\n"
+     "# comma or space separatedd all on a single line.\n"
+     "# \n"
+     "# If this directive is not used, hypermail will use show_headers\n"
+     "# when dealing with message/rfc822 attachments.\n", FALSE},
 
     {"format_flowed", &set_format_flowed, BFALSE, CFG_SWITCH,
      "# (EXPERIMENTAL)\n"
@@ -1572,6 +1581,7 @@ void dump_config(void)
     print_list("set_prefered_types",set_prefered_types);
     print_list("set_ignore_types",set_ignore_types);
     print_list("set_show_headers", set_show_headers);
+    print_list("set_show_headers_msg_rfc822", set_show_headers_msg_rfc822);    
     print_list("set_avoid_top_indices", set_avoid_top_indices);
     print_list("set_avoid_indices", set_avoid_indices);
     print_list("set_annotated", set_annotated);
