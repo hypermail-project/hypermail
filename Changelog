@@ -6,6 +6,13 @@ HYPERMAIL VERSION 2.5.0
 ============================
 
 2023-00-00 Jose Kahan
+	* src/getname.c
+	When a From: header had two email addresses, hypermail was
+	always extracting the first one, regardless if it was in
+	a comment, while the 2nd one was the valid one. In some
+	cases that address could also include enclosing parenthesis
+	Closes #85
+
 	* src/setup.c
 	Marked config options linkquotes as "deprecated, with intention to
 	remove" ddue to corresponding code not being maintained anymore.
