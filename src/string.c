@@ -914,18 +914,17 @@ bool is_start_boundary(const char *boundary_id, const char *line)
         return FALSE;
     }
 
-    /* starts with -- ? */
-    if (! (!strncmp(line, "--", 2) &&
-           !strncmp(line + 2, boundary_id,
-                    bl))) {
+    /* starts with -- followed by boundar_id? */
+    if (strncmp(line, "--", 2) != 0
+        || strncmp(line + 2, boundary_id, bl) != 0) {
         return FALSE;
     }
         
     ptr = &line[bl + 2];
     
     if (*ptr == '\0'
-        || (!strncmp(ptr, "\n", 1)
-            || !strncmp(ptr, "\r\n", 2))) {
+        || (strncmp(ptr, "\n", 1) == 0
+            || strncmp(ptr, "\r\n", 2) == 0)) {
         return TRUE;
     }
 
@@ -947,17 +946,16 @@ bool is_end_boundary(const char *boundary_id, const char *line)
     }
 
     /* starts with -- ? */
-    if (! (!strncmp(line, "--", 2) &&
-           !strncmp(line + 2, boundary_id,
-                    bl))) {
+    if (strncmp(line, "--", 2) != 0
+        || strncmp(line + 2, boundary_id, bl) != 0) {
         return FALSE;
     }
 
     /* ends with -- ? */
     ptr = &line[bl + 2];
     if (*ptr != '\0'
-        && (!strncmp(ptr, "--\n", 3)
-            || strncmp(ptr, "--\r\n", 4))) {
+        && (strncmp(ptr, "--\n", 3) == 0
+            || strncmp(ptr, "--\r\n", 4) == 0)) {
         rv = TRUE;
     }
 
@@ -973,7 +971,7 @@ char *strip_boundary_id(const char *boundary_id, int boundary_len)
     char *ptr;
     
     /* remove -- prefix */
-    if (!strncmp(boundary_id, "--", 2)) {
+    if (strncmp(boundary_id, "--", 2) == 0) {
         stripped_boundary_id = strsav(boundary_id + 2);
     } else {
         stripped_boundary_id = strsav(boundary_id);
@@ -987,7 +985,7 @@ char *strip_boundary_id(const char *boundary_id, int boundary_len)
     and not the end boundary necessarily.
     *// 
     if (boundary_len != 0
-        && !strncmp(stripped_boundary_id + boundary_len, "--", 2)) {
+        && strncmp(stripped_boundary_id + boundary_len, "--", 2) == 0) {
         *(stripped_boundary_id + boundary_len) = '\0';
     } else
 #endif
