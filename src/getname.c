@@ -56,6 +56,12 @@ static int blankstring(char *str)
 **
 ** This is an interesting new one (1998-11-26):
 ** From: <name.hidden@era.ericsson.se>›Name.Hidden@era.ericsson.seœ
+**
+** Another case that was not yet handled, when there are two @ chars
+** in the line, one in comments, and one for the address. The code was only
+** detecting the first one and including the parenthesis as part of the address.
+** (2023-04-27):
+**   From: "Roy T. Fielding (fielding@kiwi.ics.uci.edu)" <fielding@kiwi.ics.uci.edu>
 */
 
 /* AUDIT biege: this code is really tricky and may lead to BOFs in email[] and/or name[] */
@@ -64,6 +70,7 @@ void getname(char *line, char **namep, char **emailp)
     int i;
     int len;
     char *c;
+    int offset;
     int comment_fnd;
 
     char email[MAILSTRLEN];
@@ -84,7 +91,17 @@ void getname(char *line, char **namep, char **emailp)
     /* EMail Processing First:
     ** First, is there an '@' sign we can use as an anchor ?
     */
-    if ((c = hm_strchr(line, '@')) == NULL) {
+    
+    /* email is often found between <> chars, let's try to find it there
+       to cover the case of the @ char found in comments and between <> */
+    c = hm_strchr(line, '<');
+    if (c && hm_strchr(c, '@')) {
+        offset = c - line;
+    } else {
+        offset = 0;
+    }
+    
+    if ((c = hm_strchr(line + offset, '@')) == NULL) {
         /* 
         ** No '@' sign here so ...
         */
