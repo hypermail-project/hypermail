@@ -363,7 +363,8 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
       fprintf (fp, "%s", ihtmlheadfile);
 
     fprintf(fp, "</head>\n");
-    fprintf(fp, "<body>\n");
+    fprintf(fp, "<body class=\"%s\">\n",
+            (index_header) ? "index" : "message");
 }
 
 /*
