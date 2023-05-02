@@ -1948,12 +1948,22 @@ struct body *print_headers_rfc822_att(FILE *fp, struct emailinfo *email, struct 
   
     /* the from header */
     if (hasfrom) {
+        char *tmp_oea = NULL;
+        
+        if (emailp) {
+            tmp_oea = obfuscate_email_address(emailp);
+        }
+        
         fprintf (fp, "<li><span class=\"from\">\n");
         fprintf (fp, "<span class=\"heading\">%s</span>: ", lang[MSG_FROM]);
         fprintf (fp, "%s &lt;%s&gt;",
                  (tmpname) ? tmpname : "",
-                 (emailp) ? emailp : NOEMAIL);
+                 (emailp) ? tmp_oea : NOEMAIL);
         fprintf (fp, "\n</span></li>\n");
+
+        if (set_email_address_obfuscation && tmp_oea) {
+            free(tmp_oea);
+        }
     }
 
     if (hasdate) {
