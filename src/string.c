@@ -1960,6 +1960,16 @@ char *parseemail(char *input,	/* string to parse */
                             }
                             free(mailcmd);
                         }
+                        else if (conversion == OBFUSCATE_ADDRESS) {
+                            char *obfuscated_email_address = obfuscate_email_address(mailaddr);
+                            
+                            trio_asprintf(&tempbuff, "%s", 
+                                          obfuscated_email_address);
+                            if (set_email_address_obfuscation){
+                                free(obfuscated_email_address);
+                            }
+                            
+                        }
                         else if (conversion == REPLACE_DOMAIN) {
                             trio_asprintf(&tempbuff, "%.*s%s%s", 
                                           ptr-email, email, at, msubject);

@@ -1166,7 +1166,8 @@ char *ConvURLsString(char *line, char *mailid, char *mailsubject, char *charset)
 	    newparse = parseemail(parsed,	/* source */
 				  mailid,	/* mail's Message-Id: */
 				  mailsubject,	/* mail's Subject: */
-				  MAKEMAILCOMMAND); /* make a mailto: */
+                                  /* either obfuscate the address or convert it to a mailto: */
+				  (use_mailcommand == 2) ? OBFUSCATE_ADDRESS : MAKEMAILCOMMAND);
 	    free(parsed);
 	    parsed = newparse;
 	}
@@ -1256,10 +1257,11 @@ struct body *printheaders(FILE *fp, struct emailinfo *email, struct body *from_b
                         && (!strcmp(head_lower, "message-id")
                             || msg_rfc822))
                         {
-                            /* we desactivate it just during this conversion */
-                            use_mailcommand = 0;
+                            int prev_use_mail_command = use_mailcommand;
+                            /* we instruct ConvURls to only obfuscate addresses */
+                            use_mailcommand = 2;
                             ConvURLs(fp, header_content, id, subject, email->charset);
-                            use_mailcommand = 1;
+                            use_mailcommand = prev_use_mail_command;
                         }
                     else {
 #ifdef HAVE_ICONV
@@ -1883,7 +1885,7 @@ struct body *print_headers_rfc822_att(FILE *fp, struct emailinfo *email, struct 
     char *tmpsubject = NULL;
     char *tmpname = NULL;
     
-    /* find the date, author, and subject, from an message/rfc822 attachment */
+    /* find the date, author, and subject, from a message/rfc822 attachment */
   
     for (head = bp; head->header; head = head->next) {
         char head_name[128];
