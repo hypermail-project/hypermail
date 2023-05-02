@@ -17,148 +17,30 @@
 /*
 ** Default stylesheet for hypermail archives
 ** 
-** Last revised: 04/Nov/2021
+** Last revised: 02/May/2023
 **/
 
+/* Use this CSS rule to choose the background color
+   for your archive */
 html {
-    color: black;
-    background-color: #FFF6E0;
-    /** you may also try #FFFFF6 and #FFEEC2.
-     ** For other color combinations, make sure you choices pass
-     ** the WAI contrast criteria
-     ** by using https://webaim.org/resources/contrastchecker/ */
+  color: black;
+  background: #e2edfe;
+  /** you may also try #FFF6E0, #FFFFF6 or #FFEEC2.
+   ** For other color combinations, make sure you choices pass
+   ** the WAI contrast criteria
+   ** by using https://webaim.org/resources/contrastchecker/ */
 }
 
-body {
-    margin: 20px;
-    line-height: 1.4;
-    background: transparent;
-    font-family: sans-serif;
-    color: black;
-}
+/* wai-menu.css */
 
-pre {
-    font-family: monospace;
-}
-
-/* for displaying a message's body */
-pre, .body {
-    color: black;
-    background-color: white; 
-    padding: 0.5em;
-    white-space: pre-wrap;
-    overflow-wrap: break-word;
-}
-
-/* a div.showhtml-body encapsulates
-** the body of a message when using the
-** showhtml option */
-div.showhtml-body {
-    margin-top: 0.5em;
-    padding-top: 0.5em;
-    padding-left: 0.75em;
-    padding-right: 1em;
-    background-color: white;
-}
-
-/* in 2.5.0, txt2html() is generating a <br> as the first element; we
-   ignore it until we can fix the code  */
-div.showhtml-body > br:first-child {
-    display: none;
-}
-
-div.showhtml-body p {
-    padding-top: 0em;
-    padding-bottom: 0em;
-    margin-bottom: 0em;
-    margin-top: 0.75em;
-}
-
-/* used for signatures when using showhtml */
-div.showhtml-body pre {
-    padding-top: 0.75em;
-    margin-top: 0em;
-    padding-left: 0em;
-    margin-left: 0em;
-}
-
-/* a div.inline-body encapsulates
-** the body of a message when using the
-** inlinehtml option */
-div.inlinehtml-body {
-    margin-top: 1em;
-    padding: 0.74em;
-    padding-top: 0.2em;
-    color: black;
-    background-color: white;
-}
-
-div.inlinehtml-body p {
-    padding-top: 0em;
-    padding-bottom: 0em;
-    margin-bottom: 0em;
-    margin-top: 0.75em;
-}
-
-/* Not too big on the heading - they can be long */
-h1 { font-size: 150% }
-
-/* use the following rule if you want to add some style to the
-archive's name as displayed in the h1 of each index */
-/* .archive-label  { } */
-
-/* don't print the navbars pointing to the next message and indexes */
-@media print {
- #upper, #navbarfoot, #navbar {
-    display: none;
-  }
-}
-
-/* for displaying the headers */
-.heading {font-weight: bold; }
-.message-id { font-size: 0.9em; }
-span.message-id > span.heading { font-size: revert; }
-
-p.received { margin-bottom: 0; }
-
-table { margin-left: 2em; }
-nav ul {list-style: none; }
-address { font-style: inherit; }
-
-.quotelev1 {color : #990099; }
-.quotelev2 {color : #ff7700; }
-.quotelev3 {color : #007799; }
-.quotelev4 {color : #95c500; }
-.period {font-weight: bold; }
-
-.messages-list, .mail, .summary-year  {
-    border-top:    thin solid black;
-    border-bottom: thin solid black;
-}
-
-.messages-list-author {
-    font-style: italic;
-}
-.messages-list-date {
-    font-style: italic;
-}
-
-.colophon {
-    font-style: italic;
-}
-
-/*
-**  accessible breadcrumbs 
-*/
-nav ul {list-style:none; }
-
+/* accessible breadcrumbs */
 nav.breadcrumb ul { padding: 0; }
-nav.breadcrumb ul li { display: inline; }
+nav.breadcrumb ul li { display: inline;}
 nav.breadcrumb ul li+li::before { content: " > "; }
 
-/*
-**  accessible horizontal menus 
-*/
+
+/* accessible horizontal menus */
+ul.hmenu_container { margin-left: 1em; padding-left: 0; }
 ul.hmenu_container > li { list-style-type: none; }
 ul.hmenu { font-style: normal; padding: 0; display: inline; }
 ul.hmenu li { display: inline; }
@@ -173,9 +55,7 @@ ul.hmenu li:last-child {
     padding-right: 0;
 }
 
-/*
-**  replacement for dfn 
-*/
+/* replacement for dfn */
 .heading { font-weight: bold; }
 
 h2.heading, h2.theading {
@@ -186,131 +66,74 @@ h2.heading, h2.theading {
     display: list-item;
 }
 
-/* 
-** rules for the thread view
-*/
 h2.theading:before  {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
+    width:10px;
+    height:10px;
+    border-radius:50%;
     background: #b83b3b;
-    display: inline-block;
+    display:inline-block;
 }
 
 h2.theading + ul {
     list-style-type: disc;
 }
 
-/*
-** default settings for narrow screens (smaller headings and padding)
-*/
+/* default settings for narrow screens (smaller headings and padding) */
 body {
+    font-family: sans-serif;
     margin: 1em;
+    line-height: 1.4;
 }
-
 h1 {
-    font-size: 1.5em;
-}
-
-h2 {
     font-size: 1.25em;
 }
-
-h3 {
+h2 {
     font-size: 1.125em;
 }
-
-.summary-year {
-    padding-top: 1em;
-    padding-bottom: 1em;
+h3 {
+    font-size: 1em;
 }
-
-main.summary-year th.cell_period + th,
-main.summary-year td.cell_message + td {
-    padding-left: 0.5em;
-}
-
 .messages-list {
     padding-top: 1em;
-    padding-bottom: 1em;
     margin-left: 1em;
 }
-
 .messages-list ul {
     margin: 0;
     padding-left: 1em;
     list-style-type: disc;
 }
 
-/* 
-** inline attachments
-*/
-.attached-message-notice {
-    font-weight: bold;
-    border-bottom: thin solid black;
-    padding-bottom: 1em;
-}
-
-section.message-attachments address {
-    background-color: white;
-    padding-top: 0.75em;
-    padding-left: 0.75em;
-    padding-bottom: 1.25em;;
-    margin-bottom: 0px;
-}
-
-section.message-attachments pre.body {
-    margin-top: 0px;
-}
-
-section.message-attachments div.showhtml-body {
-    margin-top: -0.7em;
-    padding-top: 0em;
-}
-
-section.message-attachments div.inlinehtml-body {
-    margin-top: -1.25em;
-    padding-top: 0em;
-}
-
-/*
-**  bigger headings and padding on wider screens (desktops, tablets) 
-*/
+/* bigger headings and padding on wider screens (desktops, tablets) */
 @media screen and (min-width: 48em) {
     body {
 	margin: 1em 2.5em;
     }
-    
     h1 {
-	font-size: 2em;
-    }
-    
-    h2 {
 	font-size: 1.5em;
     }
-    
-    h3 {
+    h2 {
 	font-size: 1.25em;
     }
-    
+    h3 {
+	font-size: 1.125em;
+    }
     ul.hmenu_container {
 	padding-left: 1.5em;
     }
-    
     .messages-list {
 	padding-top: 1.5em;
-	padding-bottom: 1.5em;
 	margin-left: 2.5em;
     }
-    
     .messages-list ul {
 	padding-left: 2em;
     }
 }
 
-/*
-** accessible links 
-*/
+ul.footer_hmenu { padding: 0; display: inline; }
+ul.footer_hmenu::after { content: ""; clear: both; display: block; }
+ul.footer_hmenu > li { list-style-type: none; }
+ul.footer_hmenu li { display: inline; }
+ul.footer_hmenu li.footer_admin { float: right; }
 
 /* make links visible thru focus or hover */
 a:link {
@@ -319,7 +142,7 @@ a:link {
 }
 
 a:visited {
-    color: #754675
+    color:#754675
 }
 
 a:focus {
@@ -327,23 +150,192 @@ a:focus {
     outline-offset: 1px;
     text-decoration: underline;
     text-decoration-thickness: 1px;
-    outline-color: #005A9C;
-    cursor: pointer;
+    outline-color:#005A9C;
+    cursor :pointer;
 }
 
+
 a:hover {
-    color: #930;
+    color:#930;
     text-decoration: underline;
     text-decoration-thickness: 2px;
 }
 
-.last-message-date {
-    line-height: 1em;
-    padding-top: 0.25em;
+a:active {
+    /* outline: 0; */
 }
 
-.archived-on {
-    line-height: 0;
-    margin-bottom: 0.5em;
-    padding-bottom: 0.25em;
+
+
+/* mainindex-wai.css */
+
+table { margin: 1em; }
+
+/* Table head -- should be w3c blue */
+thead tr  { color: #FFFFFF; background-color: rgb(0,90,156); }
+
+tbody tr  { font-family: sans-serif; }
+
+.head img {float:left;}
+.head p {clear: left;}
+/* th {font-style:italic;} */
+nav ul { list-style-type: none; }
+
+table { border: 0px; border-spacing: 3px; }
+td { padding: 2px; }
+/* accessible horizontal menus */
+.cell_message { text-align: center; }
+.cell_period { text-align: right; }
+
+a.sub:link { color: green; }
+a.unsub:link {color: #b22222; }
+
+.header .important { padding: 0.5em 1em; }
+
+.visually_hidden {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+
+.restricted:after {
+    content: " (restricted)";
+}
+
+body.mainindex .head {
+  border-bottom: none;
+}
+
+
+/* messagelist-wai.css */
+
+dfn {font-weight: bold;}
+nav ul {list-style:none;}
+.messages-list {
+  border-bottom:thin solid black;
+}
+
+
+/* message.css */
+
+
+/* Leave message itself white but rest of metadata very pale grey.
+** This makes it more legible.
+** it also by analogy points out that the content of the message
+** someone else's, not W3C material necessarily -- we just run the list
+*/
+
+pre {
+    color: black;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}
+
+
+/* want to be able to identify the author and style it
+** but can't
+*/
+
+dfn {font-weight: bold;}
+.mail, .head { border-bottom:1px solid black;}
+map ul {list-style:none;}
+#message-id { font-size: small;}
+address { font-style:inherit ;}
+
+@media print {
+ #upper, #navbarfoot, #navbar {
+    display:none;
+  }
+}
+
+/* for edited messages */
+div.edit {
+ background: #CCFF99;
+ padding: 0.25em 2em 0.25em 1em;
+ margin-top: 0.25em;
+}
+p.editmes{
+ font-style: italic;
+ font-size: small;
+ padding: 0;
+}
+p.editfooter{
+ font-size: small;
+ padding: 0;
+}
+
+/* for deleted messages */
+div.spam {
+ background: #aaffaa;
+ padding: 1em 2em;
+}
+p.spammes{
+ font-size: x-large;
+ font-weight: bold;
+}
+p.spamfooter{
+ font-size: small;
+}
+
+
+/* updates added by Gerald 27 Apr 2023 */
+
+.message-forwarded {
+    padding: 0.5em 1em;
+    border-left: 4px solid #999;
+}
+
+.message-forwarded ul.headers {
+    margin: 0;
+}
+
+.message-forwarded pre {
+    padding: 0;
+    margin-bottom: 0.25em;
+}
+
+section section {
+    text-indent: 0;
+}
+
+ul.headers {
+    list-style: none;
+    padding-left: 0em;
+}
+
+.attachment-links img {
+    padding: 0.5em 0;
+}
+
+img {
+    max-width: 100%;
+}
+
+section.attachment-links ul {
+    padding-left: 1.5em;
+}
+
+/* experimental: */
+
+.mail {
+  background: white;
+  padding-left: 0.75em;
+  padding-top: 0.025em;
+}
+
+/* the following wo rules apply when you're using the 
+   yearly_index config option */
+.summary-year {
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
+
+main.summary-year th.cell_period + th,
+main.summary-year td.cell_message + td {
+    padding-left: 0.5em;
 }
