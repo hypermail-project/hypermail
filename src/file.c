@@ -63,7 +63,7 @@ int isfile(char *path)
 
     if (stat(path, &stbuf))
 	return 0;
-    return ((stbuf.st_mode & S_IFMT) == S_IFREG) ? 1 : 0;
+    return (S_ISREG(stbuf.st_mode)) ? 1 : 0;
 }
 
 /*
@@ -76,7 +76,7 @@ int isdir(char *path)
 
     if (stat(path, &stbuf))
 	return 0;
-    return ((stbuf.st_mode & S_IFMT) == S_IFDIR) ? 1 : 0;
+    return (S_ISDIR(stbuf.st_mode)) ? 1 : 0;
 }
 
 /*
