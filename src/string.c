@@ -968,7 +968,6 @@ bool is_end_boundary(const char *boundary_id, const char *line)
 char *strip_boundary_id(const char *boundary_id, int boundary_len)
 {
     char *stripped_boundary_id;
-    char *ptr;
     
     /* remove -- prefix */
     if (strncmp(boundary_id, "--", 2) == 0) {
@@ -1505,8 +1504,6 @@ static void translatechars(char *start, char *end, struct Push *buff)
  */
 static char *translateurl(char *line, int in_mailcommand)
 {
-
-  int hexbuflen;
   char hexbuf[16];
   struct Push buff;
   INIT_PUSH(buff);		/* init macro */
@@ -1582,7 +1579,7 @@ static char *translateurl(char *line, int in_mailcommand)
       default:
 	/* URIs MUST NOT have non-ascii characters */
 	/* otherwise, we must use IRI */
-	hexbuflen=trio_snprintf(hexbuf,4,"%%%02X",*line);
+        trio_snprintf(hexbuf,4,"%%%02X",*line);
 	PushString(&buff,hexbuf);
 	break;
       }
