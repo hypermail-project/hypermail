@@ -730,7 +730,7 @@ struct boundary_stack *boundary_stack_pop(struct boundary_stack *bnd)
     /* free allocated memory */
     free(tmp_bnd->boundary_id);
     if (tmp_bnd->prefered_content_charset) {
-        free(bnd->next->prefered_content_charset);
+        free(tmp_bnd->prefered_content_charset);
     }
     free(tmp_bnd);
 
