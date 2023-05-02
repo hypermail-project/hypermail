@@ -558,9 +558,9 @@ struct Config cfg[] = {
      "# all on a single line.\n", FALSE},
 
     {"show_headers_msg_rfc822", &set_show_headers_msg_rfc822, NULL, CFG_LIST,
-     "# This is the list of headers to be displayed in an message/rfc822\n"
+     "# This is the list of headers to be displayed in a message/rfc822\n"
      "# attachment if 'showheaders' is set to On. They can be listed\n"
-     "# comma or space separatedd all on a single line.\n"
+     "# comma or space separated all on a single line.\n"
      "# \n"
      "# If this directive is not used, hypermail will use show_headers\n"
      "# when dealing with message/rfc822 attachments.\n", FALSE},
