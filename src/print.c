@@ -1182,7 +1182,7 @@ char *ConvURLsString(char *line, char *mailid, char *mailsubject, char *charset)
 
 struct body *printheaders(FILE *fp, struct emailinfo *email, struct body *from_bp, bool msg_rfc822)
 {
-    struct body *bp;
+    struct body *bp = NULL;
     char *id = email->msgid;
     char *subject = email->subject;
     char head[128];
@@ -1337,7 +1337,8 @@ static void close_open_sections(FILE *fp, int *pre_open, int *showhtml_open,
 
 void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
 {
-    int insig, inblank;
+    int insig = 0;
+    int inblank = 1;
     struct body *bp = email->bodylist;
     char *id = email->msgid;
     char *subject = email->subject;
@@ -1354,8 +1355,8 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
                                  ** the <section> surrounding the list is open */
     int attachment_link_open = FALSE; /* set to true if we opened a section for the list pointing
                                          to external attachments */
-    int inquote;
-    int quote_num;
+    int inquote = 0;
+    int quote_num = 0;
     int quoted_percent;
     bool replace_quoted;
 
@@ -2494,7 +2495,7 @@ void update_deletions(int num_old)
 		if (rnum < num_old) {
 		    if (!rp->data->bodylist || !rp->data->bodylist->line[0])
 		        parse_old_html(rnum, rp->data, TRUE, FALSE, NULL, 0);
-			writearticles(rnum, rnum + 1);	/* update MSG_IN_REPLY_TO line */
+                    writearticles(rnum, rnum + 1); /* update MSG_IN_REPLY_TO line */
 		}
 	    }
 	}
@@ -2525,11 +2526,10 @@ void update_deletions(int num_old)
 
 void writearticles(int startnum, int maxnum)
 {
-    int num, skip, newfile;
+    int num, newfile;
     int is_reply = 0;
     int maybe_reply = 0; /* const, why is this here? pcm 2002-08-30 */
     struct emailinfo *email;
-    struct emailinfo *email_next_in_thread;
 
     struct body *bp;
     struct reply *rp;
@@ -2582,7 +2582,6 @@ void writearticles(int startnum, int maxnum)
 	is_reply = 0;
 	set_new_reply_to(-1, -1);
 
-	skip = 0;
 	if (email->is_deleted && set_delete_level == DELETE_REMOVES_FILES) {
 	    if (!newfile) {
 		unlink(filename);
@@ -2598,7 +2597,6 @@ void writearticles(int startnum, int maxnum)
 	}
 	else if (!newfile && !set_overwrite && !has_new_replies(email)
 		 && !(email->is_deleted && set_delete_msgnum)) {
-	    skip = 1;		/* is this really necessary with continue ??? */
 	    num++;
 	    free(filename);
 	    continue;
@@ -2612,9 +2610,6 @@ void writearticles(int startnum, int maxnum)
 	      printf("%s\n", filename);
 	  }
 	}
-
-	email_next_in_thread = nextinthread(email->msgnum);
-
 
 	/*
 	 * Create the comment fields necessary for incremental updating
@@ -3442,9 +3437,9 @@ void writehaof(int amountmsgs, struct emailinfo *email)
     else
 	newfile = 1;
 
-	if ((fp = fopen(filename, "w")) == NULL) { /* AUDIT biege: where? */
-	    trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
-            progerr(errmsg);
+    if ((fp = fopen(filename, "w")) == NULL) { /* AUDIT biege: where? */
+        trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
+        progerr(errmsg);
     }
 
     if (set_showprogress)
@@ -3685,14 +3680,14 @@ void write_summary_indices(int amount_new)
 
 void write_toplevel_indices(int amountmsgs)
 {
-    int i, j, newfile, offset, k;
+    int i, j, newfile, k;
+    int offset = 0;
     bool first = TRUE;
     struct emailsubdir *sd;
     char *subject = lang[MSG_FOLDERS_INDEX];
     static char verbose_period_name[DATESTRLEN*2 + 1];
     static char abbr_period_name[DATESTRLEN*2 + 1];
     char *end_date;
-    char *index_title;
     char *filename;
     char *saved_set_dateformat;
     char *abbr_dateformat = set_describe_folder != NULL ?
@@ -3766,26 +3761,20 @@ void write_toplevel_indices(int amountmsgs)
 	    switch (k) {
 		case DATE_INDEX:
 		    writedates(sd->count, sd->first_email);
-		    index_title = lang[MSG_LTITLE_LISTED_BY_DATE];
 		    break;
 	        case THREAD_INDEX:
 		    writethreads(sd->count, sd->first_email);
-		    index_title = lang[MSG_LTITLE_DISCUSSION_THREADS];
 		    break;
 	        case SUBJECT_INDEX:
 		    writesubjects(sd->count, sd->first_email);
-		    index_title = lang[MSG_LTITLE_LISTED_BY_SUBJECT];
 		    break;
 		case AUTHOR_INDEX:
 		    writeauthors(sd->count, sd->first_email);
-		    index_title = lang[MSG_LTITLE_LISTED_BY_AUTHOR];
 		    break;
 		case ATTACHMENT_INDEX:
 		    writeattachments(sd->count, sd->first_email);
-		    index_title = lang[MSG_LTITLE_LISTED_BY_ATTACHMENT];
 		    break;
   	        default:
-		    index_title = "";
 		    break;
 	    }
 	    if (set_writehaof)
