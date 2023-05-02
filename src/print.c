@@ -1249,13 +1249,18 @@ struct body *printheaders(FILE *fp, struct emailinfo *email, struct body *from_b
                              head_lower, head);
 
 
-                    /* JK: avoid converting Message-Id: headers */
-                    if (!strcmp(head_lower, "message-id") && use_mailcommand) {
-                        /* we desactivate it just during this conversion */
-                        use_mailcommand = 0;
-                        ConvURLs(fp, header_content, id, subject, email->charset);
-                        use_mailcommand = 1;
-                    }
+                    /* JK: avoid converting Message-Id: headers for all messages.
+                       We also avoid converting all mail address  headers in 
+                       message/rfc822 attachments */
+                    if (use_mailcommand
+                        && (!strcmp(head_lower, "message-id")
+                            || msg_rfc822))
+                        {
+                            /* we desactivate it just during this conversion */
+                            use_mailcommand = 0;
+                            ConvURLs(fp, header_content, id, subject, email->charset);
+                            use_mailcommand = 1;
+                        }
                     else {
 #ifdef HAVE_ICONV
                         size_t tmplen;
