@@ -316,19 +316,22 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
       fprintf(fp,"<meta name=\"robots\" content=\"noindex\" />\n");
 
     } else if (is_deleted || annotation_robot) {
-      char *value;
+        char *value;
 
       /* if the message is deleted, avoid bots, else set the value
 	 of the robots robots meta tag according to the info supplied by the message */
-      if (is_deleted)
-	value = "noindex";
-      else if (annotation_robot == 1) 
-	value = "nofollow";
-      else if (annotation_robot == 2)
-	value = "noindex";
-      else if (annotation_robot == 3)
-	value = "nofollow, noindex";
-      fprintf(fp,"<meta name=\"robots\" content=\"%s\" />\n", value);
+        if (is_deleted)
+            value = "noindex";
+        else if (annotation_robot == 1) 
+            value = "nofollow";
+        else if (annotation_robot == 2)
+            value = "noindex";
+        else if (annotation_robot == 3)
+            value = "nofollow, noindex";
+        else
+            value = "noindex"; /* default value, removing gcc warning */
+        
+        fprintf(fp,"<meta name=\"robots\" content=\"%s\" />\n", value);
     }
 
     /* print the css url according to the type of header */
