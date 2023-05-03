@@ -6,6 +6,9 @@ HYPERMAIL VERSION 2.5.0
 ============================
 
 2023-00-00 Jose Kahan
+	* many files
+	Removed compiler warnings detected by gcc -O2 -Wall
+
 	* src/getname.c
 	When a From: header had two email addresses, hypermail was
 	always extracting the first one, regardless if it was in
