@@ -6,6 +6,11 @@ HYPERMAIL VERSION 2.5.0
 ============================
 
 2023-00-00 Jose Kahan
+	* getdate.y
+	Fixed bison warning "POSIX yacc reserves %type to nonterminals [-Wyacc]"
+	by adapting the solution proposed for kerberos5:
+	https://github.com/krb5/krb5/commit/0108d7d7fbb1111c062ac580e69e97103662fc2b
+
 	* many files
 	Removed compiler warnings detected by gcc -O2 -Wall
 
