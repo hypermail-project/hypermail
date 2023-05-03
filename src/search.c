@@ -269,7 +269,7 @@ static int addb(const char *token, struct body *bp)
 #ifdef COUNT_TOKEN_FREQ
 	    p->count = 1;
 #endif
-	    if (!next_itoken >= max_tokens) {
+	    if (!(next_itoken >= max_tokens)) {
 		trio_snprintf(errmsg, sizeof(errmsg), "Internal error - too many distinct tokens.");
 		progerr(errmsg);
 	    }
@@ -454,9 +454,10 @@ static void add_search_text(struct body *bp, int msgnum)
     char *ptr = bp->line;
     int bigram_index = 0;
     char token[MAXLINE];
-    if (!start_time)
+    if (!start_time) {
 	start_time = time(NULL);
-	while ((bp = tokenize_body(bp, token, &ptr, &bigram_index, TRUE)) != NULL) {
+    }
+    while ((bp = tokenize_body(bp, token, &ptr, &bigram_index, TRUE)) != NULL) {
 	addb(token, bp);
 	++bigram_count;
     }
@@ -474,9 +475,10 @@ static void add_bigrams(struct body *bp, int msgnum)
     char *ptr = bp->line;
     char token[MAXLINE];
     int itok;
-    if (!start_time)
+    if (!start_time) {
 	start_time = time(NULL);
-	while ((bp = tokenize_body(bp, token, &ptr, &bigram_index, TRUE)) != NULL) {
+    }
+    while ((bp = tokenize_body(bp, token, &ptr, &bigram_index, TRUE)) != NULL) {
 	itok = ENCODE_TOKEN(token);
 	if (last_itok)
 	    add_bigram(last_itok, itok, bp, ptr);
@@ -574,6 +576,8 @@ void analyze_headers(int max_num)
     add_old_replies();
 }
 
+#ifdef IS_THIS_USED_20230503
+/* maybe this function was used for debugging? */
 static void print_count(struct search_text *t)
 {
     if (t->left)
@@ -584,6 +588,7 @@ static void print_count(struct search_text *t)
     if (t->right)
 	print_count(t->right);
 }
+#endif
 
 static int better_match(struct body *bp, const char *matched_string, const char *last_matched_string)
 {
