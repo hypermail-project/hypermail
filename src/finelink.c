@@ -95,7 +95,9 @@ static int place_a_end(const String_Match * match_info, struct body **bp, char *
     int index;
     char token[MAXLINE];
     char *ptr1 = buffer;
+#ifdef IS_THIS_NEEDED_20230503
     char *last_ptr = ptr1;
+#endif
     char *tptr;
     if (!*bp)
 	return FALSE;
@@ -106,7 +108,9 @@ static int place_a_end(const String_Match * match_info, struct body **bp, char *
 	    fprintf(fp2, "%s</a>%s", buffer, token);
 	    return TRUE;
 	}
+#ifdef IS_THIS_NEEDED_20230503        
 	last_ptr = ptr1;
+#endif
 	if (!(tptr = strstr(ptr1, *ptr))) {
 	    int len = (4 * strlen(*ptr)) / 5;
 	    char *temp1 = (char *)emalloc(len + 1);

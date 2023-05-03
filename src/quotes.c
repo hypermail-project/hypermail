@@ -324,7 +324,9 @@ char *find_quote_class(char *line)
 int compute_quoted_percent(struct body *bp)
 {
     int inheader = 1;
+#ifdef IS_THIS_USED_20230503
     int insig = 0;
+#endif
     int count_quoted = 0;
     int count_lines = 0;
 
@@ -339,8 +341,10 @@ int compute_quoted_percent(struct body *bp)
             continue;
         }
 
+#ifdef IS_THIS_USED_20230503
 	if (is_sig_start(bp->line))
 	    insig = 1;
+#endif
 
 	if (isquote(bp->line))
 	    ++count_quoted;
