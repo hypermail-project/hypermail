@@ -68,17 +68,19 @@ static char *chomp(char *line)
 static int convert_to_hrule(const char *line)
 {
     int count_hrule_chars = 0;
-    while (*line && isspace(*line))
+    while (*line && isspace(*line)) {
 	++line;
-	while (*line == '-' || *line == '_' || *line == '~' || *line == '=' || *line == '*') {
+    }
+    while (*line == '-' || *line == '_' || *line == '~' || *line == '=' || *line == '*') {
 	if (!count_hrule_chars || *line == line[-1])
 	    ++count_hrule_chars;
 	else
 	    return 0;
 	++line;
     }
-    while (isspace(*line))
+    while (isspace(*line)) {
 	++line;
+    }
     return (!*line && count_hrule_chars >= hrule_min);
 }
 
@@ -91,9 +93,10 @@ static int find_vertical_repeats(const struct body *bp)
 	return 0;
     }
     i = (isquote(bp->line) ? strlen(get_quote_prefix()) : 0);
-    if (i > strlen(bp->line))
+    if (i > strlen(bp->line)) {
 	return 0;
-	for (; i < MAXLINE; ++i) {
+    }
+    for (; i < MAXLINE; ++i) {
 	int j;
 	const struct body *bp2 = bp->next;
 	if (!bp->line[i] || i > strlen(bp2->line) || !bp2->line[i]) {
@@ -440,10 +443,12 @@ static char *unhyphenate1(struct Push *uwbuf, const char *next_line, char *line,
 	PushByte(uwbuf, *next_line++);
     if (*next_line == '-')	/* something like 'one-of-a-kind'? */
 	return line;
-    while (*next_line && strchr(")}].,:;'\">", *next_line))
+    while (*next_line && strchr(")}].,:;'\">", *next_line)) {
 	PushByte(uwbuf, *next_line++);	/* include any punct with word */
-	if (isupper(PUSH_STRING(*uwbuf)[0]) && islower((PUSH_STRING(*uwbuf))[1]))
-		return line;	/* capitalization probably means separate word */
+    }
+    if (isupper(PUSH_STRING(*uwbuf)[0]) && islower((PUSH_STRING(*uwbuf))[1])) {
+        return line;	/* capitalization probably means separate word */
+    }
     INIT_PUSH(buffer);
     PushNString(&buffer, line, len - 2);
     PushString(&buffer, PUSH_STRING(*uwbuf));	/* concatenate 2 parts of word */
