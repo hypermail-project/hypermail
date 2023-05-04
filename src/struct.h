@@ -80,12 +80,6 @@ bool multipart_stack_has_type(const struct hm_stack *, char *);
 bool multipart_stack_top_has_type(const struct hm_stack *, char *);
 const char *multipart_stack_top_type(const struct hm_stack *);
     
-#ifdef CHARSETSP
-struct charset_stack *charsets(struct charset_stack *, char *, char *);
-struct charset_stack *charsets_head(struct charset_stack *);
-int free_charsets(struct charset_stack *);
-#endif
-
 struct hm_stack *hm_stack_push(struct hm_stack *, void *);
 struct hm_stack *hm_stack_pop(struct hm_stack *, void **);
 

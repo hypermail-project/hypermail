@@ -435,15 +435,6 @@ struct boundary_stack {
     int applemail_old_set_save_alts;
 };
 
-#ifdef CHARSETSP
-struct charset_stack {
-    struct charset_stack *next;
-    struct charset_stack *prev;
-    char *charset;
-    char *charsetsave;
-};
-#endif /* CHARSETSP */
-
 struct hm_stack {
     struct hm_stack *prev;
     void *value;

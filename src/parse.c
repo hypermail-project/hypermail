@@ -1650,9 +1650,6 @@ int parsemail(char *mbox,	/* file name */
     struct body *origlp = NULL;	/* ... and the original lp */
     char alternativeparser = FALSE;	/* set when inside alternative parser mode */
     int alternative_weight = -1;	/* the current weight of the prefered alternative content */
-#ifdef CHARSETSP
-    char *prefered_content_charset = NULL;  /* the current charset of the alternative */
-#endif /* CHARSETSP */
     char *prefered_charset = NULL;  /* the charset for a message as chosen by heuristics */
     struct body *alternative_lp = NULL;	/* the previous alternative lp */
     struct body *alternative_bp = NULL;	/* the previous alternative bp */
@@ -1697,14 +1694,6 @@ int parsemail(char *mbox,	/* file name */
        dealing with multipart mails */
     struct hm_stack *multipartp = NULL; 
 
-#if CHARSETSP
-    struct charset_stack *charsetsp = NULL; /* This variable is used
-                                               to store a stack of
-                                               charset/charset_save
-                                               values when dealing
-                                               with multipart mails */
-#endif
-    
     struct message_node *root_message_node = NULL;  /* points to the first node of a message */
     struct message_node *current_message_node = NULL;
     struct message_node *root_alt_message_node = NULL; /* for temporarily storing alternatives */
@@ -2461,12 +2450,7 @@ int parsemail(char *mbox,	/* file name */
                             if (current_message_node->alternative) {
                                 current_message_node->skip = MN_SKIP_ALL;
                             }
-#ifdef CHARSETSSP                            
-                            if (prefered_content_charset) {
-                                free(prefered_content_charset);
-                            }
-                            prefered_content_charset = strsav (charset);
-#endif /* CHARSETSP */
+
                             strncpy(last_alternative_type, type,
                                     sizeof(last_alternative_type) - 1);
                             /* make sure it's a NULL ending string if ever type > 128 */
@@ -2568,16 +2552,6 @@ int parsemail(char *mbox,	/* file name */
                             else
                                 content = CONTENT_TEXT;
                         }
-
-#ifdef CHARSETSP
-                        if (!alternativeparser && !prefered_content_charset) {
-                            /* there are apparently no
-                               alternatives in this message, let's
-                               use the first text/ charset we
-                               found as the prefered one */
-                            prefered_content_charset = strsav (charset);
-                        }
-#endif /* CHARSETSP */           
                         break;
 
                     } /* textcontent(type) || inlinehtml && type == text/html */
@@ -2842,11 +2816,6 @@ int parsemail(char *mbox,	/* file name */
                                    message/rfc822, store the current content */
                                 boundp->alternativeparser = alternativeparser;
                                 boundp->alternative_weight = alternative_weight;
-#ifdef CHARSETSP                                
-                                if (prefered_content_charset) {
-                                    boundp->prefered_content_charset = strsav(prefered_content_charset);
-                                }
-#endif /* CHARSETSP */           
                                 boundp->alternative_message_node_created =
                                     alternative_message_node_created;
                                 strcpy(boundp->alternative_file, alternative_file);
@@ -2858,12 +2827,6 @@ int parsemail(char *mbox,	/* file name */
                                 boundp->root_alt_message_node = root_alt_message_node;
                                 boundp->applemail_old_set_save_alts = applemail_old_set_save_alts;
                                 current_alt_message_node = root_alt_message_node = NULL;
-#ifdef CHARSETSP                                
-                                if (prefered_content_charset) {
-                                    free(prefered_content_charset);
-                                }
-                                prefered_content_charset = NULL;
-#endif /* CHARSETSP */           
                                 alternative_file[0] = alternative_lastfile[0] = last_alternative_type[0] = '\0';
                                 alternative_message_node_created = FALSE;
                                 alternativeparser = FALSE;
@@ -2880,15 +2843,6 @@ int parsemail(char *mbox,	/* file name */
                             bp = lp = headp = NULL;
                             /* printf("set new boundary: %s\n", boundp->boundary_id); */
 
-#ifdef CHARSETSP
-                            /* @@JK Take into account errors when we abort, malformed mime, etc,
-                               probably put this call up, before detecting errors? */
-
-                            charsetsp = charsets(charsetsp, charset, charsetsave);
-#ifdef DEBUG_PARSE
-                            fprintf(stderr, "pushing charset %s and charsetsave %s\n", charset, charsetsave);
-#endif
-#endif
                             if (charset) {
                                 free(charset);
                                 charset = NULL;
@@ -3226,12 +3180,6 @@ int parsemail(char *mbox,	/* file name */
 		  *charsetsave = 0;
 		}
                 
-#ifdef CHARSETSP                
-                if (prefered_content_charset) {
-                    free(prefered_content_charset);
-                    prefered_content_charset = NULL;
-                }
-#endif /* CHARSETSP */           
                 if (prefered_charset) {
                     free(prefered_charset);
                     prefered_charset = NULL;
@@ -3301,11 +3249,6 @@ int parsemail(char *mbox,	/* file name */
                 multipart_stack_free(multipartp);
 		multipartp = NULL;
 
-#ifdef CHARSETSP                
-                free_charsets (charsetsp);
-                charsetsp = NULL;
-#endif
-                
                 alternativeparser = FALSE; /* there is none anymore */
 
 		if (parse_multipart_alternative_force_save_alts) {
@@ -3438,9 +3381,6 @@ int parsemail(char *mbox,	/* file name */
                                 boundp->current_alt_message_node = NULL;
                                 boundp->root_alt_message_node = NULL;
                                 boundp->applemail_old_set_save_alts = -1;
-#ifdef CHARSETSP                                                
-                                prefered_content_charset = NULL;
-#endif /* CHARSETSP */           
                                 boundp->alternativeparser = FALSE;
                                 boundp->alternative_message_node_created = FALSE;
                             }
@@ -3453,43 +3393,12 @@ int parsemail(char *mbox,	/* file name */
                             skip_mime_epilogue = TRUE;
 			    multipartp = multipart_stack_pop(multipartp);
 
-#ifdef CHARSETSP
-                            /* retrieve the parent's charset and charsetsave  */
-                            if (charsetsp->prev != NULL) {
-                                charsetsp = charsets(charsetsp, NULL, NULL);
-                            }
-                            if (charsetsp) {
-                                if (charset) {
-                                    free(charset);
-                                    if (charsetsp) {
-                                        charset = (charsetsp->charset) ? strsav (charsetsp->charset) : NULL;			    }
-                                } else {
-                                    *charsetsave='\0';
-                                }
-                                strcpy (charsetsave, charsetsp->charsetsave);
-                            }
-#ifdef DEBUG_PARSE
-                            fprintf(stderr, "Pulling charset %s and charsetsave %s\n", charset, charsetsave);
-#endif
-#else /* CHARSETSP */
                             *charsetsave='\0';
                             if (charset) {
                                 free(charset);
                                 charset = NULL;
                             }
-#endif /* ELSE CHARSETSP */
 
-#ifdef CHARSETSP
-                            if (!boundp && charsetsp->prev == NULL) {
-#ifdef DEBUG_PARSE
-                                fprintf(stderr, "No more MIME parts, freeing charsetsp\n");
-#endif
-                                free_charsets(charsetsp);
-
-                                charsetsp = NULL;
-                            }
-#endif
-                            
 			    if (alternativeparser
 				&& !multipart_stack_has_type(multipartp, "multipart/alternative")) {
 #ifdef NOTUSED
@@ -3600,30 +3509,11 @@ int parsemail(char *mbox,	/* file name */
 			quotelevel = 0;
 			continue_previous_flow_flag = FALSE;
 
-#ifdef CHARSETSP                        
-			/* restore the parent's charset/charsetsave values */
-                        if (charsetsp) {
-                            if (charset) {
-                                free(charset);
-                            }
-                            if (charsetsp->charset) {
-                                charset = strsav(charsetsp->charset);
-                            } else {
-                                charset = NULL;
-                            }
-                            strcpy(charsetsave, charsetsp->charsetsave);
-
-#ifdef DEBUG_PARSE
-                            printf("New section: restoring charset %s and charsetsave %s\n", charset, charsetsave);
-#endif
-                        }
-#else /* CHARSETSP */
                         *charsetsave = '\0';
                         if(charset) {
                             free(charset);
                             charset = NULL;
                         }
-#endif /* ELSE CHARSETSP */
                         
 			if (-1 != binfile) {
 			    close(binfile);
@@ -4237,24 +4127,6 @@ int parsemail(char *mbox,	/* file name */
 
 	strcpymax(fromdate, dp ? dp : "", DATESTRLEN);
 
-#ifdef CHARSETSP
-        if (prefered_content_charset) {
-            if (prefered_content_charset[0] != '\0') {
-#ifdef DEBUG_PARSE
-                fprintf(stderr, "Replacing charset %s with prefered_content_charset %s\n",
-                        charset, prefered_content_charset);
-#endif
-                if (charset) {
-                    free(charset);
-                }
-                charset = prefered_content_charset;
-            } else {
-                free(prefered_content_charset);
-            }
-            prefered_content_charset = NULL;
-        }
-#endif /* CHARSETSP */
-        
 	emp = addhash(num, date, namep, emailp, msgid, subject, inreply,
 		      fromdate, prefered_charset, NULL, NULL, bp);
 	if (emp) {
@@ -4292,12 +4164,6 @@ int parsemail(char *mbox,	/* file name */
 	if (charsetsave){
 	  *charsetsave = 0;
 	}
-#ifdef CHARSETSP                                                        
-        if (prefered_content_charset) {
-            free(prefered_content_charset);
-            prefered_content_charset = NULL;
-        }
-#endif /* CHARSETSP */           
         if (prefered_charset) {
             free(prefered_charset);
             prefered_charset = NULL;
