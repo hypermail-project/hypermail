@@ -2011,7 +2011,13 @@ char *message_node_get_charset(struct message_node *root)
       }
   }
 
-  /* heuristics, finetune as needed */
+  /* h euristics, finetune as needed.
+  **
+  **  Note: previously we were using this heuristic:
+  **  if body is us-ascii but subject is not,
+  **  try to use subject's charset. 
+  **
+  **  We tried to reimplement that with choose_charset */
   {
       /* ct_charset has priority over mime_charset, unless it is us-ascii */
       
