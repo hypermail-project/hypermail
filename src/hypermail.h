@@ -421,9 +421,6 @@ struct boundary_stack {
     
     char alternativeparser;
     int alternative_weight;
-#ifdef CHARSETSP
-    char *prefered_content_charset;
-#endif /* CHARSETSP */
     struct body *alternative_lp;
     struct body *alternative_bp;
     struct message_node *current_alt_message_node;
