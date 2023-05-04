@@ -2100,7 +2100,9 @@ struct body *addbody(struct body *bp, struct body **lp,	/* points to the last po
         }
 	newnode->html = (flags & BODY_HTMLIZED) ? 1 : 0;
 	newnode->header = (flags & BODY_HEADER) ? 1 : 0;
+#ifdef DELETE_ME
 	newnode->attached = (flags & BODY_ATTACHED) ? 1 : 0;
+#endif
 	newnode->attachment_links = (flags & BODY_ATTACHMENT_LINKS) ? 1 : 0;
 	newnode->attachment_rfc822 = (flags & BODY_ATTACHMENT_RFC822) ? 1 : 0;
         newnode->format_flowed = (flags & BODY_FORMAT_FLOWED) ? 1 : 0;
@@ -2185,7 +2187,9 @@ struct body *append_body(struct body *origbp, struct body **origlp, struct body 
 
         flags = (bp->html ? BODY_HTMLIZED : 0)
             | (bp->header ? BODY_HEADER : 0)
+#ifdef DELETE_ME
             | (bp->attached ? BODY_ATTACHED : 0)
+#endif
             | (bp->attachment_links ? BODY_ATTACHMENT_LINKS : 0)
             | (bp->attachment_rfc822 ? BODY_ATTACHMENT_RFC822 : 0)
             | (bp->format_flowed ? BODY_FORMAT_FLOWED : 0)
@@ -2269,7 +2273,9 @@ void dump_body(struct body *bp)
       /*
       printf("header %d\n", cursor->header);
       printf("parsed header %d\n", cursor->header);
+#ifdef DELETE_ME
       printf("attached %d\n", cursor->attached);
+#endif
       printf("attachment_links %d\n", cursor->attachment_links);
       printf("attachment_rfc822 %d\n", cursor->attachment_links);
       printf("demimed %d\n", cursor->demimed);

@@ -1435,7 +1435,9 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
         fprintf(stderr, "%s\n", bp->line);
         fprintf(stderr, "header: %d\n", bp->header);
         fprintf(stderr, "parsed: %d\n", bp->parsedheader);
+#ifdef DELETE_ME
         fprintf(stderr, "attached: %d\n", bp->attached);
+#endif
 	fprintf(stderr, "attachment_rfc822: %d\n", bp->attachment_rfc822);
         fprintf(stderr, "demimed: %d\n", bp->demimed);
         fprintf(stderr, "html: %d\n", bp->html);

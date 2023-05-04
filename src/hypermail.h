@@ -248,7 +248,9 @@ struct body {
     char html;			/* set to TRUE if already converted to HTML */
     char header;		/* part of header */
     char parsedheader;		/* this header line has been parsed once */
+#ifdef DELETE_ME
     char attached;		/* part of attachment */
+#endif
 #ifdef DELETE_ME
     char attachment_status;     /* says if this is the start / end of an attachment and
                                    type, expected to replace attached */
@@ -406,7 +408,9 @@ struct attach {
 #define BODY_FORMAT_FLOWED   (1<<10) /* this line is format-flowed */
 #define BODY_DEL_SSQ  (1<<11)    /* remove both space stuffing and
                                  * quotes where applicable for f=f */
+#ifdef DELETE_ME
 #define BODY_ATTACHED (1<<12)  /* temp while cleaning code */
+#endif
 
 /* used to store a MIME boundary and all the context related to it
 ** alternative_info, charset, applemail_hack, ... */

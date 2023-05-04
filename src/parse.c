@@ -1959,8 +1959,11 @@ int parsemail(char *mbox,	/* file name */
 		      head->demimed = TRUE;
 		    }
 
-		    if (head->parsedheader || head->attached ||
-			!head->header) {
+		    if (head->parsedheader
+#ifdef DELETE_ME
+                        || head->attached ||
+#endif
+			|| !head->header) {
 			continue;
 		    }
 		    if (!sscanf(head->line, "%127[^:]", head_name))
@@ -2608,7 +2611,9 @@ int parsemail(char *mbox,	/* file name */
                                       "<p class=\"attached-message-notice\">%s:</p>",
                                       lang[MSG_ATTACHED_MESSAGE_NOTICE]);				 		        bp = addbody(bp, &lp, notice,
                                                                                                                                              BODY_ATTACHMENT_RFC822 | BODY_HTMLIZED | bodyflags);
+#ifdef DELETE_ME
                         bodyflags |= BODY_ATTACHED;
+#endif
                         free(notice);
 #endif
                         /* need to take into account alternates with rfc822? */
@@ -3439,10 +3444,11 @@ int parsemail(char *mbox,	/* file name */
                                 boundp->alternativeparser = FALSE;
                                 boundp->alternative_message_node_created = FALSE;
                             }
+#if DELETE_ME
                             if (!boundp) {
 				bodyflags &= ~BODY_ATTACHED;
                             }
-                            
+#endif                       
                             /* skip the MIME epilogue until the next section (or next message!) */
                             skip_mime_epilogue = TRUE;
 			    multipartp = multipart_stack_pop(multipartp);
@@ -4044,11 +4050,6 @@ int parsemail(char *mbox,	/* file name */
                                                 addbody(append_bp, &append_lp,
                                                         NULL,
                                                         BODY_ATTACHMENT_LINKS | BODY_ATTACHMENT_LINKS_START | bodyflags);
-                                                        /*
-                                                        addbody(append_bp, &append_lp,
-                                                        "<ul>\n",
-                                                        BODY_HTMLIZED | BODY_ATTACHMENT_LINKS | bodyflags);
-                                                        */
                                         append_bp =
                                             addbody(append_bp, &append_lp, buffer,
                                                     BODY_HTMLIZED | BODY_ATTACHMENT_LINKS | bodyflags);
@@ -4223,12 +4224,6 @@ int parsemail(char *mbox,	/* file name */
 
 
 	if (append_bp && append_bp != bp) {
-            /* close the DIV */
-            /*
-            append_bp =
-                addbody(append_bp, &append_lp, "</ul>\n",
-                        BODY_HTMLIZED | BODY_ATTACHMENT_LINKS | bodyflags);
-            */
             append_bp = addbody(append_bp, &append_lp,
                                 NULL,
                                 BODY_ATTACHMENT_LINKS | BODY_ATTACHMENT_LINKS_END);
