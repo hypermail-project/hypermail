@@ -191,10 +191,25 @@ typedef enum {
   FORMAT_FLOWED = 1
 } textplain_format_t;
 
+typedef enum {
+    MN_KEEP = 0,
+    MN_SKIP_BUT_KEEP_CHILDREN = 1,
+    MN_SKIP_STORED_ATTACHMENT = 2,
+    MN_SKIP_ALL = 4
+} message_node_skip_t;
+
+typedef enum {
+    MN_KEEP_NODE = 0,
+    MN_FREE_NODE = 1,
+    MN_DELETE_ATTACHMENTS = 2
+} message_node_release_details_t;
+    
 /* conversions supported by string.c:parseemail() */
 typedef enum {
-  MAKEMAILCOMMAND = 1, /* makes links clickable */
-  REPLACE_DOMAIN = 2  /* replaces domain by antispamdomain */
+  MAKEMAILCOMMAND = 1,   /* makes links clickable */
+  OBFUSCATE_ADDRESS = 2, /* only obfuscate the email address */
+  REPLACE_DOMAIN = 3     /* replaces domain by antispamdomain */
+
 } parseemail_conversion_t;
 
 /* 
@@ -234,8 +249,22 @@ struct body {
     char header;		/* part of header */
     char parsedheader;		/* this header line has been parsed once */
     char attached;		/* part of attachment */
+#ifdef DELETE_ME
+    char attachment_status;     /* says if this is the start / end of an attachment and
+                                   type, expected to replace attached */
+#endif
+    /* review if still used */
     char attachment_links;      /* part of generated links to attachments */
+    int  attachment_links_flags;
     char attachment_rfc822;     /* first line of a message/rfc822 attachment */
+    int  attachment_flags;      /* states metadata for generating
+                                   markup when printing out the body,
+                                   like start or end of an attachment,
+                                   or a list of stored attachments,
+                                   and so on. check the flags defined
+                                   in BODY_ATTACHMENT early on this
+                                   section (and convert them to use an
+                                   typedef enum one day */
     char demimed;		/* if this is a header, this is set to TRUE if
 				   it has passed the decoderfc2047() function */
     int format_flowed;          /* TRUE if this a text/plain f=f line */
@@ -243,6 +272,38 @@ struct body {
     struct body *next;
 };
 
+/* here we divide a message into nodes. A message that has no attachments
+   has a single node. A message with attachments has one attachment child.
+   All those attachments then are considered siblings. 
+   An attachment itself may be a message with children attachments, for
+   example a message/rfc822 */
+struct message_node {
+    struct body *bp;
+    struct body *lp;
+    char *charset;       /* the charset declared in the content-type */
+    char *charsetsave;   /* the first charset found in MIME RFC2047 encoded headers */
+    char *content_type;
+    char *bin_filename;  /* gives the path + filename if the part is stored */
+    char *meta_filename; /* gives the path + filename of the metadata filename if it
+                            was created */
+    char *html_link;     /* gives the link that will be added to the stored attachment
+                            list */
+    char *comment_filename;  /* gives the filename that will be mentioned
+                                in the HTML comment underneath the link */
+    char *boundary_part; /* for multipart/mixed and message/rfc822, the
+                            MIME for a given part */
+    char *boundary_type;  /* for multipart/mixed, the boundary declared in 
+                             the content type */
+    char attachment_rfc822; /* set to TRUE if this message node is a
+                                message/rfc822 attachment */
+    char alternative; /* set to TRUE if this message node is a child of multipart/alternative */
+    message_node_skip_t skip; /* different values stating how we should deal with this node
+                                 if we need to fully or partially skip it when flattening it */
+    struct message_node *attachment_child;
+    struct message_node *attachment_next_sibling;
+    struct message_node *parent;
+};
+  
 struct printed {
     int msgnum;
     struct printed *next;
@@ -332,29 +393,58 @@ struct attach {
 #define BODY_CONTINUE (1<<0)	/* this is a continued line */
 #define BODY_HTMLIZED (1<<1)	/* this is already htmlified */
 #define BODY_HEADER   (1<<2)	/* this is a header line */
-#define BODY_ATTACHED (1<<3)	/* this line was attached */
-#define BODY_ATTACHMENT_LINKS (1<<4)   /* this line is part of the generated links 
-				       ** to attachments */
-#define BODY_ATTACHMENT_RFC822 (1<<5)   /* this line is the beginning of an message/rfc822
+#define BODY_ATTACHMENT (1<<3)	/* this line was attached */
+#define BODY_ATTACHMENT_START (1<<4) /* meta data to help encapsulate attachments */
+#define BODY_ATTACHMENT_END   (1<<5)
+/* beginning and ending of a list of external attachment links */
+#define BODY_ATTACHMENT_LINKS_START (1<<6) 
+#define BODY_ATTACHMENT_LINKS_END   (1<<7)
+#define BODY_ATTACHMENT_LINKS (1<<8)   /* this line is a child of the list of external
+                                          attachment links */
+#define BODY_ATTACHMENT_RFC822 (1<<9)   /* this line is the beginning of an message/rfc822
 					** attachment */
-#define BODY_FORMAT_FLOWED   (1<<6) /* this line is format-flowed */
-#define BODY_DEL_SSQ  (1<<7)    /* remove both space stuffing and
+#define BODY_FORMAT_FLOWED   (1<<10) /* this line is format-flowed */
+#define BODY_DEL_SSQ  (1<<11)    /* remove both space stuffing and
                                  * quotes where applicable for f=f */
+#define BODY_ATTACHED (1<<12)  /* temp while cleaning code */
 
-
-struct boundary {
-    struct boundary *next;
-    struct boundary *prev;
-    char *line;
+/* used to store a MIME boundary and all the context related to it
+** alternative_info, charset, applemail_hack, ... */
+struct boundary_stack {
+    struct boundary_stack *next;
+    struct boundary_stack *prev;
+    char *boundary_id;
+    
+    char alternativeparser;
+    int alternative_weight;
+#ifdef CHARSETSP
+    char *prefered_content_charset;
+#endif /* CHARSETSP */
+    struct body *alternative_lp;
+    struct body *alternative_bp;
+    struct message_node *current_alt_message_node;
+    struct message_node *root_alt_message_node;
+    char alternative_message_node_created;
+    char alternative_file[129];
+    char alternative_lastfile[129];
+    char last_alternative_type[129];
+    int applemail_old_set_save_alts;
 };
 
+#ifdef CHARSETSP
 struct charset_stack {
     struct charset_stack *next;
     struct charset_stack *prev;
     char *charset;
     char *charsetsave;
 };
+#endif /* CHARSETSP */
 
+struct hm_stack {
+    struct hm_stack *prev;
+    void *value;
+};
+  
 VAR struct header *subjectlist;
 VAR struct header *authorlist;
 VAR struct header *datelist;
