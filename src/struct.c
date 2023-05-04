@@ -729,9 +729,11 @@ struct boundary_stack *boundary_stack_pop(struct boundary_stack *bnd)
     /* JK: MAKE SURE WE ARE FREEING ALL MEMORY ASSOCIATED TO BOUNDARY */
     /* free allocated memory */
     free(tmp_bnd->boundary_id);
+#ifdef CHARSETSP
     if (tmp_bnd->prefered_content_charset) {
         free(tmp_bnd->prefered_content_charset);
     }
+#endif /* CHARSETSP */
     free(tmp_bnd);
 
     return bnd;		/* the new "active" boundary */
