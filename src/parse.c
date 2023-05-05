@@ -1663,8 +1663,15 @@ int parsemail(char *mbox,	/* file name */
     int att_counter = 0;	/* used to generate a unique name for attachments */
 
     int parse_multipart_alternative_force_save_alts = 0; /* used to control if we are parsing alternative as multipart */
-    int applemail_old_set_save_alts = -1;  /* used to store the set_save_alts when overriding it for apple mail */
-    int applemail_ua_header_len = (set_applemail_mimehack) ? strlen (set_applemail_ua_header) : 0; /* code optimization to avoid computing it each time */
+    
+    /* used to store the set_save_alts when overriding it for apple mail */
+    int applemail_old_set_save_alts = -1;
+    /* code optimization to avoid computing it each time */
+    int applemail_ua_header_len = (set_applemail_mimehack) ? strlen (set_applemail_ua_header) : 0;
+    /* we make a local copy of this config variable because the apple mail
+       hack will alter it and we may need to fall back to the original value
+       while processing a complex multipart/ message/rfc822 message */
+    int local_set_save_alts = set_save_alts;
     
     /*
     ** keeps track of attachment file name used so far for this message
@@ -1815,7 +1822,8 @@ int parsemail(char *mbox,	/* file name */
     parse_multipart_alternative_force_save_alts = 0;
     attachment_rfc822 = FALSE;
     applemail_old_set_save_alts = -1;
-
+    local_set_save_alts = set_save_alts;
+    
     require_filter_len = require_filter_full_len = 0;
     for (tlist = set_filter_require; tlist != NULL; require_filter_len++, tlist = tlist->next)
 	;
@@ -2082,7 +2090,7 @@ int parsemail(char *mbox,	/* file name */
                         head->parsedheader = TRUE;
                         if (alternativeparser
                             || !Mime_B
-                            || set_save_alts
+                            || local_set_save_alts
                             || !set_applemail_mimehack) {
                             continue;
                         }
@@ -2102,13 +2110,13 @@ int parsemail(char *mbox,	/* file name */
                             ** in-line.
                             */
 
-                            applemail_old_set_save_alts = set_save_alts;
-			    set_save_alts = 2;
+                            applemail_old_set_save_alts = local_set_save_alts;
+			    local_set_save_alts = 2;
 
 #if DEBUG_PARSE
                             printf("Applemail_hack force save_alts: yes\n");
 			    printf("Applemail_hack set_save_alts changed from %d to %d\n",
-                                   applemail_old_set_save_alts, set_save_alts);
+                                   applemail_old_set_save_alts, local_set_save_alts);
 #endif
                         }
                     }
@@ -2473,7 +2481,7 @@ int parsemail(char *mbox,	/* file name */
                                 alternative_lastfile[0] = '\0';
                             }
                         }
-                        else if (set_save_alts == 2) {
+                        else if (local_set_save_alts == 2) {
                             content = CONTENT_BINARY;
                         } else {
                             /* ...and this type is not a prefered one. Thus, we
@@ -2519,7 +2527,7 @@ int parsemail(char *mbox,	/* file name */
                         /* text content or text/html follows.
                          */
                         
-                        if (set_save_alts && alternativeparser
+                        if (local_set_save_alts && alternativeparser
                             && content == CONTENT_BINARY) {
                             file_created = MAKE_FILE; /* please make one */
                             description = set_alts_text ? set_alts_text
@@ -2604,6 +2612,13 @@ int parsemail(char *mbox,	/* file name */
                             attachment_rfc822 = TRUE;
                         }
                         isinheader = 1;
+                        /* reset the apple mail hack and the
+                           local_set_save_alts as we don't know if the
+                           forwarded message was originally sent from
+                           an apple mal client */
+                        parse_multipart_alternative_force_save_alts = 0;
+                        applemail_old_set_save_alts = -1;
+                        local_set_save_alts = set_save_alts;
                         break;
                         
                     } /* message/rfc822 */
@@ -2825,7 +2840,6 @@ int parsemail(char *mbox,	/* file name */
                                 boundp->alternative_bp = alternative_bp;
                                 boundp->current_alt_message_node = current_alt_message_node;
                                 boundp->root_alt_message_node = root_alt_message_node;
-                                boundp->applemail_old_set_save_alts = applemail_old_set_save_alts;
                                 current_alt_message_node = root_alt_message_node = NULL;
                                 alternative_file[0] = alternative_lastfile[0] = last_alternative_type[0] = '\0';
                                 alternative_message_node_created = FALSE;
@@ -2833,6 +2847,9 @@ int parsemail(char *mbox,	/* file name */
                             }
 
                             boundp = boundary_stack_push(boundp, boundbuffer);
+                            boundp->parse_multipart_alternative_force_save_alts = parse_multipart_alternative_force_save_alts;
+                            boundp->applemail_old_set_save_alts = applemail_old_set_save_alts;
+                            boundp->set_save_alts = local_set_save_alts;
                             multipartp = multipart_stack_push(multipartp, type);
                             skip_mime_epilogue = FALSE;
 
@@ -3258,10 +3275,10 @@ int parsemail(char *mbox,	/* file name */
                     printf("Applemail_hack resetting parse_multipart_alternative_force_save_alts\n");
 #endif
                     if (applemail_old_set_save_alts != -1) {
-                        set_save_alts = applemail_old_set_save_alts;
+                        local_set_save_alts = applemail_old_set_save_alts;
                         applemail_old_set_save_alts = -1;
 #if DEBUG_PARSE
-                        printf("Applemail_hack resetting save_alts to %d\n", applemail_old_set_save_alts);
+                        printf("Applemail_hack resetting save_alts to %d\n", local_set_save_alts);
 #endif
                     }
 		}
@@ -3296,6 +3313,7 @@ int parsemail(char *mbox,	/* file name */
                            to the boundary we're processing. This is to take
                            into account missing end boundaries */
                         boundary_stack_pop_to_id(&boundp, line);
+                        /* @@@ restore context for this boundp here */
                         
                         if (bp) {
                             /* store the current attachment and prepare for
@@ -3362,27 +3380,32 @@ int parsemail(char *mbox,	/* file name */
                                 current_message_node = message_node_get_parent(current_message_node);
                             }
 			    boundp = boundary_stack_pop(boundp);
-                            if (boundp && boundp->alternativeparser) {
-                                alternativeparser = boundp->alternativeparser;
-                                alternative_weight = boundp->alternative_weight;
-                                alternative_message_node_created =
-                                    boundp->alternative_message_node_created;
-                                strcpy(alternative_file, boundp->alternative_file);
-                                strcpy(alternative_lastfile, boundp->alternative_lastfile);
-                                strcpy(last_alternative_type, boundp->last_alternative_type);
-                                alternative_lp = boundp->alternative_lp;
-                                alternative_bp = boundp->alternative_bp;
-                                current_alt_message_node = boundp->current_alt_message_node;
-                                root_alt_message_node = boundp->root_alt_message_node;
+                            /* restore the context associated with the active boundary */
+                            if (boundp) {
+                                parse_multipart_alternative_force_save_alts = boundp->parse_multipart_alternative_force_save_alts;
                                 applemail_old_set_save_alts = boundp->applemail_old_set_save_alts;
-                                boundp->alternative_file[0] = '\0';
-                                boundp->alternative_lastfile[0] = '\0';
-                                boundp->last_alternative_type[0] = '\0';
-                                boundp->current_alt_message_node = NULL;
-                                boundp->root_alt_message_node = NULL;
-                                boundp->applemail_old_set_save_alts = -1;
-                                boundp->alternativeparser = FALSE;
-                                boundp->alternative_message_node_created = FALSE;
+                                local_set_save_alts = boundp->set_save_alts;
+                                
+                                if (boundp->alternativeparser) {
+                                    alternativeparser = boundp->alternativeparser;
+                                    alternative_weight = boundp->alternative_weight;
+                                    alternative_message_node_created =
+                                        boundp->alternative_message_node_created;
+                                    strcpy(alternative_file, boundp->alternative_file);
+                                    strcpy(alternative_lastfile, boundp->alternative_lastfile);
+                                    strcpy(last_alternative_type, boundp->last_alternative_type);
+                                    alternative_lp = boundp->alternative_lp;
+                                    alternative_bp = boundp->alternative_bp;
+                                    current_alt_message_node = boundp->current_alt_message_node;
+                                    root_alt_message_node = boundp->root_alt_message_node;
+                                    boundp->alternative_file[0] = '\0';
+                                    boundp->alternative_lastfile[0] = '\0';
+                                    boundp->last_alternative_type[0] = '\0';
+                                    boundp->current_alt_message_node = NULL;
+                                    boundp->root_alt_message_node = NULL;
+                                    boundp->alternativeparser = FALSE;
+                                    boundp->alternative_message_node_created = FALSE;
+                                }
                             }
 #if DELETE_ME
                             if (!boundp) {
@@ -3392,7 +3415,7 @@ int parsemail(char *mbox,	/* file name */
                             /* skip the MIME epilogue until the next section (or next message!) */
                             skip_mime_epilogue = TRUE;
 			    multipartp = multipart_stack_pop(multipartp);
-
+                            
                             *charsetsave='\0';
                             if (charset) {
                                 free(charset);
@@ -3452,7 +3475,7 @@ int parsemail(char *mbox,	/* file name */
 			    /* we found the beginning of a new section */
 			    skip_mime_epilogue = FALSE;
 
-			    if (alternativeparser && !set_save_alts) {
+			    if (alternativeparser && !local_set_save_alts) {
 				/*
 				 * parsing another alternative, so we save the
 				 * precedent values
@@ -3479,7 +3502,7 @@ int parsemail(char *mbox,	/* file name */
 			    }
 			    else {
 				att_counter++;
-				if (alternativeparser && set_save_alts == 1) {
+				if (alternativeparser && local_set_save_alts == 1) {
                                     /* JK: @@@ REVIEW THIS FOR WAI CONTENT. WE DON'T WANT
                                        TO USE <hr /> ANYMORE .. 
                                        set_save_alts NEEDS REVIEW AFTER OUR RECENT CHANGES 202305*/
@@ -4225,10 +4248,10 @@ int parsemail(char *mbox,	/* file name */
             printf("Applemail_hack resetting parse_multipart_alternative_force_save_alts\n");
 #endif
             if (applemail_old_set_save_alts != -1) {
-                set_save_alts = applemail_old_set_save_alts;
+                local_set_save_alts = applemail_old_set_save_alts;
                 applemail_old_set_save_alts = -1;
 #if DEBUG_PARSE
-                printf("Applemail_hack resetting save_alts to %d\n", applemail_old_set_save_alts);
+                printf("Applemail_hack resetting save_alts to %d\n", local_set_save_alts);
 #endif
             }
         }

@@ -429,7 +429,10 @@ struct boundary_stack {
     char alternative_file[129];
     char alternative_lastfile[129];
     char last_alternative_type[129];
+    /* the following three store the context for the applemail hack */
+    int parse_multipart_alternative_force_save_alts;
     int applemail_old_set_save_alts;
+    int set_save_alts;
 };
 
 struct hm_stack {
