@@ -2587,17 +2587,6 @@ int parsemail(char *mbox,	/* file name */
                          * be used.
                          */
                         
-#if 0
-                        char *notice;
-                        trio_asprintf(&notice,
-                                      "<p class=\"attached-message-notice\">%s:</p>",
-                                      lang[MSG_ATTACHED_MESSAGE_NOTICE]);				 		        bp = addbody(bp, &lp, notice,
-                                                                                                                                             BODY_ATTACHMENT_RFC822 | BODY_HTMLIZED | bodyflags);
-#ifdef DELETE_ME
-                        bodyflags |= BODY_ATTACHED;
-#endif
-                        free(notice);
-#endif
                         /* need to take into account alternates with rfc822? */
                         if (boundp == NULL && multipartp == NULL) {
                             /* we have a non multipart message with a message/rfc822
@@ -3787,9 +3776,6 @@ int parsemail(char *mbox,	/* file name */
 				    if (set_usemeta) {
 					/* write the mime meta info */
 					FILE *file_ptr;
-#if 0
-					char *meta_file;
-#endif
 					char *ptr;
 
 					ptr = strrchr(att_binname, PATH_SEPARATOR);
@@ -3829,9 +3815,6 @@ int parsemail(char *mbox,	/* file name */
 					    }
 					    fclose(file_ptr);
 					    chmod(meta_filename, set_filemode);
-#if 0
-					    free(meta_filename);
-#endif
 					}
 				    }
 				    if (alternativeparser) {
