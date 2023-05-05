@@ -45,6 +45,7 @@ extern char *set_mbox;
 extern char *set_archives;
 extern char *set_custom_archives;
 extern char *set_about;
+extern char *set_empty_archive_notice;
 extern char *set_dir;
 extern char *set_defaultindex;
 extern char *set_default_top_index;

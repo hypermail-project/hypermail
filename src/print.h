@@ -23,6 +23,7 @@ void writehaof(int, struct emailinfo *);
 
 void writeattachments(int, struct emailinfo *);
 
+void print_empty_archive_notice(FILE *, int);
 void printdates(FILE *, struct header *, int, int, struct emailinfo *, char *);
 void printsubjects(FILE *, struct header *, char **, int, int,
 		   struct emailinfo *);

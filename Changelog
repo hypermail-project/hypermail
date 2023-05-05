@@ -2,11 +2,20 @@ Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ============================
-HYPERMAIL VERSION 2.5.0
+HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
-	* getdate.y
+	* src/{hypermail.c, print.c, setup.c, setup.h}
+	When reading a multi-message mbox that is made only of messages that
+	are annotated as 'spam' or 'deleted', hypermail will now print
+	an "empty archive" notice in all the generated indices. You can
+	customize the markup and text of that notice with the
+	'empty_archive_notice' configuration option.
+	Note that this behavior is disabled when calling hypermail with the -u
+	option (upgrade existing archive).
+
+	* src/getdate.y
 	Fixed bison warning "POSIX yacc reserves %type to nonterminals [-Wyacc]"
 	by adapting the solution proposed for kerberos5:
 	https://github.com/krb5/krb5/commit/0108d7d7fbb1111c062ac580e69e97103662fc2b

@@ -25,6 +25,7 @@ char *set_mbox;
 char *set_archives;
 char *set_custom_archives;
 char *set_about;
+char *set_empty_archive_notice;
 char *set_dir;
 char *set_defaultindex;
 char *set_default_top_index;
@@ -235,6 +236,13 @@ struct Config cfg[] = {
      "# This will create a link in the archived index pages\n"
      "# labeled 'About this archive' to the specified URL. Set\n"
      "# this to NONE to omit such a link.\n", FALSE},
+
+    {"empty_archive_notice", &set_empty_archive_notice, NULL, CFG_STRING,
+     "# This variable will let you customize both the markup and message you\n"
+     "# want to be displayed in indices when hypermail process a mailbox\n"
+     "# where all of its messages have been annotated as either 'spam' or\n"
+     "# 'deleted'.\n"
+     "# If not set, hypermail will use a default localized message.\n", FALSE},
 
     {"label", &set_label, NULL, CFG_STRING,
      "# Define this as the label to put in archives.\n", FALSE},
@@ -1416,6 +1424,7 @@ void dump_config(void)
     printf("set_archives = %s\n",set_archives ? set_archives : "Not set");
     printf("set_custom_archives = %s\n",set_custom_archives ? set_custom_archives : "Not set");
     printf("set_about = %s\n",set_about ? set_about : "Not set");
+    printf("set_empty_archive_notice = %s\n",set_empty_archive_notice ? set_empty_archive_notice : "Not set");    
     printf("set_dir = %s\n",set_dir ? set_dir : "Not set");
     printf("set_defaultindex = %s\n",set_defaultindex ? set_defaultindex : "Not set");
     printf("set_default_top_index = %s\n",set_default_top_index ? set_default_top_index : "Not set");

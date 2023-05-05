@@ -703,8 +703,18 @@ int main(int argc, char **argv)
 	writearticles(0, max_msgnum + 1);
     }
 
-    if (amount_new) {		/* Always write the index files */
-	if (set_linkquotes) {
+    /* only update the indices when we either have a new
+       message (if set_increment) is set or when inputting
+       a whole mbox. 
+       This is a lame way to take into account msgid collision
+       when adding a new message. Without binding the condition
+       to set_condition, this could result in the indices stating
+       the archive is empty */
+    if ((set_increment && amount_new > 0)
+        || (!set_increment
+            && (amount_new > 0 || count_deleted(max_msgnum + 1)))) {
+	/* Always write the index files */
+	if (amount_new && set_linkquotes) {
 	    threadlist = NULL;
 	    threadlist_end = NULL;
 	    printedthreadlist = NULL;
@@ -728,7 +738,7 @@ int main(int argc, char **argv)
 		/* if (ep->flags & THREADING_ALTERED) */
 	    }
 	}
-	count_deleted(max_msgnum + 1);
+        
 	if (show_index[0][DATE_INDEX])
 	    writedates(amount_new, NULL);
 	if (show_index[0][THREAD_INDEX])

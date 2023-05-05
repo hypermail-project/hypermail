@@ -411,6 +411,23 @@ void fprint_summary(FILE *fp, int pos, long first_d, long last_d, int num)
 
 #endif
 
+/* prints an index notice stating that there are no messages
+in the archive. This may happen if, for example, you process
+a mbox where each message has been annotated either as spam
+or deleted */
+void print_empty_archive_notice(FILE *fp, int end_date_num)
+{
+    fprintf(fp, "<main class=\"messages-list\">\n");
+    if (set_empty_archive_notice) {
+        fprintf(fp, "%s\n", set_empty_archive_notice);
+    } else {
+        fprintf(fp, "<p class=\"archive-notice\">%s</p>\n",
+                "(no messages are available in this list)</p>\n");
+    }
+    printlaststats(fp, end_date_num);
+    fprintf(fp, "</main>\n");
+}
+
 /*----------------------------------------------------------------------------*/
 
 void print_index_header_links (FILE *fp, mindex_t called_from, long startdatenum, long enddatenum, int amountmsgs, struct emailsubdir *subdir)
@@ -2882,22 +2899,29 @@ void writedates(int amountmsgs, struct emailinfo *email)
     /*
      * Print out the actual message index lists. Here's the beef.
      */
-    if (set_indextable)
-	fprintf(fp, "<div class=\"center\">\n<table>\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong>%s</strong></td></tr>\n", lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
-    else {
-        fprintf (fp, "<main class=\"messages-list\">\n");	
-    }
-    prev_date_str[0] = '\0';
-    printdates(fp, datelist, -1, -1, email, prev_date_str);
-
-    if (set_indextable) {
-        fprintf(fp, "</table>\n</div>\n");
-        printlaststats (fp, end_date_num);
+    if (amountmsgs > 0) {
+        if (set_indextable)
+            fprintf(fp, "<div class=\"center\">\n<table>\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong>%s</strong></td></tr>\n", lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
+        else {
+            fprintf (fp, "<main class=\"messages-list\">\n");	
+        }
+        prev_date_str[0] = '\0';
+        printdates(fp, datelist, -1, -1, email, prev_date_str);
+        
+        if (set_indextable) {
+            fprintf(fp, "</table>\n</div>\n");
+            printlaststats (fp, end_date_num);
+        } else {
+            if (*prev_date_str)  /* close the previous date item */
+                fprintf (fp, "</ul>\n");
+            printlaststats (fp, end_date_num);
+            fprintf (fp, "</main>\n");
+        }
     } else {
-        if (*prev_date_str)  /* close the previous date item */
-            fprintf (fp, "</ul>\n");
-        printlaststats (fp, end_date_num);
-        fprintf (fp, "</main>\n");
+        /* print notice that the archive has no messages. 
+           This can happen if all the messages in the archive
+           have been annotated as either spam or deleted */
+        print_empty_archive_notice(fp, end_date_num);
     }
     
     /* 
@@ -2970,20 +2994,27 @@ void writeattachments(int amountmsgs, struct emailinfo *email)
      * Print out the actual message index lists. Here's the beef.
      */
 
-    if (set_indextable) {
-	fprintf(fp, "<div class=\"center\">\n<table>\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong>%s</strong></td></tr>\n", lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
-	printattachments(fp, datelist, email, &is_first);
-	fprintf(fp, "</table>\n</div>\n");
-	printlaststats (fp, end_date_num);	
-    }
-    else {
-        fprintf (fp, "<main class=\"messages-list\">\n");
-	if (printattachments(fp, datelist, email, &is_first) == 0) {
-	  fprintf(fp, "<h2 class=\"empty-archive\">%s</h2>\n", lang[MSG_EMPTY_ARCHIVE]);
-        } else {
-	  printlaststats (fp, end_date_num);
-	}
-	fprintf(fp, "</main>\n");
+    if (amountmsgs > 0) {
+        if (set_indextable) {
+            fprintf(fp, "<div class=\"center\">\n<table>\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong>%s</strong></td></tr>\n", lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
+            printattachments(fp, datelist, email, &is_first);
+            fprintf(fp, "</table>\n</div>\n");
+            printlaststats (fp, end_date_num);	
+        }
+        else {
+            fprintf (fp, "<main class=\"messages-list\">\n");
+            if (printattachments(fp, datelist, email, &is_first) == 0) {
+                fprintf(fp, "<h2 class=\"empty-archive\">%s</h2>\n", lang[MSG_EMPTY_ARCHIVE]);
+            } else {
+                printlaststats (fp, end_date_num);
+            }
+            fprintf(fp, "</main>\n");
+        }
+    } else {
+        /* print notice that the archive has no messages. 
+           This can happen if all the messages in the archive
+           have been annotated as either spam or deleted */
+        print_empty_archive_notice(fp, end_date_num);
     }
 
     /* 
@@ -3057,18 +3088,25 @@ void writethreads(int amountmsgs, struct emailinfo *email)
 
     fprintf (fp, "</header>\n");
 
-    if (set_indextable) {
-	fprintf(fp, "<div class=\"center\">\n<table>\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong> %s</strong></td></tr>\n", lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
-	print_all_threads(fp, -1, -1, email);
-	fprintf(fp, "</table>\n</div>\n");
-	printlaststats (fp, end_date_num);	
-    }
-    else {
-        fprintf (fp, "<main class=\"messages-list\">\n");
-	print_all_threads(fp, -1, -1, email);
-	printlaststats (fp, end_date_num);
-	fprintf (fp, "</main>\n");
-    }
+    if (amountmsgs > 0) {
+        if (set_indextable) {
+            fprintf(fp, "<div class=\"center\">\n<table>\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong> %s</strong></td></tr>\n", lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
+            print_all_threads(fp, -1, -1, email);
+            fprintf(fp, "</table>\n</div>\n");
+            printlaststats (fp, end_date_num);	
+        }
+        else {
+            fprintf (fp, "<main class=\"messages-list\">\n");
+            print_all_threads(fp, -1, -1, email);
+            printlaststats (fp, end_date_num);
+            fprintf (fp, "</main>\n");
+        }
+    } else {
+        /* print notice that the archive has no messages. 
+           This can happen if all the messages in the archive
+           have been annotated as either spam or deleted */
+        print_empty_archive_notice(fp, end_date_num);
+    } 
 
     /* 
      * Print out archive information links at the bottom of the index
@@ -3139,7 +3177,7 @@ void printsubjects(FILE *fp, struct header *hp, char **oldsubject,
 		fprintf(fp, "<ul>\n");
 	    }
 	}
-	if(set_indextable) {
+	if (set_indextable) {
 	    startline = "<tr><td>&nbsp;</td><td nowrap>";
 	    break_str = "</td><td nowrap>";
 	    strcpy(date_str, getindexdatestr(hp->data->date));
@@ -3205,24 +3243,31 @@ void writesubjects(int amountmsgs, struct emailinfo *email)
     
     fprintf (fp, "</header>\n");
 
-    if (set_indextable) {
-	fprintf(fp, "<div class=\"center\">\n<table>\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong> %s</strong></td></tr>\n", lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
-    }
-    else {
-        fprintf (fp, "<main class=\"messages-list\">\n");
-    }
-    {
-	char *oldsubject = "";	/* dummy to start with */
-	printsubjects(fp, subjectlist, &oldsubject, -1, -1, email);
-    }
-    if (set_indextable) {
-	fprintf(fp, "</table>\n</div>\n");
-        printlaststats (fp, end_date_num);                
-    }
-    else {
-	fprintf(fp, "</ul>\n");
-        printlaststats (fp, end_date_num);
-	fprintf (fp, "</main>\n");
+    if (amountmsgs > 0) {
+        if (set_indextable) {
+            fprintf(fp, "<div class=\"center\">\n<table>\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong> %s</strong></td></tr>\n", lang[MSG_CSUBJECT], lang[MSG_CAUTHOR], lang[MSG_CDATE]);
+        }
+        else {
+            fprintf (fp, "<main class=\"messages-list\">\n");
+        }
+        {
+            char *oldsubject = "";	/* dummy to start with */
+            printsubjects(fp, subjectlist, &oldsubject, -1, -1, email);
+        }
+        if (set_indextable) {
+            fprintf(fp, "</table>\n</div>\n");
+            printlaststats (fp, end_date_num);                
+        }
+        else {
+            fprintf(fp, "</ul>\n");
+            printlaststats (fp, end_date_num);
+            fprintf (fp, "</main>\n");
+        }
+    } else {
+        /* print notice that the archive has no messages. 
+           This can happen if all the messages in the archive
+           have been annotated as either spam or deleted */
+        print_empty_archive_notice(fp, end_date_num);
     }
 
     /* 
@@ -3363,24 +3408,31 @@ void writeauthors(int amountmsgs, struct emailinfo *email)
 
     fprintf (fp, "</header>\n");
 
-    if (set_indextable) {
-		fprintf(fp, "<div class=\"center\">\n<table>\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong> %s</strong></td></tr>\n", lang[MSG_CAUTHOR], lang[MSG_CSUBJECT], lang[MSG_CDATE]);
-    }
-    else {
-        fprintf(fp, "<main class=\"messages-list\">\n");
-    }
-    {
-	char *prevauthor = "";
-	printauthors(fp, authorlist, &prevauthor, -1, -1, email);
-    }
-    if (set_indextable) {
-	fprintf(fp, "</table>\n</div>\n");
-	printlaststats (fp, end_date_num);	
-    }
-    else {
-	fprintf(fp, "</ul>\n");
-	printlaststats (fp, end_date_num);
-	fprintf(fp, "</main>\n");
+    if (amountmsgs > 0) {
+        if (set_indextable) {
+            fprintf(fp, "<div class=\"center\">\n<table>\n<tr><td><strong>%s</strong></td><td><strong>%s</strong></td><td><strong> %s</strong></td></tr>\n", lang[MSG_CAUTHOR], lang[MSG_CSUBJECT], lang[MSG_CDATE]);
+        }
+        else {
+            fprintf(fp, "<main class=\"messages-list\">\n");
+        }
+        {
+            char *prevauthor = "";
+            printauthors(fp, authorlist, &prevauthor, -1, -1, email);
+        }
+        if (set_indextable) {
+            fprintf(fp, "</table>\n</div>\n");
+            printlaststats (fp, end_date_num);	
+        }
+        else {
+            fprintf(fp, "</ul>\n");
+            printlaststats (fp, end_date_num);
+            fprintf(fp, "</main>\n");
+        }
+    } else {
+        /* print notice that the archive has no messages. 
+           This can happen if all the messages in the archive
+           have been annotated as either spam or deleted */
+        print_empty_archive_notice(fp, end_date_num);
     }
 
     /* 
@@ -3539,7 +3591,7 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
     fprintf(fp, "</thead>\n");
     
     for (y = first_year; y <= last_year; ++y) {
-		for (m = (set_monthly_index ? 0 : -1); m < (set_monthly_index ? 12 : 0); ++m) {
+        for (m = (set_monthly_index ? 0 : -1); m < (set_monthly_index ? 12 : 0); ++m) {
 	    char month_str[80];
 	    char month_str_pub[80];
 	    int started_line = 0;
@@ -3593,23 +3645,24 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
 		   fprintf (fp1, "<main class=\"messages-list\">\n");
 		}
                 
-		switch (j) {
-		    case DATE_INDEX:
-		      {
-			char prev_date_str[DATESTRLEN + 40];
-			prev_date_str[0] = '\0';
-		        printdates(fp1, datelist, y, m, NULL, prev_date_str);
+		switch (j)
+                    {
+                    case DATE_INDEX:
+                    {
+                        char prev_date_str[DATESTRLEN + 40];
+                        prev_date_str[0] = '\0';
+                        printdates(fp1, datelist, y, m, NULL, prev_date_str);
                         if (!set_indextable) {
                             if (*prev_date_str)  /* close the previous date item */
                                 fprintf (fp1, "</ul>\n");
                         }
-			break;
-		      }
-		    case THREAD_INDEX:
-		        print_all_threads(fp1, y, m, NULL);
-			break;
-		    case SUBJECT_INDEX:
-			printsubjects(fp1, subjectlist, &prev_text, y, m, NULL);
+                        break;
+                    }
+                    case THREAD_INDEX:
+                        print_all_threads(fp1, y, m, NULL);
+                        break;
+                    case SUBJECT_INDEX:
+                        printsubjects(fp1, subjectlist, &prev_text, y, m, NULL);
                         if (!set_indextable) {
                             fprintf(fp1, "</ul>\n");
                         }
@@ -3620,8 +3673,8 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
                             fprintf(fp1, "</ul>\n");
                         }
 			break;
-		}
-
+                    }
+                
 		if (set_indextable) {
 		    fprintf(fp1, "</table>\n</div>\n");
 		}
@@ -3662,10 +3715,10 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
 		fprintf(fp, "</tr>\n");
 	}
     }
-	fprintf(fp, "</table>\n");
-	fprintf(fp, "</main>\n");	
-	fprintf (fp, "<footer>\n");	
-	printfooter(fp, ihtmlfooterfile, set_label, set_dir, subject, summary_filename, TRUE);
+    fprintf(fp, "</table>\n");
+    fprintf(fp, "</main>\n");	
+    fprintf (fp, "<footer>\n");	
+    printfooter(fp, ihtmlfooterfile, set_label, set_dir, subject, summary_filename, TRUE);
     for (j = 0; j <= AUTHOR_INDEX; ++j)
 	index_name[0][j] = save_name[j];
 }
