@@ -237,6 +237,7 @@ struct language_entry {
 #define MSG_ATTACHED_MESSAGE_NOTICE              172
 #define MSG_FORWARDED_MESSAGE_NOTICE             173
 #define MSG_LIST_OF_STORED_ATTACHMENTS_NOTICE    174
+#define MSG_EMPTY_ARCHIVE_NOTICE                 175
 
 #ifdef MAIN_FILE
 
@@ -436,6 +437,7 @@ char *de[] = {       /* German */
   "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
   "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
   "List of stored attachments", /* MSG_LIST_OF_STORED_ATTACHMENTS_NOTICE */
+  "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */
   NULL,                              /* End Of Message Table - NOWHERE*/
 };
 
@@ -620,7 +622,8 @@ char *pl[] = {                      /* English */
   "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
   "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
   "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
-  "List of stored attachments", /* MSG_LIST_OF_STORED_ATTACHMENTS_NOTICE */  
+  "List of stored attachments", /* MSG_LIST_OF_STORED_ATTACHMENTS_NOTICE */
+  "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -806,7 +809,8 @@ char *en[] = {       /* English */
   "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
   "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
   "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
-  "List of stored attachments", /* MSG_LIST_OF_STORED_ATTACHMENTS_NOTICE */  
+  "List of stored attachments", /* MSG_LIST_OF_STORED_ATTACHMENTS_NOTICE */
+  "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
   NULL,                         /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1004,6 +1008,7 @@ char *es[] = {       /* Espanol/Spanish */
   "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
   "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */  
   "List of stored attachments", /* MSG_LIST_OF_STORED_ATTACHMENTS_NOTICE */
+  "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
   NULL,                               /* End Of Message Table */
 };
 
@@ -1192,6 +1197,7 @@ char *pt[] = {                     /* Brazilian Portuguese */
   "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
   "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
   "List of stored attachments", /* MSG_LIST_OF_STORED_ATTACHMENTS_NOTICE */
+  "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
   NULL,                                /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1376,6 +1382,7 @@ char *fi[] = {       /* Finnish */
   "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
   "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
   "List of stored attachments", /* MSG_LIST_OF_STORED_ATTACHMENTS_NOTICE */
+  "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1562,7 +1569,8 @@ char *it[] = {       /* Italian */
   "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
   "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
   "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
-  "List of stored attachments", /* MSG_LIST_OF_STORED_ATTACHMENTS_NOTICE */  
+  "List of stored attachments", /* MSG_LIST_OF_STORED_ATTACHMENTS_NOTICE */
+  "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1748,7 +1756,8 @@ char *fr[] = {       /* French */
   "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
   "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
   "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
-  "List of stored attachments", /* MSG_LIST_OF_STORED_ATTACHMENTS_NOTICE */  
+  "List of stored attachments", /* MSG_LIST_OF_STORED_ATTACHMENTS_NOTICE */
+  "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
   NULL,                                    /* End Of Message Table  - NOWHERE*/
 };
 
@@ -1936,7 +1945,8 @@ char *is[] = {       /* Icelandic */
   "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
   "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
   "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
-  "List of stored attachments", /* MSG_LIST_OF_STORED_ATTACHMENTS_NOTICE */  
+  "List of stored attachments", /* MSG_LIST_OF_STORED_ATTACHMENTS_NOTICE */
+  "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
   NULL,                               /* End Of Message Table      - NOWHERE*/
 };
 
@@ -2127,7 +2137,8 @@ char *sv[] = {
   "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
   "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
   "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
-  "List of stored attachments", /* MSG_LIST_OF_STORED_ATTACHMENTS_NOTICE */  
+  "List of stored attachments", /* MSG_LIST_OF_STORED_ATTACHMENTS_NOTICE */
+  "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 
@@ -2318,7 +2329,8 @@ char *no[] = {
   "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
   "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
   "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
-  "List of stored attachments", /* MSG_LIST_OF_STORED_ATTACHMENTS_NOTICE */  
+  "List of stored attachments", /* MSG_LIST_OF_STORED_ATTACHMENTS_NOTICE */
+  "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 
@@ -2510,7 +2522,8 @@ char *gr[] = {       /* Greek */
   "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
   "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
   "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
-  "List of stored attachments", /* MSG_LIST_OF_STORED_ATTACHMENTS_NOTICE */  
+  "List of stored attachments", /* MSG_LIST_OF_STORED_ATTACHMENTS_NOTICE */
+  "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
   NULL,                           	/* End Of Message Table - NOWHERE*/
 };
 
@@ -2694,7 +2707,8 @@ char *ru[] = {     /* Russian */
   "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
   "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
   "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
-  "List of stored attachments", /* MSG_LIST_OF_STORED_ATTACHMENTS_NOTICE */  
+  "List of stored attachments", /* MSG_LIST_OF_STORED_ATTACHMENTS_NOTICE */
+  "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 
