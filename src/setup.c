@@ -181,7 +181,8 @@ struct Config cfg[] = {
      "# put this string before the message number in each URI fragment.\n", FALSE},
 
     {"email_address_obfuscation", &set_email_address_obfuscation, BFALSE, CFG_SWITCH,
-     "# set to On to enable email address obfuscation using numeric character references.\n",FALSE},
+     "# set to On to enable email address obfuscation using\n"
+     "# numeric character references.\n",FALSE},
 
     {"i18n", &set_i18n, BTRUE, CFG_SWITCH,
      "# Enable I18N features, hypermail must be linked with libiconv.\n",FALSE},
@@ -532,7 +533,8 @@ struct Config cfg[] = {
      "# This is the list of MIME attachment types that you do not want\n"
      "# to do anything with. Two special types may be used here:\n"
      "# $BINARY - ignore all types that would be stored as separate files.\n"
-     "# $NONPLAIN - ignore all types not treated as text/plain, and all $BINARY types.\n"
+     "# $NONPLAIN - ignore all types not treated as text/plain, and all\n"
+     "# $BINARY types.\n"
      "# Note: the behavior of these may be affected by the inlinehtml option.\n", FALSE},
 
     {"applemail_mimehack", &set_applemail_mimehack, BFALSE, CFG_SWITCH,
@@ -600,7 +602,7 @@ struct Config cfg[] = {
     {"ihtmlhelpupfile", &set_ihtmlhelpup, NULL, CFG_STRING,
      "# Define path as the path to a template  file  containing\n"
      "# valid  HTML  formatting  statements  that  you  wish to\n"
-     "# included as information giving help to your archive users,"
+     "# included as information giving help to your archive users\n,"
      "# in the upper navigation bar.\n", FALSE},
 
     {"ihtmlhelplowfile", &set_ihtmlhelplow, NULL, CFG_STRING,
