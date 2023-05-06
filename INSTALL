@@ -20,9 +20,9 @@ of older versions.
    "text_types = *" option or "ignore_types = $NONPLAIN" option if you want
    to restrict this). You might also want to look at the attachmentlink
    and unsafe_chars options to restrict attachment filenames.
+
    Also, it is probably a bad idea to enable cgi execution on a directory
    that hypermail puts files in.
-   Do not use the crappy cgi program called "mail".
 
 Before Building Hypermail:
 ==========================

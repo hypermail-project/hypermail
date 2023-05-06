@@ -142,6 +142,11 @@ list. The code that handles these options hasn't been updated or
 reviewed since a long time and will be deleted in a future release
 unless someone gives them more love.
 
+Removed the code that was used for the stand-alone script 'mail'.
+This script had security issues and had been disabled in 2003 to stop
+working. However, the code and associated libraries were still in
+the dist.
+
 *** HYPERMAIL FEATURES THAT NEED MORE LOVE in 3.0.0
 
 This is a list of features that have only been partially updated in

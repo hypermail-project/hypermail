@@ -13,16 +13,6 @@ SECURITY WARNING:
    server side includes (SSI) enabled unless you are sure you know what 
    you are doing. 
 
-WARNING: 
-   There once existed a program call "mail" that came with hypermail.
-   'mail' utility has not installed by default for the last two years.  
-   This program has been disabled because it was probably easy for spammers 
-   to use as an open relay. It also had problems with enabling malicious 
-   use of JavaScript and CRLF Injection.  The 'mail' utility is a historic 
-   reclic and will not be supplied in future versions.  Its functionality 
-   has been replaced with a warning that anyone using it should remove it 
-   immediately.  
-
 See the INSTALL file to get started. For a description of how to use it,
 see the hypermail.html, hmrc.html, and hypermail-faq.html files that come
 in the docs/ directory.

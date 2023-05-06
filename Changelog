@@ -6,6 +6,12 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
+	* src/mail.c libcgi configure.ac Makefile.in src/Makefile.in
+	Purged the years old deprecated mail script and its associated
+	libraries. Althought the script itself had been disabled
+	by code changes, its code base was still being built and
+	distributed with hypermail, even if it did nothing anymore.
+
 	* src/{hypermail.c, print.c, setup.c, setup.h}
 	When reading a multi-message mbox that is made only of messages that
 	are annotated as 'spam' or 'deleted', hypermail will now print
