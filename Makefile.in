@@ -89,9 +89,23 @@ clobber: clean
 distclean: clobber
 	rm -f tests/testmail
 
+# creates a distribution tar file.
+# taking care to replace the git checkout dirname by
+# by hypermail-version[-extraversion]/
+# from the values found in patchlevel.h
 tgz:
-	@(dir=`pwd`;name=`basename $$dir`;echo Creates $$name.tar.gz; cd .. ; \
-	tar -cf $$name.tar \
-           `cat $$name/FILES | grep -v "^#" | sed "s:^:$$name/:g"` ; \
-	gzip $$name.tar ; chmod a+r $$name.tar.gz ; mv $$name.tar.gz $$name/)
+	@(dir=`pwd`; source_dir=`basename $$dir`; \
+	version=`sed -nr '1s/.*VERSION\s+\"(.*)\"/\1/p' patchlevel.h`; \
+	extraversion=`sed -nr '2s/.*EXTRAVERSION\s+\"(.*)\"/-\1/p' patchlevel.h`; \
+	version=$$version$$extraversion; \
+	target_dir="hypermail-$$version"; \
+	echo creates $$target_dir.tgz from $$source_dir; \
+	cd .. ; \
+	transform_exp=s,^$$source_dir/,$$target_dir/,; \
+	tar -cf $$target_dir.tar \
+	    --transform=$$transform_exp \
+	    `cat $$source_dir/FILES | grep -v "^#" | sed "s:^:$$source_dir/:g"`; \
+	gzip $$target_dir.tar ; chmod a+r $$target_dir.tar.gz ; \
+	mv $$target_dir.tar.gz $$source_dir/ ; \
+	)
 
