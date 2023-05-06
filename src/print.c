@@ -3523,7 +3523,7 @@ void writehaof(int amountmsgs, struct emailinfo *email)
 #endif
 	fprintf(fp, "  <!DOCTYPE haof PUBLIC " "\"-//Bernhard Reiter//DTD HOAF 0.2//EN\"\n" "\"http://ffii.org/~breiter/probe/haof-0.2.dtd\">\n\n");
 	fprintf(fp, "  <haof version=\"0.2\">\n\n");
-	fprintf(fp, "      <archiver name=\"hypermail\" version=\"" VERSION ".pl" PATCHLEVEL "\" />\n\n");
+	fprintf(fp, "      <archiver name=\"hypermail\" version=\"" VERSION "\" />\n\n");
 
     print_haof_indices(fp, email ? email->subdir : NULL);
 	    

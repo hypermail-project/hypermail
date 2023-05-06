@@ -114,7 +114,7 @@ char *setindex(char *dfltindex, char *indextype, char *suffix)
 
 void version(void)
 {
-    printf("%s: %s: %s %s: %s\n", PROGNAME, lang[MSG_VERSION], VERSION, lang[MSG_PATCHLEVEL], PATCHLEVEL);
+    printf("%s: %s: %s\n", PROGNAME, lang[MSG_VERSION], VERSION);
     exit(0);
 }
 
@@ -165,7 +165,6 @@ void usage(void)
     }
     printf(")\n");
     printf("%s         : %s\n", lang[MSG_VERSION], VERSION);
-    printf("%s      : %s\n", lang[MSG_PATCHLEVEL], PATCHLEVEL);
     printf("%s            : %s\n\n", lang[MSG_DOCS], HMURL);
     exit(1);
 }

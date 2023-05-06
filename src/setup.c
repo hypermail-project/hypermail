@@ -1017,7 +1017,7 @@ void MakeConfig(bool comments)
 	fprintf(stdout,
 		"#################################################################\n"
 		"# This is an automatically generated config file done by\n"
-		"# Hypermail " VERSION " patchlevel " PATCHLEVEL " - %s",
+		"# Hypermail " VERSION " - %s",
 		ctime(&now));
     }
     for (i = 0; i < sizeof(cfg) / sizeof(cfg[0]); i++) {
