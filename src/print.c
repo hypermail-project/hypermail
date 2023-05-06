@@ -422,7 +422,7 @@ void print_empty_archive_notice(FILE *fp, int end_date_num)
         fprintf(fp, "%s\n", set_empty_archive_notice);
     } else {
         fprintf(fp, "<p class=\"archive-notice\">%s</p>\n",
-                "(no messages are available in this archive)");
+                lang[MSG_EMPTY_ARCHIVE_NOTICE]);
     }
     printlaststats(fp, end_date_num);
     fprintf(fp, "</main>\n");
