@@ -79,7 +79,6 @@ clobber: clean
 	rm -f config.status
 	rm -f archive/Makefile
 	rm -f docs/Makefile
-	rm -f libcgi/Makefile
 	rm -f src/Makefile
 	rm -f src/defaults.h
 	rm -f tests/testhm

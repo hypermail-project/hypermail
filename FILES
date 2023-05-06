@@ -102,24 +102,7 @@ lcc/getdate.c
 lcc/hypermail_files.txt
 lcc/lcc_extras.c
 lcc/lcc_extras.h
-lcc/pcre.h
-# 
-# libcgi - mail suport lib 
-# 
-libcgi/.indent.pro
-libcgi/Makefile.in
-libcgi/cgi.h
-libcgi/form_ent.c
-libcgi/form_tags.c
-libcgi/get_cgi_info.c
-libcgi/html.c
-libcgi/libcgi.html
-libcgi/main.c
-libcgi/mcode.c
-libcgi/strops.c
-libcgi/syn_mime.c
-libcgi/syn_url.c
-libcgi/template.c
+lcc/pcre2.h
 # 
 #  - Hypermail source
 # 
@@ -147,7 +130,6 @@ src/hypermail.h
 src/lang.c
 src/lang.h
 src/lock.c
-src/mail.c
 src/mem.c
 src/parse.c
 src/parse.h

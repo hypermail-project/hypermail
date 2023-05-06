@@ -500,41 +500,6 @@ else
 fi
 AC_SUBST(FNV_DEP)
 
-
-dnl ===========================================================================
-dnl Checks for libraries.
-dnl nsl socket lib?
-dnl ===========================================================================
-
-USENSL=no
-AC_CHECK_LIB(socket,gethostbyaddr,result=yes,result=no)
-if test $result = yes; then
-        LIBS="$LIBS -lsocket"
-else
-        AC_CHECK_LIB(socket,gethostbyaddr,result=yes,result=no,-lnsl)
-        if test $result = yes; then
-                LIBS = "$LIBS -lsocket -lnsl"
-                USENSL=yes
-        else
-                AC_CHECK_LIB(socket,inet_addr,result=yes,result=no)
-                if test $result = yes; then
-                        LIBS="$LIBS -lsocket"
-                else
-                        AC_CHECK_LIB(socket,inet_addr,result=yes,result=no,-lnsl)
-                        if test $result = yes; then
-                                LIBS="$LIBS -lsocket -lnsl"
-                                USENSL=yes
-                        fi
-                fi
-        fi
-fi
-if test $USENSL != yes; then
-        AC_CHECK_LIB(nsl,inet_addr,result=yes,result=no)
-        if test $result = yes; then
-                LIBS="$LIBS -lnsl"
-        fi
-fi
-
 dnl ===========================================================================
 dnl Makefile variable substitution 
 dnl ===========================================================================
@@ -546,6 +511,6 @@ AC_SUBST(LIBS)
 AC_SUBST(EXTRA_LIBS)
 AC_SUBST(INCLUDES)
 
-AC_CONFIG_FILES([Makefile archive/Makefile docs/Makefile libcgi/Makefile src/Makefile tests/testhm src/defaults.h])
+AC_CONFIG_FILES([Makefile archive/Makefile docs/Makefile src/Makefile tests/testhm src/defaults.h])
 AC_OUTPUT
 

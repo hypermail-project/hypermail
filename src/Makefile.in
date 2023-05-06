@@ -38,7 +38,6 @@ FNV_DEP=@FNV_DEP@
 CFLAGS=@CFLAGS@ $(WARNINGS)
 CPPFLAGS=@CPPFLAGS@ @INCLUDES@
 YACC=@YACC@
-NETLIBS=@LIBS@
 LDFLAGS=@LDFLAGS@
 MISC_LIBS= -lpcre2-8 -ltrio -lm
 OPT_LIBS=@EXTRA_LIBS@
@@ -57,12 +56,10 @@ OBJS=		base64.o date.o domains.o file.o hypermail.o lang.o lock.o \
 		dmatch.o setup.o threadprint.o getdate.o getname.o\
 		finelink.o txt2html.o search.o quotes.o
 
-MAILOBJS=	mail.o ../libcgi/libcgi.a
-
 .c.o:
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) $<
 
-all:    @PCRE2_DEP@ @TRIO_DEP@ @FNV_DEP@ hypermail$(SUFFIX) mail$(SUFFIX) lang$(SUFFIX)
+all:    @PCRE2_DEP@ @TRIO_DEP@ @FNV_DEP@ hypermail$(SUFFIX) lang$(SUFFIX)
 
 pcre2/.libs/libpcre2-8.a:
 	@cd pcre2; $(MAKE) CC="$(CC)" ; rm -f .libs/lib*.so*
@@ -77,15 +74,8 @@ hypermail$(SUFFIX): $(OBJS)
 	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(OBJS) $(OPT_LIBS) $(MISC_LIBS)
 	chmod 0755 $@
 
-mail$(SUFFIX):	$(MAILOBJS)
-	$(CC) -o $@ $(CFLAGS) $(MAILOBJS) $(NETLIBS) -lm
-	chmod 0755 $@
-
 lang$(SUFFIX): lang.c lang.h
 	$(CC) -DLANG_PROG $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) -o $@ lang.c $(MISC_LIBS)
-
-../libcgi/libcgi.a:
-	@cd ../libcgi; $(MAKE) all CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)"
 
 getdate.c: getdate.y getdate.h
 	@echo "Expect 13 shift/reduce conflicts."
@@ -100,13 +90,8 @@ install: all
 	@if [ ! -d $(bindir) ]; then mkdir -p $(bindir); fi
 	$(INSTALL_PROG) -s -c -m 0755 hypermail$(SUFFIX) $(bindir)
 
-mail.install:
-	@if [ ! -d $(cgidir) ]; then mkdir -p $(cgidir); fi
-	$(INSTALL_PROG) -s -c -m 0755 mail$(SUFFIX) $(cgidir)
-
 uninstall:
 	rm -f $(bindir)/hypermail$(SUFFIX)
-	rm -f $(cgidir)/mail$(SUFFIX)
 
 insight:
 	$(MAKE) CC="insight" 
@@ -126,31 +111,24 @@ splint:
 lint:	
 	lint $(SRCS) 2>&1 | tee lint.out
 
-lint_mail:	
-	lint mail.c 2>&1 | tee lint.out
-	@(cd ../libcgi; $(MAKE) lint 2>&1 | tee -a ../lint.out)
-
 clean:
-	rm -f hypermail$(SUFFIX) mail$(SUFFIX) lang$(SUFFIX)
+	rm -f hypermail$(SUFFIX) lang$(SUFFIX)
 	rm -f *.o .pure *qx *qv *.ln core
 	rm -f .inslog tca.map lint.out splint.out
 	rm -f getdate.c
 	@(if test "$(PCRE2_DEP)" != "" ; then cd pcre2; $(MAKE) clean; fi)
 	@(if test "$(TRIO_DEP)" != "" ; then cd trio; $(MAKE) clean; fi)
 	@(if test "$(FNV_DEP)" != "" ; then cd fnv; $(MAKE) clean; fi)
-	@cd ../libcgi; $(MAKE) clean
 
 clobber: clean
 	@(if test "$(PCRE_DEP2)" != "" ; then cd pcre2; rm -f *.lock; fi)
 	@(if test "$(TRIO_DEP)" != ""; then cd trio; rm -f *.lock; fi)
 	@(if test "$(FNV_DEP)" != "" ; then cd fnv; $(MAKE) clobber; fi)
-	@cd ../libcgi; $(MAKE) clobber
 
 distclean: clobber
 	@(if test "$(PCRE2_DEP)" != "" ; then cd pcre2; $(MAKE) distclean; fi)
 	@(if test "$(TRIO_DEP)" != ""; then cd trio; $(MAKE) clean; fi)
 	@(if test "$(FNV_DEP)" != "" ; then cd fnv; $(MAKE) distclean; fi)
-	@cd ../libcgi; $(MAKE) distclean
 
 #
 # Regenerate this dependency list with gcc -MM *.c:
@@ -174,7 +152,6 @@ hypermail.o: hypermail.c hypermail.h ../config.h ../patchlevel.h proto.h \
 lang.o: lang.c hypermail.h ../config.h ../patchlevel.h proto.h lang.h
 lock.o: lock.c hypermail.h ../config.h ../patchlevel.h proto.h lang.h \
  setup.h
-mail.o: mail.c ../libcgi/cgi.h ../libcgi/../config.h ../config.h
 mem.o: mem.c hypermail.h ../config.h ../patchlevel.h proto.h lang.h
 parse.o: parse.c hypermail.h ../config.h ../patchlevel.h proto.h lang.h \
  setup.h struct.h uudecode.h base64.h search.h getname.h parse.h print.h
