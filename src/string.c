@@ -473,20 +473,22 @@ unsigned char *i18n_numref2utf(char *string){
   return headofutfstr;
 }
 
-/* replaces all non 7-bit ascii chars in string by a ? 
+/* replaces all control characters in string with a ?
+** exceptions: \n, \r, and \t
+** This should be safe for all UTF-8 and ASCII chars
 ** returns the number of replaced chars
 */
-int i18n_replace_non_ascii_chars(char *string)
+int i18n_replace_control_chars(char *string)
 {
     char *ptr = string;
     int count = 0;
   
     while (*ptr) {
-        if (!isascii(*ptr) ||
-            (*ptr < 0x20 && *ptr != '\n' && *ptr != '\r' && *ptr != '\t')) {
+        if (iscntrl(*ptr) && *ptr != '\n' && *ptr != '\r' && *ptr != '\t') {
             *ptr = '?';
             count++;
-        }
+
+            }
         ptr++;
     }
     
