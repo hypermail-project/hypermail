@@ -514,7 +514,7 @@ int get_new_reply_to()
  * "In reply to"
 */
 
-void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_reply_to)
+void replace_maybe_replies(const char *filename, struct emailinfo *ep, int local_new_reply_to)
 {
     char tmpfilename[MAXFILELEN];
     char buffer[MAXLINE];
@@ -524,7 +524,7 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
     char *ptr;
     static const char *prev_patt0 = ".html\">[ Previous ]</a>";
 
-    if (!hashnumlookup(new_reply_to, &ep2))
+    if (!hashnumlookup(local_new_reply_to, &ep2))
 	return;
     trio_snprintf(tmpfilename, sizeof(tmpfilename), "%s/aaaa.tmp", set_dir);	/* AUDIT biege: poss. BOF. */
     if ((fp1 = fopen(filename, "r")) == NULL) {
@@ -546,7 +546,7 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
 		if (tmpptr) {
 		    char *path = get_path(ep, ep2);
                     fprintf(fp2,"<li><a href=\"%s%.4d.%s\">%s</a></li>\n", 
-			    path, new_reply_to, set_htmlsuffix,
+			    path, local_new_reply_to, set_htmlsuffix,
 			    tmpptr ? tmpptr : "");
 		    free(tmpptr);
 		}
@@ -559,7 +559,7 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
                     fprintf(fp2, "<li><span class=\"heading\">%s</span> " 
 			    "<a href=\"%s%.4d.%s\">%s: \"%s\"</a></li>\n", 
 			    lang[MSG_IN_REPLY_TO], path, 
-			    new_reply_to, set_htmlsuffix,
+			    local_new_reply_to, set_htmlsuffix,
 			    ep2->name, tmpptr ? tmpptr : "");
 		    free(tmpptr);
 		}
@@ -569,7 +569,7 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
 		char *tmpptr = convchars(ep2->subject, ep2->charset);
 		if (tmpptr) {
 		    char *path = get_path(ep, ep2);
-                    fprintf(fp2, "<li> <strong>%s:</strong> " "<a href=\"%s%.4d.%s\">%s: \"%s\"</a>\n", lang[MSG_IN_REPLY_TO], path, new_reply_to, set_htmlsuffix, ep2->name, tmpptr ? tmpptr : "");
+                    fprintf(fp2, "<li> <strong>%s:</strong> " "<a href=\"%s%.4d.%s\">%s: \"%s\"</a>\n", lang[MSG_IN_REPLY_TO], path, local_new_reply_to, set_htmlsuffix, ep2->name, tmpptr ? tmpptr : "");
 		    free(tmpptr);
 		}
 	  }
@@ -602,7 +602,7 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
 		    char temp[256];
 		    trio_snprintf(temp,sizeof(temp), patts[i], lang[indices[i]]);
 		    if ((ptr = strcasestr(buffer, temp))
-			&& (i < 4 || new_reply_to == atoi(ptr + strlen(temp)))) {
+			&& (i < 4 || local_new_reply_to == atoi(ptr + strlen(temp)))) {
 			suppress = 1;
 			break;
 		    }
@@ -612,7 +612,7 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
 	    }
 	    /* check for old critmail format */
 	    if ((ptr = strstr(buffer, prev_patt0))
-		&& new_reply_to == atoi(ptr - 4)
+		&& local_new_reply_to == atoi(ptr - 4)
 		&& !strncasecmp(ptr - 13, "<a href", 7)) {
 		ptr[-13] = 0;
 	    }
