@@ -615,7 +615,7 @@ static int better_match(struct body *bp, const char *matched_string, const char 
     return 0;
 }
 
-static void check_match(struct bigram_list *bigram, struct body *bp, char *ptr, int max_msgnum, String_Match * match_info, const char *match_start_ptr, const char *exact_line)
+static void check_match(struct bigram_list *bigram, struct body *bp, char *ptr, int local_max_msgnum, String_Match * match_info, const char *match_start_ptr, const char *exact_line)
 {
     int match_len = 1;
     int alloc_len = 0;
@@ -631,7 +631,7 @@ static void check_match(struct bigram_list *bigram, struct body *bp, char *ptr, 
     int b_index = 0;
     int msgnum = bigram->bp->msgnum;
     bp3 = bigram->bp;
-    if (msgnum < max_msgnum && bp3) {
+    if (msgnum < local_max_msgnum && bp3) {
 	ptr3 = bp3->line + bigram->offset;
 	while (1) {
 	    bp2 = tokenize_body(bp2, token2, &ptr2, &b2_index, TRUE);
@@ -698,7 +698,7 @@ static void check_match(struct bigram_list *bigram, struct body *bp, char *ptr, 
 ** Find the best match for a line from the bodies of prior messages  
 */
 
-int search_for_quote(char *search_line, char *exact_line, int max_msgnum, String_Match * match_info)
+int search_for_quote(char *search_line, char *exact_line, int local_max_msgnum, String_Match * match_info)
 {
     char *ptr = search_line;
     char token[MAXLINE];
@@ -734,11 +734,11 @@ int search_for_quote(char *search_line, char *exact_line, int max_msgnum, String
 	struct bigram_list *bigram;
 	bigram = find_bigram(last_itok, itok);
 	if (!bigram)
-			printf("Warning, internal inconsistency in search_for_quote:\n(%d,%d) %s %d best %d, msg %d %s || %s\n", last_itok, itok, token, dummy, match_info->match_len_tokens, max_msgnum, ptr, search_line);
+			printf("Warning, internal inconsistency in search_for_quote:\n(%d,%d) %s %d best %d, msg %d %s || %s\n", last_itok, itok, token, dummy, match_info->match_len_tokens, local_max_msgnum, ptr, search_line);
 	++count_tokens;
 	while (bigram) {
 	    ++count_matches;
-			check_match(bigram, bp, ptr, max_msgnum, match_info, match_start_ptr, exact_line);
+			check_match(bigram, bp, ptr, local_max_msgnum, match_info, match_start_ptr, exact_line);
 	    if (match_info->match_len_bytes == search_len)
 		break;
 	    bigram = bigram->next;
@@ -755,9 +755,9 @@ int search_for_quote(char *search_line, char *exact_line, int max_msgnum, String
 	tokenize_body(bp, token, &next_exact_ptr, &dummy, TRUE);
     }
     if (0)
-		printf("%d times %d searches %d tokens %d matches tries %f\n", max_msgnum, count_searched, count_tokens, count_matches, (float)count_matches / count_tokens);
+		printf("%d times %d searches %d tokens %d matches tries %f\n", local_max_msgnum, count_searched, count_tokens, count_matches, (float)count_matches / count_tokens);
     len = match_info->match_len_bytes;
-    if (max_msgnum == -1)
+    if (local_max_msgnum == -1)
 		printf("best_match_len %d (%d) len %d search_len %d %d; %s.\n", match_info->match_len_tokens, match_info->msgnum, len, search_len, match_info->match_len_bytes, match_info->last_matched_string);
 	if (match_info->match_len_tokens > 1 && (len > search_len / 2 || len > 40)) {
 	if ((ptr = strchr(match_info->last_matched_string, '\n')) != NULL)
@@ -767,7 +767,7 @@ int search_for_quote(char *search_line, char *exact_line, int max_msgnum, String
 	if (match_info->match_len_tokens > 1 && (len > search_len / 2 || len > 40)
 	&& len > match_info->match_len_bytes / 2)
 	if (0)
-			printf("#almost %d best_match_len %d len %d search_len %d %d.\n", max_msgnum, match_info->match_len_tokens, len, search_len, match_info->match_len_bytes);
+			printf("#almost %d best_match_len %d len %d search_len %d %d.\n", local_max_msgnum, match_info->match_len_tokens, len, search_len, match_info->match_len_bytes);
 
     if (match_info->last_matched_string != NULL)
 	free(match_info->last_matched_string);

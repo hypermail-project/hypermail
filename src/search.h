@@ -10,11 +10,9 @@ typedef struct {
     const char *stop_match;
 } String_Match;
 
-int search_for_quote(char *search_line, char *exact_line, int max_msgnum,
-		     String_Match * match_info);
-struct body *tokenize_body(struct body *bp, char *token, char **ptr,
-			   int *bigram_index, int ignore);
-void analyze_headers(int amount_new);
-void set_alt_replylist(struct reply *r);
+int search_for_quote(char *, char *, int, String_Match *);
+struct body *tokenize_body(struct body *, char *, char **, int *, int);
+void analyze_headers(int);
+void set_alt_replylist(struct reply *);
 
 #endif				/* SEARCH_H_INCLUDED */
