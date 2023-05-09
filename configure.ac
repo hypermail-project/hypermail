@@ -120,11 +120,6 @@ AC_ARG_WITH(httpddir,
     httpddir=$with_httpddir,	  httpddir=/usr/local/apache)
 AC_SUBST(httpddir)
 
-AC_ARG_WITH(cgidir, 
-    [  --with-cgidir=DIR	  where to install CGI scripts ],
-    cgidir=$with_cgidir,	  cgidir=$httpddir/cgi-bin)
-AC_SUBST(cgidir)
-
 AC_ARG_WITH(htmldir, 
     [  --with-htmldir=DIR	  where to install Hypermail HTML pages ],
     htmldir=$with_htmldir,	  htmldir=$httpddir/htdocs/hypermail)

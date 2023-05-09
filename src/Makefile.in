@@ -14,9 +14,6 @@ bindir=@bindir@
 # This is where the man page goes
 mandir=@mandir@
 
-# This is where your CGI programs live
-cgidir=@cgidir@
-
 # Executable program suffix (.exe for windows, null for Unix systems)
 SUFFIX=@suffix@
 
@@ -33,7 +30,12 @@ TRIO_DEP=@TRIO_DEP@
 FNV_DEP=@FNV_DEP@
 
 #WNOERROR=-Werror
-#WARNINGS=$(WNOERROR) -ansi -pedantic -Wall -Wtraditional -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Dlint
+#WARNINGS=$(WNOERROR) -ansi -pedantic -Wall -Wtraditional -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Wall -fsanitize=address -fno-omit-frame-pointer -Dlint
+
+# While waiting to put this in configure.ac
+# Note: if you're debugging memory issues (leaks, overruns, unallocated memory use)
+# Add the folowing two warnings -fsanitize=address -fno-omit-frame-pointe
+# and  -static-libasan to LIBS
 
 CFLAGS=@CFLAGS@ $(WARNINGS)
 CPPFLAGS=@CPPFLAGS@ @INCLUDES@

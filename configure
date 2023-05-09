@@ -698,7 +698,6 @@ domainaddr
 defaultindex
 htmlsuffix
 language
-cgidir
 httpddir
 suffix
 INSTALL
@@ -776,7 +775,6 @@ ac_user_opts='
 enable_option_checking
 enable_warnings
 with_httpddir
-with_cgidir
 with_htmldir
 with_language
 with_htmlsuffix
@@ -1438,7 +1436,6 @@ Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-httpddir=DIR	  webserver's root directory /usr/local/apache
-  --with-cgidir=DIR	  where to install CGI scripts
   --with-htmldir=DIR	  where to install Hypermail HTML pages
   --with-language=xx	  two character language indicator en
   --with-htmlsuffix=xx	  two character language indicator html
@@ -3835,16 +3832,6 @@ if test "${with_httpddir+set}" = set; then :
   withval=$with_httpddir; httpddir=$with_httpddir
 else
   httpddir=/usr/local/apache
-fi
-
-
-
-
-# Check whether --with-cgidir was given.
-if test "${with_cgidir+set}" = set; then :
-  withval=$with_cgidir; cgidir=$with_cgidir
-else
-  cgidir=$httpddir/cgi-bin
 fi
 
 

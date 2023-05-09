@@ -20,9 +20,6 @@ srcdir=@srcdir@
 # This is where the HTML documentation goes
 htmldir=@htmldir@
 
-# This is where your CGI programs live
-cgidir=@cgidir@
-
 INSTALL_PROG=@INSTALL@
 
 #WNOERROR=-Werror
@@ -41,7 +38,7 @@ hypermail:
 	@cd src; $(MAKE) all CC="$(CC)" \
 		CFLAGS="$(CFLAGS)" \
 		CPPFLAGS="$(CPPFLAGS)" \
-		cgidir="$(cgidir)" bindir="$(bindir)" LIBS="$(LIBS)"
+		bindir="$(bindir)" LIBS="$(LIBS)"
 
 support:   
 	@cd archive; $(MAKE) all CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" 
@@ -49,7 +46,7 @@ support:
 install: 
 	@cd src; $(MAKE) install CC="$(CC)" CFLAGS="$(CFLAGS)" \
 		CPPFLAGS="$(CPPFLAGS)"  \
-		cgidir="$(cgidir)" bindir="$(bindir)" LIBS="$(LIBS)"
+		bindir="$(bindir)" LIBS="$(LIBS)"
 	@cd docs; $(MAKE) install CC="$(CC)" CFLAGS="$(CFLAGS)" \
 		CPPFLAGS="$(CPPFLAGS)"  \
 		$(MAKEFLAGS) mandir="$(mandir)" htmldir="$(htmldir)"
@@ -58,7 +55,7 @@ install:
 		bindir="$(bindir)"
 
 uninstall: 
-	@cd src; $(MAKE) uninstall cgidir="$(cgidir)" bindir="$(bindir)" 
+	@cd src; $(MAKE) uninstall bindir="$(bindir)" 
 	@cd docs; $(MAKE) uninstall mandir="$(mandir)" htmldir="$(htmldir)"
 	@cd archive; $(MAKE) uninstall bindir="$(bindir)"
 
