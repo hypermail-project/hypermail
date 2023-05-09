@@ -12,7 +12,7 @@
 
 #ifdef HAVE_STDINT_H
 #include <stdint.h>
-#elif  HAVE_INTTYPES_H
+#elif defined HAVE_INTTYPES_H
 #include <inttypes.h>
 #endif
 
