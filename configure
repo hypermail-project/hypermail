@@ -1822,6 +1822,52 @@ fi
 
 } # ac_fn_c_try_link
 
+# ac_fn_c_check_decl LINENO SYMBOL VAR INCLUDES
+# ---------------------------------------------
+# Tests whether SYMBOL is declared in INCLUDES, setting cache variable VAR
+# accordingly.
+ac_fn_c_check_decl ()
+{
+  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
+  as_decl_name=`echo $2|sed 's/ *(.*//'`
+  as_decl_use=`echo $2|sed -e 's/(/((/' -e 's/)/) 0&/' -e 's/,/) 0& (/g'`
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $as_decl_name is declared" >&5
+$as_echo_n "checking whether $as_decl_name is declared... " >&6; }
+if eval \${$3+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$4
+int
+main ()
+{
+#ifndef $as_decl_name
+#ifdef __cplusplus
+  (void) $as_decl_use;
+#else
+  (void) $as_decl_name;
+#endif
+#endif
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  eval "$3=yes"
+else
+  eval "$3=no"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+eval ac_res=\$$3
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
+
+} # ac_fn_c_check_decl
+
 # ac_fn_c_check_func LINENO FUNC VAR
 # ----------------------------------
 # Tests whether FUNC exists, setting the cache variable VAR accordingly
@@ -4151,8 +4197,8 @@ done
 
 
 for ac_header in alloca.h arpa/inet.h ctype.h dirent.h errno.h \
-	fcntl.h locale.h malloc.h netdb.h netinet/in.h pwd.h stdarg.h \
-	stdio.h stdlib.h string.h sys/dir.h sys/param.h sys/socket.h \
+	fcntl.h inttypes.h locale.h malloc.h netdb.h netinet/in.h pwd.h stdarg.h \
+	stdint.h stdio.h stdlib.h string.h sys/dir.h sys/param.h sys/socket.h \
 	sys/stat.h sys/time.h sys/types.h time.h unistd.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
@@ -4403,6 +4449,29 @@ $as_echo "#define TIME_WITH_SYS_TIME 1" >>confdefs.h
 fi
 
 
+ac_fn_c_check_decl "$LINENO" "strcasecmp" "ac_cv_have_decl_strcasecmp" "$ac_includes_default"
+if test "x$ac_cv_have_decl_strcasecmp" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_STRCASECMP $ac_have_decl
+_ACEOF
+
+ac_fn_c_check_decl "$LINENO" "strcasestr" "ac_cv_have_decl_strcasestr" "$ac_includes_default"
+if test "x$ac_cv_have_decl_strcasestr" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_STRCASESTR $ac_have_decl
+_ACEOF
+
+
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether struct tm is in sys/time.h or time.h" >&5
 $as_echo_n "checking whether struct tm is in sys/time.h or time.h... " >&6; }
@@ -4507,6 +4576,42 @@ _ACEOF
 
 fi
 done
+
+
+
+  ac_fn_c_check_type "$LINENO" "intptr_t" "ac_cv_type_intptr_t" "$ac_includes_default"
+if test "x$ac_cv_type_intptr_t" = xyes; then :
+
+$as_echo "#define HAVE_INTPTR_T 1" >>confdefs.h
+
+else
+  for ac_type in 'int' 'long int' 'long long int'; do
+       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+int
+main ()
+{
+static int test_array [1 - 2 * !(sizeof (void *) <= sizeof ($ac_type))];
+test_array [0] = 0;
+return test_array [0];
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+
+cat >>confdefs.h <<_ACEOF
+#define intptr_t $ac_type
+_ACEOF
+
+	  ac_type=
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+       test -z "$ac_type" && break
+     done
+fi
 
 
 ac_fn_c_check_type "$LINENO" "size_t" "ac_cv_type_size_t" "$ac_includes_default"

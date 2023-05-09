@@ -3,6 +3,9 @@
 /* Define if you have the strftime function.  */
 #undef HAVE_STRFTIME
 
+/* Define to a `signed integer` if stdint.h or inttypes.h don't define */
+#undef intptr_t
+
 /* Define to `unsigned' if <sys/types.h> doesn't define.  */
 #undef size_t
 
@@ -17,6 +20,12 @@
 
 /* Define if your <sys/time.h> declares struct tm.  */
 #undef TM_IN_SYS_TIME
+
+/* Define if <string.h> has a prototype for strcasecmp. */
+#undef HAVE_DECL_STRCASECMP
+
+/* Define if <string.h> has a prototype for strcasestr. */
+#undef HAVE_DECL_STRCASESTR
 
 #undef HAVE_GDBM_H
 
@@ -43,18 +52,6 @@
 
 /* Define if you have the mkdir function.  */
 #undef HAVE_MKDIR
-
-/* Define if you have the strcasecmp function.  */
-#undef HAVE_STRCASECMP
-
-/* Define if <string.h> has a prototype for strcasecmp. */
-#undef HAVE_DECL_STRCASECMP
-
-/* Define if you have the strcasestr function.  */
-#undef HAVE_STRCASESTR
-
-/* Define if <string.h> has a prototype for strcasestr. */
-#undef HAVE_DECL_STRCASESTR
 
 /* Define if you have the strdup function.  */
 #undef HAVE_STRDUP
@@ -86,6 +83,9 @@
 /* Define if you have the <fcntl.h> header file.  */
 #undef HAVE_FCNTL_H
 
+/* Define if you have the <inttypes.h> header file.  */
+#undef HAVE_INTTYPES_H
+
 /* Define if you have the <locale.h> header file.  */
 #undef HAVE_LOCALE_H
 
@@ -107,11 +107,20 @@
 /* Define if you have the <stdarg.h> header file.  */
 #undef HAVE_STDARG_H
 
+/* Define if you have the <stdint.h> header file.  */
+#undef HAVE_STDINT_H
+
 /* Define if you have the <stdio.h> header file.  */
 #undef HAVE_STDIO_H
 
 /* Define if you have the <stdlib.h> header file.  */
 #undef HAVE_STDLIB_H
+
+/* Define if you have the strcasecmp function.  */
+#undef HAVE_STRCASECMP
+
+/* Define if you have the strcasestr function.  */
+#undef HAVE_STRCASESTR
 
 /* Define if you have the <string.h> header file.  */
 #undef HAVE_STRING_H

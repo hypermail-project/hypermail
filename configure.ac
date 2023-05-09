@@ -161,8 +161,8 @@ dnl ===========================================================================
 AC_HEADER_STDC
 
 AC_CHECK_HEADERS(alloca.h arpa/inet.h ctype.h dirent.h errno.h \
-	fcntl.h locale.h malloc.h netdb.h netinet/in.h pwd.h stdarg.h \
-	stdio.h stdlib.h string.h sys/dir.h sys/param.h sys/socket.h \
+	fcntl.h inttypes.h locale.h malloc.h netdb.h netinet/in.h pwd.h stdarg.h \
+	stdint.h stdio.h stdlib.h string.h sys/dir.h sys/param.h sys/socket.h \
 	sys/stat.h sys/time.h sys/types.h time.h unistd.h)
 
 AC_HEADER_STAT
@@ -183,6 +183,7 @@ AC_FUNC_STRFTIME
 AC_CHECK_FUNCS(mkdir strdup strstr strtol memcpy memset lstat strcasecmp \
                strcasestr getpwuid getopt snprintf memmove strerror)
 
+AC_TYPE_INTPTR_T
 AC_TYPE_SIZE_T
 
 if test $ac_cv_func_snprintf != no; then

@@ -10,6 +10,12 @@
 #include "defaults.h"
 #endif
 
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#elif  HAVE_INTTYPES_H
+#include <inttypes.h>
+#endif
+
 #include "setup.h"
 #include "struct.h"
 #include "print.h"
