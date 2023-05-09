@@ -18,7 +18,6 @@
 
 #include "hypermail.h"
 #include "setup.h"
-#include "string.h"
 #include <ctype.h>
 #if ! HAVE_MEMMOVE
 #include "pcre2/src/pcre2_internal.h"
@@ -112,17 +111,17 @@ char *remove_hypermail_tags(char *line)
 		memmove(p, p + 4, strlen(p + 4) + 1);
 	}
 	else if (set_mailcommand) {
-	    const char *p2 = set_mailcommand;
-	    int len = strlen(p2);
-	    if (strchr(p2, '$'))
-		len = strchr(p2, '$') - p2;
-	    if (!strncmp(p + 9, p2, len)) {
-		char *p3 = strstr(p + 9 + len, "\">");
-		if (p3) {
-		    memmove(p, p3 + 2, strlen(p3 + 2) + 1);
-		    p3 = strcasestr(p, "</a>");
-		    if (p3)
-			memmove(p3, p3 + 4, strlen(p3 + 4) + 1);
+	    const char *local_p2 = set_mailcommand;
+	    int len = strlen(local_p2);
+	    if (strchr(local_p2, '$'))
+		len = strchr(local_p2, '$') - local_p2;
+	    if (!strncmp(p + 9, local_p2, len)) {
+		char *local_p3 = strstr(p + 9 + len, "\">");
+		if (local_p3) {
+		    memmove(p, local_p3 + 2, strlen(local_p3 + 2) + 1);
+		    local_p3 = strcasestr(p, "</a>");
+		    if (local_p3)
+			memmove(local_p3, local_p3 + 4, strlen(local_p3 + 4) + 1);
 		}
 	    }
 	}
