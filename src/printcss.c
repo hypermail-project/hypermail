@@ -19,7 +19,7 @@
 ** REGENERATE IT. IF YO WANT TO CHANGE THE C CODE ITSELF, PLEASE EDIT
 ** THE css_to_c.pl SCRIPT
 */
-			      
+
 #include "hypermail.h"
 #include "setup.h"
 
@@ -30,7 +30,7 @@ void print_default_css_file(char *filename)
     FILE *fp;
   
     if ((fp = fopen(filename, "w")) == NULL) {
-        snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
+        trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_COULD_NOT_WRITE], filename);
         progerr(errmsg);
     }
 
@@ -379,7 +379,7 @@ void print_default_css_file(char *filename)
     fclose(fp);
     
     if (chmod(filename, set_filemode) == -1) {
-        snprintf(errmsg, sizeof(errmsg), "%s \"%s\": %o.", lang[MSG_CANNOT_CHMOD], filename, set_filemode);
+        trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\": %o.", lang[MSG_CANNOT_CHMOD], filename, set_filemode);
 	progerr(errmsg);
     }
     
