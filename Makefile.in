@@ -23,7 +23,7 @@ htmldir=@htmldir@
 INSTALL_PROG=@INSTALL@
 
 #WNOERROR=-Werror
-#WARNINGS=$(WNOERROR) -ansi -pedantic -Wall -Wtraditional -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Dlint
+#WARNINGS=$(WNOERROR) -ansi -pedantic -Wall -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Dlint
  
 # Compiler to use
 CC=@CC@
