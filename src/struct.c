@@ -1095,9 +1095,15 @@ void message_node_free(struct message_node *root_message_node)
 void message_node_delete_attachments(struct message_node *node)
 {
     struct message_node *tmp;
+    char *boundary_part;
 
+    if (!node) {
+        return;
+    }
+        
     tmp = node->parent;
-    char *boundary_part = node->boundary_part;
+    boundary_part = node->boundary_part;
+    
     node->boundary_part = NULL;
     _message_node_free(node, TRUE);
     node->parent = tmp;
@@ -2647,12 +2653,12 @@ int inlist_regex_pos(struct hmlist *listname, char *str)
 	static pcre2_match_data *match_data, **match_data_list;
 	if (!pcre_list) {
 	    int n = regex_index(NULL, -1);
-	    int i;
+	    int j;
             pcre_list = (pcre2_code **) emalloc(n * sizeof(pcre2_code *));
 			match_data_list = (pcre2_match_data **) emalloc(n * sizeof(pcre2_match_data *));
-	    for (i = 0; i < n; ++i) {
-	        pcre_list[i] = NULL;
-	        match_data_list[i] = NULL;
+	    for (j = 0; i < n; ++j) {
+	        pcre_list[j] = NULL;
+	        match_data_list[j] = NULL;
 	    }
 	}
 	if ((p = pcre_list[index]) == NULL) {
