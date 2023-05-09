@@ -101,7 +101,6 @@ accordingly.
    * contrib - contributed hypermail relate utilities
    * configs - sample hypermail configuration files,
    * docs    - documentation and documentation support files,
-   * libcgi  - support library for the mail utility,
    * src     - here's the beef,
    * tests   - directory for supporting local testing,
 
