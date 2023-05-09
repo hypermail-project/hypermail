@@ -240,7 +240,8 @@ struct i18n_alt_charset_table i18n_charsettable[] = {
 };
 #define I18N_CHARSET_TABLE_SIZE (sizeof(i18n_charsettable)/sizeof(struct i18n_alt_charset_table))
 
-char *i18n_canonicalize_charset(char *cs){
+static char *i18n_canonicalize_charset(char *cs)
+{
 
   int x=0;
 
@@ -373,7 +374,9 @@ char *i18n_utf2numref(char *instr,int escape){
   size_t len;
   struct Push buff;
   char strbuf[10];
-
+  unsigned int p;
+  int i;
+  
   INIT_PUSH(buff);
 
   if (!set_i18n){
@@ -383,10 +386,10 @@ char *i18n_utf2numref(char *instr,int escape){
 
   headofucs=ucs=i18n_convstring(instr, "UTF-8", "UCS-2BE", &len);
 
-  unsigned int p;
-  int i = (int) len;
+  i = (int) len;
+  
   for(; i > 0; i-=2){
-    p=(unsigned char)*ucs*256+(unsigned char)*(ucs+1);
+    p = (unsigned char)*ucs*256+(unsigned char)*(ucs+1);
     if (p<128){
       /* keep ASCII characters human readable */
       if (escape){
@@ -538,7 +541,6 @@ int i18n_replace_unicode_spaces(char *string, size_t sz)
 
         if (!re) {
             PCRE2_UCHAR buffer[256];
-            char errmsg[512];
             pcre2_get_error_message(errornumber, buffer, sizeof(buffer));
             trio_snprintf(errmsg, sizeof(errmsg), "Error at position %d of regular expression '%s': %s", erroroffset, pattern, buffer);
             progerr(errmsg);
@@ -1379,7 +1381,7 @@ char *convdash (char *line)
 ** Returns an ALLOCATED string!
 */
 
-char *convcharsreal(char *line, char *charset, int spamprotect)
+static char *convcharsreal(char *line, char *charset, int spamprotect)
 {
     struct Push buff;
     int in_ascii = TRUE, esclen = 0;
@@ -1470,7 +1472,7 @@ char *convchars(char *line, char *charset)
 static bool unconvwinlatin1 (char *entity, char *conv_char)
 {
   int i;
-  int value = 0;
+  unsigned int value = 0;
 
   if (!entity || *entity == '\0' || *entity != '#')
     return FALSE;
@@ -1887,14 +1889,14 @@ char *spamify_small(char *input)
   return input;
 }
 
-char *spamify_replacedomain(char *input, char *antispamdomain)
+char *spamify_replacedomain(char *input, char *new_domain)
 {
     char *atptr = strchr(input, '@');
     
     if (atptr) {
         char *buff;
 
-        buff = parseemail(input, NULL, antispamdomain, REPLACE_DOMAIN);
+        buff = parseemail(input, NULL, new_domain, REPLACE_DOMAIN);
         free(input);
         return(buff);
     }
@@ -2441,8 +2443,9 @@ hm_strchr(const char *str, int ch)
 			iso2022_state(str, &in_ascii, &esclen);
 			if (esclen) str += esclen;
 			if (in_ascii == TRUE) {
-                            if (*str == ch)
+                            if (*str == ch) {
                                 return((char *)str);
+                            }
 			}
 		}
 		return((char *)NULL);
