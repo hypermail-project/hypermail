@@ -30,7 +30,7 @@ TRIO_DEP=@TRIO_DEP@
 FNV_DEP=@FNV_DEP@
 
 #WNOERROR=-Werror
-#WARNINGS=$(WNOERROR) -ansi -pedantic -std=gnu99 -Wall -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -fsanitize=address -fno-omit-frame-pointer -Dlint
+#WARNINGS=$(WNOERROR) -ansi -pedantic -Wno-overlength-strings -Wall -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -fsanitize=address -fno-omit-frame-pointer -Dlint
 
 # While waiting to put this in configure.ac
 # Note: if you're debugging memory issues (leaks, overruns, unallocated memory use)
