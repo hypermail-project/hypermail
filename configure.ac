@@ -169,6 +169,9 @@ AC_HEADER_STAT
 AC_HEADER_DIRENT
 AC_HEADER_TIME
 
+AC_CHECK_DECLS([strcasecmp])
+AC_CHECK_DECLS([strcasestr])
+
 dnl ===========================================================================
 dnl Checks for library functions.
 dnl Check for typedefs, structures, and compiler characteristics.

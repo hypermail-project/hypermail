@@ -47,8 +47,14 @@
 /* Define if you have the strcasecmp function.  */
 #undef HAVE_STRCASECMP
 
+/* Define if <string.h> has a prototype for strcasecmp. */
+#undef HAVE_DECL_STRCASECMP
+
 /* Define if you have the strcasestr function.  */
 #undef HAVE_STRCASESTR
+
+/* Define if <string.h> has a prototype for strcasestr. */
+#undef HAVE_DECL_STRCASESTR
 
 /* Define if you have the strdup function.  */
 #undef HAVE_STRDUP

@@ -111,7 +111,19 @@ char *PushByte(struct Push *, char);
 char *PushString(struct Push *, const char *);
 char *PushNString(struct Push *, const char *, int);
 
-char *strcasestr (const char *, const char *);
+/* work around for an autoconf limitation. It detects
+   strcasecmp declared even if it's not available
+   in <string.h> and that we're not using 
+   _GNU_SOURCE */
+#if !HAVE_DECL_STRCASECMP || !HAVE_STRINGS_H
+int strcasecmp(const char *, const char *);
+int strncasecmp(const char *, const char *, size_t);
+#endif
+
+#if !HAVE_DECL_STRCASESTR
+char *strcasestr(const char *, const char *);
+#endif
+
 char *strsav(const char *);
 char *strreplace(char *, char *);
 void strcpymax(char *, const char *, int);
