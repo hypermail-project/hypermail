@@ -98,8 +98,8 @@
 #endif
 
 /*
-* this redefines the standard *printf() to use ours 
-*/
+ * this redefines the standard *printf() to use ours 
+ */
 #define TRIO_REPLACE_STDIO
 #define HAVE_SSCANF  /* avoid problems in setup.c with trio_sscanf */
 #include <trio.h>
