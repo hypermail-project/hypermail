@@ -3585,7 +3585,6 @@ static void printmonths(FILE *fp, char *summary_filename, int amountmsgs)
     fprintf(fp, "<tr>\n");
     fprintf(fp, "<th>%s</th>\n", lang[MSG_PERIOD]);
     fprintf(fp, "<th class=\"cell_period\">%s</th>\n", lang[MSG_ARTICLES]);
-    // @ JK put this in lang.h
     fprintf (fp, "<th colspan=\"4\">%s</th>\n", lang[MSG_SORTED_BY]);
     fprintf(fp, "</tr>\n");
     fprintf(fp, "</thead>\n");
