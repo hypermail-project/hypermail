@@ -169,8 +169,7 @@ AC_HEADER_STAT
 AC_HEADER_DIRENT
 AC_HEADER_TIME
 
-AC_CHECK_DECLS([strcasecmp])
-AC_CHECK_DECLS([strcasestr])
+AC_CHECK_DECLS([isblank, strcasecmp, strcasestr])
 
 dnl ===========================================================================
 dnl Checks for library functions.
@@ -180,8 +179,8 @@ dnl ===========================================================================
 AC_STRUCT_TM
 
 AC_FUNC_STRFTIME
-AC_CHECK_FUNCS(mkdir strdup strstr strtol memcpy memset lstat strcasecmp \
-               strcasestr getpwuid getopt snprintf memmove strerror)
+AC_CHECK_FUNCS(getopt getpwuid isblank lstat memcpy memmove memset mkdir snprintf \
+	       strcasecmp strcasestr strdup strerror strstr strtol)
 
 AC_TYPE_INTPTR_T
 AC_TYPE_SIZE_T

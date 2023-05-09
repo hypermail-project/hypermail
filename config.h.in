@@ -21,6 +21,9 @@
 /* Define if your <sys/time.h> declares struct tm.  */
 #undef TM_IN_SYS_TIME
 
+/* Define if <ctype.h> has a prototype for isblank. */
+#undef HAVE_DECL_ISBLANK
+
 /* Define if <string.h> has a prototype for strcasecmp. */
 #undef HAVE_DECL_STRCASECMP
 
@@ -115,6 +118,9 @@
 
 /* Define if you have the <stdlib.h> header file.  */
 #undef HAVE_STDLIB_H
+
+/* Define if you have the isblank function.  */
+#undef HAVE_ISBLANK
 
 /* Define if you have the strcasecmp function.  */
 #undef HAVE_STRCASECMP

@@ -111,16 +111,22 @@ char *PushByte(struct Push *, char);
 char *PushString(struct Push *, const char *);
 char *PushNString(struct Push *, const char *, int);
 
+/* define isblank() if there's no prototype _and_ it's not defined
+   as a macro */
+#if ((HAVE_DECL_ISBLANK==0) || !defined(HAVE_ISBLANK)) && !defined(isblank)
+int isblank(int);
+#endif
+
 /* work around for an autoconf limitation. It detects
    strcasecmp declared even if it's not available
    in <string.h> and that we're not using 
    _GNU_SOURCE */
-#if !HAVE_DECL_STRCASECMP || !HAVE_STRINGS_H
+#if HAVE_DECL_STRCASECMP==0 || !defined(HAVE_STRINGS_H)
 int strcasecmp(const char *, const char *);
 int strncasecmp(const char *, const char *, size_t);
 #endif
 
-#if !HAVE_DECL_STRCASESTR
+#if HAVE_DECL_STRCASESTR==0
 char *strcasestr(const char *, const char *);
 #endif
 

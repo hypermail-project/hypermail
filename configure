@@ -4449,6 +4449,16 @@ $as_echo "#define TIME_WITH_SYS_TIME 1" >>confdefs.h
 fi
 
 
+ac_fn_c_check_decl "$LINENO" "isblank" "ac_cv_have_decl_isblank" "$ac_includes_default"
+if test "x$ac_cv_have_decl_isblank" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_ISBLANK $ac_have_decl
+_ACEOF
 ac_fn_c_check_decl "$LINENO" "strcasecmp" "ac_cv_have_decl_strcasecmp" "$ac_includes_default"
 if test "x$ac_cv_have_decl_strcasecmp" = xyes; then :
   ac_have_decl=1
@@ -4459,7 +4469,6 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_STRCASECMP $ac_have_decl
 _ACEOF
-
 ac_fn_c_check_decl "$LINENO" "strcasestr" "ac_cv_have_decl_strcasestr" "$ac_includes_default"
 if test "x$ac_cv_have_decl_strcasestr" = xyes; then :
   ac_have_decl=1
@@ -4564,8 +4573,8 @@ fi
 fi
 done
 
-for ac_func in mkdir strdup strstr strtol memcpy memset lstat strcasecmp \
-               strcasestr getpwuid getopt snprintf memmove strerror
+for ac_func in getopt getpwuid isblank lstat memcpy memmove memset mkdir snprintf \
+	       strcasecmp strcasestr strdup strerror strstr strtol
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"

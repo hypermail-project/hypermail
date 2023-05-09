@@ -862,7 +862,7 @@ foundneedle:
 ret0:
   return 0;
 }
-#endif /* !HAVE_STRCASESTR */
+#endif /* ! HAVE_STRCASESTR */
 
 #ifndef HAVE_STRCASECMP
 /* borrowed from OpenBSD
@@ -945,7 +945,15 @@ strncasecmp(const char *s1, const char *s2, size_t n)
 	}
 	return (0);
 }
-#endif /* !HAVE_STRCASECMP */
+#endif /* ! HAVE_STRCASECMP */
+
+#ifndef HAVE_ISBLANK
+int
+isblank(int c)
+{
+    return (c == ' ' || c == '\t');
+}
+#endif /* ! HAVE_ISBLANK */
 
 /*
 ** Returns true if a string is made of only spaces
