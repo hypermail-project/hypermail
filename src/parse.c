@@ -2563,7 +2563,8 @@ int parsemail(char *mbox,	/* file name */
 
                     } /* textcontent(type) || inlinehtml && type == text/html */
 
-#if TESTING_IF_THIS_IS_AN_ERROR
+                    
+#if 1 || TESTING_IF_THIS_IS_AN_ERROR
                     else if (attach_force) {
                         /* maybe copy description and desc default values here?
                            other things here? 
@@ -2596,6 +2597,7 @@ int parsemail(char *mbox,	/* file name */
                             
                         } else {
                             free_body(bp);
+                            description = NULL;
                             bp = lp = headp = NULL;
                             attachment_rfc822 = TRUE;
                         }
