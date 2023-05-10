@@ -474,10 +474,10 @@ void printfooter(FILE *fp, char *htmlfooter, char *label, char *dir,
 ** Prints the HTML last message and last archived date (used in the indexes).
 */
 
-void printlaststats (FILE *fp, long lastdatenum)
+void printlaststats (FILE *fp, long local_lastdatenum)
 {
     fprintf (fp, "<p id=\"end\" class=\"last-message-date\"><span class=\"heading\">%s</span>: %s</p>\n",
-             lang[MSG_LAST_MESSAGE_DATE], getdatestr(lastdatenum));
+             lang[MSG_LAST_MESSAGE_DATE], getdatestr(local_lastdatenum));
 
   if (set_archived_on) {
       fprintf (fp, "<p class=\"archived-on\"><span class=\"heading\">%s</span>: %s</p>\n",  lang[MSG_ARCHIVED_ON], getlocaltime());
