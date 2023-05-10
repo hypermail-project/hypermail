@@ -712,7 +712,7 @@ void print_index_footer_links(FILE *fp, mindex_t called_from, long enddatenum, i
 
 /*----------------------------------------------------------------------------*/
 
-void print_haof_indices(FILE *fp, struct emailsubdir *subdir)
+static void print_haof_indices(FILE *fp, struct emailsubdir *subdir)
 {
     int dlev = (subdir != NULL);
 
@@ -1198,7 +1198,7 @@ char *ConvURLsString(char *line, char *mailid, char *mailsubject, char *charset)
 }
 
 
-struct body *printheaders(FILE *fp, struct emailinfo *email, struct body *from_bp, bool msg_rfc822)
+static struct body *printheaders(FILE *fp, struct emailinfo *email, struct body *from_bp, bool msg_rfc822)
 {
     struct body *bp = NULL;
     char *id = email->msgid;
@@ -1801,14 +1801,14 @@ char *print_leading_whitespace(FILE *fp, char *sp)
 }
 
 void print_headers(FILE *fp, struct emailinfo *email, int in_thread_file)
-{	
-  /*
-   * Print the message's author info and date.
-   * General form: <span class=\"heading\">from:<span class=\"heading\">: name <email></span><br /> 
-   */
+{
+ /*
+  * Print the message's author info and date.
+  * General form: <li><span class=\"heading\">from:<span class=\"heading\">: name <email></span></li> 
+  */
 
-  fprintf(fp, "<ul class=\"headers\" aria-label=\"message headers\">\n");
-
+  char *tmp_oea;
+  
 #ifdef HAVE_ICONV
   size_t tmplen;
   char *tmpsubject=i18n_convstring(email->subject,"UTF-8",email->charset,&tmplen);
@@ -1819,8 +1819,11 @@ void print_headers(FILE *fp, struct emailinfo *email, int in_thread_file)
   char *tmpsubject=0;
   char *tmpname=convchars(email->name, email->charset);
 #endif
-  char *tmp_oea = obfuscate_email_address(email->emailaddr);
   
+  tmp_oea = obfuscate_email_address(email->emailaddr);
+
+  fprintf(fp, "<ul class=\"headers\" aria-label=\"message headers\">\n");
+
   /* the from header */
   fprintf (fp, "<li><span class=\"from\">\n");
   fprintf (fp, "<span class=\"heading\">%s</span>: ", lang[MSG_FROM]);
@@ -2070,12 +2073,14 @@ print_replies(FILE *fp, struct emailinfo *email, int num, int in_thread_file)
 	    fprintf(fp, "<a href=\"%s\">",
 		    href01(email, email2, in_thread_file, FALSE));
 #ifdef HAVE_ICONV
-	    char *tmpptr;
-	    ptr = i18n_utf2numref(email2->subject,1);
-	    tmpptr = i18n_utf2numref(email2->name,1);
-	    fprintf(fp, "%s: \"%s\"</a></li>\n", tmpptr, ptr);
-	    if (tmpptr)
-	      free(tmpptr);
+            {
+                char *tmpptr;
+                ptr = i18n_utf2numref(email2->subject,1);
+                tmpptr = i18n_utf2numref(email2->name,1);
+                fprintf(fp, "%s: \"%s\"</a></li>\n", tmpptr, ptr);
+                if (tmpptr)
+                    free(tmpptr);
+            }
 #else
 	    ptr = convchars(email2->subject, email2->charset);
 	    fprintf(fp, "%s: \"%s\"</a></li>\n", email2->name, ptr);
@@ -2087,7 +2092,7 @@ print_replies(FILE *fp, struct emailinfo *email, int num, int in_thread_file)
     printcomment(fp, "lreply", "end");
 }
 
-int print_links_up(FILE *fp, struct emailinfo *email, int pos, int in_thread_file)
+static int print_links_up(FILE *fp, struct emailinfo *email, int pos, int in_thread_file)
 {
 	int num = email->msgnum;
 	int subjmatch;
@@ -3460,7 +3465,7 @@ void writeauthors(int amountmsgs, struct emailinfo *email)
 /*
 ** Pretty-prints the items for the haof
 */
-void printhaofitems(FILE *fp, struct header *hp, int year, int month, struct emailinfo *subdir_email)
+static void printhaofitems(FILE *fp, struct header *hp, int year, int month, struct emailinfo *subdir_email)
 {
   char *subj, *from_name, *from_emailaddr;
 
