@@ -2656,7 +2656,7 @@ int inlist_regex_pos(struct hmlist *listname, char *str)
 	    int j;
             pcre_list = (pcre2_code **) emalloc(n * sizeof(pcre2_code *));
 			match_data_list = (pcre2_match_data **) emalloc(n * sizeof(pcre2_match_data *));
-	    for (j = 0; i < n; ++j) {
+	    for (j = 0; j < n; ++j) {
 	        pcre_list[j] = NULL;
 	        match_data_list[j] = NULL;
 	    }
