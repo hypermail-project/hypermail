@@ -426,9 +426,9 @@ struct boundary_stack {
     struct message_node *current_alt_message_node;
     struct message_node *root_alt_message_node;
     char alternative_message_node_created;
-    char alternative_file[129];
-    char alternative_lastfile[129];
-    char last_alternative_type[129];
+    char alternative_file[131];
+    char alternative_lastfile[131];
+    char last_alternative_type[131];
     /* the following three store the context for the applemail hack */
     int parse_multipart_alternative_force_save_alts;
     int applemail_old_set_save_alts;

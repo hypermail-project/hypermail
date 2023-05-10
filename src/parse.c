@@ -935,7 +935,7 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 #ifdef NOTUSED
     char equal;
 #endif
-    int value;
+    unsigned int value;
 
     char didanything = FALSE;
 
@@ -964,13 +964,15 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 
 	    if (!strcasecmp("q", encoding)) {
 		/* quoted printable decoding */
-            endptr = ptr + strlen(ptr);
+#ifdef HAVE_ICONV
+                char *orig2,*output2,*output3;
+                size_t len, charsetlen;
+#endif
+                endptr = ptr + strlen(ptr);
 
 #ifdef HAVE_ICONV
-	      char *orig2,*output2,*output3;
-	      size_t len, charsetlen;
-	      orig2=output2=malloc(strlen(string)+1);
-	      memset(output2,0,strlen(string)+1);
+                orig2=output2=malloc(strlen(string)+1);
+                memset(output2,0,strlen(string)+1);
 
 		for (; ptr < endptr; ptr++) {
 		    switch (*ptr) {
@@ -1110,7 +1112,7 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 static int get_quotelevel (const char *line)
 {
   int quoted = 0;
-  char *p = (char *) line;
+  const char *p = line;
 
   while (p && *p == '>')
   {
@@ -1333,7 +1335,7 @@ static char * mdecodeQP(FILE *file, char *input, char **result, int *length,
 
 	input++;
 	if ('=' == inchar) {
-	    int value;
+	    unsigned int value;
 	    if ('\n' == *input) {
 		if (!fgets(i_buffer, MAXLINE, file))
 		    break;
@@ -1657,9 +1659,9 @@ int parsemail(char *mbox,	/* file name */
     struct body *append_lp = NULL;
 
     FileStatus alternative_lastfile_created = NO_FILE;	/* previous alternative attachments, for non-inline MIME types */
-    char alternative_file[129];	/* file name where we store the non-inline alternatives */
-    char alternative_lastfile[129];	/* last file name where we store the non-inline alternatives */
-    char last_alternative_type[129];      /* the alternative Content-Type value */
+    char alternative_file[131];	/* file name where we store the non-inline alternatives */
+    char alternative_lastfile[131];	/* last file name where we store the non-inline alternatives */
+    char last_alternative_type[131];      /* the alternative Content-Type value */
     int att_counter = 0;	/* used to generate a unique name for attachments */
 
     int parse_multipart_alternative_force_save_alts = 0; /* used to control if we are parsing alternative as multipart */
@@ -2460,7 +2462,7 @@ int parsemail(char *mbox,	/* file name */
                             }
 
                             strncpy(last_alternative_type, type,
-                                    sizeof(last_alternative_type) - 1);
+                                    sizeof(last_alternative_type) - 2);
                             /* make sure it's a NULL ending string if ever type > 128 */
                             last_alternative_type[sizeof(last_alternative_type) - 1] = '\0';
 #ifdef DEBUG_PARSE
@@ -3480,7 +3482,7 @@ int parsemail(char *mbox,	/* file name */
 				strcpy(alternative_lastfile,
 				       alternative_file);
                                 strncpy(last_alternative_type, type,
-                                        sizeof(last_alternative_type) - 1);
+                                        sizeof(last_alternative_type) - 2);
                                 /* make sure it's a NULL ending string if ever type > 128 */
                                 last_alternative_type[sizeof(last_alternative_type) - 1] = '\0';
                                 
@@ -3827,7 +3829,7 @@ int parsemail(char *mbox,	/* file name */
                                         /* save the last mime type to help deal with the
                                          * apple mail hack */
 					strncpy(last_alternative_type, type,
-						sizeof(last_alternative_type) - 1);
+						sizeof(last_alternative_type) - 2);
                                         /* make sure it's a NULL ending string if ever type > 128 */
                                         last_alternative_type[sizeof(last_alternative_type) - 1] = '\0';
                                     }
@@ -5025,14 +5027,14 @@ void fixnextheader(char *dir, int num, int direction)
 
     cp = bp;			/* save start of list to free later */
 
-#ifdef HAVE_ICONV
-    char *numsubject,*numname;
-    numsubject=i18n_utf2numref(email->subject,1);
-    numname=i18n_utf2numref(email->name,1);
-#endif
 
     fp = fopen(filename, "w+");
     if (fp) {
+#ifdef HAVE_ICONV
+        char *numsubject,*numname;
+        numsubject=i18n_utf2numref(email->subject,1);
+        numname=i18n_utf2numref(email->name,1);
+#endif        
 	while (bp) {
 	    if (!strncmp(bp->line, "<!-- emptylink=", 15)) {
 	      /* JK: just skip this line and the following which is just our
@@ -5117,7 +5119,6 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
     struct body *bp, *cp, *status;
     struct body *lp = NULL;
     FILE *fp;
-    char *ptr;
 
     struct emailinfo *email;
     struct emailinfo *email2 = NULL;
@@ -5249,16 +5250,16 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 
     cp = bp;			/* save start of list to free later */
 
-#ifdef HAVE_ICONV
-    char *numsubject,*numname;
-    numsubject=i18n_utf2numref(email->subject,1);
-    numname=i18n_utf2numref(email->name,1);
-#endif
-
     fp = fopen(filename, "w+");
     if (fp) {
         bool list_started = FALSE; /* tells when we're starting a reply list for the
 				      first time */
+#ifdef HAVE_ICONV
+        char *numsubject,*numname;
+        
+        numsubject=i18n_utf2numref(email->subject,1);
+        numname=i18n_utf2numref(email->name,1);
+#endif        
 	while (bp) {
 	    if (!strncmp(bp->line, "<!-- emptylink=", 15)) {
 	      /* JK: just skip this line and the following which is just our
@@ -5285,7 +5286,7 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 	    }
 	    if (!strncmp(bp->line, "<!-- lreply", 11)) {
 	        char *del_msg = (email2->is_deleted ? lang[MSG_DEL_SHORT] : "");
-		char *ptr1;
+                char *ptr, *ptr1;
 #ifdef HAVE_ICONV
 		ptr=strsav(numsubject);
 #else
@@ -5317,7 +5318,7 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 	    else if (!strncmp(bp->line, "<!-- reply", 10)) {
                 /* backwards compatiblity with the pre-WAI code */
 	        char *del_msg = (email2->is_deleted ? lang[MSG_DEL_SHORT] : "");
-		char *ptr1;
+                char *ptr, *ptr1;
 #ifdef HAVE_ICONV
 		ptr=strsav(email->subject);
 #else
@@ -5387,7 +5388,7 @@ void fixthreadheader(char *dir, int num, int max_update)
     struct body *lp = NULL;
     int threadnum = 0;
     char *ptr;
-
+    
     for (rp = threadlist; rp != NULL; rp = rp->next) {
 	if (rp->next != NULL &&
 	    (rp->next->data && rp->next->data->msgnum == num) &&
@@ -5420,14 +5421,13 @@ void fixthreadheader(char *dir, int num, int max_update)
 
     cp = bp;			/* save start of list to free later */
 
-#ifdef HAVE_ICONV
-    char *numsubject,*numname;
-    ptr=NULL;
-    numsubject=i18n_utf2numref(subject,1);
-    numname=i18n_utf2numref(name,1);
-#endif
-
     if ((fp = fopen(filename, "w+")) != NULL) {
+#ifdef HAVE_ICONV
+        char *numsubject,*numname;
+        ptr=NULL;
+        numsubject=i18n_utf2numref(subject,1);
+        numname=i18n_utf2numref(name,1);
+#endif
 	while (bp != NULL) {
 	   if (!strncmp(bp->line, "<!-- emptylink=", 15)) {
 	      /* JK: just skip this line and the following which is just our
