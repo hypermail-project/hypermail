@@ -148,6 +148,7 @@ char *getvalue(char *);
 char *getconfvalue(char *, char *, char *);
 char *unre(char *);
 char *oneunre(char *);
+int  filter_content_type_values(char *);
 void rfc3676_trim_softlb(char *);
 char *rfc3676_delsp_quotes(char *);
 int rfc3676_ishardlb(const char *);

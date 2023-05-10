@@ -2172,14 +2172,10 @@ int parsemail(char *mbox,	/* file name */
 			    ptr++;
 
                         content_type_ptr = ptr;
-                        
 			sscanf(ptr, "%128[^;]", type);
-			cp = type + strlen(type) - 1;
-			while (cp > type && isspace(*cp)) {
-			    *cp = '\0';	/* rm newlines, etc */
-			    --cp;
-			}
 
+                        filter_content_type_values(type);
+                          
 			/* now, check if there's a charset indicator here too! */
 			cp = strcasestr(ptr, "charset=");
 			if (cp) {
@@ -2188,6 +2184,7 @@ int parsemail(char *mbox,	/* file name */
 				cp++;	/* pass a quote too if one is there */
                             
 			    sscanf(cp, "%128[^;\"\n]", charbuffer);
+                            filter_content_type_values(charbuffer);
 			    /* save the charset info */
 			    charset = strsav(charbuffer);
                         }

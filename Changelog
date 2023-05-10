@@ -6,6 +6,12 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
+	* src/{parse.c, string.c, proto.h}
+	Some malformed messages could insert a \r followed by some
+	text between the Content-Type or Content-Type parameters,
+	their values and the end of the line or the ';'. Hypermail
+	now detects these values and filters them out.
+
 	* src/mail.c libcgi configure.ac Makefile.in src/Makefile.in
 	Purged the years old deprecated mail script and its associated
 	libraries. Althought the script itself had been disabled
@@ -27,7 +33,19 @@ HYPERMAIL VERSION 3.0.0
 	https://github.com/krb5/krb5/commit/0108d7d7fbb1111c062ac580e69e97103662fc2b
 
 	* many files
-	Removed compiler warnings detected by gcc -O2 -Wall
+	To prune out potential errors and portability issues, compiled
+	hypermail with the gcc flags here belowed and removed most of the
+	compiler warnings. The few ones that remain are mostly implicit
+	declaration of functions fileno(), symlink(), and lstat() whose
+	prototypes have switched between glib and posix and 'const' qualifier
+	being discarded in utf8.h, a 3rd party lib. Need more tests on
+	different platforms to improve hypermail's configure.ac. This has no
+	impact when compiling hypermail on debian with gcc either without these
+	warnings or with -Wall and with -O2.
+
+	-Wall -ansi -pedantic -Wno-overlength-strings -Wshadow -Wpointer-arith
+	-Wcast-qual -Wcast-align -Waggregate-return -Wstrict-prototypes
+	-Wmissing-prototypes -Wnested-externs -Winline
 
 	* src/getname.c
 	When a From: header had two email addresses, hypermail was

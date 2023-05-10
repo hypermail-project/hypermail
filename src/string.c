@@ -967,6 +967,46 @@ bool strisspace(char *p)
    return (*p ? FALSE : TRUE);
 }
 
+/* 
+** filters spaces and control characters from
+** content-type header and parameter values
+**
+** returns true if any char was removed, false
+** otherwise
+*/
+bool filter_content_type_values(char *_string)
+{
+    char *cp;
+    bool rv = FALSE;
+
+    if (!_string || !*_string) {
+        return FALSE;
+    }
+    
+    /* removing trailing spaces, newlines and other control chars  */
+    cp = _string + strlen(_string) - 1;
+    while (cp > _string && (isspace(*cp) || iscntrl(*cp))) {
+        *cp = '\0';
+        --cp;
+        rv = TRUE;
+    }
+    
+    /* check if the text has any control characters
+       inserted between the end of the attribute
+       value and the ; char, if yes, cut the string there;
+       some spam messages craft this kind of msgs.  */
+    cp = _string;
+    while (*cp && !isspace(*cp) && !iscntrl(*cp)) {
+        cp++;
+    }
+    if (*cp != '\0') {
+        *cp = '\0';
+        rv = TRUE;
+    }
+    
+    return rv;
+}
+
 /*
 ** Strips the timezone information from long date strings, so more correct
 ** comparisons can be made between dates when looking for article replies.
@@ -2435,7 +2475,7 @@ char *
 hm_strchr(const char *str, int ch)
 {
 	if (!set_iso2022jp) {
-		return(strchr(str, ch));
+            return(strchr(str, ch));
 	} else {
 		int in_ascii = TRUE, esclen = 0;
 	
@@ -2444,7 +2484,7 @@ hm_strchr(const char *str, int ch)
 			if (esclen) str += esclen;
 			if (in_ascii == TRUE) {
                             if (*str == ch) {
-                                return((char *)str);
+                                return((char *) str);
                             }
 			}
 		}
