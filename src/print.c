@@ -608,7 +608,8 @@ void print_index_footer_links(FILE *fp, mindex_t called_from, long enddatenum, i
 	|| (called_from != THREAD_INDEX && show_index[dlev][THREAD_INDEX]) 
 	|| (called_from != SUBJECT_INDEX && show_index[dlev][SUBJECT_INDEX]))
       fprintf(fp, "<li><span class=\"heading\"><a href=\"#first\">%d %s</a>; "
-	      "%s</span>:<ul class=\"hmenu\">\n",
+	      "%s</span>:\n"
+              "<ul class=\"hmenu\">\n",
 	      amountmsgs, lang[MSG_ARTICLES],
 	      lang[MSG_SORT_BY]);
 
@@ -654,7 +655,7 @@ void print_index_footer_links(FILE *fp, mindex_t called_from, long enddatenum, i
       else
 	fprintf(fp, "<li>%s</li>\n", lang[MSG_ATTACHMENT]);
     }
-    fprintf (fp, "</ul>\n");
+    fprintf (fp, "</ul>\n</li>");
 
     /* print the mail actions */
     if (set_mailcommand && set_hmail) {
@@ -682,7 +683,7 @@ void print_index_footer_links(FILE *fp, mindex_t called_from, long enddatenum, i
 	fprintf(fp, "<li><a href=\"%s%s\">%s</a></li>", subdir->rel_path_to_top, 
 		index_name[0][FOLDERS_INDEX],
 		lang[MSG_FOLDERS_INDEX]);
-      fprintf (fp, "</ul></li>\n");
+      fprintf (fp, "</ul>\n</li>\n");
     }
 
     if (ihtmlhelplowfile)
@@ -691,12 +692,13 @@ void print_index_footer_links(FILE *fp, mindex_t called_from, long enddatenum, i
     if ((set_about && *set_about) 
 	|| (set_archives && *set_archives))
       {
-	fprintf (fp, "<li><span class=\"heading\">%s</span>:<ul class=\"hmenu\">", lang[MSG_NEARBY]);
+	fprintf (fp, "<li><span class=\"heading\">%s</span>:\n"
+                 "<ul class=\"hmenu\">", lang[MSG_NEARBY]);
 	if (set_about && *set_about)
 	  fprintf(fp, "<li><a href=\"%s\">%s</a></li>", set_about, lang[MSG_ABOUT_THIS_ARCHIVE]);
 	if (set_archives && *set_archives)
 	  fprintf(fp, "<li><a href=\"%s\">%s</a></li>", set_archives, lang[MSG_OTHER_MAIL_ARCHIVES]);
-	fprintf (fp, "</ul></li>\n");
+	fprintf (fp, "</ul>\n</li>\n");
       }
 
     if (set_custom_archives && *set_custom_archives)
