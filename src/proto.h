@@ -1,5 +1,5 @@
 #ifndef __PROTO_H_
-#define __PROTO_H_ 1
+#define __PROTO_H_
 
 #include "hypermail.h"
 
