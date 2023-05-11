@@ -59,8 +59,8 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 
     while (rp != NULL) {
 #if DEBUG_THREAD
-	fprintf(stderr, "print_all_threads: message %d prev %d level %d\n",
-		rp->msgnum, prev, level);
+	fprintf(stderr, "print_all_threads: prev message %d current message %d name %s\n", 
+		prev, rp->msgnum, (rp->data) ? rp->data->name : "" );
 #endif
 	if (rp->msgnum == -1) {
 	    level =
@@ -78,8 +78,7 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 	}
 
 #if DEBUG_THREAD
-	fprintf(stderr, "print_all_threads: %d: %s\n", rp->msgnum,
-		rp->data->name);
+	fprintf(stderr, "print_all_threads: current_level %d: \n", level);
 #endif
 	if (prev == -1) {
 	    level =
@@ -87,16 +86,23 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 				     filename_stack, subject_stack,
 				     thread_file_depth, email, rp->data,
 				     filenameb, fp_body);
+            
 	    filenameb = NULL;
 	    stack[level] = rp->msgnum;
+#if DEBUG_THREAD
+            fprintf(stderr, "print_all_threads: new level %d: \n", level);
+#endif                
 	}
 	else if (hide_level) {
 	    ;			/* don't change level */ 
         }
 	else if (rp->frommsgnum == prev) {
-	    if (level < MAXSTACK)
+	    if (level < MAXSTACK) {
 		level++;
-	    else
+#if DEBUG_THREAD
+                fprintf(stderr, "print_all_threads: new level %d: \n", level);
+#endif                                
+            } else
 		fprintf(stderr, "thread level too deep - sticking at %d\n",
 			MAXSTACK);
 	    stack[level] = rp->msgnum;
@@ -132,9 +138,9 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 	      }
 	      else {
 		/* if we go over the thread limit, we just close the last open li */
-		if (!set_indextable && num_open_li[level - 1] != 0) {
+		if (!set_indextable && num_open_li[level] != 0) {
 		  fprintf (fp, "</li>\n");
-		  num_open_li[level - 1]--;
+		  num_open_li[level]--;
 		}
 	      }
 	    }
@@ -152,12 +158,13 @@ void print_all_threads(FILE *fp, int year, int month, struct emailinfo *email)
 		}
 	    }
 	    newlevel = i + 1;
-	    if (newlevel == level) {
+#if DEBUG_THREAD
+            fprintf(stderr, "print_all_threads: new level %d: \n", level);
+#endif                            
+	    if (level != 0 && (newlevel == level)) {
 	      /* same level, close the previous item */
                 if (!set_indextable && num_open_li[level] != 0) {
-                    if (num_open_li[level] != 1) {
-                        fprintf (fp, "</li>\n");
-                    }
+                    fprintf(fp, "</li>\n");
                     num_open_li[level]--;
                 }
 	    }
@@ -291,8 +298,8 @@ static void format_thread_info(FILE *fp, struct emailinfo *email,
     }
     else {
         if (num_open_li[level] != 0) {
-            if (num_open_li[level] != 1) {
-                fprintf (fp, "</li>\n");
+            if (level != 0) {
+                fprintf(fp, "</li>\n");
             }
             num_open_li[level]--;
 	}
@@ -379,33 +386,31 @@ static int finish_thread_levels(FILE **fp, int level, int newlevel,
 	    num_replies[level - 1] += num_replies[level];
 	    if (level < set_thrdlevels) {
 		if (level > thread_file_depth) {
-		    if (num_open_li[level] != 0) {
-		      fprintf(*fp, "</li>");
+		    if (level != 0 && num_open_li[level] != 0) {
+		      fprintf(*fp, "</li>\n");
 		      num_open_li[level]--;
-		    }
-		    fprintf(*fp, "</ul>\n");
-
-		    if (num_open_li[level] != 0) {
-		      fprintf(*fp, "</li>");
-		      num_open_li[level]--;
+                      if (num_open_li[level] == 0) {
+                          fprintf(*fp, "</ul>\n");
+                      }
 		    }
 		}
 		else if (level < MAXSTACK) {
 		    char *filename = htmlfilename(filename_stack[level],
 						  subdir_email, "");
-		    fprintf(*fp, "</li></ul>\n");
+		    fprintf(*fp, "</li>\n</ul>\n");
 		    if (num_open_li[level] != 0) {
-		      fprintf(*fp, "</li>");
+		      fprintf(*fp, "</li>\n");
 		      num_open_li[level]--;
 		    }
-		    fprintf (*fp, "</ul>");
+		    fprintf (*fp, "</j2ul>\n");
 		    printfooter(*fp, ihtmlfooterfile, set_label, set_dir,
 				subject_stack[level], filename, TRUE);
 		    fclose(*fp);
 		    *fp = fp_stack[level - 1];
 		    if (num_replies[level]) {
+                        /* JK: Audit this */
 			fprintf(*fp,
-				"<ul><li><a href=\"%s\">%u replies</a></ul>\n",
+				"<ul><li><a href=\"%s\">%u replies</a></li></ul>\n",
 				filename_stack[level], num_replies[level]);
 			if (chmod(filename, set_filemode) == -1) {
                             trio_snprintf(errmsg, sizeof(errmsg), 
@@ -422,10 +427,12 @@ static int finish_thread_levels(FILE **fp, int level, int newlevel,
 		}
 	    }
 	    else {
-	      if (num_open_li[level] != 0) {
-		fprintf(*fp, "</li>");
-		num_open_li[level]--;
-	      }	      
+                /* if we go over the thread limit, we just close the
+                   last open li */ 
+                if (num_open_li[level] != 0) {
+                    fprintf(*fp, "</li>\n");
+                    num_open_li[level]--;
+                }	      
 	    }
 	    level--;
 	}
