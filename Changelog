@@ -19,7 +19,7 @@ HYPERMAIL VERSION 3.0.0
 	closes #95
 
 	* src/{setup.c, setup.h, parse.c}, doc/{hmrc.html, hmrc.4}
-	max_attachments_per_msg, a new configuration option to limit
+	New conf. option max_attachments_per_msg. Used for limiting
 	the number of attachments we want to parse for messages.
 	See hmrc.html, hmrc.4 or hypermail -v for more info.
 
@@ -72,10 +72,11 @@ HYPERMAIL VERSION 3.0.0
 	Closes #85
 
 	* src/setup.c
-	Marked config options linkquotes as "deprecated, with intention to
-	remove" ddue to corresponding code not being maintained anymore.
+	Marked config options finelinks, linkquotes as "deprecated, with
+	intention to remove" due to corresponding code not being maintained
+	anymore.
 
-        New directive show_headers_msg_rfc822 useful if you want to
+        New conf. option show_headers_msg_rfc822. Useful if you want to
 	fine-tune which headers you want to be displayed in message/rfc822
 	attachments. If not declared, hypermail will use
 	show_headers_msg for message/rfc822 attachments.
@@ -85,6 +86,16 @@ HYPERMAIL VERSION 3.0.0
 
 	* src/string.c
 	fixed a memory leak after calling obfuscated_email_address()
+
+	* many files
+	Reworked the parser so that it now produces a tree that represents
+	a message to have better parsing of multipart/mixed and message/rfc822
+	messages, choosing a charset for the whole message, and, most
+	importantly, separate the identification of the logic structures
+	of a message from the generation of markup. Once a message is parsed
+	and processed, the tree will then be flattened to the structure the
+	print modules are used to, but including now markers for the beginning
+	and end of sections, etc.
 
 2023-05-12 @shlomif
 	* README
