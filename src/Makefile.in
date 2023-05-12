@@ -30,7 +30,11 @@ TRIO_DEP=@TRIO_DEP@
 FNV_DEP=@FNV_DEP@
 
 #WNOERROR=-Werror
-#WARNINGS=$(WNOERROR) -ansi -pedantic -Wno-overlength-strings -Wall -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -fsanitize=address -fno-omit-frame-pointer -Dlint
+# Note that -ansi and -std=iso9899:199409 seem to be equivalent in gcc as it
+# doesn't support the
+# for clang -std=c90
+# @@ make this part of autoconf?
+#WARNINGS=$(WNOERROR) -Wall -Wextra -std=iso9899:199409  -pedantic -Wno-overlength-strings -Wall -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Dlint
 
 # While waiting to put this in configure.ac
 # Note: if you're debugging memory issues (leaks, overruns, unallocated memory use)
