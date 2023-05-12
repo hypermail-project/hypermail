@@ -74,7 +74,7 @@ HYPERMAIL VERSION 3.0.0
 	* src/string.c
 	fixed a memory leak after calling obfuscated_email_address()
 
-2023-05-12 Andy Valencia
+2023-05-12 @vandys (Andy Valencia)
 	* src/struct.c
 	spamify() was being systematically applied even if
 	spamprotect was disabled
