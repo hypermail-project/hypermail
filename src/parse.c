@@ -1516,7 +1516,6 @@ static void write_txt_file(struct emailinfo *emp, struct Push *raw_text_buf)
 ** following some heuristics
 */
 static message_node_skip_t message_node_skip_status(FileStatus file_created,
-                                                    char attach_force,
                                                     ContentType content,
                                                     char *content_type)
 {
@@ -2775,7 +2774,6 @@ int parsemail(char *mbox,	/* file name */
                                                       att_comment_filename,
                                                       attachment_rfc822,
                                                       message_node_skip_status(file_created,
-                                                                               attach_force,
                                                                                content,
                                                                                type));
                             if (alternativeparser) {
@@ -2978,7 +2976,6 @@ int parsemail(char *mbox,	/* file name */
                                                   att_comment_filename,
                                                   attachment_rfc822,
                                                   message_node_skip_status(file_created,
-                                                                           attach_force,
                                                                            content,
                                                                            type));
                         
@@ -3320,7 +3317,6 @@ int parsemail(char *mbox,	/* file name */
                                                       att_comment_filename,
                                                       attachment_rfc822,
                                                       message_node_skip_status(file_created,
-                                                                               attach_force,
                                                                                content,
                                                                                type));
                             if (alternativeparser) {
@@ -4071,7 +4067,6 @@ int parsemail(char *mbox,	/* file name */
                                           att_comment_filename,
                                           attachment_rfc822,
                                           message_node_skip_status(file_created,
-                                                                   attach_force,
                                                                    content,
                                                                    type));
                 
