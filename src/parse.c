@@ -549,14 +549,16 @@ char *getmaildate(char *line)
     INIT_PUSH(buff);
 
     c = strchr(line, ':');
-    if ((*(c + 1) && *(c + 1) == '\n') || (*(c + 2) && *(c + 2) == '\n')) {
+    if (!*(c + 1) 
+        || ((*(c + 1) == '\n')
+            || (*(c + 1) == '\r'))) {
 	PushString(&buff, NODATE);
 	RETURN_PUSH(buff);
     }
     c += 2;
     while (*c == ' ' || *c == '\t')
 	c++;
-    for (i = 0, len = DATESTRLEN - 1; *c && *c != '\n' && i < len; c++)
+    for (i = 0, len = DATESTRLEN - 1; *c && *c != '\n' && *c != '\r' && i < len; c++)
 	PushByte(&buff, *c);
 
     RETURN_PUSH(buff);
@@ -578,7 +580,7 @@ char *getfromdate(char *line)
     if (days[i] == NULL)
 	tmpdate[0] = '\0';
     else {
-	for (i = 0, len = DATESTRLEN - 1; *c && *c != '\n' && i < len; c++)
+	for (i = 0, len = DATESTRLEN - 1; *c && *c != '\n' && *c != '\r' && i < len; c++)
 	    tmpdate[i++] = *c;
 
 	tmpdate[i] = '\0';
@@ -615,7 +617,7 @@ char *getid(char *line)
     else
 	c = strrchr(line, '<') + 1;
 
-    for (i = 0; *c && *c != '>' && *c != '\n'; c++) {
+    for (i = 0; *c && *c != '>' && *c != '\n' && *c != '\r'; c++) {
 	if (*c == '\\')
 	    continue;
 	PushByte(&buff, *c);
@@ -668,7 +670,7 @@ char *getsubject(char *line)
 
     startp = c;
 
-    for (i = len = 0; c && *c && (*c != '\n'); c++) {
+    for (i = len = 0; c && *c && (*c != '\n') && (*c != '\r'); c++) {
 	i++;
 	/* keep track of the max length without trailing white spaces: */
 	if (!isspace(*c))
@@ -676,7 +678,7 @@ char *getsubject(char *line)
     }
 
     if (isre(startp, &postre)) {
-	if (!*postre || (*postre == '\n'))
+	if (!*postre || (*postre == '\n') || (*postre == '\r'))
 	    len = 0;
     }
 
@@ -2022,6 +2024,7 @@ int parsemail(char *mbox,	/* file name */
                         continue;
                     }              
 		    else if (!strncasecmp(head->line, "Date:", 5)) {
+                        strlftonl(head->line);
                         head->parsedheader = TRUE;
                         if (!message_headers_parsed) {
                             date = getmaildate(head->line);
@@ -2030,6 +2033,7 @@ int parsemail(char *mbox,	/* file name */
 		    }
 		    else if (!strncasecmp(head->line, "From:", 5)) {
                         head->parsedheader = TRUE;
+                        strlftonl(head->line);                        
                         if (!message_headers_parsed) {
                             getname(head->line, &namep, &emailp);
                             if (set_spamprotect) {
@@ -2046,15 +2050,18 @@ int parsemail(char *mbox,	/* file name */
                            processing it over and over here below
                         */
                         head->parsedheader = TRUE;
+                        strlftonl(head->line);
                     }
 		    else if (!strncasecmp(head->line, "Message-Id:", 11)) {
                         head->parsedheader = TRUE;
+                        strlftonl(head->line);
                         if (!message_headers_parsed) {
                             msgid = getid(head->line);
                         }
 		    }
 		    else if (!strncasecmp(head->line, "Subject:", 8)) {
                         head->parsedheader = TRUE;
+                        strlftonl(head->line);
                         if (!message_headers_parsed) {
                             subject = getsubject(head->line);
                             hassubject = 1;
@@ -2062,6 +2069,7 @@ int parsemail(char *mbox,	/* file name */
 		    }
 		    else if (!strncasecmp(head->line, "In-Reply-To:", 12)) {
                         head->parsedheader = TRUE;
+                        strlftonl(head->line);
                         if (!message_headers_parsed) {
                             inreply = getreply(head->line);
                         }
@@ -2182,7 +2190,7 @@ int parsemail(char *mbox,	/* file name */
 			    if ('\"' == *cp)
 				cp++;	/* pass a quote too if one is there */
                             
-			    sscanf(cp, "%128[^;\"\n]", charbuffer);
+			    sscanf(cp, "%128[^;\"\n\r]", charbuffer);
                             filter_content_type_values(charbuffer);
 			    /* save the charset info */
 			    charset = strsav(charbuffer);
@@ -2196,7 +2204,7 @@ int parsemail(char *mbox,	/* file name */
                                 if ('\"' == *cp)
                                     cp++;	/* pass a quote too if one is there */
                                 
-                                sscanf(cp, "%128[^;\"\n]", charbuffer);
+                                sscanf(cp, "%128[^;\"\n\r]", charbuffer);
                                 /* save the format info */
                                 if (!strcasecmp (charbuffer, "flowed"))
                                     textplain_format = FORMAT_FLOWED;
@@ -2209,7 +2217,7 @@ int parsemail(char *mbox,	/* file name */
                                 if ('\"' == *cp)
                                     cp++;	/* pass a quote too if one is there */
                                 
-                                sscanf(cp, "%128[^;\"\n]", charbuffer);
+                                sscanf(cp, "%128[^;\"\n\r]", charbuffer);
                                 /* save the delsp info */
                                 if (!strcasecmp (charbuffer, "yes"))
                                     delsp_flag = TRUE;

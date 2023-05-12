@@ -1763,7 +1763,9 @@ void message_node_dump(struct message_node *root_message_node)
                   ovector = pcre2_get_ovector_pointer(match_data);
                   max_bytes=(int)ovector[1];
                   /* skip any \n */
-                  if (max_bytes > 0 && line[max_bytes - 1] == '\n') {
+                  if (max_bytes > 0
+                      && ((line[max_bytes - 1] == '\n')
+                          || (line[max_bytes - 1] == '\r'))) {
                       max_bytes--;
                   }
                   line[max_bytes]='\0';
@@ -2031,11 +2033,8 @@ struct body *addbody(struct body *bp, struct body **lp,	/* points to the last po
 	    /* if successful, continue */
 	    if (newbuf) {
 		/* remove LF from the first part: */
-		char *lf;
-		lf = strchr(newbuf, '\n');
-		if (lf)
-		    *lf = 0;
-
+                strchomp (newbuf);
+                
 		/* append the new part */
 		strcat(newbuf, unstuffed_line);
 
@@ -2071,7 +2070,7 @@ int rmlastlines(struct body *bp)
     
     for (tempnode = bp; tempnode->next != NULL && tempnode->next->line
              && (tempnode->next->line)[0] != '\0'; tempnode = tempnode->next);
-    if ((tempnode->line)[0] == '\n') {
+    if ((tempnode->line)[0] == '\n' || (tempnode->line)[0] == '\r') {
         (tempnode->line)[0] = '\0';
         return 1;
     }

@@ -142,6 +142,7 @@ char *stripzone(char *);
 char *strip_boundary_id(const char *, int);
 
 char *strchomp(char *);
+char *strlftonl(char *s);
 
 int numstrchr(char *, char);
 char *getvalue(char *);

@@ -1147,6 +1147,21 @@ char *strchomp(char *s) {
     return s;
 }
 
+/* replaces \r with a \n */
+char *strlftonl(char *s) {
+    char *c;
+
+    if (s && *s) {
+        c = strrchr(s, '\r');
+        if (c && *(c+1) == '\n' ) {
+            *c = '\n';
+            *(c+1) = '\0';
+        }
+    }
+    
+    return s;
+}
+
 /*
 ** How many times does the character c appear in string s?
 */
