@@ -19,7 +19,7 @@ HYPERMAIL VERSION 3.0.0
 	closes #95
 
 	* src/{setup.c, setup.h, parse.c}, doc/{hmrc.html, hmrc.4}
-	max_attachments_per_msg new configuration option to limit
+	max_attachments_per_msg, a new configuration option to limit
 	the number of attachments we want to parse for messages.
 	See hmrc.html, hmrc.4 or hypermail -v for more info.
 
@@ -85,12 +85,6 @@ HYPERMAIL VERSION 3.0.0
 
 	* src/string.c
 	fixed a memory leak after calling obfuscated_email_address()
-
-2023-05-12 @vandys (Andy Valencia)
-	* src/struct.c
-	spamify() was being systematically applied even if
-	spamprotect was disabled
-	PR#97
 
 2023-05-12 @shlomif
 	* README
