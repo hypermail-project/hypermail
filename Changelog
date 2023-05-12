@@ -6,6 +6,11 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
+	* src/{setup.c, setup.h, parse.c}, doc/{hmrc.html, hmrc.4}
+	max_attachments_per_msg new configuration option to limit
+	the number of attachments we want to parse for messages.
+	See hmrc.html, hmrc.4 or hypermail -v for more info.
+
 	* src/{parse.c, string.c, proto.h}
 	Some malformed messages could insert a \r followed by some
 	text between the Content-Type or Content-Type parameters,

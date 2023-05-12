@@ -103,6 +103,7 @@ extern char *set_applemail_ua_header;
 
 extern int set_showhtml;
 extern int set_thrdlevels;
+extern int set_max_attach_per_msg;
 extern int set_dirmode;
 extern int set_filemode;
 extern int set_locktime;

@@ -90,6 +90,7 @@ char *set_applemail_ua_header;
 
 int set_showhtml;
 int set_thrdlevels;
+int set_max_attach_per_msg;
 int set_dirmode;
 int set_filemode;
 
@@ -457,6 +458,16 @@ struct Config cfg[] = {
      "# This specifies the number of thread levels to outline\n"
      "# in the thread index.\n", FALSE},
 
+    {"max_attachments_per_msg", &set_max_attach_per_msg, INT(200), CFG_INTEGER,
+     "# This specifies the maximum number of attachments that will be\n"
+     "# processed for a message. Any attachments beyond this limit\n"
+     "# will be ignored.\n"
+     "# Set to 0 to remove this limit.\n"
+     "# Note that if you remove this limit or set it too high,\n"
+     "# memory usage may increase when parsing a message made up\n"
+     "# of hundreds of attachments.\n"
+     "# Default value: 200.\n", FALSE},
+        
     {"dirmode", &set_dirmode, INT(0755), CFG_OCTAL,
      "# This is an octal number  representing  the  permissions\n"
      "# that new directories are set to when they are created.\n", FALSE},
@@ -1238,7 +1249,12 @@ void PostConfig(void)
             exit(0);
         }
     }
-
+    if (set_max_attach_per_msg < 0) {
+        printf("Warning: max_att_per_msg can't have negative values.\n"
+               "Assuming you wanted it to be 0 (no limits).\n");
+        set_max_attach_per_msg = 0;
+    }
+   
     /* disable locks if we're debugging hypermail */
     if (set_debug_level > 0) {
         set_uselock = 0;

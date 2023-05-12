@@ -4,8 +4,7 @@
 	<meta name="generator" content=
 	      "HTML Tidy for HTML5 for Linux version 5.6.0" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<meta http-equiv="Content-Type" content=
-	      "text/html; charset=utf-8" />
+	<meta charset="utf-8"  />
 	<title>Hypermail - hmrc list configuration</title>
 	<link rel="author" href="https://github.com/hypermail-project" />
 	<style>
@@ -16,6 +15,9 @@
 	     line-height: 1.2;
 	 }
 
+	 h1 {
+	     vertical-align: center;
+	 }
 	 img {
 	     vertical-align: middle;
 	 }
@@ -46,7 +48,7 @@
     </head>
     <body>
 	<header>
-<h1><img src="hypermail.png" width="60" height="60" alt="" />&nbsp;&nbsp;&nbsp;Hypermail List
+<h1><img src="hypermail.png" width="60" height="60" alt="image used to illustrate hypermail in action" />&nbsp;&nbsp;&nbsp;Hypermail List
 Configuration File</h1>
 <hr />
 <p>The hypermail list configuration file is used to specify
@@ -56,8 +58,8 @@ begining of the line. The file to use can be specified via the -c
 command line argument. The default file is .hmrc in the user's home
 directory.</p>
 <p>Examples listed on this page are shown <em>in this style</em>. The
-default value is shown unless otherwise indicated. <b>Off</b> is
-equivalent to 0, and <b>On</b> is equivalent to 1 for options which
+default value is shown unless otherwise indicated. <strong>Off</strong> is
+equivalent to 0, and <strong>On</strong> is equivalent to 1 for options which
     are either on or off.</p>
 <nav>
 <ul>
@@ -234,8 +236,8 @@ next in thread</li>
 </li>
 </ul>
 </li>
-<li><a href="#attachments">Attachments</a> <b>Note that some of
-these may affect security</b>
+<li><a href="#attachments">Attachments</a> <strong>Note that some of
+these may affect security</strong>
 <ul>
 <li><a href="#inlinehtml">inlinehtml</a> where to put
 text/html</li>
@@ -266,6 +268,7 @@ handling</li>
 choices</li>
 <li><a href="#filename_base">filename_base</a> attachment file
 name</li>
+<li><a href="#max_attachments_per_msg">max_attachments_per_msg</a> control the max number of attachments that will be parsed from a message</li>
 </ul>
 </li>
 <li><a href="#sysadmin">System Administration</a>
@@ -541,7 +544,8 @@ fragment.<br />
     <br />
     The default value is <em>hypermail.css</em> (link relative to the archive).<br />
     <br />
-<em>default_css_url = https://example.org/StyleSheets/my_hypermail.css</em> 
+    <em>default_css_url = https://example.org/StyleSheets/my_hypermail.css</em>
+</dd>
 </dl>
     </section>
     
@@ -1129,6 +1133,17 @@ alternative file.<br />
 <em>alts_text = "alternate version of message"</em> (the default if
 save_alts = 2)<br />
 <em>alts_text = "&lt;hr&gt;"</em> (the default if save_alts = 1)</dd>
+<dt id="max_attachments_per_msg">max_attachments_per_message = positive integer</dt>
+<dd> This specifies the maximum number of attachments that will be
+    processed for a message. Any attachments beyond this limit
+    will be ignored.<br />
+    Set to <code>0</code> to remove this limit.<br />
+    Note that if you remove this limit or set it too high,
+    memory usage may increase when parsing a message made up
+    of hundreds of attachments.<br />
+    <br />
+    <em>max_attachments_per_message = 30 </em> (set to <code>200</code> by default)
+</dd>
 </dl>
     </section>
     <section>
@@ -1573,8 +1588,7 @@ Pages</a></strong> and <strong><a href="archive_search.html">Adding
 a Search Engines to your Hypermail Archive</a></strong>
 </blockquote>
 <hr />
-<p><em><strong>Last updated August 11,
-    2021</strong></em></p>
+<p><em><strong>Last updated May 12, 2023</strong></em></p>
 </footer>
 </body>
 </html>

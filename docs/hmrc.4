@@ -975,6 +975,20 @@ option.
 .B Disabled
 by default.
 .TP
+.B max_attachments_per_msg = positive integer
+This specifies the maximum number of attachments that will be
+processed for a message. Any attachments beyond this limit
+will be ignored.
+Set to
+.B 0
+to remove this limit.
+Note that if you remove this limit or set it too high,
+memory usage may increase when parsing a message
+made up of hundreds of attachments.
+Set to
+.B 200
+by default.
+.TP
 .B searchbackmsgnum = postive integer
 If the linkquotes option is on and an incremental update is being
 done (-u option), this controls the tradeoff between speed and

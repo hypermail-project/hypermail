@@ -2273,7 +2273,17 @@ int parsemail(char *mbox,	/* file name */
 #endif                        
                     }
                 }
-                            
+
+                /* a limit to avoid having the message_node tree growing
+                   uncontrollably */
+                if ((set_max_attach_per_msg != 0)
+                    && (att_counter > set_max_attach_per_msg)) {
+                    content = CONTENT_IGNORE;
+#if DEBUG_PARSE
+                    printf("Hit max_attach_per_msg limit; ignoring further attachments for msgid %s\n", msgid);
+#endif                        
+                }
+                
                 if (content == CONTENT_IGNORE) {
                     continue;
                 } else if (ignorecontent(type)) {
