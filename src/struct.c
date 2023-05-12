@@ -1987,11 +1987,7 @@ struct body *addbody(struct body *bp, struct body **lp,	/* points to the last po
         
         if (!(flags & BODY_ATTACHMENT || flags & BODY_ATTACHMENT_LINKS)
             || (flags & BODY_ATTACHMENT_RFC822)) {
-            if (set_spamprotect) {
-                newnode->line = spamify(strsav(unstuffed_line));
-            } else {
-                newnode->line = strsav(unstuffed_line);
-            }
+            newnode->line = spamify(strsav(unstuffed_line));
         } else if (flags & BODY_ATTACHMENT_LINKS && line && *line) {
             newnode->line = strsav(line);
         }
