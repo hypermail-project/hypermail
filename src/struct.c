@@ -1985,10 +1985,14 @@ struct body *addbody(struct body *bp, struct body **lp,	/* points to the last po
 	newnode = (struct body *)emalloc(sizeof(struct body));
 	memset(newnode, 0, sizeof(struct body));
         
-        if (!(flags & BODY_ATTACHMENT || flags & BODY_ATTACHMENT_LINKS)
+        if (!(flags & BODY_ATTACHMENT
+              || flags & BODY_ATTACHMENT_LINKS
+              || flags & BODY_NO_ANTISPAM)
             || (flags & BODY_ATTACHMENT_RFC822)) {
             newnode->line = spamify(strsav(unstuffed_line));
-        } else if (flags & BODY_ATTACHMENT_LINKS && line && *line) {
+        } else if ((flags & BODY_ATTACHMENT_LINKS
+                    || flags & BODY_NO_ANTISPAM)
+                   && line && *line) {
             newnode->line = strsav(line);
         }
     
@@ -2006,6 +2010,7 @@ struct body *addbody(struct body *bp, struct body **lp,	/* points to the last po
 	newnode->attachment_links = (flags & BODY_ATTACHMENT_LINKS) ? 1 : 0;
 	newnode->attachment_rfc822 = (flags & BODY_ATTACHMENT_RFC822) ? 1 : 0;
         newnode->format_flowed = (flags & BODY_FORMAT_FLOWED) ? 1 : 0;
+        newnode->antispam_disabled = (flags & BODY_NO_ANTISPAM) ? 1 : 0;
 	newnode->next = NULL;
     }
     if (bp == NULL) {
@@ -2020,6 +2025,11 @@ struct body *addbody(struct body *bp, struct body **lp,	/* points to the last po
 	    int newlen;
 	    char *newbuf;
 
+            if (!tempnode->antispam_disabled) {
+                unstuffed_line = spamify(strsav(unstuffed_line));
+                free_unstuffed_line = 1;
+            }
+            
 	    /* get the new size + 1 for the terminating zero */
 	    newlen = strlen(tempnode->line) + strlen(unstuffed_line) + 1;
 
@@ -2030,7 +2040,7 @@ struct body *addbody(struct body *bp, struct body **lp,	/* points to the last po
 	    if (newbuf) {
 		/* remove LF from the first part: */
                 strchomp (newbuf);
-                
+
 		/* append the new part */
 		strcat(newbuf, unstuffed_line);
 

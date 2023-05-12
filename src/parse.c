@@ -1910,6 +1910,12 @@ int parsemail(char *mbox,	/* file name */
 	    /* check for MIME */
 	    else if (!strncasecmp(line, "MIME-Version:", 13))
 		Mime_B = TRUE;
+            else if (!strncasecmp(line, "Content-Type:", 13)) {
+                /* we don't do anything here except switch off anti-spam
+                   to avoid having boundaries with @ chars being changed 
+                   by the antispam functions */
+                bp = addbody(bp, &lp, line, BODY_HEADER | BODY_NO_ANTISPAM | bodyflags);
+            }
 	    else if (isspace(line[0]) && ('\n' != line[0]) \
 		     && !('\r' == line[0] && '\n' == line[1])) {
 		/*
