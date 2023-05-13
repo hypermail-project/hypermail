@@ -298,10 +298,12 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
     free(title);
 
     if (name && email){
-      fprintf(fp, "<meta name=\"Author\" content=\"%s (%s)\" />\n",convchars(name,charset),
-	      tmp_oea = obfuscate_email_address(email));
-      if (set_email_address_obfuscation && tmp_oea)
-          free(tmp_oea);
+        char *tmp_name = convchars(name,charset);
+        fprintf(fp, "<meta name=\"Author\" content=\"%s (%s)\" />\n", tmp_name,
+                tmp_oea = obfuscate_email_address(email));
+        free(tmp_name);
+        if (set_email_address_obfuscation && tmp_oea)
+            free(tmp_oea);
     }
     fprintf(fp, "<meta name=\"Subject\" content=\"%s\" />\n", rp =
 	    convchars(subject, charset));

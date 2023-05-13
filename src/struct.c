@@ -474,7 +474,7 @@ struct emailinfo *hashreplylookup(int msgnum, char *inreply, char *subject, int 
     struct hashemail *ep;
 
 #if DEBUG_THREAD > 1
-	fprintf(stderr, "hashreplynumlookup(%d, '%s'...)\n", msgnum, (inreply == NULL) ? "" : inreply);
+    fprintf(stderr, "hashreplynumlookup(%d, '%s'...)\n", msgnum, (inreply == NULL) ? "" : inreply);
 #endif
     *maybereply = 0;
 
@@ -484,7 +484,7 @@ struct emailinfo *hashreplylookup(int msgnum, char *inreply, char *subject, int 
 	while (ep) {
 	    if (strcmp(inreply, ep->data->msgid) == 0) {
 #if DEBUG_THREAD
-				fprintf(stderr, "match on msgid   %4d %4d\n", msgnum, ep->data->msgnum);
+                fprintf(stderr, "match on msgid   %4d %4d\n", msgnum, ep->data->msgnum);
 #endif
 		return ep->data;
 	    }
@@ -493,9 +493,9 @@ struct emailinfo *hashreplylookup(int msgnum, char *inreply, char *subject, int 
 
 	ep = etable[hash(inreply)];
 	while (ep) {
-			if ((msgnum != ep->data->msgnum) && (strstr(inreply, ep->data->datestr))) {
+            if ((msgnum != ep->data->msgnum) && (strstr(inreply, ep->data->datestr))) {
 #if DEBUG_THREAD
-				fprintf(stderr, "match on date    %4d %4d\n", msgnum, ep->data->msgnum);
+                fprintf(stderr, "match on date    %4d %4d\n", msgnum, ep->data->msgnum);
 #endif
 		return ep->data;
 	    }
@@ -504,17 +504,17 @@ struct emailinfo *hashreplylookup(int msgnum, char *inreply, char *subject, int 
 
 	ep = etable[hash(inreply)];
 	while (ep != NULL) {
-			if ((msgnum != ep->data->msgnum) && (strcmp(inreply, ep->data->subject) == 0)) {
+            if ((msgnum != ep->data->msgnum) && (strcmp(inreply, ep->data->subject) == 0)) {
 		*maybereply = 1;
 #if DEBUG_THREAD
-				fprintf(stderr, "match on subject %4d %4d\n", msgnum, ep->data->msgnum);
+                fprintf(stderr, "match on subject %4d %4d\n", msgnum, ep->data->msgnum);
 #endif
 		return ep->data;
 	    }
 	    ep = ep->next;
 	}
 
-    }				/* end of matching on inreply */
+    } /* end of matching on inreply */
 
     /* No match so far.  Now try matching on the subject, removing
      * one instance of "re: " from the front of the subject each
@@ -541,36 +541,40 @@ struct emailinfo *hashreplylookup(int msgnum, char *inreply, char *subject, int 
 	saved_s = strcpy(s, subject);
 #endif
 
-        if (isre(s, NULL))
+        if (isre(s, NULL)) {
             do {
+                char *new_s;
 #if DEBUG_THREAD > 1
                 fprintf(stderr, "extra %s\n", s);
 #endif
                 ep = etable[hash(s)];
                 while (ep != NULL) {
-					if ((strcasecmp(s, ep->data->subject) == 0) && (msgnum != ep->data->msgnum)) {
+                    if ((strcasecmp(s, ep->data->subject) == 0) && (msgnum != ep->data->msgnum)) {
                         match = 1;
-						if (lowest_so_far == NULL || ep->data->msgnum < lowest_so_far->msgnum)
+                        if (lowest_so_far == NULL || ep->data->msgnum < lowest_so_far->msgnum)
                             lowest_so_far = ep->data;
                     }
                     ep = ep->next;
                 }
-                s = oneunre(s);
+                new_s = oneunre(s);
+                free(s);
+                s = new_s;
             } while (s != NULL);
-
-	free(saved_s);
+        } else {
+            free(saved_s);
+        }
 
 	if (match) {
 	    *maybereply = 1;
 	    if (lowest_so_far != NULL && lowest_so_far->msgnum < msgnum) {
 #if DEBUG_THREAD
-				fprintf(stderr, "match on extra   %4d %4d\n", msgnum, lowest_so_far->msgnum);
+                fprintf(stderr, "match on extra   %4d %4d\n", msgnum, lowest_so_far->msgnum);
 #endif
 		return lowest_so_far;
 	    }
 	    else {
 #if DEBUG_THREAD
-				fprintf(stderr, "match on extra   %4d %4d discarded - less than %d\n", msgnum, lowest_so_far ? lowest_so_far->msgnum : -1, msgnum);
+                fprintf(stderr, "match on extra   %4d %4d discarded - less than %d\n", msgnum, lowest_so_far ? lowest_so_far->msgnum : -1, msgnum);
 #endif
 		return NULL;
 	    }
@@ -1027,7 +1031,8 @@ void message_node_clear(struct message_node *node,
         if (node->meta_filename) {
             unlink (node->meta_filename);
         }
-    }    
+    }
+    
     if (node->content_type)
         free(node->content_type);
     if (node->boundary_part)

@@ -4536,9 +4536,11 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
 	    }
 	}
     }
-    else if (cmp_msgid)
+    else if (cmp_msgid) {
+        free(filename);
 	return -1;
-
+    }
+    
     if (legal) {	    /* only do this if the input was reliable */
 	struct emailinfo *emp;
 
@@ -4617,6 +4619,8 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
 	free(isofromdate);
     }
     free(filename);
+    
+    free_body(bp);
 #if 0
     if (bp != NULL) {		/* revisit me */
 	if (bp->line)
