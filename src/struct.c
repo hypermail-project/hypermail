@@ -2780,8 +2780,6 @@ void hmlist_free(struct hmlist *listname)
     while (listname) {
         next = listname->next;
 
-        fprintf (stderr, "freeing node %p value %p(%s)\n", listname, listname->val, listname->val);
-        
         free(listname->val);
         free(listname);
         listname = next;
