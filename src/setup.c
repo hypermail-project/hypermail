@@ -184,7 +184,7 @@ int set_delete_level;
 int set_debug_level;
 
 struct Config cfg[] = {
-    {"fragment_prefix", &set_fragment_prefix, "msg", CFG_STRING,
+    {"fragment_prefix", &set_fragment_prefix, MSG_FRAGMENT_PREFIX, CFG_STRING,
      "# put this string before the message number in each URI fragment.\n", FALSE},
 
     {"email_address_obfuscation", &set_email_address_obfuscation, BFALSE, CFG_SWITCH,
@@ -223,7 +223,7 @@ struct Config cfg[] = {
      "# would result in \"file..html\", probably not what you want.\n", FALSE},
 
     {"mbox", &set_mbox, NULL, CFG_STRING,
-     "# This is the mailbox to read messages in from. Set this with \n"
+     "# This is the mailbox to read messages in from. Set this with\n"
      "# a value of NONE to read from standard input.\n", FALSE},
 
      {"ietf_mbox",  &set_ietf_mbox, BFALSE, CFG_SWITCH,
@@ -261,12 +261,12 @@ struct Config cfg[] = {
      "# directory will have the same name as the input mailbox.\n", FALSE},
 
     {"defaultindex", &set_defaultindex, DEFAULTINDEX, CFG_STRING,
-     "# This specifies the default index that  users can view when\n"
+     "# This specifies the default index that users can view when\n"
      "# entering the archive. Valid types are date, thread, author,\n"
      "# subject, and attachment. When using the folder_by_date or\n"
      "# msgsperfolder options, this option applies to subdirectories.\n", FALSE},
 
-    {"default_top_index", &set_default_top_index, "folders", CFG_STRING,
+    {"default_top_index", &set_default_top_index, DEFAULT_TOP_INDEX, CFG_STRING,
      "# This specifies the default index that  users can view when\n"
      "# entering the top level of an archive that uses the folder_by_date\n"
      "# or msgsperfolder option. Valid types are date, thread, author,\n"
@@ -280,7 +280,7 @@ struct Config cfg[] = {
     {"avoid_top_indices", &set_avoid_top_indices, NULL, CFG_LIST,
      "# This is a list of index files to not generate for the top\n"
      "# directory of an archive using the folder_by_date or\n"
-     "# msgsperfolder option. Valid types are date, thread, author, \n"
+     "# msgsperfolder option. Valid types are date, thread, author,\n"
      "# subject, folders, and attachment.\n", FALSE},
 
     {"overwrite", &set_overwrite, BFALSE, CFG_SWITCH,
@@ -346,9 +346,10 @@ struct Config cfg[] = {
      "# only takes effect if hm_showhtml is 1.\n", FALSE},
 
     {"showhr", &set_showhr, BFALSE, CFG_SWITCH,
+     "# (DEPRECATED AND IGNORED)\n"
      "# Set this to On to place horizontal rules before and after articles.\n"
-     "NOTE: THIS OPTION HAS BEEN DEPRECATED BY THE HTML5 and WAI CHANGES.\n"
-     "IT WILL BE IGNORED.\n", FALSE},
+     "# NOTE: THIS OPTION HAS BEEN DEPRECATED BY THE HTML5 and WAI CHANGES.\n"
+     "# IT WILL BE IGNORED.\n", FALSE},
 
     {"showreplies", &set_showreplies, BTRUE, CFG_SWITCH,
      "# Set this to On to show all replies to a message as links\n"
@@ -370,14 +371,15 @@ struct Config cfg[] = {
      "# message.\n", FALSE},
 
     {"usetable", &set_usetable, BFALSE, CFG_SWITCH,
+     "# (DEPRECATED AND IGNORED)\n"
      "# Setting this variable to On will tell Hypermail to generate\n"
      "# an index menu at the top and bottom of each page in a table\n"
      "# format. Set to Off if you want the standard Hypermail page look\n"
      "# and feel\n"
-     "NOTE: THIS OPTION HAS BEEN DEPRECATED BY THE WAI CHANGES. IT WILL BE\n"
-     "IGNORED.\n", FALSE},
+     "# NOTE: THIS OPTION HAS BEEN DEPRECATED BY THE WAI CHANGES. IT WILL BE\n"
+     "# IGNORED.\n", FALSE},
 
-    /* deprecated in 2.2.25 */
+    /* removed in 2.2.25 */
     /* 
     {"indextable", &set_indextable, BFALSE, CFG_SWITCH,
      "# Setting this variable to On will tell Hypermail to generate\n"
@@ -489,12 +491,12 @@ struct Config cfg[] = {
     {"hmail", &set_hmail, NULL, CFG_STRING,
      "# Set this to the list's submission address.\n", FALSE},
 
-    {"newmsg_command", &set_newmsg_command, "mailto:$TO", CFG_STRING,
+    {"newmsg_command", &set_newmsg_command, NEW_MSG_COMMAND, CFG_STRING,
      "# This specifies the mail command to use when converting the\n"
      "# set_hmail address to links in replies. The variables $TO, $SUBJECT,\n"
      "# and $ID can be used in constructing the command string.\n", FALSE},
 
-    {"replymsg_command", &set_replymsg_command, "not set", CFG_STRING,
+    {"replymsg_command", &set_replymsg_command, REPLYMSG_COMMAND, CFG_STRING,
      "# This specifies the mail command to use when converting the\n"
      "# set_hmail address to links in replies. The variables $TO, $SUBJECT,\n"
      "# and $ID can be used in constructing the command string. The value\n"
@@ -523,12 +525,15 @@ struct Config cfg[] = {
      "# The CSS will be associated to the indexes thru an HTML LINK element.\n"
     , FALSE},
 
-    {"default_css_url", &set_default_css_url, "hypermail.css", CFG_STRING,
+    {"default_css_url", &set_default_css_url, DEFAULT_CSS_URL, CFG_STRING,
      "# Specifies the default URL for the CSS file used by hypermail if either\n"
      "# icss_url or mcss_url are not declared.\n"
-     "# The default URL is hypermail.css, a relative URL to the archive.\n"
-    , FALSE},
-    
+     "# \n"
+     "# Note: if you don't specify this url, hypermail will use by default\n"
+     "# \"" DEFAULT_CSS_URL "\", a local link relative to the archive.\n"
+     "# In this case, if \"" DEFAULT_CSS_URL "\", doesn't exist, hypermail will\n"
+     "# create it, and populate with its default style.\n", FALSE},
+     
     {"text_types", &set_text_types, NULL, CFG_LIST,
      "# This is a list of MIME types that you want hypermail to treat\n"
      "# exactly as if they were text/plain.\n", FALSE},
@@ -567,7 +572,7 @@ struct Config cfg[] = {
      "# This option is ignored if save_alts is enabled or if text/html is\n"
      "# the prefered type.", FALSE},
 
-    {"applemail_ua_header", &set_applemail_ua_header, "X-Mailer", CFG_STRING,
+    {"applemail_ua_header", &set_applemail_ua_header, APPLE_MAIL_UA_HEADER, CFG_STRING,
      "# Set to the header name that Apple Mail uses to identify its mail agent.\n"
      "# This option is only useful if you enabled the\n"
      "# applemail_mimehack configuration option.\n", FALSE},
@@ -704,9 +709,9 @@ struct Config cfg[] = {
      "# messages with attachments.\n", FALSE},
 
     {"linkquotes", &set_linkquotes, BFALSE, CFG_SWITCH,
-     "# NOTE: this option has not been working well since 2.4.0 and should\n"
-     "# now be considered experimental. It may be deprecated in \n"
-     "# the next version of hypermail.\n"
+     "# (UNSTABLE, MAY BE DEPRECATED) this option has not been working well\n"
+     "# since 2.4.0 and should now be considered experimental.\n"
+     "# It may be deprecated in the next version of hypermail.\n"
      "# \n"
      "# Set this to On to create fine-grained links from quoted\n"
      "# text to the text where the quote originated. It also improves\n"
@@ -715,6 +720,7 @@ struct Config cfg[] = {
      "# the searchbackmsgnum option to alter the performance).\n", FALSE},
 
     {"searchbackmsgnum", &set_searchbackmsgnum, INT(500), CFG_INTEGER,
+     "# (UNSTABLE, MAY BE DEPRECATED)\n"
      "# If the linkquotes option is on and an incremental update is being\n"
      "# done (-u option), this controls the tradeoff between speed and\n"
      "# the reliability of finding the right source for quoted text.\n"
@@ -722,12 +728,14 @@ struct Config cfg[] = {
      "# message and the final direct reply to that message.\n", FALSE},
 
     {"link_to_replies", &set_link_to_replies, NULL, CFG_STRING,
+     "# (UNSTABLE, MAY BE DEPRECATED)\n"
      "# If the linkquotes option is on, specifying a string here\n"
      "# causes it to generate links from original quoted text to the\n"
      "# location(s) in replies which quote them. The string\n"
      "# is used to display the link.\n", FALSE},
 
     {"quote_hide_threshold", &set_quote_hide_threshold, INT(100), CFG_INTEGER,
+     "# (UNSTABLE, MAY BE DEPRECATED)\n"
      "# If the linkquotes option is on, setting this to an\n"
      "# integer less than 100 will cause it to replace quoted\n"
      "# text with one-line links if the percent of lines in the\n"
@@ -735,17 +743,20 @@ struct Config cfg[] = {
      "# quoted text exceeds the number indicated by this option.\n", FALSE},
 
     {"quote_link_string", &set_quote_link_string, NULL, CFG_STRING,
+     "# (UNSTABLE, MAY BE DEPRECATED)\n"
      "# If the quote_hide_threshold option is being used, the\n"
      "# quote_link_string will be used if available to display the\n"
      "# link that replaces the quoted text. If no string is specified\n"
      "# here, the first line of each section of quoted text will used.\n", FALSE},
 
     {"monthly_index", &set_monthly_index, BFALSE, CFG_SWITCH,
+     "# (CODE NEEDS MORE LOVE)\n"
      "# Set this to On to create additional index files broken up\n"
      "# by month. A summary.html file will provide links to all the\n"
      "# monthly indices.\n", FALSE},
 
     {"yearly_index", &set_yearly_index, BFALSE, CFG_SWITCH,
+     "# (CODE NEEDS MORE LOVE)\n"
      "# Set this to On to create additional index files broken up\n"
      "# by year. A summary.html file will provide links to all the\n"
      "# yearly indices.\n", FALSE},
@@ -815,16 +826,15 @@ struct Config cfg[] = {
     {"iso2022jp", &set_iso2022jp, BFALSE, CFG_SWITCH,
      "# Set this to On to support ISO-2022-JP messages.\n", FALSE},
 
-    {"override_default_charset", &set_default_charset, "US-ASCII", CFG_STRING,
+    {"override_default_charset", &set_default_charset, DEFAULT_CHARSET, CFG_STRING,
      "# (EXPERIMENTAL)\n"
-     "# Set this to to override the default US-ASCII charset you want to associate\n"
+     "# Set this to to override the default " DEFAULT_CHARSET " charset you want to associate\n"
      "# with a message that doesn't explcitly specify any charset.\n"
      "# Use this only with legacy archives that you know to be in a given\n"
      "# charset but that have no charset attribute.\n"
      "# \n"
      "# Note that the only thing that will be converted are headers,\n"
-     "# the message body won't be affected.\n"
-     "# default value: US-ASCII.\n", FALSE},
+     "# the message body won't be affected.\n", FALSE},
 
     {"replace_us_ascii_with_utf8", &set_replace_us_ascii_with_utf8, BFALSE, CFG_SWITCH,
      "# (EXPERIMENTAL)\n"
@@ -843,7 +853,7 @@ struct Config cfg[] = {
      "# the hypermail generated indexes. See the \"annotated\" configuration"
      "# option for a more detailed description.\n", FALSE},
 
-    {"annotated", &set_annotated, "X-Hypermail-Annotated", CFG_LIST,
+    {"annotated", &set_annotated, HM_ANNOTATION_HEADER, CFG_LIST,
      "# This is the list of headers that indicate that a message was annotated.\n"
      "# When a message contains such a header, the header may have one more comma\n"
      "# separated values indicatating the annotation type. Order and case are\n"
@@ -867,13 +877,14 @@ struct Config cfg[] = {
      "# annotation In such case, user supplied robot annotations values will be\n"
      "# silently ignored.\n", FALSE},
 
-    {"deleted", &set_deleted, "X-Hypermail-Deleted X-No-Archive", CFG_LIST,
+    {"deleted", &set_deleted, HM_DELETED_HEADERS, CFG_LIST,
+     "# (DEPRECATED)\n"
      "# NOTE: this option has been deprecated by annotated, but it will continue\n"
      "# being parsed and honored for legacy reasons.\n"
      "# This is the list of headers that indicate the message should\n"
      "# not be displayed if the value of this header is 'yes'.\n", FALSE},
 
-    {"expires", &set_expires, "Expires", CFG_LIST,
+    {"expires", &set_expires, EXPIRES_HEADER, CFG_LIST,
      "# This is the list of headers that indicate the message should\n"
      "# not be displayed if the value of this header is a date in the past.\n", FALSE},
 
