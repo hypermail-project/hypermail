@@ -19,7 +19,7 @@
 ** REGENERATE IT. IF YO WANT TO CHANGE THE C CODE ITSELF, PLEASE EDIT
 ** THE css_to_c.pl SCRIPT
 */
-
+			      
 #include "hypermail.h"
 #include "setup.h"
 
@@ -374,6 +374,23 @@ void print_default_css_file(char *filename)
     fprintf(fp, "main.summary-year th.cell_period + th,\n");
     fprintf(fp, "main.summary-year td.cell_message + td {\n");
     fprintf(fp, "    padding-left: 0.5em;\n");
+    fprintf(fp, "}\n");
+    fprintf(fp, "\n");
+    fprintf(fp, "/* the following rules are used to set the style of quotes\n");
+    fprintf(fp, "   when you're using the 'showhtml' config option with\n");
+    fprintf(fp, "   values 1 or 2 */\n");
+    fprintf(fp, "\n");
+    fprintf(fp, "/* use this option to specify the style for a quote line */\n");
+    fprintf(fp, ".quote {\n");
+    fprintf(fp, "/* enable this one to change the style to italic to emulate\n");
+    fprintf(fp, "   the deprecated iquote config option */\n");
+    fprintf(fp, "    font-style: italic;\n");
+    fprintf(fp, "}\n");
+    fprintf(fp, "\n");
+    fprintf(fp, "/* add more entries or separate this rule into\n");
+    fprintf(fp, "   multiple ones if you want a specific style for\n");
+    fprintf(fp, "   quotes depending on their level */	\n");
+    fprintf(fp, ".quotelev1, .quotelev2, .quotelev3, .quotelev5, .quotelev6 {\n");
     fprintf(fp, "}\n");
      
     fclose(fp);

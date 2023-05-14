@@ -339,3 +339,20 @@ main.summary-year th.cell_period + th,
 main.summary-year td.cell_message + td {
     padding-left: 0.5em;
 }
+
+/* the following rules are used to set the style of quotes
+   when you're using the 'showhtml' config option with
+   values 1 or 2 */
+
+/* use this option to specify the style for a quote line */
+.quote {
+/* enable this one to change the style to italic to emulate
+   the deprecated iquote config option */
+    font-style: italic;
+}
+
+/* add more entries or separate this rule into
+   multiple ones if you want a specific style for
+   quotes depending on their level */	
+.quotelev1, .quotelev2, .quotelev3, .quotelev5, .quotelev6 {
+}

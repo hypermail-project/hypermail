@@ -1713,7 +1713,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
                         }
                     }
                     else {
-                        fprintf(fp, "<%s class=\"%s\">", set_iquotes ? "em" : "span", find_quote_class(bp->line));
+                        fprintf(fp, "<%s class=\"quote %s\">", set_iquotes ? "em" : "span", find_quote_class(bp->line));
                         
                         ConvURLs(fp, bp->line, id, subject, email->charset);
                         
@@ -1865,7 +1865,7 @@ void print_headers(FILE *fp, struct emailinfo *email, int in_thread_file)
 	free(ptr);
     }
     else {
-      fprintf(fp, "%s &lt;<em>%s</em>&gt;", tmpname, 
+      fprintf(fp, "%s &lt;%s&gt;", tmpname, 
 	      (strcmp(email->emailaddr, "(no email)") != 0) ? email->emailaddr : "no email");
     }
   }
