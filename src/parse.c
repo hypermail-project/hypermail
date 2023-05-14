@@ -3196,10 +3196,6 @@ int parsemail(char *mbox,	/* file name */
 		    free(subject);
                     subject = NULL;
                 }
-		if (inreply) {
-		    free(inreply);
-		    inreply = NULL;
-		}
 		if (charset) {
 		    free(charset);
 		    charset = NULL;
@@ -3207,15 +3203,17 @@ int parsemail(char *mbox,	/* file name */
 		if (charsetsave){
 		  *charsetsave = 0;
 		}
-                
                 if (prefered_charset) {
                     free(prefered_charset);
                     prefered_charset = NULL;
                 }                
-
 		if (msgid) {
 		    free(msgid);
 		    msgid = NULL;
+		}
+		if (inreply) {
+		    free(inreply);
+		    inreply = NULL;
 		}
 		if (namep) {
 		    free(namep);
@@ -3308,8 +3306,11 @@ int parsemail(char *mbox,	/* file name */
 
 		if (set_linkquotes && !inreply) { /* why only if set_linkquotes? pcm */
 		    char *new_inreply = getreply(line);
-		    if (new_inreply && !*new_inreply) free(new_inreply);
-		    else inreply = new_inreply;
+		    if (new_inreply && !*new_inreply) {
+                        free(new_inreply);
+                    } else {
+                        inreply = new_inreply;
+                    }
 		}
 
 		if (Mime_B) {
@@ -4179,16 +4180,12 @@ int parsemail(char *mbox,	/* file name */
 	    free(subject);
             subject = NULL;
         }
-	if (inreply) {
-	    free(inreply);
-	    inreply = NULL;
-	}
 	if (charset) {
 	    free(charset);
 	    charset = NULL;
 	}
 	if (charsetsave){
-	  *charsetsave = 0;
+            *charsetsave = 0;
 	}
         if (prefered_charset) {
             free(prefered_charset);
@@ -4197,6 +4194,10 @@ int parsemail(char *mbox,	/* file name */
 	if (msgid) {
 	    free(msgid);
 	    msgid = NULL;
+	}
+	if (inreply) {
+	    free(inreply);
+	    inreply = NULL;
 	}
 	if (namep) {
 	    free(namep);

@@ -63,7 +63,9 @@ int rmlastlines(struct body *);
 struct emailsubdir *new_subdir(char *, struct emailsubdir *, char *, time_t);
 
 struct printed *markasprinted(struct printed *, int);
+void printed_free(struct printed *pl);
 int wasprinted(struct printed *, int);
+
 
 struct header *addheader(struct header *, struct emailinfo *, int, int);
 
@@ -89,3 +91,4 @@ int inlist_pos(struct hmlist *, char *);
 int inlist_regex_pos(struct hmlist *, char *);
 struct hmlist *add_2_list(struct hmlist *, char *);
 struct hmlist *add_list(struct hmlist *, char *);
+void hmlist_free(struct hmlist *);

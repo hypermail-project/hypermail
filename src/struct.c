@@ -1057,13 +1057,13 @@ void message_node_clear(struct message_node *node,
         memset(node, 0, sizeof(struct message_node));    
 }
 
-static void _message_node_free(struct message_node *root_message_node, bool delete_attachments)
+static void _message_node_free(struct message_node *root_message_node, message_node_release_details_t flags)
 {
     struct message_node *cursor = root_message_node;
     struct message_node *tmp;
     message_node_release_details_t extra_release_details = MN_KEEP_NODE;
 
-    if (delete_attachments) {
+    if (flags & MN_DELETE_ATTACHMENTS) {
         extra_release_details |= MN_DELETE_ATTACHMENTS;
     }
     
@@ -1082,7 +1082,11 @@ static void _message_node_free(struct message_node *root_message_node, bool dele
             cursor->attachment_child = NULL;
             message_node_clear(tmp, MN_FREE_NODE | extra_release_details);
         } else {
-            message_node_clear(cursor, MN_KEEP_NODE | extra_release_details);            
+            if (flags & MN_FREE_ROOT_NODE) {
+                message_node_clear(cursor, MN_FREE_NODE | extra_release_details);
+            } else {
+                message_node_clear(cursor, MN_KEEP_NODE | extra_release_details);
+            }
             break;
         }
     }
@@ -1091,7 +1095,7 @@ static void _message_node_free(struct message_node *root_message_node, bool dele
 /* frees a message node allocated memory */
 void message_node_free(struct message_node *root_message_node)
 {
-    _message_node_free(root_message_node, FALSE);
+    _message_node_free(root_message_node, MN_FREE_NODE | MN_FREE_ROOT_NODE);
 }
 
 /* deletes all attachments associated with a node and its children
@@ -1110,7 +1114,7 @@ void message_node_delete_attachments(struct message_node *node)
     boundary_part = node->boundary_part;
     
     node->boundary_part = NULL;
-    _message_node_free(node, TRUE);
+    _message_node_free(node, MN_DELETE_ATTACHMENTS);
     node->parent = tmp;
     node->boundary_part = boundary_part;
     node->skip = MN_SKIP_ALL;
@@ -1595,7 +1599,6 @@ struct body *message_node_flatten(struct body **flattened_lp, struct message_nod
   
   *flattened_lp = cursor_lp;
   return root_flattened_bp;
-
 }
 
 /*
@@ -2363,13 +2366,26 @@ struct printed *markasprinted(struct printed *pp, int num)
     newnode->msgnum = num;
     newnode->next = NULL;
 
-    if (pp == NULL)
+    if (pp == NULL) {
 	pp = newnode;
+    }
     else {
-		for (tempnode = pp; tempnode->next != NULL; tempnode = tempnode->next);
-	tempnode->next = newnode;
+        for (tempnode = pp; tempnode->next != NULL; tempnode = tempnode->next);
+        tempnode->next = newnode;
     }
     return pp;
+}
+
+/* free a printed list structure */
+void printed_free(struct printed *pl)
+{
+    struct printed *next;
+    
+    while(pl) {
+        next = pl->next;
+        free(pl);
+        pl = next;
+    }
 }
 
 /*
@@ -2756,4 +2772,18 @@ struct hmlist *add_list(struct hmlist *listname, char *value)
 	listname = add_2_list(listname, valp);
 
     return listname;
+}
+
+void hmlist_free(struct hmlist *listname)
+{
+    struct hmlist *next;
+    while (listname) {
+        next = listname->next;
+
+        fprintf (stderr, "freeing node %p value %p(%s)\n", listname, listname->val, listname->val);
+        
+        free(listname->val);
+        free(listname);
+        listname = next;
+    }
 }

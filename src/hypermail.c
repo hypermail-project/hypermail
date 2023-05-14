@@ -461,9 +461,12 @@ int main(int argc, char **argv)
         mhtmlnavbar2upfile = expand_contents(set_ihtmlnavbar2up);
     }
     
-    if (set_dir)
-	set_dir = strreplace(set_dir, dirpath(set_dir));
-
+    if (set_dir) {
+        char *dp = dirpath(set_dir);
+	set_dir = strreplace(set_dir, dp);
+        free (dp);
+    }
+    
     /*
      * Default names for directories and labels need to be figured out.
      */
@@ -764,9 +767,40 @@ int main(int argc, char **argv)
 
     if (set_uselock)
 	unlock_archive();
+    
+    printed_free(printedlist);
+    printed_free(printedthreadlist);
 
+    /* move these to a free config function in setup.c? */
+    hmlist_free(show_headers);
+    hmlist_free(set_text_types);
+    hmlist_free(set_inline_types);
+    hmlist_free(set_prefered_types);
+    hmlist_free(set_ignore_types);
+    hmlist_free(set_show_headers);
+    hmlist_free(set_show_headers_msg_rfc822);
+    hmlist_free(set_skip_headers);
+    hmlist_free(set_avoid_indices);
+    hmlist_free(set_avoid_top_indices);
+    hmlist_free(set_filter_out);
+    hmlist_free(set_filter_require);
+    hmlist_free(set_filter_out_full_body);
+    hmlist_free(set_filter_require_full_body);
+    hmlist_free(set_applemail_ua_value);
+    hmlist_free(set_annotated);
+    hmlist_free(set_deleted);
+    hmlist_free(set_expires);
+    hmlist_free(set_delete_msgnum);
+    
     if (configfile)
 	free(configfile);
+    if (0 && locale_code)
+        free(locale_code);
+    if (set_dir)
+        free(set_dir);
+    if (set_mbox)
+        free(set_mbox);
+    
     if (ihtmlheaderfile)
 	free(ihtmlheaderfile);
     if (ihtmlfooterfile)
@@ -785,6 +819,6 @@ int main(int argc, char **argv)
 	free(mhtmlfooterfile);
     if (mhtmlnavbar2upfile)
 	free(mhtmlnavbar2upfile);
-    
+
     return (0);
 }

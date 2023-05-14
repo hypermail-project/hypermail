@@ -201,7 +201,8 @@ typedef enum {
 typedef enum {
     MN_KEEP_NODE = 0,
     MN_FREE_NODE = 1,
-    MN_DELETE_ATTACHMENTS = 2
+    MN_FREE_ROOT_NODE = 2,    
+    MN_DELETE_ATTACHMENTS = 4
 } message_node_release_details_t;
     
 /* conversions supported by string.c:parseemail() */
