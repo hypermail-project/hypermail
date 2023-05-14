@@ -332,6 +332,8 @@ struct Config cfg[] = {
      "# information found in most email messages.\n", FALSE},
 
     {"showhtml", &set_showhtml, INT(1), CFG_INTEGER,
+     "# (DEPRECATED AND IGNORED)\n"
+     "# YOU CAN USE CSS TO ACHIEVE THE SAME (AND BETTER) RESULTS\n"
      "# Set this to 1 to show the articles in a proportionally-spaced\n"
      "# font rather than a fixed-width (monospace) font.\n"
      "# Set this to 2 for more complex conversion to html\n"
@@ -341,7 +343,7 @@ struct Config cfg[] = {
      "# 1 and 2 run risks of altering the appearance in undesired ways.\n", FALSE},
 
     {"showbr", &set_showbr, BTRUE, CFG_SWITCH,
-     "# Set this to On to place <br> tags at the end of article lines.\n"
+     "# Set this to On to place <br /> tags at the end of article lines.\n"
      "# Otherwise, all non-quoted article lines will word wrap. This\n"
      "# only takes effect if hm_showhtml is 1.\n", FALSE},
 
@@ -1228,10 +1230,81 @@ void PostConfig(void)
 	    show_index[0][i] = show_index[1][i];
     }
 
-    if (set_htmlbody != NULL)
+    /*
+    **  options that have been deprecated or removed
+    */
+    if (set_showhr) {
+        printf("Warning: the showhr option has been disabled. See the\n"
+	       "INSTALL file for instructions on replacing it with a style sheet.\n");
+        set_showhr = 0;
+    }
+
+    if (set_showhr) {
+	printf("Warning: the showhr option has been deprecated. See the\n"
+	       "INSTALL file for instructions on replacing it with a style sheet.\n");
+        set_showhr = 0;
+    }    
+
+    if (set_usetable) {
+	printf("Warning: the showhr option has been deprecated. See the\n"
+	       "INSTALL file for instructions on replacing it with a style sheet.\n");
+        set_usetable = 0;
+    }
+        
+    if (set_deleted) {
+        printf("Warning: deleted has been deprecated in favor of annotated.\n"
+               "Ignoring it.\n");
+        hmlist_free(set_deleted);
+        set_deleted = NULL;
+    }
+
+    if (set_htmlbody != NULL) {
 	printf("Warning: the body option has been disabled. See the\n"
 	       "INSTALL file for instructions on replacing it with a style sheet.\n");
+        free(set_htmlbody);
+        set_htmlbody = NULL;
+    }
 
+    /*
+    ** configuration options we are considering to deprecate in the next
+    ** version unless they receive more love
+    */
+#if 0
+    if (set_showhtml != 0) {
+	printf("Warning: using showhtml option has been disabled. See the\n"
+	       "INSTALL file for instructions on replacing it with a style sheet.\n");
+    }
+#endif
+    
+    if (set_linkquotes) {
+	printf("Warning: linkquotes is considered unstable in 3.0 and may be deprecated\n"
+               "in the next version of hypermail unless it receives more love.\n");
+
+        if (set_searchbackmsgnum != 0) {
+            printf("Warning: searchbackmsgnum is considered unstable in 3.0 and may be deprecated\n"
+                   "in the next version of hypermail unless it receives more love.\n");
+        }
+        
+        if (set_link_to_replies != NULL) {
+            printf("Warning: link_to_replies is considered unstable in 3.0 and may be\n"
+                   "deprecated in the next version of hypermail unless it receives more love.\n");
+        }
+
+        if (set_quote_hide_threshold != 0) {
+            printf("Warning: quote_hide_threshold is considered unstable in 3.0 and may be\n"
+                   "deprecated in the next version of hypermail unless it receives more love.\n");
+        }
+
+        if (set_quote_link_string != NULL) {
+            printf("Warning: quote_link_string is considered unstable in 3.0 and may be\n"
+                   "deprecated in the next version of hypermail unless it receives more love.\n");
+        }
+    }
+
+    /*
+    ** control for the values of other options
+    */
+    
     if (set_save_alts < 0 || set_save_alts > 2) {
         printf("Error: save_alts option value must be between 0 and 2.\n");
         exit(0);
