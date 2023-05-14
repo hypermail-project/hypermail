@@ -426,8 +426,10 @@ static int iscaps(const char *line)
 	if (islower(*line) || *line == '<')
 	    return 0;
 	if (isupper(*line)) {
-	    if (++count_uppercase >= min_caps_length)
+	    if (++count_uppercase >= min_caps_length) {
 		found_enough_uppercase = 1;
+                break;
+            }
 	}
 	else
 	    count_uppercase = 0;
@@ -582,9 +584,9 @@ void txt2html(FILE *fp, struct emailinfo *email, const struct body *bp, bool rep
 	    was_break = 1;
 	}
 	if (!set_linkquotes) {
-	    fprintf(fp, "<em class=\"%s\">", find_quote_class(line));
+	    fprintf(fp, "<span class=\"quote %s\">", find_quote_class(line));
 	    ConvURLs(fp, chomp(line), email->msgid, email->subject, email->charset);
-	    fprintf(fp, "</em><br />\n");
+	    fprintf(fp, "</span><br />\n");
 	}
 		else if (handle_quoted_text(fp, email, bp, line, inquote, quote_num, replace_quoted, maybe_reply)) {
 	    ++quote_num;
@@ -605,6 +607,10 @@ void txt2html(FILE *fp, struct emailinfo *email, const struct body *bp, bool rep
     }
     if (is_caps_line)
 	fprintf(fp, "</%s>\n", caps_tag);
+    if (was_par) {
+	fprintf(fp, "</p>\n");
+        was_par = 0;
+    }
     is_blank_prev = is_blank_line;
     if (!isquote(line))
 	inquote = was_quote_prefix = 0;
