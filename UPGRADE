@@ -12,31 +12,18 @@ produce invalid markup in some of your messages or have duplicate
 links that point to replies and other messages (the 2.4.0 + the 3.0.0
 ones) in your current messages.
 
-All generated markup was reviewed with the help of experts of the WAI
-community to make sure it is accessible. Wwe may have missed some files
-that are only generated when using specific configuration options; if
-that's the case, please open an issue and we'll look at it.
+Except for some few exceptions related to specific options (see here
+below), all generated markup was reviewed with the help of experts of
+the WAI community to make sure it is accessible. We may have missed
+some files that are only generated when using specific configuration
+options; if that's the case, please open an issue and we'll look at
+it.
 
 Hypermail is now using PCRE2. If you were using any of the filtering
 options, you should check if your regular expressions need updating.
 For more info see for example:
 
   https://wiki.php.net/rfc/pcre2-migration:
- 
-The indextable option was deprecated.
-
-The linkquotes has been broken since at least 2.4.0 and no work was
-done in 3.0.0 to try to fix it. The inlinehtml options may not be
-working well. Test them out before upgrading. These options may be
-potentially deprecated in a future version of hypermail unless people
-send feedback (and code if possible) asking to preserve and update
-them.
-
-The yearly and monthly summaries seem to have been broken since some
-long time ago. Some few updates were done but they require more
-love to make them more useful. In particular, messages are missing
-links pointing back to the summaries. Note that you could do this
-by using the different navbar options.
 
 All style that used to be embeeded in hypermail's generated archive
 files was moved to an external stylesheet. This stylesheet,
@@ -49,6 +36,40 @@ You can find hypermail's current stylesheet under docs/hypermail.css.
 If you were already relying on an external stylesheet file, we advise
 you to check hypermail's default shipped one to see if there are
 changes you'd be interested in supporting in your own stylesheet file.
+
+The following configuration options are now considered deprecated and
+will be ignored. They will be removed from the code base in the next
+hypermail release:
+
+- showhr, usetable, iquotes. All of these options have been made
+  obsolete by markup changes in hypermail. You can emulate their
+  behavior by using CSS.
+
+The following options are being considered as future candidates for
+deprecation:
+
+- showhtml. We are not sure if people are using this option with
+  values 1 and 2. The markup that's produced isn't so special and we
+  think that it'd be better to merge whatever features people deem
+  useful there to the normal markup and use CSS to control
+  presentation. Minimal work has been done with this option other than
+  to make sure the produced markup is valid. The markup that's
+  produced with this option was not given a WAI review.
+
+The following options are now considered unstable since version 2.4
+and are considered future candidates for deprecation unless people
+state they are being used and someone proposes to adopt their code and
+gives it more love and maintenance:
+
+- linkquotes, searchbackmsgnum, link_to_replies, quote_hide_threshold,
+  quote_link_string. Note that all these options are related to
+  linkquotes. No work was done in 3.0.0 regarding these options.
+  
+The yearly and monthly summaries seem to have been broken since some
+long time ago. Some few updates were done but they require more
+love to make them more useful. In particular, messages are missing
+links pointing back to the summaries. Note that you could do this
+by using the different navbar options.
 
 From Hypermail 2.3.0 to Hypermail 2.4.0
 -----------------------------------------
