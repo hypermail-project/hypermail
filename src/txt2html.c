@@ -582,9 +582,9 @@ void txt2html(FILE *fp, struct emailinfo *email, const struct body *bp, bool rep
 	    was_break = 1;
 	}
 	if (!set_linkquotes) {
-	    fprintf(fp, "<i class=\"%s\">", find_quote_class(line));
+	    fprintf(fp, "<em class=\"%s\">", find_quote_class(line));
 	    ConvURLs(fp, chomp(line), email->msgid, email->subject, email->charset);
-	    fprintf(fp, "</i><br />\n");
+	    fprintf(fp, "</em><br />\n");
 	}
 		else if (handle_quoted_text(fp, email, bp, line, inquote, quote_num, replace_quoted, maybe_reply)) {
 	    ++quote_num;
