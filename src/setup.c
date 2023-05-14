@@ -1234,33 +1234,20 @@ void PostConfig(void)
     **  options that have been deprecated or removed
     */
     if (set_showhr) {
-        printf("Warning: the showhr option has been disabled. See the\n"
-	       "INSTALL file for instructions on replacing it with a style sheet.\n");
+        printf("Warning: the 'showhr' option has been deprecated and will be ignored.\n"
+               "See the INSTALL file for instructions on replacing it with a style sheet.\n");
         set_showhr = 0;
     }
 
-    if (set_showhr) {
-	printf("Warning: the showhr option has been deprecated. See the\n"
-	       "INSTALL file for instructions on replacing it with a style sheet.\n");
-        set_showhr = 0;
-    }    
-
     if (set_usetable) {
-	printf("Warning: the showhr option has been deprecated. See the\n"
-	       "INSTALL file for instructions on replacing it with a style sheet.\n");
+	printf("Warning: the 'usetable' option has been deprecated and will be ignored.\n"
+               "See the INSTALL file for instructions on replacing it with a style sheet.\n");
         set_usetable = 0;
     }
         
-    if (set_deleted) {
-        printf("Warning: deleted has been deprecated in favor of annotated.\n"
-               "Ignoring it.\n");
-        hmlist_free(set_deleted);
-        set_deleted = NULL;
-    }
-
     if (set_htmlbody != NULL) {
-	printf("Warning: the body option has been disabled. See the\n"
-	       "INSTALL file for instructions on replacing it with a style sheet.\n");
+	printf("Warning: the 'body' option has been deprecated and will be ignored.\n"
+               "See the INSTALL file for instructions on replacing it with a style sheet.\n");
         free(set_htmlbody);
         set_htmlbody = NULL;
     }
@@ -1277,26 +1264,26 @@ void PostConfig(void)
 #endif
     
     if (set_linkquotes) {
-	printf("Warning: linkquotes is considered unstable in 3.0 and may be deprecated\n"
-               "in the next version of hypermail unless it receives more love.\n");
+	printf("Warning: the 'linkquotes' option is considered unstable in 3.0 and may be\n"
+               "deprecated in the next version of hypermail unless it receives more love.\n");
 
         if (set_searchbackmsgnum != 0) {
-            printf("Warning: searchbackmsgnum is considered unstable in 3.0 and may be deprecated\n"
-                   "in the next version of hypermail unless it receives more love.\n");
+            printf("Warning: the 'searchbackmsgnum' option is considered unstable in 3.0 and may be\n"
+                   "deprecated in the next version of hypermail unless it receives more love.\n");
         }
         
         if (set_link_to_replies != NULL) {
-            printf("Warning: link_to_replies is considered unstable in 3.0 and may be\n"
+            printf("Warning: the 'link_to_replies' option is considered unstable in 3.0 and may be\n"
                    "deprecated in the next version of hypermail unless it receives more love.\n");
         }
 
         if (set_quote_hide_threshold != 0) {
-            printf("Warning: quote_hide_threshold is considered unstable in 3.0 and may be\n"
+            printf("Warning: the 'quote_hide_threshold' option is considered unstable in 3.0 and may be\n"
                    "deprecated in the next version of hypermail unless it receives more love.\n");
         }
 
         if (set_quote_link_string != NULL) {
-            printf("Warning: quote_link_string is considered unstable in 3.0 and may be\n"
+            printf("Warning: the 'quote_link_string' option is considered unstable in 3.0 and may be\n"
                    "deprecated in the next version of hypermail unless it receives more love.\n");
         }
     }
@@ -1306,35 +1293,35 @@ void PostConfig(void)
     */
     
     if (set_save_alts < 0 || set_save_alts > 2) {
-        printf("Error: save_alts option value must be between 0 and 2.\n");
+        printf("Error: the 'save_alts' option value must be between 0 and 2.\n");
         exit(0);
     }
     
     if (set_applemail_mimehack && set_save_alts) {
-        printf("Warning: the applemail_mimehack option will be ignored as\n"
+        printf("Warning: the 'applemail_mimehack' option option will be ignored as\n"
 	       "the save_alts options is enabled.\n");
         set_applemail_mimehack = 0;
     }
     if (set_applemail_mimehack && set_prefered_types
         &&  !strcasecmp(set_prefered_types->val, "text/html")) {
-        printf("Warning: the applemail_mimehack option will be ignored as\n"
+        printf("Warning: the 'applemail_mimehack' option will be ignored as\n"
 	       "text/html is the prefered type.\n");
         set_applemail_mimehack = 0;
     }
     if (set_applemail_mimehack) {
         if (!set_applemail_ua_header || !*set_applemail_ua_header) {
-            printf("Error: the applemail_mimehack option is enabled\n"
+            printf("Error: the 'applemail_mimehack' option is enabled\n"
                    "but the applemail_ua_header configuration variable is empty.\n");
             exit(0);
         }
         else if (!set_applemail_ua_value) {
-            printf("Error: the applemail_mimehack option is enabled\n"
+            printf("Error: the 'applemail_mimehack' option is enabled\n"
                    "but the applemail_ua_value configuration variable is empty.\n");
             exit(0);
         }
     }
     if (set_max_attach_per_msg < 0) {
-        printf("Warning: max_att_per_msg can't have negative values.\n"
+        printf("Warning: the 'max_att_per_msg' option can't have negative values.\n"
                "Assuming you wanted it to be 0 (no limits).\n");
         set_max_attach_per_msg = 0;
     }
