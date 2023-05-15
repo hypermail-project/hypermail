@@ -139,11 +139,12 @@ files</li>
 <li><a href="#avoid_top_indices">avoid_top_indices</a> don't
 generate these files</li>
 <li><a href="#attachmentsindex">attachmentsindex</a> create these
-files</li>
+    files</li>
 <li><a href="#latest_folder">latest_folder</a> symlink to recent
-subdir</li>
+    subdir</li>
 <li><a href="#noindex_onindexes">noindex_onindexes</a> instruct
-robots to not index hypermail generated indexes</li>
+    robots to not index hypermail generated indexes</li>
+<li><a href="#empty_archive_notice">empty_archive_notice</a> message that should be displayed when an archive is empty <strong>(NEW IN 3.0)</strong></li>
 </ul>
 </li>
 <li><a href="#index_body">Body style</a>
@@ -641,6 +642,12 @@ to not index the indexes. See <a href="#annotated">anontated</a>
 for further discussion on <strong>noindex</strong>.<br />
 <br />
 <em>noindex_onindexes = 0</em></dd>
+<dt id="empty_archive_notice">empty_archive_notice = [ string ]</dt>
+<dd>Message that hypermail should display in the indices if the archive
+is empty (e.g, no messages, or all messages marked as deleted or spam),
+If not set, hypermail will use a default localized message.    
+<br />
+<em>empty_archive_notice = "(no messages are available in this archive)"</em></dd>
 </dl>
 <h3><a id="index_body">Index body style</a></h3>
 <dl>
@@ -978,8 +985,8 @@ file | NONE ]</dt>
     included as information in each archived message,
     giving links to the hierarchy of your archive.<br />
     By default uses the value of <code>ihtmlnavbar2upfile</code>,<br />
-    If neither <code>mhtmlnavbar2upfile</code> nor ihtmlnavbar2upfile
-    are specified, hypermail will use the following breadcrumb
+    If <code>mhtmlnavbar2upfile</code> and ihtmlnavbar2upfile
+    are unspecified, hypermail will use the following breadcrumb
     that will use the archive's <code>label</code> and link  to the default 
     index of the archive:<br />
 	<pre>

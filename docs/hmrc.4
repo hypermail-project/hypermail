@@ -477,6 +477,11 @@ for further discussion on the
 .B noindex
 metadata value.
 .TP
+.B empty_archive_notice = "string"
+Message that hypermail should display in the indices if the archive
+is empty (e.g, no messages, or all messages marked as deleted or spam),
+If not set, hypermail will use a default localized message.
+.TP
 .B base_url = "url"
 The url of the archive's main directory. This is needed when
 the latest_folder option is used and the folder_by_date makes
@@ -827,6 +832,14 @@ statements you wish to be included as information on each archived message,
 giving links to the hierarchy of your archive. By default uses the
 value of
 .B ihtmlnavbar2upfile
+If
+.B mhtmlnavbar2upfile
+and
+.B ihtmlnavbar2upfile
+are undefined, hypermail will generate a generic breadcrumb
+that uses the archive's
+.B label
+and links back to the archive's default index file.
 .TP
 .B hmail =  Mailing_List_Submission_Address
 Set this to the list's submission address.  When enabled, this can be 
