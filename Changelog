@@ -6,6 +6,10 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
+	* src/{defaults.h.in, setup.c, hypermail.c}
+	set a default breadcrumb for messages if neither
+	mhtmlnavbar2upfile ihtmlnavbar2upfile config options are set
+
 	* src/{parse.c, struct.c, hypermail.h}
 	spamify() was being systematically applied to boundary-ids which broke
 	boundary detection in multipart/ messages whenever a boundary-id had a

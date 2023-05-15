@@ -659,7 +659,11 @@ struct Config cfg[] = {
      "# valid  HTML  formatting  statements  that  you  wish to be\n"
      "# included as information in each archived message,\n"
      "# giving links to the hierarchy of your archive.\n"
-     "# By default uses the value of ihtmlnavbar2upfile,\n", FALSE},
+     "# By default uses the value of ihtmlnavbar2upfile,\n"
+     "# If neither this config option nor ihtmlnavbar2upfile are\n"
+     "# defined  in the config file, hypermail will use\n"
+     "# a generic navbar using the name of the archive, linking\n"
+     "# back to the default index of the archive (index.html)\n", FALSE},
 
     {"locktime", &set_locktime, INT(3600), CFG_INTEGER,
      "# Specify number of seconds to wait for a lock before we\n"

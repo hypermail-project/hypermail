@@ -53,4 +53,7 @@
 
 #define DEFAULT_CSS_URL "hypermail.css"
 
+/* this is a format string where %s will be replaced by the archive's label */
+#define DEFAULT_MHTML_NAVBAR2UP "<ul>\n  <li><a href=\"./index.html\" rel=\"start\">%s</a></li>\n</ul>\n"
+
 #endif

@@ -429,6 +429,8 @@ int main(int argc, char **argv)
 	set_mbox = NULL;
     }
 
+#if 0
+    /* JK: do we need this here or can we leave it all in setup.c? */
     /*
     ** Deprecated options 
     */
@@ -441,25 +443,7 @@ int main(int argc, char **argv)
       fprintf (stderr, "The \"usetable\" option has been deprecated. Ignoring it.\n");
       set_usetable = FALSE;
     }
-
-    /*
-     * Read the contents of the file into the variables to be used
-     * in printing out the pages.
-     */
-
-    ihtmlheaderfile = expand_contents(set_ihtmlheader);
-    ihtmlfooterfile = expand_contents(set_ihtmlfooter);
-    ihtmlheadfile = expand_contents(set_ihtmlhead);
-    ihtmlhelpupfile = expand_contents(set_ihtmlhelpup);
-    ihtmlhelplowfile = expand_contents(set_ihtmlhelplow);
-    ihtmlnavbar2upfile = expand_contents(set_ihtmlnavbar2up);
-    mhtmlheaderfile = expand_contents(set_mhtmlheader);
-    mhtmlfooterfile = expand_contents(set_mhtmlfooter);
-    if (set_mhtmlnavbar2up) {
-        mhtmlnavbar2upfile = expand_contents(set_mhtmlnavbar2up);
-    } else {
-        mhtmlnavbar2upfile = expand_contents(set_ihtmlnavbar2up);
-    }
+#endif
     
     if (set_dir) {
         char *dp = dirpath(set_dir);
@@ -484,9 +468,36 @@ int main(int argc, char **argv)
         free(t);
     }
 
-    if (!set_label || !strcasecmp(set_label, "NONE"))
+    if (!set_label || !strcasecmp(set_label, "NONE")) {
 	set_label = set_mbox ? (strreplace(set_label, (strrchr(set_mbox, '/')) ? strrchr(set_mbox, '/') + 1 : set_mbox)) : "stdin";
+    }
+    
+    /*
+     * Read the contents of the file into the variables to be used
+     * in printing out the pages.
+     */
 
+    ihtmlheaderfile = expand_contents(set_ihtmlheader);
+    ihtmlfooterfile = expand_contents(set_ihtmlfooter);
+    ihtmlheadfile = expand_contents(set_ihtmlhead);
+    ihtmlhelpupfile = expand_contents(set_ihtmlhelpup);
+    ihtmlhelplowfile = expand_contents(set_ihtmlhelplow);
+    ihtmlnavbar2upfile = expand_contents(set_ihtmlnavbar2up);
+    mhtmlheaderfile = expand_contents(set_mhtmlheader);
+    mhtmlfooterfile = expand_contents(set_mhtmlfooter);
+    if (set_mhtmlnavbar2up) {
+        mhtmlnavbar2upfile = expand_contents(set_mhtmlnavbar2up);
+    } else {
+        mhtmlnavbar2upfile = expand_contents(set_ihtmlnavbar2up);
+    }
+
+    /* if the user didn't specify a message navbar for messages, we
+       set up a generic one using the archives's label and linking
+       back to the main index */
+    if (!mhtmlnavbar2upfile || !*mhtmlnavbar2upfile) {
+        trio_asprintf(&mhtmlnavbar2upfile, DEFAULT_MHTML_NAVBAR2UP, set_label);
+    }
+    
     /*
      * Which index file will be called "index.html"?
      */

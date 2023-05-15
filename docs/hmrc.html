@@ -231,7 +231,7 @@ next in thread</li>
     disable support for RFC 3676 format=flowed in quoted text (<strong>EXPERIMENTAL</strong>)</li>
 <li><a href="#mhtmlheaderfile">mhtmlheaderfile</a> template</li>
 <li><a href="#mhtmlfooterfile">mhtmlfooterfile</a> template</li>
-<li><a href="#mhtmlnavbar2up">mhtmlnavbar2upfile</a> template</li>
+<li><a href="#mhtmlnavbar2upfile">mhtmlnavbar2upfile</a> template (<strong>NEW IN 3.0</strong>)</li>
 </ul>
 </li>
 </ul>
@@ -268,7 +268,7 @@ handling</li>
 choices</li>
 <li><a href="#filename_base">filename_base</a> attachment file
 name</li>
-<li><a href="#max_attachments_per_msg">max_attachments_per_msg</a> control the max number of attachments that will be parsed from a message</li>
+<li><a href="#max_attachments_per_msg">max_attachments_per_msg</a> control the max number of attachments that will be parsed from a message (<strong>NEW IN 3.0</strong>)</li>
 </ul>
 </li>
 <li><a href="#sysadmin">System Administration</a>
@@ -978,11 +978,17 @@ file | NONE ]</dt>
     included as information in each archived message,
     giving links to the hierarchy of your archive.<br />
     By default uses the value of <code>ihtmlnavbar2upfile</code>,<br />
-
-    <br />
-    <em>mhtmlfooterfile = /lists/hypermail-msgfooter.hyp</em> (disabled
+    If neither <code>mhtmlnavbar2upfile</code> nor ihtmlnavbar2upfile
+    are specified, hypermail will use the following breadcrumb
+    that will use the archive's <code>label</code> and link  to the default 
+    index of the archive:<br />
+	<pre>
+   &lt;ul>
+      &lt;li>&lt;a href="./index.html" rel="start">&lt;em>label for the archive&lt;/em>&lt;/a>&lt;/li>
+   &lt;/ul>     
+	</pre>
+    <em>mhtmlnavbar2upfile = /lists/hypermail-navbar2upfile.hyp</em> (disabled
     by default)</dd>
-
 </dl>
     </section>
     <section>
