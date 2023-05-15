@@ -718,7 +718,7 @@ struct Config cfg[] = {
      "# messages with attachments.\n", FALSE},
 
     {"linkquotes", &set_linkquotes, BFALSE, CFG_SWITCH,
-     "# (UNSTABLE, MAY BE DEPRECATED) this option has not been working well\n"
+     "# (UNMAINTAINED, MAY BE DEPRECATED) this option has not been working well\n"
      "# since 2.4.0 and should now be considered experimental.\n"
      "# It may be deprecated in the next version of hypermail.\n"
      "# \n"
@@ -729,7 +729,7 @@ struct Config cfg[] = {
      "# the searchbackmsgnum option to alter the performance).\n", FALSE},
 
     {"searchbackmsgnum", &set_searchbackmsgnum, INT(500), CFG_INTEGER,
-     "# (UNSTABLE, MAY BE DEPRECATED)\n"
+     "# (UNMAINTAINED, MAY BE DEPRECATED)\n"
      "# If the linkquotes option is on and an incremental update is being\n"
      "# done (-u option), this controls the tradeoff between speed and\n"
      "# the reliability of finding the right source for quoted text.\n"
@@ -737,14 +737,14 @@ struct Config cfg[] = {
      "# message and the final direct reply to that message.\n", FALSE},
 
     {"link_to_replies", &set_link_to_replies, NULL, CFG_STRING,
-     "# (UNSTABLE, MAY BE DEPRECATED)\n"
+     "# (UNMAINTAINED, MAY BE DEPRECATED)\n"
      "# If the linkquotes option is on, specifying a string here\n"
      "# causes it to generate links from original quoted text to the\n"
      "# location(s) in replies which quote them. The string\n"
      "# is used to display the link.\n", FALSE},
 
     {"quote_hide_threshold", &set_quote_hide_threshold, INT(100), CFG_INTEGER,
-     "# (UNSTABLE, MAY BE DEPRECATED)\n"
+     "# (UNMAINTAINED, MAY BE DEPRECATED)\n"
      "# If the linkquotes option is on, setting this to an\n"
      "# integer less than 100 will cause it to replace quoted\n"
      "# text with one-line links if the percent of lines in the\n"
@@ -752,7 +752,7 @@ struct Config cfg[] = {
      "# quoted text exceeds the number indicated by this option.\n", FALSE},
 
     {"quote_link_string", &set_quote_link_string, NULL, CFG_STRING,
-     "# (UNSTABLE, MAY BE DEPRECATED)\n"
+     "# (UNMAINTAINED, MAY BE DEPRECATED)\n"
      "# If the quote_hide_threshold option is being used, the\n"
      "# quote_link_string will be used if available to display the\n"
      "# link that replaces the quoted text. If no string is specified\n"
