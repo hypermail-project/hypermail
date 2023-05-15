@@ -127,9 +127,9 @@ by date</li>
 <li><a href="#msgsperfolder">msgsperfolder</a> split into subdirs
 of n messages</li>
 <li><a href="#monthly_index">monthly_index</a> create monthly index
-files</li>
+files (<strong>CODE NEES MORE LOVE</strong>)</li>
 <li><a href="#yearly_index">yearly_index</a> create yearly index
-files</li>
+files (<strong>CODE NEEDS MORE LOVE</strong></li>
 <li><a href="#defaultindex">defaultindex</a> what goes in
 index.html</li>
 <li><a href="#default_top_index">default_top_index</a> what goes in
@@ -150,7 +150,7 @@ generate these files</li>
 <li><a href="#index_body">Body style</a>
 <ul>
 <li><a href="#indextable">indextable</a> style of message
-    lists <strong>deprecated</strong></li>
+    lists (<strong>DEPRECATED</strong>)</li>
 <li><a href="#reverse">reverse</a> sort order, date/thread
 files</li>
 <li><a href="#reverse_folders">reverse_folders</a> sort order, list
@@ -180,16 +180,16 @@ archives</li>
 <li><a href="#msg_body">Body style</a>
 <ul>
 <li><a href="#showhtml">showhtml</a> how much conversion to
-html?</li>
+html? (<strong>may be deprecated</strong>)</li>
 <li><a href="#href_detection">href_detection</a> how to handle
 URLs</li>
 <li><a href="#showbr">showbr</a> line wrapping for body</li>
-<li><a href="#iquotes">iquotes</a> italicize quotes</li>
+<li><a href="#iquotes">iquotes</a> italicize quotes (<strong>DEPRECATED</strong>)</li>
 <li><a href="#i18n_body">i18n_body</a> translate message body into
 UTF-8</li>
 <li><a href="#mcss_url">mcss_url</a> URL of CSS stylesheet for messages</li>
 <li><a href="#quote_hide_threshold">quote_hide_threshold</a> cut
-excessive quoting</li>
+excessive quoting (<strong>UNMAINTAINED</strong>)</li>
 <li><a href="#files_by_thread">files_by_thread</a> add file with
 all messages in 1 thread</li>
 </ul>
@@ -199,11 +199,11 @@ all messages in 1 thread</li>
 <li><a href="#linkquotes">linkquotes</a> fine-grained link to
 source of quoted text (<strong>UNMAINTAINED</strong>)</li>
 <li><a href="#searchbackmsgnum">searchbackmsgnum</a> linkquotes
-performance</li>
+performance  (<strong>UNMAINTAINED</strong>)</li>
 <li><a href="#link_to_replies">link_to_replies</a> fine-grained
-link to responses</li>
+link to responses (<strong>UNMAINTAINED</strong>)</li>
 <li><a href="#quote_link_string">quote_link_string</a> linkquotes
-labels</li>
+labels (<strong>UNMAINTAINED</strong>)</li>
 <li><a href="#spamprotect">spamprotect</a> obfuscate email
 addresses</li>
 <li><a href="#antispamdomain">antispamdomain</a> how to obfuscate
@@ -324,7 +324,7 @@ output</li>
 <li><a href="#annotated">annotated</a> what headers indicate
 message annotations</li>
 <li><a href="#deleted">deleted</a> what headers indicate deletion
-<strong>deprecated</strong></li>
+(<strong>DEPRECATED</strong>)</li>
 <li><a href="#expires">expires</a> what headers indicate expire
 date</li>
 <li><a href="#delete_older">delete_older</a> delete messages before
@@ -787,11 +787,11 @@ with its markup and treat it as such.<br />
 Only takes effect if showhtml is set to 1.<br />
 <br />
 <em>showbr = 1</em></dd>
-<dt id="iquotes">iquotes = [ 0 | 1 ]</dt>
-<dd>Set this to 1 if you want quoted lines to be shown in italics.
+<dt id="iquotes">iquotes = [ 0 | 1 ] <strong>DEPRECATED, use css .quote rule instead</strong></dt>
+<dd class="deprecated">Set this to 1 if you want quoted lines to be shown in italics.
 Only take effect if showhtml is set to 1.<br />
 <br />
-<em>iquotes = 1</em></dd>
+<em class="deprecated">iquotes = 1</em></dd>
 <dt id="i18n_body">i18n_body = [ 0 | 1 ]</dt>
 <dd>Translate message body into UTF-8. The <em>i18n</em>
 configuration option must be enabled.<br />
@@ -1427,7 +1427,7 @@ In an <strong>hmrc</strong> file:<br />
 In a message:<br />
 <em>X-Hypermail-Annotated: edited, noindex</em></dd>
 <dt id="deleted">deleted = list of headers used to indicate
-    deletion <strong>[DEPRECATED]</strong></dt>
+    deletion <strong>DEPRECATED, replaced by <a href="#annotated">annotated</a></strong></dt>
 <dd>This is the list of headers that indicate the message should
 not be displayed if the value of this header is 'yes'. See the
 <a href="#delete_level">delete_level</a> option for more info about
