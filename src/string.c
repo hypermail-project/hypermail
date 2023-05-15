@@ -868,9 +868,6 @@ ret0:
 
 #ifndef HAVE_STRCASECMP
 /* borrowed from OpenBSD
- * Copyright (c) 1987, 1993
- *	The Regents of the University of California.  All rights reserved.
- *
  * $OpenBSD: strcasecmp.c,v 1.7 2015/08/31 02:53:57
  */
 
