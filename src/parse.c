@@ -2052,7 +2052,7 @@ int parsemail(char *mbox,	/* file name */
                                 free(tmp);
                                 /* we need to "fix" the name as well, as sometimes
                                    the email ends up in the name part */
-                                tmp = strsav(namep);
+                                tmp = namep;
                                 namep = spamify(tmp);
                                 free(tmp);
                             }
