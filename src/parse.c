@@ -1019,12 +1019,12 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 	    }
 	    else if (!strcasecmp("b", encoding)) {
 		/* base64 decoding */
-		int len;
 	        size_t charsetlen;
 #ifdef HAVE_ICONV
                 size_t tmplen;
 		char *output2;
-		base64Decode(ptr, output, &len);
+                
+		base64_decode_string(ptr, output);
 		output2=i18n_convstring(output,charset,"UTF-8",&tmplen);
 		memcpy(output,output2,tmplen);
 		output += tmplen;
@@ -1033,7 +1033,9 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 		memcpy(charsetsave,charset,charsetlen);
 		charsetsave[charsetlen] = '\0';
 #else
-		base64Decode(ptr, output, &len);
+                int len;
+                
+		len = base64_decode_string(ptr, output)
 		output += len;
 #endif
 	    }
@@ -1754,7 +1756,8 @@ int parsemail(char *mbox,	/* file name */
 				   the content_disposition */
     char *description = NULL;	/* user-supplied description for an attachment */
     char attach_force;
-
+    struct base64_decoder_state *b64_decoder_state = NULL; /* multi-line base64 decoding */
+    
     EncodeType decode = ENCODE_NORMAL;
     ContentType content = CONTENT_TEXT;
 
@@ -2043,10 +2046,15 @@ int parsemail(char *mbox,	/* file name */
                         if (!message_headers_parsed) {
                             getname(head->line, &namep, &emailp);
                             if (set_spamprotect) {
-                                emailp = spamify(strsav(emailp));
+                                char *tmp;
+                                tmp = emailp;
+                                emailp = spamify(tmp);
+                                free(tmp);
                                 /* we need to "fix" the name as well, as sometimes
                                    the email ends up in the name part */
-                                namep = spamify(strsav(namep));
+                                tmp = strsav(namep);
+                                namep = spamify(tmp);
+                                free(tmp);
                             }
                         }
 		    }
@@ -2402,6 +2410,7 @@ int parsemail(char *mbox,	/* file name */
 			}
 			else if (!strncasecmp(ptr, "BASE64", 6)) {
 			    decode = ENCODE_BASE64;
+                            b64_decoder_state = base64_decoder_state_new();
 			}
 			else if (!strncasecmp(ptr, "8BIT", 4)) {
 			    decode = ENCODE_NORMAL;
@@ -3237,6 +3246,10 @@ int parsemail(char *mbox,	/* file name */
 		/* go back to default mode: */
                 file_created = alternative_lastfile_created = NO_FILE;
 		content = CONTENT_TEXT;
+                if (decode == ENCODE_BASE64) {
+                    base64_decoder_state_free(b64_decoder_state);
+                    b64_decoder_state = NULL;
+                }                                
 		decode = ENCODE_NORMAL;
 		Mime_B = FALSE;
                 skip_mime_epilogue = FALSE;
@@ -3532,6 +3545,10 @@ int parsemail(char *mbox,	/* file name */
 			}
 			/* go back to the MIME attachment default mode */
 			content = CONTENT_TEXT;
+                        if (decode == ENCODE_BASE64) {
+                            base64_decoder_state_free(b64_decoder_state);
+                            b64_decoder_state = NULL;
+                        }                                              
 			decode = ENCODE_NORMAL;
 			multilinenoend = FALSE;
                         *attachname = '\0';
@@ -3573,7 +3590,7 @@ int parsemail(char *mbox,	/* file name */
 		    }
 		    break;
 		case ENCODE_BASE64:
-		    base64Decode(line, newbuffer, &datalen);
+                    datalen = base64_decode_stream(b64_decoder_state, line, newbuffer);
 		    data = newbuffer;
 		    break;
 		case ENCODE_UUENCODE:
@@ -4003,8 +4020,9 @@ int parsemail(char *mbox,	/* file name */
 		    }
 		}
 
-		if (ENCODE_QP == decode)
+		if (ENCODE_QP == decode) {
 		    free(data);	/* this was allocatd by mdecodeQP() */
+                }
 	    }
 	}
     }
@@ -4221,6 +4239,10 @@ int parsemail(char *mbox,	/* file name */
 
 	/* go back to default mode: */
 	content = CONTENT_TEXT;
+        if (ENCODE_BASE64 == decode) {
+            base64_decoder_state_free(b64_decoder_state);
+            b64_decoder_state = NULL;
+        }                              
 	decode = ENCODE_NORMAL;
 	Mime_B = FALSE;
         skip_mime_epilogue = FALSE;

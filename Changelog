@@ -101,6 +101,13 @@ HYPERMAIL VERSION 3.0.0
 	print modules are used to, but including now markers for the beginning
 	and end of sections, etc.
 
+2023-05-16 Andy Valencia (@vandys)
+	* src/{parse.c, base64.h, base64.c}
+	The BASE64 decoder didn't take into account lines that were not
+	multiples of four and this resulted in a corrupted decode. Changed the
+	decoder so that state can be preserved between subsequent calls.
+	Closes #96
+
 2023-05-12 @shlomif
 	* README
 	Fixed spelling errors
