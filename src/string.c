@@ -1178,6 +1178,8 @@ int numstrchr(char *s, char c)
 /*
 ** Grabs whatever happens to be between the outermost double quotes in a line.
 ** This is for grabbing the values in comments.
+** 
+** caller must free returned value
 */
 
 char *getvalue(char *line)
@@ -1192,7 +1194,8 @@ char *getvalue(char *line)
     c = strchr(line, '\"');
     d = strrchr(line, '\"');
     if (c == NULL)
-	return "";
+	return strsav("");
+    
     for (c++, i = 0, len = MAXLINE - 1; *c && c != d && i < len; c++)
 	PushByte(&buff, *c);
 
@@ -1974,17 +1977,17 @@ char *unspamify(char *s)
 {
     char *p;
     
-    if (!s)
-	return s;
-    if (!strchr(s, '@') && ((p = strstr(s, set_antispam_at)) != NULL)) {
+    if (s && *s && !strchr(s, '@') && ((p = strstr(s, set_antispam_at)) != NULL)) {
 	struct Push buff;
 	INIT_PUSH(buff);
 	PushNString(&buff, s, p - s);
 	PushByte(&buff, '@');
 	PushString(&buff, p + strlen(set_antispam_at));
 	return PUSH_STRING(buff);
+    } else {
+        /* weird string, bail out */
+        return strsav(s);
     }
-    return strsav(s);
 }
 
 /*

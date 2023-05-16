@@ -4472,7 +4472,9 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
 		else if (!strcasecmp(command, "id")) {
 		    char *raw_msgid = getvalue(line);
 		    msgid = unspamify(raw_msgid);
-		    if (raw_msgid) free(raw_msgid);
+		    if (raw_msgid) {
+                        free(raw_msgid);
+                    }
 		    if (msgid && !strstr(line,"-->") && set_linkquotes)
 		        msgid = NULL;/* old version of Hypermail wrote junk? */
 		}
@@ -4499,7 +4501,9 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
 		else if (!strcasecmp(command, "inreplyto")) {
 		    char *raw_msgid = getvalue(line);
 		    valp = unspamify(raw_msgid);
-		    if (raw_msgid) free(raw_msgid);
+		    if (raw_msgid) {
+                        free(raw_msgid);
+                    }
 		    if (valp) {
 			inreply = unconvchars(valp);
 			free(valp);
