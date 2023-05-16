@@ -6,6 +6,12 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
+	* src/{setup.c, setup.h}
+	new conf. option warn_deprecated_options to control whether we
+	want hypermail to display warnings when a configuration file
+	has options that have been deprecated or that we plan to deprecate
+	in the next release.
+	
 	* src/{defaults.h.in, setup.c, hypermail.c}
 	set a default breadcrumb for messages if neither
 	mhtmlnavbar2upfile ihtmlnavbar2upfile config options are set

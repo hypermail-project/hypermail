@@ -346,6 +346,7 @@ markup body for deleted messages (by reasons other than spam)</li>
 "#htmlmessage_deleted_spam">htmlmessage_deleted_spam</a> custom
 markup body for deleted messages (by spam reasons)</li>
 <li><a href="#progress">progress</a> verbosity</li>
+<li><a href="#warn_deprecated_options">warn_deprecated_options</a> warn if you are using deprecated config options</a> (<strong>NEW IN 3.0</strong>)</li>
 <li><a href="#warn_suppressions">warn_suppressions</a> warn about
 ignored messages</li>
 <li><a href="#uselock">uselock</a> serialize</li>
@@ -1547,6 +1548,14 @@ information is listed individually with the number of the message
 the attachments relates to.<br />
 <br />
 <em>progress = 0</em></dd>
+<dt id="warn_deprecated_options">warn_deprecated_options = [ 0 | 1 ]</dt>
+<dd>Set to 1 if you want hypermail to display warning messages if you
+are using deprecated or planned to deprecate configuration options.
+Set it to 0 to hide those warnings. This warning is written to stdout.<br />
+This option is enabled by default.<br />
+<br />
+<em>warn_deprecated_options = 0</em>
+</dd>
 <dt id="warn_suppressions">warn_suppressions = [ 0 | 1 ]</dt>
 <dd>Set this to 1 to get warnings (on stdout) about messages that
 are not converted because of they are missing a msgid (if
@@ -1601,7 +1610,7 @@ Pages</a></strong> and <strong><a href="archive_search.html">Adding
 a Search Engines to your Hypermail Archive</a></strong>
 </blockquote>
 <hr />
-<p><em><strong>Last updated May 12, 2023</strong></em></p>
+<p><em><strong>Last updated May 16, 2023</strong></em></p>
 </footer>
 </body>
 </html>

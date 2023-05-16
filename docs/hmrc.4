@@ -773,6 +773,16 @@ With a setting of 2, attachment creation information is listed individually
 with the number of the message the attachments relate to.
 This is written to stdout.
 .TP
+.B warn_deprecated_options = [ 0 | 1 ]
+Set this to
+.B 1
+if you want hypermail to display warning messages if you
+are using deprecated or planned to deprecate configuration options.
+Set it to
+.B 0
+to hide those warnings. This option is enabled by default
+This warning is written to stdout.
+.TP
 .B thrdlevels = number
 This specifies the number of thread levels to outline in the thread index.  For instance, if
 .B thrdlevels

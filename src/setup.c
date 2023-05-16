@@ -48,6 +48,7 @@ bool set_readone;
 bool set_reverse;
 bool set_reverse_folders;
 bool set_showprogress;
+bool set_warn_deprecated_options;
 bool set_showheaders;
 bool set_showbr;
 bool set_showhr;
@@ -326,6 +327,13 @@ struct Config cfg[] = {
      "# is listed individually with the number of the message the\n"
      "# attachments relate to. This is written to stdout.\n", FALSE},
 
+    {"warn_deprecated_options", &set_warn_deprecated_options, BTRUE, CFG_SWITCH,
+     "# Set this to On to have hypermail warn you if your configuration file\n"
+     "# has options that have been deprecated or that we plan to deprecate.\n"
+     "# To remove this warning you can either clean up your configuration file"
+     "# or add this option with the value Off\n"
+     "# This option is enabled by default.\n", FALSE},
+    
     {"showheaders", &set_showheaders, BFALSE, CFG_SWITCH,
      "# Set this to On to show the article header lines in the archived HTML\n"
      "# files.  These lines typically include the To:, From:, and Subject:\n"
@@ -1242,68 +1250,84 @@ void PostConfig(void)
     /*
     **  options that have been deprecated or removed
     */
-    if (set_showhr) {
-        printf("Warning: the 'showhr' option has been deprecated and will be ignored.\n"
-               "See the INSTALL file for instructions on replacing it with CSS rules.\n\n");
-        set_showhr = FALSE;
-    }
-
-    if (set_usetable) {
-	printf("Warning: the 'usetable' option has been deprecated and will be ignored.\n"
-               "See the INSTALL file for instructions on replacing it with CSS rules.\n\n");
-        set_usetable = FALSE;
-    }
+    if (set_warn_deprecated_options) {
+        bool warnings = FALSE;
         
-    if (set_htmlbody != NULL) {
-	printf("Warning: the 'body' option has been deprecated and will be ignored.\n"
+        if (set_showhr) {
+            printf("Warning: the 'showhr' option has been deprecated and will be ignored.\n"
                "See the INSTALL file for instructions on replacing it with CSS rules.\n\n");
-        free(set_htmlbody);
-        set_htmlbody = NULL;
-    }
+            set_showhr = FALSE;
+            warnings = TRUE;
+        }
 
-    if (set_iquotes) {
-	printf("Warning: the 'iquotes' option has been deprecated and will be ignored.\n"
-               "Use the css .quote rule to emulate it.\n"
-               "Consult docs/hypermail.css for more info.\n\n");
-        set_iquotes = 0;
-    }
+        if (set_usetable) {
+            printf("Warning: the 'usetable' option has been deprecated and will be ignored.\n"
+                   "See the INSTALL file for instructions on replacing it with CSS rules.\n\n");
+            set_usetable = FALSE;
+            warnings = TRUE;
+        }
+        
+        if (set_htmlbody != NULL) {
+            printf("Warning: the 'body' option has been deprecated and will be ignored.\n"
+                   "See the INSTALL file for instructions on replacing it with CSS rules.\n\n");
+            free(set_htmlbody);
+            set_htmlbody = NULL;
+            warnings = TRUE;
+        }
+        
+        if (set_iquotes) {
+            printf("Warning: the 'iquotes' option has been deprecated and will be ignored.\n"
+                   "Use the css .quote rule to emulate it.\n"
+                   "Consult docs/hypermail.css for more info.\n\n");
+            set_iquotes = 0;
+            warnings = TRUE;
+        }
     
-    /*
-    ** configuration options we are considering to deprecate in the next
-    ** version unless they receive more love
-    */
+        /*
+        ** configuration options we are considering to deprecate in the next
+        ** version unless they receive more love
+        */
 #if 0
-    if (set_showhtml != 0) {
-	printf("Warning: using showhtml option has been disabled. See the\n"
-	       "INSTALL file for instructions on replacing it with a style sheet.\n\n");
-    }
+        if (set_showhtml != 0) {
+            printf("Warning: using showhtml option has been disabled. See the\n"
+                   "INSTALL file for instructions on replacing it with a style sheet.\n\n");
+            warnings = TRUE;
+        }
 #endif
-    
-    if (set_linkquotes) {
-	printf("Warning: the 'linkquotes' option is considered unstable in 3.0 and may be\n"
-               "deprecated in the next version of hypermail unless it receives more love.\n\n");
-
-        if (set_searchbackmsgnum != 0) {
-            printf("Warning: the 'searchbackmsgnum' option is considered unstable in 3.0 and may be\n"
+        
+        if (set_linkquotes) {
+            printf("Warning: the 'linkquotes' option is considered unstable in 3.0 and may be\n"
                    "deprecated in the next version of hypermail unless it receives more love.\n\n");
+
+            if (set_searchbackmsgnum != 0) {
+                printf("Warning: the 'searchbackmsgnum' option is considered unstable in 3.0 and may be\n"
+                       "deprecated in the next version of hypermail unless it receives more love.\n\n");
+            }
+            
+            if (set_link_to_replies != NULL) {
+                printf("Warning: the 'link_to_replies' option is considered unstable in 3.0 and may be\n"
+                       "deprecated in the next version of hypermail unless it receives more love.\n\n");
+            }
+            
+            if (set_quote_hide_threshold != 0) {
+                printf("Warning: the 'quote_hide_threshold' option is considered unstable in 3.0 and may be\n"
+                       "deprecated in the next version of hypermail unless it receives more love.\n\n");
+            }
+            
+            if (set_quote_link_string != NULL) {
+                printf("Warning: the 'quote_link_string' option is considered unstable in 3.0 and may be\n"
+                       "deprecated in the next version of hypermail unless it receives more love.\n\n");
+            }
+            warnings = TRUE;
+        }
+
+        if (warnings) {
+            printf("You can switch off the deprecated option warnings by using the\n"
+                   "\"warn_deprecated_options\" configuration option.\n\n");
         }
         
-        if (set_link_to_replies != NULL) {
-            printf("Warning: the 'link_to_replies' option is considered unstable in 3.0 and may be\n"
-                   "deprecated in the next version of hypermail unless it receives more love.\n\n");
-        }
-
-        if (set_quote_hide_threshold != 0) {
-            printf("Warning: the 'quote_hide_threshold' option is considered unstable in 3.0 and may be\n"
-                   "deprecated in the next version of hypermail unless it receives more love.\n\n");
-        }
-
-        if (set_quote_link_string != NULL) {
-            printf("Warning: the 'quote_link_string' option is considered unstable in 3.0 and may be\n"
-                   "deprecated in the next version of hypermail unless it receives more love.\n\n");
-        }
-    }
-
+    } /* warn_deprecated_options */
+    
     /*
     ** control for the values of other options
     */
@@ -1580,6 +1604,7 @@ void dump_config(void)
     printf("set_readone = %d\n",set_readone);
     printf("set_reverse = %d\n",set_reverse);
     printf("set_showprogress = %d\n",set_showprogress);
+    printf("set_warn_deprecated_options = %d\n",set_warn_deprecated_options);
     printf("set_showheaders = %d\n",set_showheaders);
     printf("set_showhtml = %d\n",set_showhtml);
     printf("set_showbr = %d\n",set_showbr);

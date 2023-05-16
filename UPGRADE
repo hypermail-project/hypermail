@@ -64,7 +64,11 @@ gives it more love and maintenance:
 - linkquotes, searchbackmsgnum, link_to_replies, quote_hide_threshold,
   quote_link_string. Note that all these options are related to
   linkquotes. No work was done in 3.0.0 regarding these options.
-  
+
+By default, hypermail will warn you if your configuration file includes
+deprecated or planned to be deprecated options. You can switch off this
+warning by using the new "warn_deprecated_options" configuration option.
+
 The yearly and monthly summaries seem to have been broken since some
 long time ago. Some few updates were done but they require more
 love to make them more useful. In particular, messages are missing
