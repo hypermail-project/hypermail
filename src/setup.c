@@ -1214,9 +1214,11 @@ void PostConfig(void)
     int i;
     /* Keep default behavior the same as it was when mailcommand applied
     * to the cases now covered by replymsg_command. */
-    if (!strcmp(set_replymsg_command, "not set"))
-	set_replymsg_command = set_mailcommand;
-
+    if (!strcmp(set_replymsg_command, "not set")) {
+        free(set_replymsg_command);
+	set_replymsg_command = strsav(set_mailcommand);
+    }
+    
     show_index[1][AUTHOR_INDEX]  = !inlist(set_avoid_indices, "author");
     show_index[1][DATE_INDEX]    = !inlist(set_avoid_indices, "date");
     show_index[1][SUBJECT_INDEX] = !inlist(set_avoid_indices, "subject");
@@ -1242,19 +1244,19 @@ void PostConfig(void)
     */
     if (set_showhr) {
         printf("Warning: the 'showhr' option has been deprecated and will be ignored.\n"
-               "See the INSTALL file for instructions on replacing it with a style sheet.\n\n");
-        set_showhr = 0;
+               "See the INSTALL file for instructions on replacing it with CSS rules.\n\n");
+        set_showhr = FALSE;
     }
 
     if (set_usetable) {
 	printf("Warning: the 'usetable' option has been deprecated and will be ignored.\n"
-               "See the INSTALL file for instructions on replacing it with a style sheet.\n\n");
-        set_usetable = 0;
+               "See the INSTALL file for instructions on replacing it with CSS rules.\n\n");
+        set_usetable = FALSE;
     }
         
     if (set_htmlbody != NULL) {
 	printf("Warning: the 'body' option has been deprecated and will be ignored.\n"
-               "See the INSTALL file for instructions on replacing it with a style sheet.\n\n");
+               "See the INSTALL file for instructions on replacing it with CSS rules.\n\n");
         free(set_htmlbody);
         set_htmlbody = NULL;
     }
@@ -1396,6 +1398,11 @@ int ConfigAddItem(char *cfg_line)
 
 		switch (cfg[i].flags) {
 		case CFG_STRING:
+                    if (cfg[i].value) {
+                        if (*(char **)cfg[i].value) {
+                            free(*(char **)cfg[i].value);
+                        }
+                    }
 		    *(char **)cfg[i].value = strsav(towhat);
 		    break;
 		case CFG_SWITCH:
@@ -1420,7 +1427,7 @@ int ConfigAddItem(char *cfg_line)
 		    *(int *)cfg[i].value = (int)strtol(towhat, NULL, 8);
 		    break;
 		case CFG_LIST:
-
+                    
                     /* Is this the first time that it's been called
                      * for this list ? If so then there is a value
                      * being set for the list via a config file.
@@ -1429,8 +1436,9 @@ int ConfigAddItem(char *cfg_line)
                      */
                     if (cfg[i].changed == FALSE) { /* first time through ? */
                         if (cfg[i].value) {
-                            if (*(struct hmlist **)cfg[i].value)
-                                 free(*(struct hmlist **)cfg[i].value);
+                            if (*(struct hmlist **)cfg[i].value) {
+                                hmlist_free(*(struct hmlist **)cfg[i].value);
+                            }
 		            *(struct hmlist **)cfg[i].value = NULL;
                         }
                     }
@@ -1448,8 +1456,9 @@ int ConfigAddItem(char *cfg_line)
                      */
                     if (cfg[i].changed == FALSE) { /* first time through ? */
                         if (cfg[i].value) {
-                            if (*(struct hmlist **)cfg[i].value)
-                                 free(*(struct hmlist **)cfg[i].value);
+                            if (*(struct hmlist **)cfg[i].value) {
+                                hmlist_free(*(struct hmlist **)cfg[i].value);
+                            }
 		            *(struct hmlist **)cfg[i].value = NULL;
                         }
                     }
@@ -1504,7 +1513,7 @@ void ConfigCleanup(void)
 	case CFG_STRINGLIST:
 	    if (cfg[i].value) {
 		if (*(struct hmlist **)cfg[i].value)
-		    free(*(struct hmlist **)cfg[i].value);
+		    hmlist_free(*(struct hmlist **)cfg[i].value);
 	    }
 	    break;
 	case CFG_STRING:

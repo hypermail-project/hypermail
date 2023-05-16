@@ -352,35 +352,35 @@ int main(int argc, char **argv)
      */
 
     if (strlen(set_language) > 2) {
-	locale_code = strsav(set_language);
+	locale_code = set_language;
 	set_language[2] = 0;	/* shorten to 2-letter code */
     }
     else
 	locale_code = NULL;
 
     if ((tlang = valid_language(set_language, &locale_code)) == NULL) {
-	trio_snprintf(errmsg, sizeof(errmsg), "\"%s\" %s.", set_language, lang[MSG_LANGUAGE_NOT_SUPPORTED]);
-	cmderr(errmsg);
+        trio_snprintf(errmsg, sizeof(errmsg), "\"%s\" %s.", set_language, lang[MSG_LANGUAGE_NOT_SUPPORTED]);
+        cmderr(errmsg);
     }
 
 #ifdef HAVE_LOCALE_H
-	if (!setlocale(LC_ALL, locale_code)) {
-            char *rv = NULL;
-            
-            if (!strcmp(locale_code, "en_US")) {
-                /* many systems now install by defualt en_US.UTF-8.
-                   Here we assume that the mapping between en_US and en_US.UTF-8
-                   in system messages is identical. 
-                   We cannot do the same for other languages, though */
-                rv = setlocale(LC_ALL, "en_US.UTF-8");
-            }
-            if (!rv) {
-                trio_snprintf(errmsg, sizeof(errmsg), "WARNING: locale \"%s\", not supported.\n", locale_code);
-                fprintf(stderr, "%s", errmsg);/* AUDIT biege: avoid format-bug warning */
-            }
+    if (!setlocale(LC_ALL, locale_code)) {
+        char *rv = NULL;
+        
+        if (!strcmp(locale_code, "en_US")) {
+            /* many systems now install by defualt en_US.UTF-8.
+               Here we assume that the mapping between en_US and en_US.UTF-8
+               in system messages is identical. 
+               We cannot do the same for other languages, though */
+            rv = setlocale(LC_ALL, "en_US.UTF-8");
+        }
+        if (!rv) {
+            trio_snprintf(errmsg, sizeof(errmsg), "WARNING: locale \"%s\", not supported.\n", locale_code);
+            fprintf(stderr, "%s", errmsg);/* AUDIT biege: avoid format-bug warning */
+        }
     }
 #endif
-	
+
     lang = tlang;		/* A good language, make it so. */
 
     if (print_usage)		/* Print the usage message and terminate */
@@ -388,17 +388,17 @@ int main(int argc, char **argv)
 
 #ifndef GDBM
     if (set_usegdbm) {
-    fprintf(stderr, "%s: %s\n", PROGNAME, lang[MSG_OPTION_G_NOT_BUILD_IN]);
-    usage();
+        fprintf(stderr, "%s: %s\n", PROGNAME, lang[MSG_OPTION_G_NOT_BUILD_IN]);
+        usage();
     }
 #endif
-
+    
 #ifndef HAVE_LIBFNV
     if (set_nonsequential)
-      progerr("Hypermail isn't built with the libfnv hash library.\n"
-	     "You cannot use the nonsequential option.\n");
+        progerr("Hypermail isn't built with the libfnv hash library.\n"
+                "You cannot use the nonsequential option.\n");
 #endif /* HAVE_LIBFNV */
-
+    
     if (set_mbox && !strcasecmp(set_mbox, "NONE")) {
 	use_stdin = TRUE;
     }
@@ -424,27 +424,12 @@ int main(int argc, char **argv)
 	    use_stdin = FALSE;
     }
     else {
-	if (set_mbox)
+	if (set_mbox) {
 	    free(set_mbox);
+        }
 	set_mbox = NULL;
     }
 
-#if 0
-    /* JK: do we need this here or can we leave it all in setup.c? */
-    /*
-    ** Deprecated options 
-    */
-    if (set_showhr) {
-      fprintf (stderr, "The \"showhr\" option has been deprecated. Ignoring it.\n");
-      set_showhr = FALSE;
-    }
-
-    if (set_usetable) {
-      fprintf (stderr, "The \"usetable\" option has been deprecated. Ignoring it.\n");
-      set_usetable = FALSE;
-    }
-#endif
-    
     if (set_dir) {
         char *dp = dirpath(set_dir);
 	set_dir = strreplace(set_dir, dp);
@@ -778,58 +763,17 @@ int main(int argc, char **argv)
 
     if (set_uselock)
 	unlock_archive();
-    
+
+    /* 
+    ** do some cleanup 
+    */
     printed_free(printedlist);
     printed_free(printedthreadlist);
 
-    /* move these to a free config function in setup.c? */
-    hmlist_free(show_headers);
-    hmlist_free(set_text_types);
-    hmlist_free(set_inline_types);
-    hmlist_free(set_prefered_types);
-    hmlist_free(set_ignore_types);
-    hmlist_free(set_show_headers);
-    hmlist_free(set_show_headers_msg_rfc822);
-    hmlist_free(set_skip_headers);
-    hmlist_free(set_avoid_indices);
-    hmlist_free(set_avoid_top_indices);
-    hmlist_free(set_filter_out);
-    hmlist_free(set_filter_require);
-    hmlist_free(set_filter_out_full_body);
-    hmlist_free(set_filter_require_full_body);
-    hmlist_free(set_applemail_ua_value);
-    hmlist_free(set_annotated);
-    hmlist_free(set_deleted);
-    hmlist_free(set_expires);
-    hmlist_free(set_delete_msgnum);
+    ConfigCleanup();
     
     if (configfile)
 	free(configfile);
-    if (0 && locale_code)
-        free(locale_code);
-    if (set_dir)
-        free(set_dir);
-    if (set_mbox)
-        free(set_mbox);
     
-    if (ihtmlheaderfile)
-	free(ihtmlheaderfile);
-    if (ihtmlfooterfile)
-	free(ihtmlfooterfile);
-    if (ihtmlheadfile)
-	free(ihtmlheadfile);
-    if (ihtmlhelpupfile)
-	free(ihtmlhelpupfile);
-    if (ihtmlhelplowfile)
-	free(ihtmlhelplowfile);
-    if (ihtmlnavbar2upfile)
-	free(ihtmlnavbar2upfile);
-    if (mhtmlheaderfile)
-	free(mhtmlheaderfile);
-    if (mhtmlfooterfile)
-	free(mhtmlfooterfile);
-    if (mhtmlnavbar2upfile)
-	free(mhtmlnavbar2upfile);
-
     return (0);
 }
