@@ -108,11 +108,14 @@ PCRE2 independently.
 End
 
 
-The code for strcasecmp() was borrowed from OpenBSD. OpenBSD code can be
-freely used, copied, modified, and distributed by anyone and for any
-purpose.  It is covered by The Berkeley Copyright license, which has
-been included here above. See https://www.openbsd.org/policy.html
+The code for strcasecmp() was borrowed from OpenBSD. OpenBSD code can be freely
+used, copied, modified, and distributed by anyone and for any purpose.  They
+are both covered by The Berkeley Copyright license, which has been included
+here above. See https://www.openbsd.org/policy.html
 
+Parts of the code in the uudecode.c module were borrowed from the BSD uudecode
+command, which is also covered the Berkeley Copyright license, included here
+above.
 
 The code for strcasestr() was borrowed from glib.c 2.1
 This code is covered by the GNU Lesser General Public License.
