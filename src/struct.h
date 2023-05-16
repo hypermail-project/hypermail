@@ -2,6 +2,9 @@
 ** struct.c functions
 */
 
+#ifndef _HYPERMAIL_STRUCT_H
+#define _HYPERMAIL_STRUCT_H
+
 unsigned hash(char *);
 void reinit_structs(void);
 void fill_email_dates(struct emailinfo *, char *, char *, char *, char *);
@@ -92,3 +95,5 @@ int inlist_regex_pos(struct hmlist *, char *);
 struct hmlist *add_2_list(struct hmlist *, char *);
 struct hmlist *add_list(struct hmlist *, char *);
 void hmlist_free(struct hmlist *);
+
+#endif /* _HYPERMAIL_STRUCT_H */

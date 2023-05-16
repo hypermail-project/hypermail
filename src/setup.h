@@ -1,5 +1,5 @@
-#ifndef __SETUP_H
-#define __SETUP_H
+#ifndef _HYPERMAIL_SETUP_H
+#define _HYPERMAIL_SETUP_H
 
 typedef int bool;
 
@@ -206,4 +206,4 @@ enum { DEBUG_DISABLED,
        DEBUG_DUMP_ATT_VERBOSE, /* always replace msg body with lang[MSG_DELETED/MSG_EXPIRED] */
        DEBUG_DUMP_BODY /* stubs for deleted msgs, full msg for expired */
 };
-#endif
+#endif /* _HYPERMAIL_SETUP_H */

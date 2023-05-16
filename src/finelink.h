@@ -1,5 +1,5 @@
-#ifndef __FINELINK_H
-#define __FINELINK_H
+#ifndef _HYPERMAIL_FINELINK_H
+#define _HYPERMAIL_FINELINK_H
 
 #include "hypermail.h"
 #include "setup.h"		/* for bool */
@@ -12,4 +12,4 @@ void replace_maybe_replies(const char *, struct emailinfo *, int);
 void set_new_reply_to(int msgnum, int match_len);
 int get_new_reply_to(void);
 
-#endif
+#endif /* _HYPERMAIL_FINELINK_H */
