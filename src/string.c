@@ -719,6 +719,16 @@ char *strsav(const char *s)
     return p;
 }
 
+/* 
+** Replaces present with new, by either
+** allocating or reallocating more memory
+** if needed.
+** Special case. If new is NULL, it will
+** free present and return NULL.
+**
+** Caller must free returned value.
+**
+*/
 char *strreplace(char *present, char *new)
 {
     char *retval;
