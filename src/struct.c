@@ -1997,7 +1997,7 @@ struct body *addbody(struct body *bp, struct body **lp,	/* points to the last po
               || flags & BODY_ATTACHMENT_LINKS
               || flags & BODY_NO_ANTISPAM)
             || (flags & BODY_ATTACHMENT_RFC822)) {
-            newnode->line = spamify(strsav(unstuffed_line));
+            newnode->line = spamify(unstuffed_line);
         } else if ((flags & BODY_ATTACHMENT_LINKS
                     || flags & BODY_NO_ANTISPAM)
                    && line && *line) {
@@ -2034,7 +2034,7 @@ struct body *addbody(struct body *bp, struct body **lp,	/* points to the last po
 	    char *newbuf;
 
             if (!tempnode->antispam_disabled) {
-                unstuffed_line = spamify(strsav(unstuffed_line));
+                unstuffed_line = spamify(unstuffed_line);
                 free_unstuffed_line = 1;
             }
             

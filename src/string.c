@@ -1914,6 +1914,10 @@ char *makeinreplytocommand(char *inreplytocommand, char *subject, char *id)
   return newcmd;
 }
 
+/*
+** replaces '@' and domain, depending on the config settings
+** caller must free returned string
+*/
 char *spamify(char *input)
 {
     if (set_antispamdomain) {
@@ -1924,42 +1928,52 @@ char *spamify(char *input)
     }
 }
 
+/* 
+** replaces the '@' character in an email address with set_antispam_at
+**  caller must free the returned string
+*/
 char *spamify_small(char *input)
 {
-  /* we should replace the @-letter in the email address */
+    if (input && *input) { 
+        char *atptr = strchr(input, '@');
 
-  char *atptr = strchr(input, '@');
-
-  if (atptr) {
-      char *newbuf = replacechar(input, '@', set_antispam_at);
+        if (atptr) {
+            char *newbuf = replacechar(input, '@', set_antispam_at);
     
-      /* correct the pointer and free the old */
-      free(input);
-      return newbuf;
-  }
-  /* weird email, bail out */
-  return input;
+            /* return the spamified email address */
+            return newbuf;
+        }
+    }
+    /* weird email, bail out */
+    return strsav(input);
 }
 
+/* 
+** replaces the domain and '@' character depending on the
+** the configuration settings
+** caller must free returned string
+*/
 char *spamify_replacedomain(char *input, char *new_domain)
 {
-    char *atptr = strchr(input, '@');
-    
-    if (atptr) {
-        char *buff;
-
-        buff = parseemail(input, NULL, new_domain, REPLACE_DOMAIN);
-        free(input);
-        return(buff);
+    if (input && *input) {
+        char *atptr = strchr(input, '@');
+        
+        if (atptr) {
+            char *buff;
+            
+            buff = parseemail(input, NULL, new_domain, REPLACE_DOMAIN);
+            return(buff);
+        }
     }
     
     /* weird email, bail out */
-    return input;
+    return strsav(input);
 }
 
 char *unspamify(char *s)
 {
     char *p;
+    
     if (!s)
 	return s;
     if (!strchr(s, '@') && ((p = strstr(s, set_antispam_at)) != NULL)) {
