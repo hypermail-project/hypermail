@@ -4460,11 +4460,16 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
 		    date = getvalue(line);
 		else if (!strcasecmp(command, "name"))
 		    name = getvalue(line);
-		else if (!strcasecmp(command, "email"))
-		    email = unobfuscate_email_address(getvalue(line));
+		else if (!strcasecmp(command, "email")) {
+                    valp = getvalue(line);
+                    if (valp) {
+                        email = unobfuscate_email_address(valp);
+                        free(valp);
+                    }
+                }
 		else if (!strcasecmp(command, "subject")) {
 		    valp = getvalue(line);
-		    {
+		    if (valp) {
 			subject = unconvchars(valp);
 			free(valp);
 		    }
@@ -4500,9 +4505,11 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
 		}
 		else if (!strcasecmp(command, "inreplyto")) {
 		    char *raw_msgid = getvalue(line);
-		    valp = unspamify(raw_msgid);
 		    if (raw_msgid) {
+                        valp = unspamify(raw_msgid);
                         free(raw_msgid);
+                    } else {
+                        valp = NULL;
                     }
 		    if (valp) {
 			inreply = unconvchars(valp);
