@@ -84,6 +84,10 @@ char *obfuscate_email_address(char *address)
   RETURN_PUSH(buf);
 }
 
+/* 
+** undoes the work of obfuscate_email_address.
+** caller must return value
+*/ 
 char *unobfuscate_email_address(char *address){
 
 #define uea_sbufsize 6
