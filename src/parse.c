@@ -3272,7 +3272,10 @@ int parsemail(char *mbox,	/* file name */
 		    meta_dir = NULL;
 		}
 		att_counter = 0;
-		att_name_list = NULL;
+                if (att_name_list) {
+                    hmlist_free (att_name_list);
+                    att_name_list = NULL;
+                }                
 		inline_force = FALSE;
                 attach_force = FALSE;
 		*attachname = '\0';
@@ -3783,9 +3786,9 @@ int parsemail(char *mbox,	/* file name */
                                                   fname);
 
 				if (att_name_list == NULL)
-				    att_name_list = att_name_last = (struct hmlist *)malloc(sizeof(struct hmlist));
+				    att_name_list = att_name_last = (struct hmlist *)emalloc(sizeof(struct hmlist));
 				else {
-				  att_name_last->next = (struct hmlist *)malloc(sizeof(struct hmlist));
+				  att_name_last->next = (struct hmlist *)emalloc(sizeof(struct hmlist));
 				  att_name_last = att_name_last->next;
 				}
 				att_name_last->next = NULL;
@@ -4264,13 +4267,10 @@ int parsemail(char *mbox,	/* file name */
 	    meta_dir = NULL;
 	}
 	att_counter = 0;
-	while (att_name_list != NULL) {
-	    struct hmlist *ptr_next_att = att_name_list->next;
-	    free(att_name_list->val);
-	    free(att_name_list);
-	    att_name_list = ptr_next_att;
-	}
-	att_name_list = NULL;
+        if (att_name_list) {
+            hmlist_free (att_name_list);
+            att_name_list = NULL;
+        }
 	description = NULL;
         *attachname = '\0';
         
