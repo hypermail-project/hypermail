@@ -2377,14 +2377,14 @@ struct printed *markasprinted(struct printed *pp, int num)
 }
 
 /* free a printed list structure */
-void printed_free(struct printed *pl)
+void printed_free(struct printed *pp)
 {
     struct printed *next;
     
-    while(pl) {
-        next = pl->next;
-        free(pl);
-        pl = next;
+    while(pp) {
+        next = pp->next;
+        free(pp);
+        pp = next;
     }
 }
 
