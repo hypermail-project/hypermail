@@ -466,7 +466,14 @@ void crossindexthread2(int num)
 	    if (0) fprintf(stderr, "add thread.b %d %d %d\n", num, rp->data->msgnum, rp->msgnum);
 	    threadlist = addreply(threadlist, num, rp->data, 0,
 				  &threadlist_end);
-	    printedlist = markasprinted(printedthreadlist, rp->msgnum);
+#ifdef FIX_OR_DELETE_ME
+            /* JK: 2023-05-17: this seems to have been a longtime typo, 
+               it produces memory leaks and didn't have any use in the
+               thread code. Tentatively correcting it to printthreadlist 
+               and checking for side effects */
+            printedlist = markasprinted(printedthreadlist, rp->msgnum);
+#endif
+            printedthreadlist = markasprinted(printedthreadlist, rp->msgnum);
 	    crossindexthread2(rp->msgnum);
 	}
     }
@@ -481,7 +488,14 @@ void crossindexthread2(int num)
 	    rp->data->flags |= USED_THREAD;
 	    threadlist = addreply(threadlist, num, rp->data, 0,
 				  &threadlist_end);
+#ifdef FIX_OR_DELETE_ME
+            /* JK: 2023-05-17: this seems to have been a longtime typo, 
+               it produces memory leaks and didn't have any use in the
+               thread code. Tentatively correcting it to printthreadlist 
+               and checking for side effects */            
 	    printedlist = markasprinted(printedthreadlist, rp->msgnum);
+#endif
+	    printedthreadlist = markasprinted(printedthreadlist, rp->msgnum);            
 	    crossindexthread2(rp->msgnum);
 	}
     }
@@ -3192,11 +3206,19 @@ int parsemail(char *mbox,	/* file name */
 					require_filter_len + require_filter_full_len))
 		        ++num_added;
 		    num++;
-		}
-		else if (att_dir != NULL) {
-		    emptydir(att_dir);
-		    rmdir(att_dir);
-		}
+                    
+		} else {
+                    /* addhash refused to add this message, maybe it's a duplicate id
+                       or it failed one of its tests. 
+                       We delete the body to avoid and associated attachments to 
+                       avoid memory leaks */
+                    free_body(bp);
+                    
+                    if (att_dir != NULL) {
+                        emptydir(att_dir);
+                        rmdir(att_dir);
+                    }
+                }
 		for (pos = 0; pos < require_filter_len; ++pos)
 		    require_filter[pos] = FALSE;
 		for (pos = 0; pos < require_filter_full_len; ++pos)
@@ -4195,7 +4217,19 @@ int parsemail(char *mbox,	/* file name */
 	    if (set_txtsuffix && set_increment != -1)
 	        write_txt_file(emp, &raw_text_buf);
 	    num++;
-	}
+	} else {
+            /* addhash refused to add this message, maybe it's a duplicate id
+               or it failed one of its tests.
+               We delete the body to avoid and associated attachments to 
+               avoid memory leaks */
+            free_body(bp);
+            bp = NULL;
+            
+            if (att_dir != NULL) {
+                emptydir(att_dir);
+                rmdir(att_dir);
+            }
+        }
         
 	/* @@@ if we didn't add the message, we should consider erasing the attdir
 	   if it's there */
@@ -4325,6 +4359,7 @@ int parsemail(char *mbox,	/* file name */
     threadlist = NULL;
     printedthreadlist = NULL;
     crossindexthread1(datelist);
+
 #if DEBUG_THREAD
     {
 	struct reply *r;
@@ -4348,7 +4383,12 @@ int parsemail(char *mbox,	/* file name */
 #endif
 
     /* can we clean up a bit please... */
-
+    
+    if (printedthreadlist) {
+        printed_free(printedthreadlist);
+        printedthreadlist = NULL;
+    }
+    
     boundary_stack_free(boundp);
     multipart_stack_free(multipartp);
 
