@@ -2654,6 +2654,24 @@ int parsemail(char *mbox,	/* file name */
                             attachment_rfc822 = TRUE;
                         }
                         isinheader = 1;
+
+                        /* RFC2046 states that message/rfc822 can only
+                           have Content-Transfer-Encoding values of 7bit, 
+                           8bit, and binary. Some broken mail clients 
+                           may have used something else */
+                        if (decode != ENCODE_NORMAL) {
+#if DEBUG_PARSE
+                            printf("Error: msgid %s : message/rfc822 Content-Type associated with a\n"
+                                   "Content-Transfer-Encoding that is not\n7bit, 8bit, or binary.\n"
+                                   "Forcing ENCODE_NORMAL\n", msgid);
+#endif                            
+                            if (decode == ENCODE_BASE64) {
+                                base64_decoder_state_free(b64_decoder_state);
+                                b64_decoder_state = NULL;
+                            }
+                            decode = ENCODE_NORMAL;
+                        }
+                        
                         /* reset the apple mail hack and the
                            local_set_save_alts as we don't know if the
                            forwarded message was originally sent from
