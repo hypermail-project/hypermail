@@ -2085,6 +2085,11 @@ int parsemail(char *mbox,	/* file name */
                         head->parsedheader = TRUE;
                         strlftonl(head->line);
                         if (!message_headers_parsed) {
+                            if (inreply) {
+                                /* we already parsed a References: header before, but
+                                   we're going to give priority to In-Reply-To */
+                                free(inreply);
+                            }
                             inreply = getreply(head->line);
                         }
 		    }
@@ -2099,8 +2104,9 @@ int parsemail(char *mbox,	/* file name */
                              * email composer, which erroneously uses "References"
                              * when it should use "In-reply-to".
                              */
-                            if (!inreply)
+                            if (!inreply) {
                                 inreply = getid(head->line);
+                            }
                             if (set_linkquotes) {
                                 bp = addbody(bp, &lp, line, 0);
                             }
@@ -3162,10 +3168,11 @@ int parsemail(char *mbox,	/* file name */
 			}
 		    }
 		}
-		if (!emp)
+		if (!emp) {
 		  emp =
 		    addhash(num, date, namep, emailp, msgid, subject,
 			    inreply, fromdate, prefered_charset, NULL, NULL, bp);
+                }
                 /*
                  * dp, if it has a value, has a date from the "From " line of
                  * the message after the one we are just finishing.
