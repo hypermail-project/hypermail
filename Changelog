@@ -6,7 +6,11 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
-	* src/{parse.c}
+	* src/string.c
+	translateurl() was not URL-encoding UTF-8 chars correctly
+	makeinreplytocommand() was not calling translateurl for the subject
+
+	* src/parse.c
 	Hypermail leaked memory if a message had more than one of
 	the following headers: Subject:, Date:, From:, Message-Id:.
 	Hypermail now only takes into account the first header

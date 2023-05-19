@@ -1663,6 +1663,8 @@ static void translatechars(char *start, char *end, struct Push *buff)
  * translateurl(), to escape URI strings only.
  *  this should be divided from convchars().
  *
+ *  we assume line is always given in UTF-8
+ *
  *   in_mailcommand: line is MAILCOMMAND, if 1
  *
  */
@@ -1671,9 +1673,11 @@ static char *translateurl(char *line, int in_mailcommand)
   char hexbuf[16];
   struct Push buff;
   INIT_PUSH(buff);		/* init macro */
+  unsigned char c;
   
   for(; *line; line++){
-    if(isalnum((int)*line)){
+      c = (unsigned char) *line;
+      if(isalnum(c) && c < 127) {
       PushByte(&buff,*line);
     }else{
       switch (*line){
@@ -1743,7 +1747,7 @@ static char *translateurl(char *line, int in_mailcommand)
       default:
 	/* URIs MUST NOT have non-ascii characters */
 	/* otherwise, we must use IRI */
-        trio_snprintf(hexbuf,4,"%%%02X",*line);
+        trio_snprintf(hexbuf,4,"%%%02X",(unsigned char)*line);
 	PushString(&buff,hexbuf);
 	break;
       }
@@ -1905,14 +1909,18 @@ char *makemailcommand(char *mailcommand, char *email, char *id, char *subject)
 
 char *makeinreplytocommand(char *inreplytocommand, char *subject, char *id)
 {
-  char *newcmd = NULL;
+  char *newcmd = NULL, *newcmd2 = NULL;
   char *convid = NULL;
+  char *convsubj=NULL;
 
   /* if id was interpolated from the subject, skip it */
   if (strstr (subject, id)) {
       return NULL;
   }
-  
+
+  /* escape subject */
+  convsubj=translateurl(subject,0);
+
   /* escape id */
   if (set_email_address_obfuscation){
     convid = obfuscate_email_address (id);
@@ -1927,8 +1935,17 @@ char *makeinreplytocommand(char *inreplytocommand, char *subject, char *id)
     newcmd = replace (inreplytocommand, "$ID", "");
   }
   free (convid);
-   
-  return newcmd;
+
+  /* put subject */
+  if (subject && strlen(subject)>0){
+      newcmd2 = replace(newcmd, "$SUBJECT", convsubj);
+  }else{
+      newcmd2 = replace(newcmd, "$SUBJECT", "");
+  }
+  free(newcmd);
+  free(convsubj);
+  
+  return newcmd2;
 }
 
 /*
