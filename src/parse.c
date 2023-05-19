@@ -5279,6 +5279,10 @@ void fixnextheader(char *dir, int num, int direction)
             }
             bp = bp->next;
        }
+#ifdef HAVE_ICONV
+       free(numsubject);
+       free(numname);
+#endif
     }
     fclose(fp);
 
@@ -5547,6 +5551,10 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 	        last_reply = bp->line;
 	    bp = bp->next;
 	}
+#ifdef HAVE_ICONV
+        free(numsubject);
+        free(numname);
+#endif
     }
     fclose(fp);
 
@@ -5671,6 +5679,10 @@ void fixthreadheader(char *dir, int num, int max_update)
 	    }
 	    bp = bp->next;
 	}
+#ifdef HAVE_ICONV
+        free(numsubject);
+        free(numname);
+#endif
     }
     fclose(fp);
 

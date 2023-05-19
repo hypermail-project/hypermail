@@ -6,6 +6,11 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
+	* src/parse.c
+	fixnextheader(), fixreplyheader(), and fixthreadheader were
+	not freeing memory allocated via i18n_utf2numref to
+	numsubject and numname
+
 	* src/string.c
 	translateurl() was not URL-encoding UTF-8 chars correctly
 	makeinreplytocommand() was not calling translateurl for the subject
