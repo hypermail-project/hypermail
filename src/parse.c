@@ -5243,8 +5243,8 @@ void fixnextheader(char *dir, int num, int direction)
                 ptr = convchars(email->subject, email->charset);
 #endif
                 fprintf(fp, "<li><span class=\"heading\">%s</span>: ", lang[MSG_NEXT_MESSAGE]);
-                fprintf(fp, "<a href=\"%s\" title=\"%s\">%s: \"%s\"</a></li>\n",
-                        msg_href(email, e3, FALSE), lang[MSG_LTITLE_NEXT],
+                fprintf(fp, "<a href=\"%s\">%s: \"%s\"</a></li>\n",
+                        msg_href(email, e3, FALSE),
 #ifdef HAVE_ICONV
                         numname, ptr ? ptr : "");
 #else
