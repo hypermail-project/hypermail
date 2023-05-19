@@ -6,6 +6,14 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
+	* src/{parse.c}
+	Hypermail leaked memory if a message had more than one of
+	the following headers: Subject:, Date:, From:, Message-Id:.
+	Hypermail now only takes into account the first header
+	it finds, and ignores the duplicates. Note that multiple
+	Message-Ids will be rendered, but only the first one will
+	be taken into account internally (e.g., for threads).
+
 	* src/{hypermail.h, struct.c}
 	When a message/rfc body part contained only a stored
 	attachment (e.g., text/html), even if the attachment

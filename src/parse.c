@@ -2050,6 +2050,11 @@ int parsemail(char *mbox,	/* file name */
                         strlftonl(head->line);
                         head->parsedheader = TRUE;
                         if (!message_headers_parsed) {
+                            if (hasdate) {
+                                /* msg has two or more of this header,
+                                   ignore them */
+                                continue;
+                            }
                             date = getmaildate(head->line);
                             hasdate = 1;
                         }
@@ -2058,6 +2063,11 @@ int parsemail(char *mbox,	/* file name */
                         head->parsedheader = TRUE;
                         strlftonl(head->line);                        
                         if (!message_headers_parsed) {
+                            if (namep || emailp) {
+                                /* msg has two or more of this header,
+                                   ignore them */
+                                continue;
+                            }
                             getname(head->line, &namep, &emailp);
                             if (set_spamprotect) {
                                 char *tmp;
@@ -2084,6 +2094,11 @@ int parsemail(char *mbox,	/* file name */
                         head->parsedheader = TRUE;
                         strlftonl(head->line);
                         if (!message_headers_parsed) {
+                            if (msgid) {
+                                /* msg has two or more of this header,
+                                   ignore them */
+                                continue;
+                            }
                             msgid = getid(head->line);
                         }
 		    }
@@ -2091,6 +2106,11 @@ int parsemail(char *mbox,	/* file name */
                         head->parsedheader = TRUE;
                         strlftonl(head->line);
                         if (!message_headers_parsed) {
+                            if (hassubject) {
+                                /* msg has two or more of this header,
+                                   ignore them */
+                                continue;
+                            }
                             subject = getsubject(head->line);
                             hassubject = 1;
                         }
