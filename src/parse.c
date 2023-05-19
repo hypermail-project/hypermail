@@ -3320,6 +3320,23 @@ int parsemail(char *mbox,	/* file name */
                 attach_force = FALSE;
 		*attachname = '\0';
 
+                if (att_binname) {
+                    free(att_binname);
+                    att_binname = NULL;
+                }
+                if (meta_filename) {
+                    free(meta_filename);
+                    meta_filename = NULL;
+                }
+                if (att_link) {
+                    free(att_link);
+                    att_link = NULL;
+                }
+                if (att_comment_filename) {
+                    free(att_comment_filename);
+                    att_comment_filename = NULL;
+                }
+                
 		/* by default we have none! */
 		hassubject = 0;
 		hasdate = 0;
@@ -4251,7 +4268,22 @@ int parsemail(char *mbox,	/* file name */
         
 	/* @@@ if we didn't add the message, we should consider erasing the attdir
 	   if it's there */
-
+        if (att_binname) {
+            free(att_binname);
+            att_binname = NULL;
+        }
+        if (meta_filename) {
+            free(meta_filename);
+            meta_filename = NULL;
+        }
+        if (att_link) {
+            free(att_link);
+            att_link = NULL;
+        }
+        if (att_comment_filename) {
+            free(att_comment_filename);
+            att_comment_filename = NULL;
+        }
 	if (hasdate) {
 	    free(date);
             date = NULL;
