@@ -2847,6 +2847,9 @@ int parsemail(char *mbox,	/* file name */
                                                       message_node_skip_status(file_created,
                                                                                content,
                                                                                type));
+#if DEBUG_PARSE
+                            current_message_node->msgid = strsav(msgid);
+#endif
                             if (alternativeparser) {
                                 current_alt_message_node = current_message_node;
                             }
@@ -3049,7 +3052,9 @@ int parsemail(char *mbox,	/* file name */
                                                   message_node_skip_status(file_created,
                                                                            content,
                                                                            type));
-                        
+#if DEBUG_PARSE                        
+                        current_message_node->msgid = strsav(msgid);
+#endif
                     }
                 }
 
@@ -3424,6 +3429,9 @@ int parsemail(char *mbox,	/* file name */
                                                       message_node_skip_status(file_created,
                                                                                content,
                                                                                type));
+#if DEBUG_PARSE                            
+                            current_message_node->msgid = strsav(msgid);
+#endif
                             if (alternativeparser) {
                                 current_alt_message_node = current_message_node;
                             }
@@ -4179,6 +4187,9 @@ int parsemail(char *mbox,	/* file name */
                                           message_node_skip_status(file_created,
                                                                    content,
                                                                    type));
+#if DEBUG_PARSE                                            
+                current_message_node->msgid = strsav(msgid);
+#endif
                 
             }
         }

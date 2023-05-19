@@ -877,7 +877,7 @@ int multipart_stack_free(struct hm_stack *s)
         t++;
     }
     
-#if DEBUG_PARSE
+#ifdef DEBUG_PARSE
     fprintf (stderr, "multipart_stack_free: freed %d elements\n", t);
 #endif
     return t;
@@ -1024,6 +1024,7 @@ void message_node_clear(struct message_node *node,
     if (node->bp) {
         free_body(node->bp);
     }
+    
     if (release_details & MN_DELETE_ATTACHMENTS) {
         if (node->bin_filename) {
             unlink(node->bin_filename);
@@ -1051,6 +1052,11 @@ void message_node_clear(struct message_node *node,
         free(node->html_link);
     if (node->comment_filename)
         free(node->comment_filename);
+#ifdef DEBUG_PARSE
+    if (node->msgid)
+        free(node->msgid);
+#endif
+    
     if (release_details & MN_FREE_NODE)
         free(node);
     else
@@ -1361,6 +1367,15 @@ static message_node_skip_t message_node_skip_adjust(struct message_node *root)
     struct message_node *cursor = root;
     bool found_stored_attachment = FALSE;
 
+    /* JK this is an ugly hack. I'd prefer doing this in parsemail
+       when a message/rfc822 body content is a stored attachment,
+       we want to keep both the message/rfc822 headers as well as
+       the link to the stored attachment */
+    if (cursor->skip == MN_SKIP_STORED_ATTACHMENT
+        && cursor->attachment_rfc822) {
+        return MN_KEEP_WITH_STORED_ATTACHMENT;
+    }
+        
     /* not a multipart node, return the current skip value */
     if (!cursor->boundary_type
         || strncasecmp(cursor->content_type, "multipart/", 10)) {
@@ -1508,6 +1523,13 @@ struct body *message_node_flatten(struct body **flattened_lp, struct message_nod
               if (cursor->skip & MN_SKIP_STORED_ATTACHMENT) {
                   message_node_attachment_list(&attachment_bp, &attachment_lp, cursor);
               } else {
+
+                  /* case where the top message body or an message/rfc822 has only
+                     a stored attachment, no multipart or text/plain  */
+                  if (cursor->skip & MN_KEEP_WITH_STORED_ATTACHMENT) {
+                      message_node_attachment_list(&attachment_bp, &attachment_lp, cursor);
+                  }
+                  
                   root_flattened_bp = addbody(root_flattened_bp, &cursor_lp,
                                               NULL,
                                               BODY_ATTACHMENT | BODY_ATTACHMENT_START

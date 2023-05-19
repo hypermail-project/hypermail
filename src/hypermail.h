@@ -193,9 +193,10 @@ typedef enum {
 
 typedef enum {
     MN_KEEP = 0,
-    MN_SKIP_BUT_KEEP_CHILDREN = 1,
-    MN_SKIP_STORED_ATTACHMENT = 2,
-    MN_SKIP_ALL = 4
+    MN_KEEP_WITH_STORED_ATTACHMENT = 1,
+    MN_SKIP_BUT_KEEP_CHILDREN = 2,
+    MN_SKIP_STORED_ATTACHMENT = 4,
+    MN_SKIP_ALL = 8
 } message_node_skip_t;
 
 typedef enum {
@@ -284,6 +285,9 @@ struct body {
 struct message_node {
     struct body *bp;
     struct body *lp;
+#ifdef DEBUG_PARSE
+    char *msgid;         /* for helping debugging */
+#endif
     char *charset;       /* the charset declared in the content-type */
     char *charsetsave;   /* the first charset found in MIME RFC2047 encoded headers */
     char *content_type;

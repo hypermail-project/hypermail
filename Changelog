@@ -6,6 +6,13 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
+	* src/{hypermail.h, struct.c}
+	When a message/rfc body part contained only a stored
+	attachment (e.g., text/html), even if the attachment
+	was being added to the attachments dir, both the message/rfc822
+	headers and the link to the stored attachment were not being
+	added to the resulting markup and generated a memory leak.
+
 	* src/parse.c
 	Some old mail clients were could associate a message/rfc822
 	Content-Type with a BASE64 Content-Transfer-Encoding, which
