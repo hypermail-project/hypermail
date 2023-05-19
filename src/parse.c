@@ -2847,7 +2847,7 @@ int parsemail(char *mbox,	/* file name */
                                                       message_node_skip_status(file_created,
                                                                                content,
                                                                                type));
-#if DEBUG_PARSE
+#if DEBUG_PARSE_MSGID_TRACE
                             current_message_node->msgid = strsav(msgid);
 #endif
                             if (alternativeparser) {
@@ -3052,7 +3052,7 @@ int parsemail(char *mbox,	/* file name */
                                                   message_node_skip_status(file_created,
                                                                            content,
                                                                            type));
-#if DEBUG_PARSE                        
+#if DEBUG_PARSE_MSGID_TRACE
                         current_message_node->msgid = strsav(msgid);
 #endif
                     }
@@ -3429,7 +3429,7 @@ int parsemail(char *mbox,	/* file name */
                                                       message_node_skip_status(file_created,
                                                                                content,
                                                                                type));
-#if DEBUG_PARSE                            
+#if DEBUG_PARSE_MSGID_TRACE
                             current_message_node->msgid = strsav(msgid);
 #endif
                             if (alternativeparser) {
@@ -4187,7 +4187,7 @@ int parsemail(char *mbox,	/* file name */
                                           message_node_skip_status(file_created,
                                                                    content,
                                                                    type));
-#if DEBUG_PARSE                                            
+#if DEBUG_PARSE_MSGID_TRACE
                 current_message_node->msgid = strsav(msgid);
 #endif
                 

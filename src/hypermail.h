@@ -285,7 +285,7 @@ struct body {
 struct message_node {
     struct body *bp;
     struct body *lp;
-#ifdef DEBUG_PARSE
+#ifdef DEBUG_PARSE_MSGID_TRACE
     char *msgid;         /* for helping debugging */
 #endif
     char *charset;       /* the charset declared in the content-type */

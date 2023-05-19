@@ -1052,7 +1052,7 @@ void message_node_clear(struct message_node *node,
         free(node->html_link);
     if (node->comment_filename)
         free(node->comment_filename);
-#ifdef DEBUG_PARSE
+#ifdef DEBUG_PARSE_MSGID_TRACE
     if (node->msgid)
         free(node->msgid);
 #endif
