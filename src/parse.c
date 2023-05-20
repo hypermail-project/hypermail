@@ -470,8 +470,9 @@ void crossindexthread2(int num)
                thread code. Tentatively correcting it to printthreadlist 
                and checking for side effects */
             printedlist = markasprinted(printedthreadlist, rp->msgnum);
-#endif
+#else
             printedthreadlist = markasprinted(printedthreadlist, rp->msgnum);
+#endif
 	    crossindexthread2(rp->msgnum);
 	}
     }
