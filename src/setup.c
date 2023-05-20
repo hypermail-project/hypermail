@@ -1042,14 +1042,14 @@ struct Config cfg[] = {
      "# languages that use different character sets from English.\n", FALSE},
 
      {"debug", &set_debug_level, INT(DEBUG_DISABLED), CFG_INTEGER,
-     "This option lets you enable different debug options for helping\n"
-     "develop and debug hypermail code.\n"
-     "1 - dumps the message_node tree after parsing a message\n"
-     "2 - same as above but also dumps all parsed lines\n"
-     "    for each attachment\n"
-     "3 - dumps the bp content and exits\n"
-     "4 - adds visual markup to each body part section to help identify\n"
-     "    each section without having to examine the source code\n", FALSE},
+     "# This option lets you enable different debug options for helping\n"
+     "# develop and debug hypermail code.\n"
+     "# 1 - dumps the message_node tree after parsing a message\n"
+     "# 2 - same as above but also dumps all parsed lines\n"
+     "#     for each attachment\n"
+     "# 3 - dumps the bp content and exits\n"
+     "# 4 - adds visual markup to each body part section to help identify\n"
+     "#     each section without having to examine the source code\n", FALSE},
 };
 
 /* ---------------------------------------------------------------- */
