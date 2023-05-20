@@ -736,7 +736,7 @@ getannotation(char *line, annotation_content_t *annotation_content,
       c++;
 
     startp = c;
-    while (!isspace (*c) && *c != '\n' && *c != ',') {
+    while (!isspace (*c) && *c != '\n' && *c != '\r' && *c != ',') {
       c++;
     }
 
