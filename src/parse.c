@@ -66,8 +66,6 @@
 
 #define NEW_PARSER 1
 
-extern char *mktemp(char *);
-
 typedef enum {
     ENCODE_NORMAL,
     ENCODE_QP,			/* quoted printable */
