@@ -805,7 +805,7 @@ char *getreply(char *line)
     if (strstr(line, " from ") != NULL) {
 	if ((strstr(line, " at ")) != NULL) {
 	    if ((m = strchr(line, '<')) != NULL) {
-		for (m++; *m && *m != '>' && *m != '\n'; m++) {
+		for (m++; *m && *m != '>' && *m != '\n' && *m != '\r'; m++) {
 		    PushByte(&buff, *m);
 		}
 		RETURN_PUSH(buff);
@@ -832,7 +832,7 @@ char *getreply(char *line)
 	 */
 
 	if ((m = strchr(line, '<')) != NULL) {
-	    for (m++; *m && *m != '>' && *m != '\n'; m++) {
+	    for (m++; *m && *m != '>' && *m != '\n' && *m != '\r'; m++) {
 		PushByte(&buff, *m);
 	    }
 	    RETURN_PUSH(buff);
@@ -845,7 +845,7 @@ char *getreply(char *line)
 	if (*c == '"')
 	    c++;
 
-	for (; *c && *c != '.' && *c != '\n'; c++) {
+	for (; *c && *c != '.' && *c != '\n' && *c != '\r'; c++) {
 	    PushByte(&buff, *c);
 	}
 	RETURN_PUSH(buff);
@@ -853,7 +853,7 @@ char *getreply(char *line)
 
     if ((c = strstr(line, "dated: ")) != NULL) {
 	c += 7;
-	for (; *c && *c != '.' && *c != '\n'; c++) {
+	for (; *c && *c != '.' && *c != '\n' && *c != '\r'; c++) {
 	    PushByte(&buff, *c);
 	}
 	RETURN_PUSH(buff);
@@ -861,7 +861,7 @@ char *getreply(char *line)
 
     if ((c = strstr(line, "dated ")) != NULL) {
 	c += 6;
-	for (; *c && *c != '.' && *c != '\n'; c++) {
+	for (; *c && *c != '.' && *c != '\n'  && *c != '\r'; c++) {
 	    PushByte(&buff, *c);
 	}
 	RETURN_PUSH(buff);
@@ -870,7 +870,7 @@ char *getreply(char *line)
 
     if ((c = strchr(line, '<')) != NULL) {
 	c++;
-	for (; *c && *c != '>' && *c != '\n'; c++) {
+	for (; *c && *c != '>' && *c != '\n' && *c != '\r'; c++) {
 	    if (*c == '\\')
 		continue;
 	    PushByte(&buff, *c);
@@ -883,7 +883,7 @@ char *getreply(char *line)
 	if (*c == '\"')
 	    c++;
 
-	for (; *c && *c != '.' && *c != '\n' && *c != 'f'; c++) {
+	for (; *c && *c != '.' && *c != '\n'  && *c != '\r' && *c != 'f'; c++) {
 	    PushByte(&buff, *c);
 	}
 	RETURN_PUSH(buff);
