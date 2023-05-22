@@ -1,0 +1,63 @@
+/*
+** This program and library is free software; you can redistribute it and/or 
+** modify it under the terms of the GNU (Library) General Public License 
+** as published by the Free Software Foundation; either version 2 
+** of the License, or any later version. 
+** 
+** This program is distributed in the hope that it will be useful, 
+** but WITHOUT ANY WARRANTY; without even the implied warranty of 
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+** GNU (Library) General Public License for more details. 
+** 
+** You should have received a copy of the GNU (Library) General Public License
+** along with this program; if not, write to the Free Software 
+** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA 
+**/
+
+/*
+** stylesheet for hypermail HTML documentation
+**
+** (extracted from what was previoulsy imbricated
+** in the HTML files)
+** 
+** Last revised: 22/May/2023
+**/
+
+body {
+    background-color: #FFFFFF;
+    color: #000000;
+    margin: 20px;
+    line-height: 1.2;
+}
+
+h1 {
+    text-align: center;
+}
+
+img {
+    vertical-align: middle;
+}
+
+hr {
+    /* width: 400px; */
+    border: 1px solid black;
+}
+	    
+dt {
+    font-weight: bold;
+    padding-bottom: 4px;
+}
+
+dd {
+    padding-bottom: 6px;
+}
+
+main {
+    border-bottom: 2px solid black;
+}
+
+.deprecated {
+    text-decoration: line-through;
+}
+</style>
+
