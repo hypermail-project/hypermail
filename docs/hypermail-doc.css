@@ -1,4 +1,4 @@
-/*
+>/*
 ** This program and library is free software; you can redistribute it and/or 
 ** modify it under the terms of the GNU (Library) General Public License 
 ** as published by the Free Software Foundation; either version 2 
@@ -42,7 +42,12 @@ hr {
     /* width: 400px; */
     border: 1px solid black;
 }
-	    
+
+hr.centered {
+    width: 55%;
+    text-align: center;
+}
+
 dt {
     font-weight: bold;
     padding-bottom: 4px;
@@ -59,5 +64,18 @@ main {
 .deprecated {
     text-decoration: line-through;
 }
-</style>
 
+/* rules from the faq */
+
+/*
+  body {
+  background-image: url(stars.png);
+  background-color: #000000;
+  color: #FFFFFF;
+  }
+  :link { color: #998800 }
+  :visited { color: #998800 }
+  :active { color: #FFFFFF }
+  h1.c1 {text-align: center}
+  /*]]>*/
+*/
