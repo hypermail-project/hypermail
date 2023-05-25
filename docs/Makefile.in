@@ -22,9 +22,7 @@ uninstall:
 	rm -f $(mandir)/man1/hypermail.1
 	rm -f $(mandir)/man4/hmrc.4
 	(if [ -d $(htmldir) ]; then \
-		rm -f $(htmldir)/hr.yellow.png; \
 		rm -f $(htmldir)/hypermail.png; \
-		rm -f $(htmldir)/stars.png; \
 		rm -f $(htmldir)/archive_search.html; \
 		rm -f $(htmldir)/hypermail.html; \
 		rm -f $(htmldir)/hypermail-faq.html; \
@@ -45,9 +43,7 @@ install.man:
 
 install.html:
 	@(if [ ! -d $(htmldir) ]; then mkdir -p $(htmldir); fi)
-	$(INSTALL_PROG) -c -m 0644 hr.yellow.png $(htmldir)
 	$(INSTALL_PROG) -c -m 0644 hypermail.png $(htmldir)
-	$(INSTALL_PROG) -c -m 0644 stars.png $(htmldir)
 	$(INSTALL_PROG) -c -m 0644 archive_search.html $(htmldir)
 	$(INSTALL_PROG) -c -m 0644 hypermail.html $(htmldir)
 	$(INSTALL_PROG) -c -m 0644 hypermail-faq.html $(htmldir)
