@@ -334,7 +334,10 @@ int main(int argc, char **argv)
 	    break;
 	}
     }
-
+ 
+    /* do some postconfig checks for deprecated / obsolete options and inits */
+    PostConfig();
+        
 #ifdef DEBUG
     dump_config();
     exit(0);

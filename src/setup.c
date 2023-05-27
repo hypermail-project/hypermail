@@ -1523,8 +1523,6 @@ int ConfigInit(char *filename)
 	    r = FALSE;
     }
 
-    PostConfig();
-
     return r;
 }
 

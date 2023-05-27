@@ -6,6 +6,10 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
+	* src/{hypermail.c, setup.c}
+	PostConfig() was only being called after reading the configuration
+	file, but ignored the options set directly in the command line
+
 	* src/parse.c
 	fixnextheader(), fixreplyheader(), and fixthreadheader were
 	not freeing memory allocated via i18n_utf2numref to
