@@ -787,8 +787,12 @@ struct Config cfg[] = {
      "# Setting this greater than 1 will produce multiple levels of files\n"
      "# for each thread whose replies are nested by more than 1 level,\n"
      "# but that is rarely useful. This option is currently disabled\n"
+     /* indextable was removed in 2.2.25 */
+     /*
      "# if the indextable option is turned on, and probably needs to\n"
-     "# be less than thrdlevels.\n", FALSE},
+     "# be less than thrdlevels.\n"
+     */
+     , FALSE},
 
     {"startmsgnum", &set_startmsgnum, INT(0), CFG_INTEGER,
      "# Sets the number of the first message of an archive. This option is\n"

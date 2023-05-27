@@ -146,14 +146,6 @@ generates the html files. This is dependent on local needs. Do not
 put a '.' in the value. It would result in "file..html", probably
 not what you want.
 .TP
-.B \-t
- This will tell Hypermail to generate an
-index menu at the top and bottom of each page in a table format.
-.TP
-.B \-T
-This will tell Hypermail to  generate  
-a message index Subject/Author/Date listings using a table format.
-.TP
 .B \-u
 This option tells Hypermail to add message(s) to the end of the existing HTML file archive and integrate them into it by links and cross-references. All archive index files will be regenerated to include the new message.
  Hypermail used to require that you only send it one message at a time when
@@ -554,8 +546,6 @@ recommended for archives with over a few hundred messages.
 Setting this greater than 1 will produce multiple levels of files
 for each thread whose replies are nested by more than 1 level,
 but that is rarely useful. This option is currently disabled
-if the indextable option is turned on, and probably needs to
-be less than thrdlevels.
 
 .SH BUGS
 

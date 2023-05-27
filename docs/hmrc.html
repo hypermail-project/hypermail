@@ -112,8 +112,6 @@ generate these files</li>
 </li>
 <li><a href="#index_body">Body style</a>
 <ul>
-<li><a href="#indextable">indextable</a> style of message
-    lists (<strong>DEPRECATED</strong>)</li>
 <li><a href="#reverse">reverse</a> sort order, date/thread
 files</li>
 <li><a href="#reverse_folders">reverse_folders</a> sort order, list
@@ -615,13 +613,6 @@ If not set, hypermail will use a default localized message.
 </dl>
 <h3><a id="index_body">Index body style</a></h3>
 <dl>
-    <dt id="indextable">indextable = [ 0 | 1 ] <strong>DEPRECATED</strong></dt>
-<dd class="deprecated">Setting this variable to 1 will tell Hypermail to generate a
-message index Subject/Author/Date listings using a table format.
-Set to 0 if you want the standard Hypermail index page look and
-feel.<br />
-<br />
-<em class="deprecated">indextable = 0</em></dd>
 <dt id="reverse">reverse = [ 0 | 1 ]</dt>
 <dd>Setting this variable to 1 will reverse-sort the article
 entries in the date and thread index files by the date they were
@@ -651,9 +642,7 @@ creates one file for each thread that has replies, and is
 recommended for archives with over a few hundred messages. Setting
 this greater than 1 will produce multiple levels of files for each
 thread whose replies are nested by more than 1 level, but that is
-rarely useful. This option is currently disabled if the indextable
-option is turned on, and probably needs to be less than
-thrdlevels.<br />
+rarely useful.<br />
 <br />
 <em>thread_file_depth = 0</em></dd>
 <dt id="icss_url">icss_url = [ URL | NONE ]</dt>

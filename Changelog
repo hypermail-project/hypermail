@@ -6,9 +6,13 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
-	* src/{hypermail.c, setup.c}
-	PostConfig() was only being called after reading the configuration
-	file, but ignored the options set directly in the command line
+	* src/{hypermail.c, setup.c}, docs/{hypermail.html, hypermail.1,
+	hmrc.html, hmrc.4}
+	Removed the -T option from the doc, the hypermail -h page and other
+	places where the option was mentioned. This option
+	was deprecated and removed in 2.2.25 but it was still documented.
+	Removed the -t option from the hypermail -h page. This option
+	was deprecated in 3.0.0 and is now ignored.
 
 	* src/parse.c
 	fixnextheader(), fixreplyheader(), and fixthreadheader were

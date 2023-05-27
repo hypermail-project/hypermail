@@ -147,8 +147,6 @@ void usage(void)
     printf("  -o keyword=val: Set config item\n");
     printf("  -p            : %s\n", lang[MSG_OPTION_P]);
     printf("  -s htmlsuffix : %s\n", "HTML file suffix (.html, .htm, ..)");
-    printf("  -t            : %s\n", "Use Tables");
-    printf("  -T            : %s\n", "Use index tables");
     printf("  -u            : %s\n", lang[MSG_OPTION_U]);
     printf("  -v            : %s\n", lang[MSG_OPTION_VERBOSE]);
     printf("  -V            : %s\n", lang[MSG_OPTION_VERSION]);
@@ -224,7 +222,6 @@ int main(int argc, char **argv)
 	case 'p':
 	case 's':
 	case 't':
-	case 'T':
 	case 'u':
 	case 'x':
 	case 'X':
@@ -302,9 +299,12 @@ int main(int argc, char **argv)
 	case 't':
 	    set_usetable = TRUE;
 	    break;
+            /* removed in 2.2.25 */
+            /*
 	case 'T':
 	    set_indextable = TRUE;
 	    break;
+            */
 	case 'u':
 	    set_increment = TRUE;
 	    break;
