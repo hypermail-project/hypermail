@@ -400,7 +400,8 @@ struct Config cfg[] = {
     
     {"iquotes", &set_iquotes, BFALSE, CFG_SWITCH,
      "# (DEPRECATED AND IGNORED)\n"
-     "# You can achieve this effect using css. Check docs/hypermail.css.\n"
+     "# You can achieve this effect using the css quote and quotelev classes.
+     "# Check docs/hypermail.css.\n"
      "# Set this to On to italicize quoted lines.\n", FALSE},
 
     {"eurodate", &set_eurodate, BFALSE, CFG_SWITCH,
@@ -1281,7 +1282,7 @@ void PostConfig(void)
         
         if (set_iquotes) {
             printf("Warning: the 'iquotes' option has been deprecated and will be ignored.\n"
-                   "Use the css .quote rule to emulate it.\n"
+                   "Use the css quote and quotelev classes to emulate it.\n"
                    "Consult docs/hypermail.css for more info.\n\n");
             set_iquotes = 0;
             warnings = TRUE;
