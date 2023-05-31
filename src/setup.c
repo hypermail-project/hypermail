@@ -1004,10 +1004,11 @@ struct Config cfg[] = {
      "# a file for each thread that contains all the messages in that\n"
      "# thread.\n", FALSE},
 
-    {"href_detection", &set_href_detection, BTRUE, CFG_SWITCH,
+    {"href_detection", &set_href_detection, BFALSE, CFG_SWITCH,
      "# Set this to On to assume that any string on the body of the message\n"
      "# that says <A HREF=\" ... </A> is a URL, together with its markup\n"
-     "# and treat it as such.\n", TRUE},
+     "# and treat it as such.\n
+     "# NOTE THIS CAN BE A SECURITY RISK DUE TO MARKUP INJECTION\n", TRUE},
 
     {"mbox_shortened", &set_mbox_shortened, BFALSE, CFG_SWITCH,
      "# Set this to On to enable use of mbox that has had some of its\n"
@@ -1287,7 +1288,7 @@ void PostConfig(void)
             set_iquotes = 0;
             warnings = TRUE;
         }
-    
+
         /*
         ** configuration options we are considering to deprecate in the next
         ** version unless they receive more love
@@ -1299,6 +1300,13 @@ void PostConfig(void)
             warnings = TRUE;
         }
 #endif
+        if (set_href_detection) {
+            printf("Warning: The  'href_detection' option can be a security risk due to\n"
+                   "uncontrolled markup injection. We advise to use it with caution.\n"
+                   "This option will potentially be deprecated in the next version of\n"
+                   "hypermai\n\n");
+            warnings = TRUE;
+        }
         
         if (set_linkquotes) {
             printf("Warning: the 'linkquotes' option is considered unstable in 3.0 and may be\n"
@@ -1370,7 +1378,7 @@ void PostConfig(void)
                "Assuming you wanted it to be 0 (no limits).\n");
         set_max_attach_per_msg = 0;
     }
-   
+
     /* disable locks if we're debugging hypermail */
     if (set_debug_level > 0) {
         set_uselock = 0;

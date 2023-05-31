@@ -26,7 +26,14 @@
 		    </li>
 		    <li><a href="#4">Configuration Options</a></li>
 		    <li><a href="#5">Order of Options Processing</a></li>
-		    <li><a href="#6">Other Things</a></li>
+		    <li><a href="#6">Other Things</a>
+			<ul>
+			    <li><a href="#6.1">Filenames</a></li>
+			    <li><a href="#6.2">Sorting</a></li>
+			    <li><a href="#6.3">Running Hypermail automatically</a></li>
+			    <li><a href="#6.4">Including HTML in messages</a></li>
+			</ul>
+		    </li>
 		    <li><a href="#6b">Running Hypermail Automatically</a></li>
 		    <li><a href="#7">Getting Help With Hypermail</a></li>
 		    <li><a href="#8">Getting Hypermail Software</a></li>
@@ -66,22 +73,15 @@
 		and author. Each entry in these index files are links to the
 		individual articles and provide a bird's-eye view of every archived
 		message.</p>
-	    <p>Hypermail was originally developed and designed by
-		<a href="mailto:gruber@intraspect.com">Tom Gruber</a> for Enterprise
-		Integration Technologies (EIT) in Common Lisp. It was later
-		rewritten in C by <a href="mailto:kev@kevcom.com">Kevin Hughes</a>
-		while at EIT. Hypermail is now being maintained by Peter McCluskey
-		<a href="mailto:pcm@rahul.net">&lt;pcm@rahul.net&gt;</a>.</p>
+
 	    <p>To see what Hypermail can do, take a look at these
 		Hypermail-produced archives:</p>
 	    <ul>
+		<li><a href="https://lists.w3.org/Archives/Public/">W3C Public Mailing List Archives</a> (3.0)</li>
 		<li><a href="http://www.hypermail-project.org/archive/">Hypermail
-		    Development Archives</a></li>
-		<li><a href=
-		       "http://www.landfield.com/wu-ftpd/mail-archive/">WU-FTPD Mailing
-		    list Archives</a></li>
+		    Development Archives</a> (2.3)</li>
 		<li><a href="http://www.faqs.org/faq-maintainers/mail-archive">FAQ
-		    Maintainers Archives</a></li>
+		    Maintainers Archives</a> (2.2)</li>
 	    </ul>
 	    <hr />
 	    <h2><a id="2" href="#">Usage</a></h2>
@@ -178,9 +178,13 @@ exists.</p>
 manner:</p>
 <blockquote><strong>variable = number<br />
 variable = "string"</strong></blockquote>
-The complete set of variables that Hypermail recognizes is
+
+<p>The complete set of variables that Hypermail recognizes is
 described in the <a href="hmrc.html">Configuration Options</a>
-page.
+    page.</p>
+
+<p>To get you up to speed, a <a href="dot.hmrc-sample">sample annotated hypermail configuration file</a> is included in the docs dir.</p>
+
 <p><a id="3.2" href="#"><strong>Archive Interface
 Options:</strong></a></p>
 <blockquote><strong>-l</strong>&nbsp;&nbsp;<em>"label"</em>,<br />
@@ -372,7 +376,9 @@ For a complete list, see <a href="hmrc.html">hmrc.html</a>.</p>
     </dd>
 
     <dt><strong>HM_LANGUAGE "language-id"</strong></dt>
-    <dd>This is a two-letter string specifying the default language to
+    <dd><strong>NB non-english language files have not been updated since long time ago
+	and are now lagging in translation.</strong><br />
+	This is a two-letter string specifying the default language to
 	use, or a longer string specifying a language and locale. Set this
 	the value of the language table you wish to use when running and
 	generating archives. See also <a href=
@@ -526,149 +532,148 @@ For a complete list, see <a href="hmrc.html">hmrc.html</a>.</p>
 <p>Settings are processed in this order:</p>
 <ol>
 <li>From the program's hard-wired internal defaults (specified in
-options.h),</li>
+defaults.h and setup.c),</li>
 <li>From runtime environment variables,</li>
 <li>From the configuration file,</li>
 <li>From command-line options.</li>
 </ol>
-<p>Early versions of Hypermail read the command line before reading
-the configuration file.</p>
 <hr />
 
 <h2><a id="6" href="#">Other Things</a></h2>
-<strong>Filenames:</strong> In the specified directory, articles
-will be read out in the order that they were read in from a mailbox
-or standard input. Filenames start at zero and increase in this
-fashion: <strong>0000.html, 0001.html, 0002.html</strong>, etc. In
-the same directory:
+
+<h3><a id="6.1" href="#">Filenames</a></h3>
+
+<p>In the specified directory, articles will be read out in the order
+that they were read in from a mailbox or standard input. Filenames
+start at zero and increase in this fashion: <strong>0000.html, 0001.html, 0002.html</strong>,
+etc. In the same directory:</p>
+
 <ul>
-<li><strong>date.html</strong> is the index of articles sorted by
-the date they were received by the system's mail daemon.</li>
-<li><strong>thread.html</strong> is the index of articles sorted by
-thread first, then the date they were received.</li>
-<li><strong>subject.html</strong> is the index of articles sorted
-by subject. Any "Re:" prefixes in front of subjects will have been
-stripped out.</li>
-<li><strong>author.html</strong> is the index of articles sorted by
-the first word of the author's name. If the author's name can't be
-determined, their email address will be substituted.</li>
-<li>One of the above files will be called
-<strong>index.html</strong> and is the default index that users can
-go to when entering the archive.</li>
+    <li><strong>date.html</strong> is the index of articles sorted by
+	the date they were received by the system's mail daemon.</li>
+    <li><strong>thread.html</strong> is the index of articles sorted by
+	thread first, then the date they were received.</li>
+    <li><strong>subject.html</strong> is the index of articles sorted
+	by subject. Any "Re:" prefixes in front of subjects will have been
+	stripped out.</li>
+    <li><strong>author.html</strong> is the index of articles sorted by
+	the first word of the author's name. If the author's name can't be
+	determined, their email address will be substituted.</li>
+    <li>One of the above files will be called
+	<strong>index.html</strong> and is the default index that users can
+	go to when entering the archive.</li>
 </ul>
-<p><strong>Sorting:</strong> In the date and thread index files,
-note that these lists are sorted by the date the articles were
-received by the system's mail daemon, not by the date they were
-written on. The order of articles in the date index may not
-necessarily match the order in which the article files are written
-and linked together. Because of this, it is a good idea to make
-sure the mailbox is sorted by date with the most recent messages
-towards the bottom.</p>
-<p><a id="6b"></a> <strong>Running Hypermail
-automatically:</strong> All that's needed to start archiving email
+
+<h3><a id="6.2" href="#">Sorting</a></h3>
+
+<p>In the date and thread index files, note that these lists are sorted
+by the date the articles were received by the system's mail daemon,
+not by the date they were written on. The order of articles in the
+date index may not necessarily match the order in which the article
+files are written and linked together. Because of this, it is a good
+idea to make sure the mailbox is sorted by date with the most recent
+messages towards the bottom.</p>
+
+<h3><a id="6.3" href="#">Running Hypermail automatically</a></h3>
+
+<p>The following are some tips on how to make hypermail archive incoming
+    messages on-the-fly.</p>
+
+<h4>Sendmail and qmail aliases</h4>
+
+<p>All that's needed to start archiving email
 messages is to set up Hypermail to do incremental updates in your
 <strong>/etc/aliases</strong> file (assuming that you use
 <strong>sendmail</strong> or something that works like it to
 deliver mail). Here's what an entry might look like (the last line
 is one unbroken line):</p>
+
 <blockquote><strong>#<br />
 # WU-FTPD Mailing List Archives<br />
 #<br />
 wulist: "|/usr/local/bin/hypermail -i -u -d /wu-ftpd/mail-archive
 -l \"WU-FTPD Mailing List Archive\""</strong></blockquote>
-After adding the entry, make sure <strong>newaliases</strong> is
+
+<p>After adding the entry, make sure <strong>newaliases</strong> is
 run to update the mail aliases. This entry will run Hypermail and
-update/create the archive whenever a new message is received.
-Hypermail also works well as a <strong>cron</strong> job. Because
-<strong>sendmail</strong> may run Hypermail as different users, you
+    update/create the archive whenever a new message is received.</p>
+
+<p> Because <strong>sendmail</strong> may run Hypermail as different users, you
 will want to make sure that archive directories and files are made
 readable and writeable by a trusted sendmail user (or read/writable
 by everyone if you can't do that) when they are created. This will
 ensure that there will be no problems incrementally updating the
-archive.
+    archive.</p>
+
 <p>If you use qmail instead of sendmail, you probably want to
 create a file /var/qmail/alias/.qmail-&lt;mylistemailaddress&gt;
 containing something like this:</p>
-<blockquote>|/usr/local/bin/hypermail -i -u -d
-/wu-ftpd/mail-archive -l \"WU-FTPD Mailing List
-Archive\"</blockquote>
-<p>If you are running Linux kernel version 2.4 or higher, <a href=
-"http://www.student.lu.se/~nbi98oli/dnotify.html">dnotify</a> looks
-like it provides another way to automate Hypermail.</p>
-<p><strong>Including HTML in messages:</strong> One can include
-formatted HTML in message bodies by enclosing the HTML with the
-&lt;HTML&gt; tag (in either uppercase or lowercase). This tag must
-be on a line by itself:</p>
-<pre>
-   This text will not be parsed...
-   &lt;html&gt;
-   <strong>this text</strong> will be parsed as HTML.
-   &lt;/html&gt;
-   This text will not be parsed...
-</pre>
-<p>There is no limit to how often the &lt;HTML&gt; tag can be used
-in an article.</p>
+<blockquote><strong>|/usr/local/bin/hypermail -i -u -d
+    /wu-ftpd/mail-archive -l \"WU-FTPD Mailing List
+    Archive\"</strong></blockquote>
+
+<h4>Smartlist / Procmail</h4>
+
+<p>If you are using <a href="https://github.com/procmail-org/SmartList">smartlist</a>,
+    you can call hypermail automatically by enabling rc.local.s20 and
+    adding a filter. You may also use this filter in a procmail rule. Note that in both cases, we're relying on smartlist/procmail's locks insted of hypermail's:</p>
+<blockquote><strong>
+    :0 cw
+    | /usr/local/bin/hypermail -o uselock=0  -i -u -d 
+    /wu-ftpd/mail-archive -l \"WU-FTPD Mailing List 
+    Archive\"</strong></blockquote>
+
+<h4>Other ways of automatizing hypermail</h4>
+
+<p>On linux, cronjobs and <a href="https://en.wikipedia.org/wiki/Inotify">inotify</a> may be two other possibilities for running hypermail.</p>
+
 <hr />
 
-<h2><a id="7" href="#">Getting Help With
-Hypermail</a></h2>
-<p>If you are are looking for more information on Hypermail and its
-features and developmental status, check out <a href=
-"http://sourceforge.net/projects/hypermail/">SourceForge: Project
-Info - hypermail</a> and <a href=
-"http://www.hypermail-project.org">hypermail-project.org</a>.
-Additional documentation and the hypermail development list
-archives are available there.</p>
+<h2><a id="7" href="#">Getting Hypermail Software</a></h2>
+
+<p>Please visit <a href="https://github.com/hypermail-project/hypermail">The Hypermail Project github repository</a> to
+download the latest stable version of Hypermail as well as follow its
+development.</p>
+
+<p>Hypermail is available free of charge under <a href="a href="http://www.fsf.org/copyleft/gpl.html">GNU Public License version 3 (GPLv3)</a>. Please read the LICENSES.txt file for licenses that cover libraries and some functions that are used by Hypermail.</p>
+
 <hr />
 
-<h2><a id="8" href="#">Getting Hypermail Software</a></h2>
-<p>Hypermail is available free of charge under GNU Public License.
-More details about the GPL are available at <a href=
-"http://www.fsf.org/copyleft/gpl.html">http://www.fsf.org/copyleft/gpl.html</a>.</p>
-<p>Currently, <a href=
-"http://sourceforge.net/projects/hypermail/">SourceForge: Project
-Info - hypermail</a> has the most recent version.</p>
-<p><a href="http://www.hypermail-project.org/">The Hypermail
-Development Center</a> also has beta development versions of
-hypermail available from time to time.</p>
+<h2><a id="8" href="#">Getting Help With Hypermail</a></h2>
+
+<p>We don't run any mailing lists anymore. We rely on github for reporting issues, feature requests, bug fixes, publishing releases, and tracking development.</p>
+
+<p>If you're interested in the past history of hypermail and design decisions, you can browse the hypermail developer's <a href="https://hypermail-project.org/archive/index.html">mailing list archives</a> (<a href="https://web.archive.org/web/20120220004045/https://hypermail-project.org/archive/index.html">mirror</a>), covering the 1998-2010 activity period.</p>
+
 <hr />
 
 <h2><a id="9" href="#">Credits</a></h2>
-I would like to thank <a href="mailto:gruber@intraspect.com">Tom
-Gruber</a>, who originally designed and developed Hypermail in
-Common Lisp, for the basis of a <strong>GREAT</strong> tool.
-<p>I'd also like to thank <a href="mailto:kev@kevcom.com">Kevin
-Hughes</a> for developing the initial C version of Hypermail. Kevin
-also provided a great deal of assistance with restarting the
-current hypermail development.</p>
-<p>There are a great deal of people that also contributed to
-Hypermail's development. The <a href=
-"http://www.hypermail.org/hypermail/credits.html">Hypermail
-Development Center Credits</a> page is an attempt to let you know
-just who they are.</p>
-<p>Hypermail development is currently being fostered by <a href=
-"mailto:pcm@rahul.net">&lt;Peter McCluskey&gt;</a>.</p>
+
+<p>Hypermail was originally developed and designed by
+    <a href="mailto:gruber@intraspect.com">Tom Gruber</a> for Enterprise
+    Integration Technologies (EIT) in Common Lisp. It was later
+    rewritten in C by <a href="mailto:kev@kevcom.com">Kevin Hughes</a>
+    while at EIT.</p>
+
+    <p>Hypermail is currently fostered by
+    <a href="https://github.com/hypermail-project/hypermail">Jos&eacute; Kahan</a>.</p>
+
+    <p>Please refer to the <a href="credits.html">credits</a> page for a list of
+    people who have contributed to the hypermail project.</p>
+
 <hr />
 
 <h2><a id="10" href="#">See Also</a></h2>
 <blockquote><strong>hypermail(1)</strong>, &nbsp;
 <strong>hmrc(4)</strong>, &nbsp; <strong><a href=
-"hmrc.html">Hypermail List Configuration File</a></strong>. &nbsp;
-and &nbsp; <strong><a href="customizing.html">Customizing Hypermail
-Pages</a></strong> and <strong><a href="archive_search.html">Adding
+"hmrc.html">Hypermail List Configuration File</a></strong>, &nbsp;
+<strong><a href="customizing.html">Customizing Hypermail
+Pages</a></strong>, &nbsp; <strong><a href="archive_search.html">Adding
 a Search Engines to your Hypermail
 Archive</a></strong></blockquote>
 <hr />
-<p><em>Please send any feature requests, bug fixes, and comments on
-Hypermail to <a href=
-"mailto:hypermail@hypermail-project.org">&lt;hypermail@hypermail-project.org&gt;</a>.
-In order to minimize spam on the list, you must subscribe to the
-list (at least temporarily) in order to send mail to it. You may
-subscribe to the list by sending a message with the word
-"subscribe" in the Subject: field to
-hypermail-request@hypermail-project.org.</em></p>
-<p><small><em><strong>Last updated May 24, 2023
-</strong></em></small></p>
+
+<p><small><em><strong>Last updated May 24, 2023</strong></em></small></p>
 	</main>
 </body>
 </html>
