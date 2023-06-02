@@ -1,3 +1,5 @@
+#ifndef _HYPERMAIL_GETDATE_H
+#define _HYPERMAIL_GETDATE_H
 /*  Copyright (C) 1995 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
@@ -54,3 +56,5 @@
 #endif
 
 time_t get_date (const char *p, const time_t *now);
+
+#endif /* _HYPERMAIL_GETDATE_H */

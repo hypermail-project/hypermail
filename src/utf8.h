@@ -1,3 +1,5 @@
+#ifndef SHEREDOM_UTF8_H_INCLUDED
+#define SHEREDOM_UTF8_H_INCLUDED
 /* The latest version of this library is available on GitHub;
  * https://github.com/sheredom/utf8.h */
 
@@ -25,9 +27,6 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  * For more information, please refer to <http://unlicense.org/> */
-
-#ifndef SHEREDOM_UTF8_H_INCLUDED
-#define SHEREDOM_UTF8_H_INCLUDED
 
 #if defined(_MSC_VER)
 #pragma warning(push)

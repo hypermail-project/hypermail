@@ -1,5 +1,19 @@
 /*
-** $Id: setup.c,v 1.23 2013-06-11 18:55:44 kahan Exp $
+** Copyright (C) 1997-2023 Hypermail Project
+** 
+** This program and library is free software; you can redistribute it and/or 
+** modify it under the terms of the GNU (Library) General Public License 
+** as published by the Free Software Foundation; either version 3
+** of the License, or any later version. 
+** 
+** This program is distributed in the hope that it will be useful, 
+** but WITHOUT ANY WARRANTY; without even the implied warranty of 
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+** GNU (Library) General Public License for more details. 
+** 
+** You should have received a copy of the GNU (Library) General Public License
+** along with this program; if not, write to the Free Software 
+** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA 
 */
 
 #include "hypermail.h"
@@ -400,7 +414,7 @@ struct Config cfg[] = {
     
     {"iquotes", &set_iquotes, BFALSE, CFG_SWITCH,
      "# (DEPRECATED AND IGNORED)\n"
-     "# You can achieve this effect using the css quote and quotelev classes.
+     "# You can achieve this effect using the css quote and quotelev classes.\n"
      "# Check docs/hypermail.css.\n"
      "# Set this to On to italicize quoted lines.\n", FALSE},
 
@@ -1007,7 +1021,7 @@ struct Config cfg[] = {
     {"href_detection", &set_href_detection, BFALSE, CFG_SWITCH,
      "# Set this to On to assume that any string on the body of the message\n"
      "# that says <A HREF=\" ... </A> is a URL, together with its markup\n"
-     "# and treat it as such.\n
+     "# and treat it as such.\n"
      "# NOTE THIS CAN BE A SECURITY RISK DUE TO MARKUP INJECTION\n", TRUE},
 
     {"mbox_shortened", &set_mbox_shortened, BFALSE, CFG_SWITCH,

@@ -1,5 +1,5 @@
-#ifndef __UCONVERT_H
-#define __UCONVERT_H
+#ifndef _HYPERMAIL_UCONVERT_H
+#define _HYPERMAIL_UCONVERT_H
 
 /*
 ** This file lists the convertions between a given charset space and the
@@ -29,4 +29,4 @@ int WIN1252CP [] = {
 };
 #define WIN1252CP_length sizeof(WIN1252CP) / sizeof(int)
 
-#endif /* __UCONVERT_H */
+#endif /* _HYPERMAIL_UCONVERT_H */

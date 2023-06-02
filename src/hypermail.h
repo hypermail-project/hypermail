@@ -1,12 +1,15 @@
+#ifndef _HYPERMAIL_HYPERMAIL_H
+#define _HYPERMAIL_HYPERMAIL_H
 /* 
 ** Copyright (C) 1994, 1995 Enterprise Integration Technologies Corp.
 **         VeriFone Inc./Hewlett-Packard. All Rights Reserved.
 ** Kevin Hughes, kev@kevcom.com 3/11/94
 ** Kent Landfield, kent@landfield.com 4/6/97
+** Hypermail Project 1998-2023
 ** 
 ** This program and library is free software; you can redistribute it and/or 
 ** modify it under the terms of the GNU (Library) General Public License 
-** as published by the Free Software Foundation; either version 2 
+** as published by the Free Software Foundation; either version 3
 ** of the License, or any later version. 
 ** 
 ** This program is distributed in the hope that it will be useful, 
@@ -18,9 +21,6 @@
 ** along with this program; if not, write to the Free Software 
 ** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA 
 */
-
-#ifndef _HYPERMAIL_HYPERMAIL_H
-#define _HYPERMAIL_HYPERMAIL_H
 
 #ifndef MAIN_FILE
 #define VAR extern
@@ -530,4 +530,4 @@ extern int strcasecmp(const char *, const char *);
 extern int strncasecmp(const char *, const char *, size_t);
 #endif
 
-#endif				/* ! _HYPERMAIL_HYPERMAIL_H */
+#endif /* _HYPERMAIL_HYPERMAIL_H */

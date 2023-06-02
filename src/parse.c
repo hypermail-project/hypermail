@@ -3,10 +3,11 @@
 **         VeriFone Inc./Hewlett-Packard. All Rights Reserved.
 ** Kevin Hughes, kev@kevcom.com 3/11/94
 ** Kent Landfield, kent@landfield.com 4/6/97
+** Hypermail Project 1998-2023
 **
 ** This program and library is free software; you can redistribute it and/or
 ** modify it under the terms of the GNU (Library) General Public License
-** as published by the Free Software Foundation; either version 2
+** as published by the Free Software Foundation; either version 3
 ** of the License, or any later version.
 **
 ** This program is distributed in the hope that it will be useful,
