@@ -28,6 +28,7 @@ uninstall:
 		rm -f $(htmldir)/hypermail-faq.html; \
 		rm -f $(htmldir)/customizing.html; \
 		rm -f $(htmldir)/hmrc.html; \
+		rm -f $(htmldir)/thanks.html; \
 		rm -f $(htmldir)/hypermail.css; \
 		rmdir $(htmldir); \
 	fi)
@@ -49,6 +50,7 @@ install.html:
 	$(INSTALL_PROG) -c -m 0644 hypermail-faq.html $(htmldir)
 	$(INSTALL_PROG) -c -m 0644 customizing.html $(htmldir)
 	$(INSTALL_PROG) -c -m 0644 hmrc.html $(htmldir)
+	$(INSTALL_PROG) -c -m 0644 thanks.html $(htmldir)
 
 install.css:
 	@(if [ ! -d $(htmldir) ]; then mkdir -p $(htmldir); fi)
