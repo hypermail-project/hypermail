@@ -6,6 +6,10 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
+	* src{*.c, *.h}
+	Added missing copyright, GPL licence where needed
+	Added protection against multiple includes of .h files
+	
 	* src/{hypermail.c, setup.c}, docs/{hypermail.html, hypermail.1,
 	hmrc.html, hmrc.4}
 	Removed the -T option from the doc, the hypermail -h page and other
