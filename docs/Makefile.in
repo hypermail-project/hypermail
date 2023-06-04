@@ -25,7 +25,7 @@ uninstall:
 		rm -f $(htmldir)/hypermail.png; \
 		rm -f $(htmldir)/archive_search.html; \
 		rm -f $(htmldir)/hypermail.html; \
-		rm -f $(htmldir)/hypermail-faq.html; \
+		rm -f $(htmldir)/faq.html; \
 		rm -f $(htmldir)/customizing.html; \
 		rm -f $(htmldir)/hmrc.html; \
 		rm -f $(htmldir)/thanks.html; \
@@ -47,7 +47,7 @@ install.html:
 	$(INSTALL_PROG) -c -m 0644 hypermail.png $(htmldir)
 	$(INSTALL_PROG) -c -m 0644 archive_search.html $(htmldir)
 	$(INSTALL_PROG) -c -m 0644 hypermail.html $(htmldir)
-	$(INSTALL_PROG) -c -m 0644 hypermail-faq.html $(htmldir)
+	$(INSTALL_PROG) -c -m 0644 faq.html $(htmldir)
 	$(INSTALL_PROG) -c -m 0644 customizing.html $(htmldir)
 	$(INSTALL_PROG) -c -m 0644 hmrc.html $(htmldir)
 	$(INSTALL_PROG) -c -m 0644 thanks.html $(htmldir)
