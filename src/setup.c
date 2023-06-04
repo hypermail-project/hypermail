@@ -665,7 +665,7 @@ struct Config cfg[] = {
      "# Define path as the path to a template  file  containing\n"
      "# valid  HTML  formatting  statements  that  you  wish to\n"
      "# included as information in your indexes,\n"
-     "# giving links to the hierarchin in your archive.\n", FALSE},
+     "# giving links to the hierarchy in your archive.\n", FALSE},
 
     {"mhtmlheaderfile", &set_mhtmlheader, NULL, CFG_STRING,
      "# Define path as the path to a template  file  containing\n"
