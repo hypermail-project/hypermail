@@ -6,6 +6,9 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
+        * config.guess, config.sub
+        Updated from https://git.savannah.gnu.org/gitweb/?p=config.git
+
 	* configure.ac, configure
 	Rewrote the rules for supporting user-defined paths / system paths for
 	the gdbm library
