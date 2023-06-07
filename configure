@@ -4655,26 +4655,36 @@ fi
 
 
 
+
 # Check whether --with-gdbm was given.
 if test "${with_gdbm+set}" = set; then :
   withval=$with_gdbm;  given_gdbm=$withval
 fi
 
 
-if test "$given_gdbm" != "no"; then
-    for i in /usr/local /usr $withval; do
-      if test -f "$i/include/gdbm.h"; then
-        GDBM_INCLUDE="$i/include"
-        THIS_PREFIX="$i"
-      fi
-    done
+if test "${given_gdbm}" = "no"; then
+   given_gdbm=""
+fi
 
-    unset ac_cv_lib_gdbm_gdbm_open
+if test -n "${given_gdbm}" -a "${given_gdbm}" != "yes" -a "${given_gdbm}" != "/usr"; then
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for \"${given_gdbm}/include/gdbm.h\"" >&5
+$as_echo_n "checking for \"${given_gdbm}/include/gdbm.h\"... " >&6; }
+   if test -f "${given_gdbm}/include/gdbm.h"; then
+      GDBM_INCLUDE="${given_gdbm}/include"
+      { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+   else
+      { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+   fi
+
+   if test -n "${GDBM_INCLUDE}"; then
+      unset ac_cv_lib_gdbm_gdbm_open
 
   old_LDFLAGS="$LDFLAGS"
-  LDFLAGS="-L$THIS_PREFIX/lib $LDFLAGS"
+  LDFLAGS="-L${given_gdbm}/lib $LDFLAGS"
 
-       { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gdbm_open in -lgdbm" >&5
+      { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gdbm_open in -lgdbm" >&5
 $as_echo_n "checking for gdbm_open in -lgdbm... " >&6; }
 if ${ac_cv_lib_gdbm_gdbm_open+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -4712,22 +4722,95 @@ fi
 $as_echo "$ac_cv_lib_gdbm_gdbm_open" >&6; }
 if test "x$ac_cv_lib_gdbm_gdbm_open" = xyes; then :
   GDBM_LIB="-lgdbm"
+else
+  GDBM_INCLUDE=""
 fi
 
 
   LDFLAGS="$old_LDFLAGS"
 
 
-    if test "$THIS_PREFIX" != "" && test "$THIS_PREFIX" != "/usr"; then
-      THIS_LFLAGS="$THIS_PREFIX/lib"
-    fi
+      if test -n "${GDBM_LIB}"; then
+
+  if test "x$LDFLAGS" = "x"; then
+    test "x$silent" != "xyes" && echo "  setting LDFLAGS to \""-L${given_gdbm}/lib"\""
+    LDFLAGS=""-L${given_gdbm}/lib""
+  else
+    apr_addto_bugger=""-L${given_gdbm}/lib""
+    for i in $apr_addto_bugger; do
+      apr_addto_duplicate="0"
+      for j in $LDFLAGS; do
+        if test "x$i" = "x$j"; then
+          apr_addto_duplicate="1"
+          break
+        fi
+      done
+      if test $apr_addto_duplicate = "0"; then
+        test "x$silent" != "xyes" && echo "  adding \"$i\" to LDFLAGS"
+        LDFLAGS="$LDFLAGS $i"
+      fi
+    done
+  fi
+
+      else
+         { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: gdbm includes and/or libs not found under \"${given_gdbm}\"" >&5
+$as_echo "$as_me: WARNING: gdbm includes and/or libs not found under \"${given_gdbm}\"" >&2;}
+      fi
+   fi
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for GDBM support" >&5
-$as_echo_n "checking for GDBM support... " >&6; }
+if test -n "${given_gdbm}" -a -z "${GDBM_INCLUDE}"; then
+  gdbm_headers_found=1
+  { $as_echo "$as_me:${as_lineno-$LINENO}: Trying /usr/include/gdbm.h" >&5
+$as_echo "$as_me: Trying /usr/include/gdbm.h" >&6;}
+  ac_fn_c_check_header_mongrel "$LINENO" "gdbm.h" "ac_cv_header_gdbm_h" "$ac_includes_default"
+if test "x$ac_cv_header_gdbm_h" = xyes; then :
+   GDBM_INCLUDE=""
+else
 
-if test "$GDBM_LIB" = "" && test "$given_gdbm" != "no"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gdbm_open in -lgdbm" >&5
+      { $as_echo "$as_me:${as_lineno-$LINENO}: Trying /usr/local/include/gdbm.h" >&5
+$as_echo "$as_me: Trying /usr/local/include/gdbm.h" >&6;}
+      ac_fn_c_check_header_mongrel "$LINENO" "/usr/local/include/gdbm.h" "ac_cv_header__usr_local_include_gdbm_h" "$ac_includes_default"
+if test "x$ac_cv_header__usr_local_include_gdbm_h" = xyes; then :
+   GDBM_INCLUDE="-I/usr/local/include"
+else
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: Trying /opt/local/include/gdbm.h" >&5
+$as_echo "$as_me: Trying /opt/local/include/gdbm.h" >&6;}
+        ac_fn_c_check_header_mongrel "$LINENO" "/opt/local/include/gdbm.h" "ac_cv_header__opt_local_include_gdbm_h" "$ac_includes_default"
+if test "x$ac_cv_header__opt_local_include_gdbm_h" = xyes; then :
+   GDBM_INCLUDE="-I/opt/local/include"
+else
+
+                    { $as_echo "$as_me:${as_lineno-$LINENO}: Trying /usr/pkg/include/gdbm.h" >&5
+$as_echo "$as_me: Trying /usr/pkg/include/gdbm.h" >&6;}
+          ac_fn_c_check_header_mongrel "$LINENO" "/usr/pkg/include/gdbm.h" "ac_cv_header__usr_pkg_include_gdbm_h" "$ac_includes_default"
+if test "x$ac_cv_header__usr_pkg_include_gdbm_h" = xyes; then :
+   GDBM_INCLUDE=""
+else
+
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: gdbm.h not found" >&5
+$as_echo "gdbm.h not found" >&6; }
+	    gdbm_headers_found=0
+
+fi
+
+
+
+fi
+
+
+
+fi
+
+
+
+fi
+
+
+
+  if test ${gdbm_headers_found} -eq 1; then
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gdbm_open in -lgdbm" >&5
 $as_echo_n "checking for gdbm_open in -lgdbm... " >&6; }
 if ${ac_cv_lib_gdbm_gdbm_open+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -4764,78 +4847,22 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_gdbm_gdbm_open" >&5
 $as_echo "$ac_cv_lib_gdbm_gdbm_open" >&6; }
 if test "x$ac_cv_lib_gdbm_gdbm_open" = xyes; then :
-
-$as_echo "#define GDBM 1" >>confdefs.h
- DBM_TYPE=gdbm; GDBM_LIB=-lgdbm
+  DBM_TYPE=gdbm; GDBM_LIB=-lgdbm
 else
   DBM_TYPE=""
 fi
 
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking gdbm library" >&5
-$as_echo_n "checking gdbm library... " >&6; }
-  if test "a$DBM_TYPE" = a; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: none found" >&5
-$as_echo "none found" >&6; }
-    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: No gdbm library found - will limit a few features" >&5
-$as_echo "$as_me: WARNING: No gdbm library found - will limit a few features" >&2;}
-  else
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $DBM_TYPE found" >&5
-$as_echo "$DBM_TYPE found" >&6; }
   fi
-else
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
+
+  unset gdbm_headers_found
 fi
 
-if test "$GDBM_LIB" = "-lgdbm" && test "$GDBM_INCLUDE" = ""; then
-  ac_fn_c_check_header_mongrel "$LINENO" "gdbm.h" "ac_cv_header_gdbm_h" "$ac_includes_default"
-if test "x$ac_cv_header_gdbm_h" = xyes; then :
-   GDBM_INCLUDE=""
-else
-
-      { $as_echo "$as_me:${as_lineno-$LINENO}: result: Try /usr/local/include/gdbm.h" >&5
-$as_echo "Try /usr/local/include/gdbm.h" >&6; }
-      ac_fn_c_check_header_mongrel "$LINENO" "/usr/local/include/gdbm.h" "ac_cv_header__usr_local_include_gdbm_h" "$ac_includes_default"
-if test "x$ac_cv_header__usr_local_include_gdbm_h" = xyes; then :
-   GDBM_INCLUDE="-I/usr/local/include"
-else
-
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: Try /opt/local/include/gdbm.h" >&5
-$as_echo "Try /opt/local/include/gdbm.h" >&6; }
-        ac_fn_c_check_header_mongrel "$LINENO" "/opt/local/include/gdbm.h" "ac_cv_header__opt_local_include_gdbm_h" "$ac_includes_default"
-if test "x$ac_cv_header__opt_local_include_gdbm_h" = xyes; then :
-   GDBM_INCLUDE="-I/opt/local/include"
-else
-
-                    { $as_echo "$as_me:${as_lineno-$LINENO}: result: Try /usr/pkg/include/gdbm.h" >&5
-$as_echo "Try /usr/pkg/include/gdbm.h" >&6; }
-          ac_fn_c_check_header_mongrel "$LINENO" "/usr/pkg/include/gdbm.h" "ac_cv_header__usr_pkg_include_gdbm_h" "$ac_includes_default"
-if test "x$ac_cv_header__usr_pkg_include_gdbm_h" = xyes; then :
-   GDBM_INCLUDE=""
-else
-
-            { $as_echo "$as_me:${as_lineno-$LINENO}: result: Giving up - You need to install gdbm.h somewhere" >&5
-$as_echo "Giving up - You need to install gdbm.h somewhere" >&6; }
-            exit
-
-fi
+if test -n "${GDBM_LIB}"; then
+   $as_echo "#define HAVE_GDBM_H 1" >>confdefs.h
 
 
+$as_echo "#define GDBM 1" >>confdefs.h
 
-fi
-
-
-
-fi
-
-
-
-fi
-
-
-fi
-
-if test -n "$GDBM_LIB"; then
 
   if test "$GDBM_INCLUDE" != "/usr/include"; then
 
@@ -4863,11 +4890,11 @@ if test -n "$GDBM_LIB"; then
 
   fi
 
-    $as_echo "#define HAVE_GDBM_H 1" >>confdefs.h
-
-    EXTRA_LIBS="$EXTRA_LIBS $GDBM_LIB"
+   EXTRA_LIBS="$EXTRA_LIBS $GDBM_LIB"
+else
+   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: hypermail's usegdbm config option won't be available unless you install libgdbm-dev" >&5
+$as_echo "$as_me: WARNING: hypermail's usegdbm config option won't be available unless you install libgdbm-dev" >&2;}
 fi
-
 
 
 # Check whether --enable-i18n was given.

@@ -272,68 +272,79 @@ ifelse($3,,[
   ])
 ])
 
+dnl
+dnl gdbm check
+dnl
+
 AC_ARG_WITH(gdbm,
    AS_HELP_STRING([--with-gdbm=[DIR]],
                   [Include GDBM support]),
    [ given_gdbm=$withval])
 
-if test "$given_gdbm" != "no"; then
-    for i in /usr/local /usr $withval; do
-      if test -f "$i/include/gdbm.h"; then
-        GDBM_INCLUDE="$i/include"
-        THIS_PREFIX="$i"
+if test "${given_gdbm}" = "no"; then
+   given_gdbm=""
+fi
+
+dnl user-defined GDBM local install
+if test -n "${given_gdbm}" -a "${given_gdbm}" != "yes" -a "${given_gdbm}" != "/usr"; then
+   AC_MSG_CHECKING(for "${given_gdbm}/include/gdbm.h")
+   if test -f "${given_gdbm}/include/gdbm.h"; then
+      GDBM_INCLUDE="${given_gdbm}/include"
+      AC_MSG_RESULT(yes)
+   else
+      AC_MSG_RESULT(no)
+   fi
+   
+   if test -n "${GDBM_INCLUDE}"; then
+      unset ac_cv_lib_gdbm_gdbm_open
+      AC_TEMP_LDFLAGS(-L${given_gdbm}/lib,[
+      AC_CHECK_LIB(gdbm, gdbm_open,[GDBM_LIB="-lgdbm"],[GDBM_INCLUDE=""])
+      ])
+      
+      if test -n "${GDBM_LIB}"; then
+      	 APR_ADDTO(LDFLAGS, "-L${given_gdbm}/lib")
+      else
+         AC_MSG_WARN(gdbm includes and/or libs not found under "${given_gdbm}")
       fi
-    done
-
-    unset ac_cv_lib_gdbm_gdbm_open
-    AC_TEMP_LDFLAGS(-L$THIS_PREFIX/lib,[
-       AC_CHECK_LIB(gdbm, gdbm_open, [GDBM_LIB="-lgdbm"])
-    ])
-
-    if test "$THIS_PREFIX" != "" && test "$THIS_PREFIX" != "/usr"; then
-      THIS_LFLAGS="$THIS_PREFIX/lib"
-    fi
+   fi
 fi
 
-AC_MSG_CHECKING(for GDBM support)
-
-if test "$GDBM_LIB" = "" && test "$given_gdbm" != "no"; then
-  AC_CHECK_LIB(gdbm, gdbm_open,[AC_DEFINE(GDBM,1, [Whether you have GDBM]) DBM_TYPE=gdbm; GDBM_LIB=-lgdbm],
-     [DBM_TYPE=""])
-  AC_MSG_CHECKING([gdbm library])
-  if test "a$DBM_TYPE" = a; then
-    AC_MSG_RESULT(none found)
-    AC_MSG_WARN(No gdbm library found - will limit a few features)
-  else
-    AC_MSG_RESULT($DBM_TYPE found)
-  fi
-else
-    AC_MSG_RESULT(no)
-fi
-
-if test "$GDBM_LIB" = "-lgdbm" && test "$GDBM_INCLUDE" = ""; then
+dnl if the user chose the system gdbm or alternative if autoconf found
+dnl issues with the path the user gave to a local gdbm
+if test -n "${given_gdbm}" -a -z "${GDBM_INCLUDE}"; then
+  gdbm_headers_found=1
+  AC_MSG_NOTICE(Trying /usr/include/gdbm.h)
   AC_CHECK_HEADER(gdbm.h, [ GDBM_INCLUDE="" ], [ 
-      AC_MSG_RESULT(Try /usr/local/include/gdbm.h)
+      AC_MSG_NOTICE(Trying /usr/local/include/gdbm.h)
       AC_CHECK_HEADER(/usr/local/include/gdbm.h, [ GDBM_INCLUDE="-I/usr/local/include" ],[
-        AC_MSG_RESULT(Try /opt/local/include/gdbm.h)
+        AC_MSG_NOTICE(Trying /opt/local/include/gdbm.h)
         AC_CHECK_HEADER(/opt/local/include/gdbm.h, [ GDBM_INCLUDE="-I/opt/local/include" ],[
           dnl if in /usr/pkg/include, do not add anything.  See above.
-          AC_MSG_RESULT(Try /usr/pkg/include/gdbm.h)
+          AC_MSG_NOTICE(Trying /usr/pkg/include/gdbm.h)
           AC_CHECK_HEADER(/usr/pkg/include/gdbm.h, [ GDBM_INCLUDE="" ],[
-            AC_MSG_RESULT([Giving up - You need to install gdbm.h somewhere])
-            exit
+            AC_MSG_RESULT([gdbm.h not found])
+	    gdbm_headers_found=0
           ])
         ])
       ])  
-    ])
+  ])
+
+  if test ${gdbm_headers_found} -eq 1; then
+     AC_CHECK_LIB(gdbm, gdbm_open,[DBM_TYPE=gdbm; GDBM_LIB=-lgdbm],
+     [DBM_TYPE=""])
+  fi
+
+  unset gdbm_headers_found
 fi
 
-if test -n "$GDBM_LIB"; then
-    AC_ADD_INCLUDE($GDBM_INCLUDE)
-    AC_DEFINE(HAVE_GDBM_H)
-    EXTRA_LIBS="$EXTRA_LIBS $GDBM_LIB"
+if test -n "${GDBM_LIB}"; then
+   AC_DEFINE(HAVE_GDBM_H)
+   AC_DEFINE(GDBM,1, [Whether you have GDBM])
+   AC_ADD_INCLUDE($GDBM_INCLUDE)
+   EXTRA_LIBS="$EXTRA_LIBS $GDBM_LIB"
+else
+   AC_MSG_WARN(hypermail's usegdbm config option won't be available unless you install libgdbm-dev)
 fi
-
 
 dnl
 dnl iconv check

@@ -6,6 +6,10 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
+	* configure.ac, configure
+	Rewrote the rules for supporting user-defined paths / system paths for
+	the gdbm library
+
 	* removed acconfig.h from FILES and from the repository.
 	Not needed anymore by autoconf.
 
@@ -17,7 +21,7 @@ HYPERMAIL VERSION 3.0.0
 	Added protection against multiple includes of .h files
 
 	* src/{hypermail.c, setup.c}, docs/{hypermail.html, hypermail.1,
-	hmrc.html, hmrc.4}
+	  hmrc.html, hmrc.4}
 	Removed the -T option from the doc, the hypermail -h page and other
 	places where the option was mentioned. This option
 	was deprecated and removed in 2.2.25 but it was still documented.
