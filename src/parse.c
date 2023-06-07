@@ -1049,7 +1049,7 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 #else
                 int len;
                 
-		len = base64_decode_string(ptr, output)
+		len = base64_decode_string(ptr, output);
 		output += len;
 #endif
 	    }
