@@ -1765,18 +1765,21 @@ void message_node_dump(struct message_node *root_message_node)
           header_detected = FALSE;
           while (bp) {
               char *line;
-              size_t len;
               
               line = bp->line;
               if (!header_detected
                   && (line[0] == '\n' || (line[0] == '\r' && line[1] == '\n'))) {
                   header_detected = TRUE;
               }
-              
+
+#ifdef HAVE_ICONV
               /* don't start the convertion until we hit the first header */
               if (header_detected && convert_to_utf8) {
+                  size_t len;
+                  
                   line = i18n_convstring(bp->line, charset, "UTF-8", &len);
               }
+#endif
 #ifdef HAVE_PCRE2
               /* need to be able to only output 40 utf-8 chars here */
               rc = pcre2_match(

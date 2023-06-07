@@ -1033,8 +1033,8 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 	    }
 	    else if (!strcasecmp("b", encoding)) {
 		/* base64 decoding */
-	        size_t charsetlen;
 #ifdef HAVE_ICONV
+	        size_t charsetlen;
                 size_t tmplen;
 		char *output2;
                 

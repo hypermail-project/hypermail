@@ -64,8 +64,7 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
     register char *aptr;
     char c;
     char *ptr,*tmpptr=NULL, *tmp_oea=NULL;
-    size_t tmplen;
-
+    
     aptr = format;
 
     while ((c = *aptr++)) {
@@ -94,6 +93,8 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 	    case 'A':		/* %e - email address of message author */
 		if (email && name) {
 #ifdef HAVE_ICONV
+                  size_t tmplen;
+                    
 		  tmpptr=i18n_convstring(name,"UTF-8",charset,&tmplen);
 		  cp = convchars(tmpptr,charset);
 		  if(tmpptr)
@@ -198,7 +199,10 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 		free(ptr);
 		continue;
 	    case 'S':		/* %s - Subject of message or Index Title */
+            {
 #ifdef HAVE_ICONV
+                size_t tmplen;
+                
 	        tmpptr=i18n_convstring(subject,"UTF-8",charset, &tmplen);
 		fprintf(fp, "<meta name=\"Subject\" content=\"%s\" />",
 			cp = convchars(tmpptr,charset));
@@ -208,6 +212,7 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 #endif
 		free(cp);
 		continue;
+            }
 	    case 't':
 	      {
 		struct emailinfo *ep;

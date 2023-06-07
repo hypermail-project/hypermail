@@ -1905,8 +1905,6 @@ struct body *print_headers_rfc822_att(FILE *fp, struct emailinfo *email, struct 
     bool hasdate = FALSE;
     bool hasfrom = FALSE;
     bool hassubject = FALSE;
-
-    size_t tmplen;
     char *tmpsubject = NULL;
     char *tmpname = NULL;
     
@@ -1957,10 +1955,14 @@ struct body *print_headers_rfc822_att(FILE *fp, struct emailinfo *email, struct 
     fprintf(fp, "<ul class=\"headers\" aria-label=\"message headers\">\n");
 
 #ifdef HAVE_ICONV
-    if (subject) 
+    if (subject) {
+        size_t tmplen;
+        
         tmpsubject = i18n_convstring( subject, "UTF-8", email->charset, &tmplen);
+    }
     if (namep) {
         char *tmptmpname;
+        size_t tmplen;
         
         tmptmpname = i18n_convstring(namep, "UTF-8" ,email->charset, &tmplen); 
         tmpname = convchars(tmptmpname, "utf-8");
