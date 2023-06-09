@@ -24,16 +24,15 @@
 ** All the nasty string functions live here.
 */
 
-#include <iconv.h>
-#include <errno.h>
-#include <ctype.h>
-#include <sys/stat.h>
-
 #include "hypermail.h"
 #include "setup.h"
 #include "parse.h"
 #include "uconvert.h"
 #include "utf8.h"
+
+#ifdef HAVE_ICONV_H
+#include <iconv.h>
+#endif
 
 #define HAVE_PCRE2
 #ifdef HAVE_PCRE2
@@ -188,10 +187,9 @@ char *unobfuscate_email_address(char *address){
   RETURN_PUSH(buf);
 }
 
-/* I18N hack */
-#ifdef HAVE_ICONV_H
-#include <iconv.h>
-#endif
+/*
+** I18N hack 
+*/
 
 #ifdef HAVE_ICONV
 struct i18n_alt_charset_table {

@@ -21,7 +21,6 @@
 */
 
 #include <fcntl.h>
-#include <sys/stat.h>
 
 #include "hypermail.h"
 #include "setup.h"
