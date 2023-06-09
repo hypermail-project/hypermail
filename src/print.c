@@ -21,7 +21,6 @@
 */
 
 #include <fcntl.h>
-#include <sys/stat.h>
 
 #include "hypermail.h"
 #include "dmatch.h"
@@ -1957,14 +1956,16 @@ struct body *print_headers_rfc822_att(FILE *fp, struct emailinfo *email, struct 
 #ifdef HAVE_ICONV
     if (subject) {
         size_t tmplen;
-        
-        tmpsubject = i18n_convstring( subject, "UTF-8", email->charset, &tmplen);
+        char *tmptmpsubject;
+        tmptmpsubject = i18n_convstring( subject, "UTF-8", email->charset, &tmplen);
+        tmpsubject = convchars(tmptmpsubject, "utf-8");
+        free(tmptmpsubject);
     }
     if (namep) {
         char *tmptmpname;
         size_t tmplen;
         
-        tmptmpname = i18n_convstring(namep, "UTF-8" ,email->charset, &tmplen); 
+        tmptmpname = i18n_convstring(namep, "UTF-8", email->charset, &tmplen); 
         tmpname = convchars(tmptmpname, "utf-8");
         free(tmptmpname);
     }
