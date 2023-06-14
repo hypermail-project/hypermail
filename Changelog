@@ -6,6 +6,12 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
+	* parse.c
+	If a multipart/mixed attachment had a Content-Disposition header
+	that didn't give a filename, the parser wasn't checking if the
+	Content-Type header had a name attribute it could use for the
+	attachment file.
+
 	* print.c
 	Although description strings for attachments are stored in UTF-8,
 	they were not being converted to the prefered charset for message

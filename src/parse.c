@@ -1612,6 +1612,37 @@ static void _extract_attachname(char *np, char *attachname, size_t attachname_si
 }
 
 /*
+** if the attachname that is given is empty, searchs the Content-Type:
+** header value for a name attribute and, if found, copies it to
+** attachname; If in this case, the Content-Type: header value doesn't
+** have a name attribute, it clears the attachname.
+*/
+static void _control_attachname(char *content_type, char *attachname, size_t attachname_size)
+{
+    /* only use the Content-Type name attribute to get 
+       the filename if Content-Disposition didn't 
+       provide a filename */
+    char *fname;
+    
+    if (*attachname == '\0') {
+        fname = strcasestr(content_type, "name=");
+        if (fname) {
+            fname += 5;
+            _extract_attachname(fname, attachname, sizeof(attachname));
+#ifdef FACTORIZE_ATTACHNAME                                
+            if ('\"' == *fname)
+                fname++;
+            sscanf(fname, "%128[^\"]", attachname);
+            safe_filename(attachname);
+#endif /* FACTORIZE_ATTACHNAME */            
+        }
+        else {
+            attachname[0] = '\0';	/* just clear it */
+        }
+    }
+}
+
+/*
 ** Parsing...the heart of Hypermail!
 ** This loads in the articles from stdin or a mailbox, adding the right
 ** field variables to the right structures. If readone is set, it will
@@ -2641,6 +2672,16 @@ int parsemail(char *mbox,	/* file name */
                            other things here? 
                            what to do with content == CONTENT_BINARY?
                         */
+
+                        {
+                            /* don't like calling this function in two parts,
+                               but we need to fix a bug. Will have to refactorize how
+                               to handle attach_force when we revisit the code */
+                            
+                            /* if attachname is empty, copy the value of the name attribute,
+                               if given in the Content-Type header */
+                            _control_attachname(content_type_ptr, attachname, sizeof(attachname));
+                        }
                         break;
                     }
 #endif
@@ -2706,37 +2747,17 @@ int parsemail(char *mbox,	/* file name */
                         /*
                          * This is not a multipart and not text
                          */
-                        char *fname = NULL;	/* attachment filename */
                         
                         /*
                          * only do anything here if we're not
                          * ignoring this content
                          */
                         if (CONTENT_IGNORE != content) {
-
                             /* only use the Content-Type name attribute to get 
                                the filename if Content-Disposition didn't 
                                provide a filename */
-                            if (*attachname == '\0') {
-                                fname = strcasestr(content_type_ptr, "name=");
-                                if (fname) {
-                                    fname += 5;
-                                    _extract_attachname(fname, attachname, sizeof(attachname));
-#ifdef FACTORIZE_ATTACHNAME                                
-
-                                    if ('\"' == *fname)
-                                        fname++;
-                                    sscanf(fname, "%128[^\"]", attachname);
-                                    safe_filename(attachname);
-#endif /* FACTORIZE_ATTACHNAME */
-                                }
-                                else {
-                                    attachname[0] = '\0';	/* just clear it */
-                                }
-                            }
-                            
+                            _control_attachname(content_type_ptr, attachname, sizeof(attachname));
                             file_created = MAKE_FILE;	/* please make one */
-                            
                             content = CONTENT_BINARY;	/* uknown turns into binary */
                         }
                         break;
