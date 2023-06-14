@@ -7,6 +7,11 @@ HYPERMAIL VERSION 3.0.0
 
 2023-00-00 Jose Kahan
 	* print.c
+	Although description strings for attachments are stored in UTF-8,
+	they were not being converted to the prefered charset for message
+	files, which lead to invalid chars appearing in messages
+
+	* print.c
 	Special chars in subjects in forwarded messages were not being
 	escaped
 

@@ -1385,7 +1385,8 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
     int quote_num = 0;
     int quoted_percent;
     bool replace_quoted;
-
+    bool prefered_charset_is_utf8;
+    
     /* used to generate unique ids for each forwarded-message
        (message/rfc822) section */
     int forwarded_message_count = 0; 
@@ -1407,6 +1408,12 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
     if (set_showprogress && replace_quoted)
         printf("\nMessage %d quoted text (%d %%) replaced by links\n", msgnum, quoted_percent);
 
+    if (!strncasecmp (email->charset, "UTF-8", 5)) {
+        prefered_charset_is_utf8 = TRUE;
+    } else {
+        prefered_charset_is_utf8 = FALSE;
+    }
+    
     /* for deleted messages, print a specific message, either default
     ** or configuration given */
     if (email->is_deleted && set_delete_level != DELETE_LEAVES_TEXT && !(email->is_deleted == 2 && set_delete_level == DELETE_LEAVES_EXPIRED_TEXT)) {
@@ -1640,6 +1647,19 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
                         attachment_link_open = TRUE;
                     }
                 }
+                
+                /* attachment descriptions and comments are coded in utf-8.
+                   If the prefered charset for the message is not utf-8,
+                   we convert the line before printing it */
+#ifdef HAVE_ICONV
+                if (!prefered_charset_is_utf8) {
+                    size_t tmplen;
+                    char *tmpline = i18n_convstring( bp->line, "UTF-8", email->charset, &tmplen);
+
+                    free(bp->line);
+                    bp->line = tmpline;
+                }
+#endif
             }
 
             else if (!inlinehtml_open) {
