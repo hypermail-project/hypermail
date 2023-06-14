@@ -258,6 +258,11 @@ static char *i18n_canonicalize_charset(char *cs)
 }
 
 
+/*
+** converts a string from a charset to another charset
+** returns the converted string and the len of the string
+** caller must free returned string 
+*/
 char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *len){
 
   size_t origlen,strleft,bufleft;
