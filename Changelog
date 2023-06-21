@@ -6,18 +6,23 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
-	* parse.c
+	* src/{parse.c, struct.c, struct.h}
+	In complex messages where a multipart/mixed had a message/rfc822 part,
+	with the later having multipart/mixed parts, parsing the message could
+	fail if there were one or more missing boundary end separators.
+
+	* src/parse.c
 	If a multipart/mixed attachment had a Content-Disposition header
 	that didn't give a filename, the parser wasn't checking if the
 	Content-Type header had a name attribute it could use for the
 	attachment file.
 
-	* print.c
+	* src/print.c
 	Although description strings for attachments are stored in UTF-8,
 	they were not being converted to the prefered charset for message
 	files, which lead to invalid chars appearing in messages
 
-	* print.c
+	* src/print.c
 	Special chars in subjects in forwarded messages were not being
 	escaped
 

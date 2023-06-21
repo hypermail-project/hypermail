@@ -1123,6 +1123,26 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 ** RFC 3676 format=flowed parsing routines
 */
 
+/* 
+** returns true if a string line is s signature start 
+** rfc3676 gives "-- \n" and "-- \r\n" as signatures. 
+** We also add "--\n" to this list, as mutt allows it
+*/
+static int is_sig_separator (const char *line)
+{
+    bool rv;
+    
+    if (!strcmp (line, "-- \n")
+        || !strcmp (line, "-- \r\n")
+        || !strcmp (line, "--\n")) {
+        rv = TRUE;
+    } else {
+        rv = FALSE;
+    }
+
+    return rv;
+}
+
 /* get_quote_level returns the number of quotes in a line,
    following the RFC 3676 section 4.5 criteria.
 */
@@ -1257,12 +1277,8 @@ static bool rfc3676_handler (char *line, bool delsp_flag, int *quotelevel,
   ** signature detection
   */
 
-  /* Is it a signature separator? */
-  /* rfc3676 gives "-- \n" and "--\r\n" as signatures. We also add "--\n" to this list,
-     as mutt allows it */
-  if (!strcmp (line + tmp_padding, "-- \n")
-      || !strcmp (line + tmp_padding, "-- \r\n")
-      || !strcmp (line + tmp_padding, "--\n")) {
+  /* Is it an RFC3676  signature separator? */
+  if (is_sig_separator (line + tmp_padding)) {
       /* yes, stop f=f */
       *continue_prev_flow_flag = FALSE;
       sig_sep = TRUE;
@@ -2545,7 +2561,7 @@ int parsemail(char *mbox,	/* file name */
                             */
                             if (!strcasecmp(type, "text/html")) {
 #if DEBUG_PARSE
-                                fprintf(stderr, "Discarding apparently equivalent text//html alternative\n");
+                                fprintf(stderr, "Discarding apparently equivalent text/html alternative\n");
 #endif
                                 content = CONTENT_IGNORE;
                                 break;
@@ -3446,12 +3462,7 @@ int parsemail(char *mbox,	/* file name */
 #if DEBUG_PARSE
 			printf("hit %s\n", line);
 #endif
-                        /* make sure the boundaryp stack's top corresponds
-                           to the boundary we're processing. This is to take
-                           into account missing end boundaries */
-                        boundary_stack_pop_to_id(&boundp, line);
-                        /* @@@ restore context for this boundp here */
-                        
+
                         if (bp) {
                             /* store the current attachment and prepare for
                                the new one */
@@ -3502,6 +3513,43 @@ int parsemail(char *mbox,	/* file name */
                             bp = lp = headp = NULL;
                         }
 
+                        /* make sure the boundaryp stack's top corresponds
+                           to the boundary we're processing. This is to take
+                           into account missing end boundaries */
+                        if ( ! boundary_stack_top_has_id(boundp, line) ) {
+                            boundary_stack_pop_to_id(&boundp, line);
+                            /* move the current_message_node pointer */
+                            current_message_node = message_node_get_parent_with_boundid(current_message_node, boundp);
+                            /* restore context for this boundp here (hate that this
+                               restore context code is duplicated) */
+                            if (boundp) {
+                                parse_multipart_alternative_force_save_alts = boundp->parse_multipart_alternative_force_save_alts;
+                                applemail_old_set_save_alts = boundp->applemail_old_set_save_alts;
+                                local_set_save_alts = boundp->set_save_alts;
+                                
+                                if (boundp->alternativeparser) {
+                                    alternativeparser = boundp->alternativeparser;
+                                    alternative_weight = boundp->alternative_weight;
+                                    alternative_message_node_created =
+                                        boundp->alternative_message_node_created;
+                                    strcpy(alternative_file, boundp->alternative_file);
+                                    strcpy(alternative_lastfile, boundp->alternative_lastfile);
+                                    strcpy(last_alternative_type, boundp->last_alternative_type);
+                                    alternative_lp = boundp->alternative_lp;
+                                    alternative_bp = boundp->alternative_bp;
+                                    current_alt_message_node = boundp->current_alt_message_node;
+                                    root_alt_message_node = boundp->root_alt_message_node;
+                                    boundp->alternative_file[0] = '\0';
+                                    boundp->alternative_lastfile[0] = '\0';
+                                    boundp->last_alternative_type[0] = '\0';
+                                    boundp->current_alt_message_node = NULL;
+                                    boundp->root_alt_message_node = NULL;
+                                    boundp->alternativeparser = FALSE;
+                                    boundp->alternative_message_node_created = FALSE;
+                                }
+                            }                            
+                        }
+                        
                         if (is_end_boundary(boundp->boundary_id, line)) {
                             isinheader = 0;	/* no header, the ending boundary
                                                    can't have any describing

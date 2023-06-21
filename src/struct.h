@@ -67,6 +67,7 @@ struct message_node *message_node_mimetest(struct message_node *,
                                            char *, char *,
                                            char, message_node_skip_t);
 struct message_node *message_node_get_parent(struct message_node *);
+struct message_node *message_node_get_parent_with_boundid(struct message_node *, struct boundary_stack *);
 void message_node_append_child (struct message_node *, struct message_node *);
 void message_node_attachment_list (struct body **, struct body **, struct message_node *);
 struct body *message_node_flatten(struct body **, struct message_node *);
@@ -96,9 +97,11 @@ struct header *addheader(struct header *, struct emailinfo *, int, int);
 struct boundary_stack *boundary_stack_push(struct boundary_stack *, char *);
 struct boundary_stack *boundary_stack_pop(struct boundary_stack *);
 int boundary_stack_free(struct boundary_stack *);
-char *boundary_stack_has_id(struct boundary_stack *, const char *boundary_id);
-bool boundary_stack_pop_to_id(struct boundary_stack **boundaryp, const char *boundary_id);
-    
+char *boundary_stack_has_id(struct boundary_stack *, const char *);
+bool boundary_stack_pop_to_id(struct boundary_stack **boundaryp, const char *);
+char *boundary_stack_peek_id(struct boundary_stack *);
+bool boundary_stack_top_has_id(struct boundary_stack *, const char *);
+
 struct hm_stack *multipart_stack_push(struct hm_stack *, char *);
 struct hm_stack *multipart_stack_pop(struct hm_stack *);
 int multipart_stack_free(struct hm_stack *);

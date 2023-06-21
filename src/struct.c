@@ -739,6 +739,31 @@ struct boundary_stack *boundary_stack_pop(struct boundary_stack *bnd)
     return bnd;		/* the new "active" boundary */
 }
 
+char *boundary_stack_peek_id(struct boundary_stack *bnd)
+{
+    if (!bnd)
+        return NULL;
+
+    return bnd->boundary_id;
+}
+
+bool boundary_stack_top_has_id(struct boundary_stack *bnd, const char *boundary_id)
+{
+    bool rv = FALSE;
+    char *stripped_boundary_id;
+
+    stripped_boundary_id = strip_boundary_id(boundary_id, 0);
+    if (stripped_boundary_id) {
+        if (bnd
+            && !strcasecmp (bnd->boundary_id, stripped_boundary_id)) {
+            rv = TRUE;
+        }
+        free(stripped_boundary_id);
+    }
+
+    return rv;
+}
+
 /*
 ** Frees the memory allocated to a boundary structure/
 ** Returns the number of elements freed.
@@ -817,7 +842,7 @@ char *boundary_stack_has_id(struct boundary_stack *boundaryp, const char *bounda
 bool boundary_stack_pop_to_id(struct boundary_stack **boundaryp, const char *boundary_id)
 {
     struct boundary_stack *s = *boundaryp;
-    char *stripped_boundary_id;;
+    char *stripped_boundary_id;
     
     if (!boundary_stack_has_id(s, boundary_id)) {
         return FALSE;
@@ -1271,6 +1296,22 @@ struct message_node *message_node_get_parent(struct message_node *current_messag
     return rv;
 }
 
+/* this is a kludge work-around for the way we are handling message/rfc822 */
+struct message_node *message_node_get_parent_with_boundid(struct message_node *current_message_node, struct boundary_stack *boundp)
+{
+    struct message_node *cursor = current_message_node;
+    char *boundary_id = boundary_stack_peek_id(boundp);
+        
+    while (cursor->parent) {
+        if (!strcasecmp (cursor->boundary_part, boundary_id)) {
+            break;
+        }
+        cursor = cursor->parent;        
+    }
+   
+    return cursor;
+}
+
 /*
 ** append a child to a parent node; if there are already children in the list,
 ** it will append it to the last one
@@ -1350,7 +1391,7 @@ static struct hm_stack *stack_attachment_list_pop(struct hm_stack *s,
     *attachment_bp = ((attachment_list_stack *)p)->attachment_bp;
     *attachment_lp = ((attachment_list_stack *)p)->attachment_lp;
 
-    free(p);
+    free((attachment_list_stack *)p);
 
     return s;
 }
@@ -1367,7 +1408,7 @@ static message_node_skip_t message_node_skip_adjust(struct message_node *root)
     bool rv = MN_SKIP_ALL;
     struct message_node *cursor = root;
     bool found_stored_attachment = FALSE;
-
+    
     /* JK this is an ugly hack. I'd prefer doing this in parsemail
        when a message/rfc822 body content is a stored attachment,
        we want to keep both the message/rfc822 headers as well as
@@ -1376,7 +1417,13 @@ static message_node_skip_t message_node_skip_adjust(struct message_node *root)
         && cursor->attachment_rfc822) {
         return MN_KEEP_WITH_STORED_ATTACHMENT;
     }
-        
+
+    /* always display message/rfc822, regardless of its attachments
+       being stored or inline */
+    if (cursor->attachment_rfc822) {
+        return cursor->skip;
+    }
+
     /* not a multipart node, return the current skip value */
     if (!cursor->boundary_type
         || strncasecmp(cursor->content_type, "multipart/", 10)) {
@@ -1397,7 +1444,6 @@ static message_node_skip_t message_node_skip_adjust(struct message_node *root)
     }
     
     cursor = cursor->attachment_child;
-    
     while (cursor) {
 
         /* at least one of its children has MN_KEEP, we can stop */
