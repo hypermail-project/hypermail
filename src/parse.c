@@ -1644,7 +1644,7 @@ static void _control_attachname(char *content_type, char *attachname, size_t att
         fname = strcasestr(content_type, "name=");
         if (fname) {
             fname += 5;
-            _extract_attachname(fname, attachname, sizeof(attachname));
+            _extract_attachname(fname, attachname, attachname_size);
 #ifdef FACTORIZE_ATTACHNAME                                
             if ('\"' == *fname)
                 fname++;
