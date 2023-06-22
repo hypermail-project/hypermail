@@ -2659,12 +2659,24 @@ void writearticles(int startnum, int maxnum)
 	    }
 #endif
 	    ++num;
+#ifdef HAVE_ICONV
+            if (localsubject)
+                free(localsubject);
+            if (localname)
+                free(localname);
+#endif            
 	    free(filename);
 	    continue;
 	}
 	else if (!newfile && !set_overwrite && !has_new_replies(email)
 		 && !(email->is_deleted && set_delete_msgnum)) {
 	    num++;
+#ifdef HAVE_ICONV
+            if (localsubject)
+                free(localsubject);
+            if (localname)
+                free(localname);
+#endif                        
 	    free(filename);
 	    continue;
 	}
