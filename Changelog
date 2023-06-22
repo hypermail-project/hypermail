@@ -6,6 +6,12 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
+	* src/parse.c
+	When parse_old_html()called with cmp_msgid to check if the first
+	message in the archive corresponds to the first one that is added,
+	the comparition failed if the msgid had characters that had to be
+	escaped inside xml comments.
+
 	* src/{parse.c, struct.c, struct.h}
 	In complex messages where a multipart/mixed had a message/rfc822 part,
 	with the later having multipart/mixed parts, parsing the message could

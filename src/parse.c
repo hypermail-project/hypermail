@@ -4794,8 +4794,15 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
 	    emp = addhash(num, date ? date : NODATE,
 			  name, email, msgid, subject, inreply,
 			  fromdate, charset, isodate, isofromdate, bp);
-	if (cmp_msgid)
-	    msgids_are_same = !strcmp(ep->msgid, msgid);
+	if (cmp_msgid) {
+            /* at this point, special xml chars have been escaped in msgid,
+               but not in ep->msgid. We temporarily unconvert them so that we
+               can do the comparition */
+            char *tmpmsgid = unconvchars(msgid);
+            
+	    msgids_are_same = !strcmp(ep->msgid, tmpmsgid);
+            free(tmpmsgid);
+        }
 	if (emp != NULL && replylist_tmp != NULL) {
 	    if (do_insert) {
 	        emp->exp_time = exp_time;
