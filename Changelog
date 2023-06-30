@@ -6,8 +6,14 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
+	* src/{parse.c, setup.c, setup.h}
+	New configuration option ignore_content_disposition to be able to
+	ignore the Content-Disposition header for some Mime-Types. This is
+	particularly useful for old Apple Mail messages that associated
+	Content-Disposition: attachment with multipart/appledouble.
+
 	* src/parse.c
-	When parse_old_html()called with cmp_msgid to check if the first
+	When parse_old_html() was called with cmp_msgid to check if the first
 	message in the archive corresponds to the first one that is added,
 	the comparition failed if the msgid had characters that had to be
 	escaped inside xml comments.

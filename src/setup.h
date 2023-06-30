@@ -168,6 +168,7 @@ extern struct hmlist *set_filter_require;
 extern struct hmlist *set_filter_out_full_body;
 extern struct hmlist *set_filter_require_full_body;
 extern struct hmlist *set_applemail_ua_value;
+extern struct hmlist *set_ignore_content_disposition;
 
 extern bool set_format_flowed;
 extern bool set_format_flowed_disable_quoted;

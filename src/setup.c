@@ -156,6 +156,7 @@ struct hmlist *set_filter_require = NULL;
 struct hmlist *set_filter_out_full_body = NULL;
 struct hmlist *set_filter_require_full_body = NULL;
 struct hmlist *set_applemail_ua_value;
+struct hmlist *set_ignore_content_disposition;
 
 bool set_format_flowed;
 bool set_format_flowed_disable_quoted;
@@ -585,8 +586,16 @@ struct Config cfg[] = {
      "# $BINARY - ignore all types that would be stored as separate files.\n"
      "# $NONPLAIN - ignore all types not treated as text/plain, and all\n"
      "# $BINARY types.\n"
-     "# Note: the behavior of these may be affected by the inlinehtml option.\n", FALSE},
+     "# Note: the behavior of these may be affected by the inlinehtml\n"
+     "# option.\n", FALSE},
 
+    {"ignore_content_disposition", &set_ignore_content_disposition, NULL, CFG_LIST,
+     "# Set to the list of MIME types/subtypes for which you want to ignore\n"
+     "# the Content-Disposition: header.\n"
+     "# This is useful if you're dealing with old Apple Mail messages as they\n"
+     "# were wrongly using Content-Disposition: attachment for\n"
+     "# multipart/appledouble (Apple fixed this later on).\n", FALSE},
+    
     {"applemail_mimehack", &set_applemail_mimehack, BFALSE, CFG_SWITCH,
      "# Set to On to process Apple Mail MIME multipart/alternative\n"
      "# as if the save_alts was enabled. If the message contains only\n"

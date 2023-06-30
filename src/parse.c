@@ -2424,6 +2424,12 @@ int parsemail(char *mbox,	/* file name */
 			char *fname;
 			char *np;
 
+                        head->parsedheader = TRUE;
+
+                        if (inlist(set_ignore_content_disposition, type)) {
+                            continue;
+                        }
+                        
 			while (*ptr && isspace(*ptr))
 			    ptr++;
 			if (!strncasecmp(ptr, "attachment", 10)
@@ -2469,7 +2475,6 @@ int parsemail(char *mbox,	/* file name */
 			    }
 			    file_created = MAKE_FILE;	/* please make one */
 			} /* inline */
-                        head->parsedheader = TRUE;
                         
                     } /* Content-Disposition: */
 		    else if (!strncasecmp(head->line, "Content-Base:", 13)) {

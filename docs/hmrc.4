@@ -985,6 +985,14 @@ do anything with.  They are quietly ignored.  They can be listed
 individually on multiple lines or comma or space separated on a 
 single line.
 .TP
+.B ignore_content_disposition = types_of_MIME_attachments
+This is the list of MIME attachment types for which you wish to ignore any
+associated
+.B Content-Disposition
+header.  They are quietly ignored.  They can be
+listed individually on multiple lines or comma or space separated on a single
+line.
+.TP
 .B applemail_mimehack = [ 0 | 1]
 In a multipart/alternative message, Apple Mail (as of June/2018)
 is only adding attachments to the text/html related part. Set this

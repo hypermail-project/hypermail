@@ -217,7 +217,9 @@ to attachments</li>
 <li><a href="#prefered_types">prefered_types</a> choose from
 multipart/mixed</li>
 <li><a href="#ignore_types">ignore_types</a> discard text/x-vcard,
-etc</li>
+etc.</li>
+<li><a href="#ignore_content_disposition">ignore_content_disposition_types</a>
+list of MIME types for which you want to ignore the associated Content-Disposition header (<strong>NEW IN 3.0</strong>)</li>
 <li><a href="#attachmentlink">attachmentlink</a> control
 filenames</li>
 <li><a href="#applemail_mimehack">applemail_mimehack</a> process
@@ -307,7 +309,7 @@ markup body for deleted messages (by reasons other than spam)</li>
 "#htmlmessage_deleted_spam">htmlmessage_deleted_spam</a> custom
 markup body for deleted messages (by spam reasons)</li>
 <li><a href="#progress">progress</a> verbosity</li>
-<li><a href="#warn_deprecated_options">warn_deprecated_options</a> warn if you are using deprecated config options</a> (<strong>NEW IN 3.0</strong>)</li>
+<li><a href="#warn_deprecated_options">warn_deprecated_options></a> warn if you are using deprecated config options (<strong>NEW IN 3.0</strong>)</li>
 <li><a href="#warn_suppressions">warn_suppressions</a> warn about
 ignored messages</li>
 <li><a href="#uselock">uselock</a> serialize</li>
@@ -1049,6 +1051,20 @@ application/x-msdownload<br />
 <em>ignore_types = text/x-vcard<br />
 ignore_types = application/x-msdownload</em></p>
 </dd>
+<dt id="ignore_content_disposition">ignore_content_disposition = indicate types
+ of attachments for which you want to ignore the Content-Disposition
+header</dt>
+<dd>This is the list of MIME attachment types for which you do not want
+to honor an associated Content-Disposition header (thus making them inline by default).
+The header is silenty ignored and is not parsed.<br />
+The MIME types can be listed individually on multiple lines or
+comma or space separated on a single line.<br />
+This option is useful when dealing with broken UA, such as early Apple Mail
+clients that associated Content-Disposition: attachment with
+multipart/appledouble. Later on, Apple fixed this and either used
+Content-Disposition: inline or discarded this header entirely.<br />
+<br />
+<em>ignore_content_disposition = multipart/appledouble</em> (disabled by default)</dd>
 <dt id="attachmentlink">attachmentlink = attachment-link-format</dt>
 <dd>Format of the attachment links.<br />
 <br />
