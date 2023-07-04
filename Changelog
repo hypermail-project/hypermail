@@ -6,6 +6,11 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
+	* src/{printfile.c, lang.h}
+	Add a title="Normal view" to the default stylesheet to take
+	into account someone adding alternate css files by means
+	of hypermail's configuration directives.
+
 	* src/{parse.c, setup.c, setup.h}
 	New configuration option ignore_content_disposition to be able to
 	ignore the Content-Disposition header for some Mime-Types. This is

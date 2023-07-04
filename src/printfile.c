@@ -381,7 +381,8 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
         buffer = NULL;
     }
     
-    fprintf(fp, "<link rel=\"stylesheet\" href=\"%s\" />\n",
+    fprintf(fp, "<link rel=\"stylesheet\" title=\"%s\" href=\"%s\" />\n",
+            lang[MSG_CSS_NORMAL_VIEW],
             (buffer) ? buffer: css_url);
     if (buffer) {
         free(buffer);
