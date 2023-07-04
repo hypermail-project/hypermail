@@ -4659,13 +4659,22 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
 		    fromdate = getvalue(line);
 		else if (!strcasecmp(command, "sent"))
 		    date = getvalue(line);
-		else if (!strcasecmp(command, "name"))
-		    name = getvalue(line);
-		else if (!strcasecmp(command, "email")) {
+		else if (!strcasecmp(command, "name")) {
                     valp = getvalue(line);
                     if (valp) {
-                        email = unobfuscate_email_address(valp);
+                        name = unconvchars(valp);
                         free(valp);
+                    }
+                }
+		else if (!strcasecmp(command, "email")) {
+                    char *tmp = getvalue(line);
+                    if (tmp) {
+                        valp = unconvchars(line);
+                        free (tmp);
+                        if (valp) {
+                            email = unobfuscate_email_address(valp);
+                            free(valp);
+                        }
                     }
                 }
 		else if (!strcasecmp(command, "subject")) {
@@ -4676,10 +4685,14 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
 		    }
 		}
 		else if (!strcasecmp(command, "id")) {
-		    char *raw_msgid = getvalue(line);
-		    msgid = unspamify(raw_msgid);
-		    if (raw_msgid) {
-                        free(raw_msgid);
+                    valp = getvalue(line);
+                    if (valp) {
+                        char *raw_msgid = unconvchars(valp);
+                        free(valp);
+                        msgid = unspamify(raw_msgid);
+                        if (raw_msgid) {
+                            free(raw_msgid);
+                        }
                     }
 		    if (msgid && !strstr(line,"-->") && set_linkquotes)
 		        msgid = NULL;/* old version of Hypermail wrote junk? */

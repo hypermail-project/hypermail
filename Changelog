@@ -6,8 +6,13 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
+	* src/parse.c
+	parse_old_html() was not unconverting all the protected
+	HTML entities (such as &ndash;) from the comments in a
+	hypermail archive directory.
+
 	* src/{printfile.c, lang.h}
-	Add a title="Normal view" to the default stylesheet to take
+	Associate title="Normal view" to the default stylesheet to take
 	into account someone adding alternate css files by means
 	of hypermail's configuration directives.
 
