@@ -134,6 +134,7 @@
 
 #define NUMSTRLEN    10
 #define MAXLINE	     1024
+#define MAXURLLEN    4096
 #define MAXFILELEN   256
 #define NAMESTRLEN   320
 #define MAILSTRLEN   80

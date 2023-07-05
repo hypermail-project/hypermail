@@ -2258,8 +2258,8 @@ static char *url[] = {
 char *parseurl(char *input, char *charset)
 {
     struct Push buff;		/* output buffer */
-    char urlbuff[256];
-    char tempbuff[MAXLINE];
+    char urlbuff[MAXURLLEN];
+    char tempbuff[MAXURLLEN];
     char *inputp;
     char *match[sizeof(url) / sizeof(char **)];
     int first;
@@ -2407,10 +2407,17 @@ char *parseurl(char *input, char *charset)
 		&& ((istelprotocol && (*inputp == '+' || isdigit(*inputp)))
 		    || (!istelprotocol && !ispunct(*inputp)))) {
 
-                if (set_iso2022jp)
-		    urlscan = sscanf(inputp, "%255[^] \033)<>\"\'\n[\t\\]", urlbuff);
-                else
-		    urlscan = sscanf(inputp, "%255[^] )<>\"\'\n[\t\\]", urlbuff);
+                char *format;
+                
+                if (set_iso2022jp) {
+                    trio_asprintf(&format, "%%%d[^] \033)<>\"\'\n[\t\\]", MAXURLLEN - 1);
+		    urlscan = sscanf(inputp, format, urlbuff);
+                }
+                else {
+                    trio_asprintf(&format, "%%%d[^] )<>\"\'\n[\t\\]", MAXURLLEN - 1);
+		    urlscan = sscanf(inputp, format, urlbuff);
+                }
+                free(format);
             }
 
 	    if (urlscan == 1) {

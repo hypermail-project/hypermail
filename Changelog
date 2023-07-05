@@ -6,6 +6,10 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
+	* src/{hypermail.h, string.c}
+	Increase the max size for a scanned url string to 4096 to reflect
+	modern trends.
+
 	* src/parse.c
 	parse_old_html() was not unconverting all the protected
 	HTML entities (such as &ndash;) from the comments in a
