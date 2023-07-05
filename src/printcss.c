@@ -55,7 +55,7 @@ void print_default_css_file(char *filename)
     fprintf(fp, "/*\n");
     fprintf(fp, "** Default stylesheet for hypermail archives\n");
     fprintf(fp, "** \n");
-    fprintf(fp, "** Last revised: 05/June/2023\n");
+    fprintf(fp, "** Last revised: 05/July/2023\n");
     fprintf(fp, "**/\n");
     fprintf(fp, "\n");
     fprintf(fp, "/* Use this CSS rule to choose the background color\n");
@@ -180,7 +180,7 @@ void print_default_css_file(char *filename)
     fprintf(fp, "}\n");
     fprintf(fp, "\n");
     fprintf(fp, "a:visited {\n");
-    fprintf(fp, "    color:#754675\n");
+    fprintf(fp, "    color:#529;\n");
     fprintf(fp, "}\n");
     fprintf(fp, "\n");
     fprintf(fp, "a:focus {\n");
@@ -201,7 +201,6 @@ void print_default_css_file(char *filename)
     fprintf(fp, "a:active {\n");
     fprintf(fp, "    /* outline: 0; */\n");
     fprintf(fp, "}\n");
-    fprintf(fp, "\n");
     fprintf(fp, "\n");
     fprintf(fp, "\n");
     fprintf(fp, "/* mainindex-wai.css */\n");
@@ -279,7 +278,7 @@ void print_default_css_file(char *filename)
     fprintf(fp, "*/\n");
     fprintf(fp, "\n");
     fprintf(fp, "dfn {font-weight: bold;}\n");
-    fprintf(fp, ".mail, .head { border-bottom:1px solid black;}\n");
+    fprintf(fp, "/* .mail, .head { border-bottom:1px solid black;} */\n");
     fprintf(fp, "map ul {list-style:none;}\n");
     fprintf(fp, "#message-id { font-size: small;}\n");
     fprintf(fp, "address { font-style:inherit ;}\n");
@@ -318,6 +317,7 @@ void print_default_css_file(char *filename)
     fprintf(fp, "p.spamfooter{\n");
     fprintf(fp, " font-size: small;\n");
     fprintf(fp, "}\n");
+    fprintf(fp, "\n");
     fprintf(fp, "\n");
     fprintf(fp, "/* updates added by Gerald 27 Apr 2023 */\n");
     fprintf(fp, "\n");

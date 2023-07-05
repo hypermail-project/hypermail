@@ -17,7 +17,7 @@
 /*
 ** Default stylesheet for hypermail archives
 ** 
-** Last revised: 05/June/2023
+** Last revised: 05/July/2023
 **/
 
 /* Use this CSS rule to choose the background color
@@ -142,7 +142,7 @@ a:link {
 }
 
 a:visited {
-    color:#754675
+    color:#529;
 }
 
 a:focus {
@@ -163,7 +163,6 @@ a:hover {
 a:active {
     /* outline: 0; */
 }
-
 
 
 /* mainindex-wai.css */
@@ -241,7 +240,7 @@ pre {
 */
 
 dfn {font-weight: bold;}
-.mail, .head { border-bottom:1px solid black;}
+/* .mail, .head { border-bottom:1px solid black;} */
 map ul {list-style:none;}
 #message-id { font-size: small;}
 address { font-style:inherit ;}
@@ -280,6 +279,7 @@ p.spammes{
 p.spamfooter{
  font-size: small;
 }
+
 
 /* updates added by Gerald 27 Apr 2023 */
 
