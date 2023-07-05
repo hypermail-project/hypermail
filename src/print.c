@@ -1501,14 +1501,14 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
                                     &inlinehtml_open, &attachment_open);
                 if (bp->attachment_rfc822) {
                     forwarded_message_count++;
-                    fprintf(fp, "<section%s class=\"message-body-part\" "
+                    fprintf(fp, "<section%s class=\"message-body-part\">\n",
+                            (body_start) ? body_start_attribute : "");
+                    fprintf(fp, "<article class=\"message-forwarded\" "
                             "aria-labelledby=\"fm%d\">\n",
-                            (body_start) ? body_start_attribute : "",
                             forwarded_message_count);
                     fprintf(fp, "<h2 id=\"fm%d\" class=\"forwarded-message-notice\">%s</h2>\n",
                             forwarded_message_count,
                             lang[MSG_FORWARDED_MESSAGE_NOTICE]);
-                    fprintf(fp, "<div class=\"message-forwarded\">\n");
                 } else {
                     fprintf(fp, "<section%s class=\"message-body-part\">\n",
                             (body_start) ? body_start_attribute : "");
@@ -1543,7 +1543,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
                 close_open_sections(fp, &pre_open, &showhtml_open,
                                     &inlinehtml_open, &attachment_open);
                 if (bp->attachment_rfc822) {
-                    fprintf(fp, "</div>\n");
+                    fprintf(fp, "</article>\n");
                 }
                 fprintf(fp, "</section>\n");
             }

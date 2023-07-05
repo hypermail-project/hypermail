@@ -6,6 +6,12 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
+	* src/print.c
+	Markup improvements for forwarded messages, replace <div> with
+	<article>, move the <h2> forwarded message from below the corresponding
+	<section> parent to article to below <article> and move the
+	aria-labelled-by attribute from that <section> to <article>.
+
 	* src/{hypermail.h, string.c}
 	Increase the max size for a scanned url string to 4096 to reflect
 	modern trends.
