@@ -6,11 +6,17 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
+	* aclocal.m4 moved to m4/apr.m4
+	We were wrongly storing our local autoconf macros in aclocal.m4.  That
+	file is reserved for aclocal and the autotools. We moved our macros to
+	m4/apr.m4 (apr is from where we borrowed those macros).
+
 	* src/print.c
-	Markup improvements for forwarded messages, replace <div> with
-	<article>, move the <h2> forwarded message from below the corresponding
-	<section> parent to article to below <article> and move the
-	aria-labelled-by attribute from that <section> to <article>.
+	Integrate @bert-github's markup improvements for forwarded messages.
+	Replace <div> with <article>, move the <h2> forwarded message from
+	below the corresponding <section> parent to article to below <article>
+	and move the aria-labelled-by attribute from that <section> to
+	<article>.
 
 	* src/{hypermail.h, string.c}
 	Increase the max size for a scanned url string to 4096 to reflect

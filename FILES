@@ -28,7 +28,11 @@ install-sh
 ltmain.sh
 maketgz
 patchlevel.h
-# 
+#
+#  - m4 macros
+#
+m4/apr.m4
+#
 #  - Archive directory files
 # 
 archive/.indent.pro
