@@ -5,6 +5,7 @@ AC_REVISION($Revision: 1.2 $)dnl
 AC_INIT
 AC_CONFIG_SRCDIR([src/hypermail.c])
 AC_CONFIG_HEADER(config.h)
+AC_CONFIG_MACRO_DIRS([m4])
 AC_PREFIX_DEFAULT(/usr/local)
 LDFLAGS=""
 LIBS=""
