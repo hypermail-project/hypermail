@@ -17,7 +17,7 @@
 /*
 ** Default stylesheet for hypermail archives
 ** 
-** Last revised: 02/May/2023
+** Last revised: 05/June/2023
 **/
 
 /* Use this CSS rule to choose the background color
@@ -154,7 +154,6 @@ a:focus {
     cursor :pointer;
 }
 
-
 a:hover {
     color:#930;
     text-decoration: underline;
@@ -282,12 +281,23 @@ p.spamfooter{
  font-size: small;
 }
 
-
 /* updates added by Gerald 27 Apr 2023 */
 
 .message-forwarded {
-    padding: 0.5em 1em;
-    border-left: 4px solid #999;
+    padding: 0 1em;
+    border: 2px solid #888;
+    border-radius: 0.5em;
+}
+
+.message-body-part {
+    margin: 1em 0;
+}
+.message-forwarded > h2 {
+    color: #303030;
+    padding: 0 1em;
+    background: #DEE7CA;
+    margin: 0 -1rem 0.5rem;
+    border-radius: 0.3rem 0.3rem 0 0;
 }
 
 .message-forwarded ul.headers {
@@ -308,6 +318,15 @@ ul.headers {
     padding-left: 0em;
 }
 
+.attachment-links {
+  background: aliceblue;
+  padding: 0.01em 1em;
+}
+
+section.attachment-links ul {
+    padding-left: 1.5em;
+}
+
 .attachment-links img {
     padding: 0.5em 0;
 }
@@ -316,16 +335,15 @@ img {
     max-width: 100%;
 }
 
-section.attachment-links ul {
-    padding-left: 1.5em;
-}
-
 /* experimental: */
 
 .mail {
-  background: white;
-  padding-left: 0.75em;
-  padding-top: 0.025em;
+    background: white;
+    /*
+      padding-left: 0.75em;
+      padding-top: 0.025em;
+   */
+    padding: 0.025em 0.75em;
 }
 
 /* the following wo rules apply when you're using the 
