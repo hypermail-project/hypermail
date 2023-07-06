@@ -2655,7 +2655,7 @@ int parsemail(char *mbox,	/* file name */
                             description = set_alts_text ? set_alts_text
                                 : "alternate version of message";
                             /* JK 2023/04: why is description tied to
-                               the lenght of attachname and why it was
+                               the length of attachname and why it was
                                using it to make a filename?  code
                                commented out while investigating. We
                                get the filename from the filename
@@ -2681,6 +2681,13 @@ int parsemail(char *mbox,	/* file name */
                                 content = CONTENT_HTML;
                             else
                                 content = CONTENT_TEXT;
+                        } else {
+                            /* we should refactor and simplify the cases when
+                               we call the following function. 
+                               It's needed here when a text/plain part has
+                               Content-Disposition: attachment and a filename
+                               given only in the Content-Type name attribute */
+                            _control_attachname(content_type_ptr, attachname, sizeof(attachname));
                         }
                         break;
 

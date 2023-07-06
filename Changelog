@@ -6,6 +6,11 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
+	* src/parse.c
+	filenames were not being taken int account for text/plain attachment
+	with Content-Disposition: attachment and a filename name given only in
+	the Content-Type name attribute.
+
 	* aclocal.m4 moved to m4/apr.m4
 	We were wrongly storing our local autoconf macros in aclocal.m4.  That
 	file is reserved for aclocal and the autotools. We moved our macros to
