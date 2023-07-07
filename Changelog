@@ -6,6 +6,17 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
+	* src/{hypermail.h, print.c}
+	Two enhancements to simplify the understanding of complex structured
+	messages when using screen readers.
+
+	For forwarded messages, appending the nesting level-sequence for the
+	message.
+
+	Reduced the text "List of stored attachments" to "Attachments for
+	message nesting level-sequence" for forwarded messages and just
+	"Attachments" for the root message.
+
 	* src/parse.c
 	filenames were not being taken int account for text/plain attachment
 	with Content-Disposition: attachment and a filename name given only in

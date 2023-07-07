@@ -1387,12 +1387,18 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
     bool replace_quoted;
     bool prefered_charset_is_utf8;
     
-    /* used to generate unique ids for each forwarded-message
-       (message/rfc822) section */
-    int forwarded_message_count = 0; 
-    /* used to generate unique ids for each list of stored
-       attachments section */
-    int list_of_stored_attachments_count = 0; 
+    /* used to generate both unique ids for each forwarded-message
+       (message/rfc822) section, list of stored attachments and
+    indications helping users of screen-readers better identify
+    how a forwarded message is binded with a list of stored
+    attachments */
+    unsigned int nesting_level_sequence[MAX_FWD_MSG_NESTING_LEVEL];
+    int nesting_level = 0;
+    /* we only use this when we read nesting_level >= MAX_FWD_MSG_NESTING_LEVEL
+       so that we can continue to ensure xmlwf and unique ids */
+    int forwarded_message_count = 0;
+    
+    memset(nesting_level_sequence, 0, sizeof(nesting_level_sequence));
     
     if (set_linkquotes || set_showhtml == 2)
         /* should be changed to unconditional after tested for a while?
@@ -1500,22 +1506,47 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
                 close_open_sections(fp, &pre_open, &showhtml_open,
                                     &inlinehtml_open, &attachment_open);
                 if (bp->attachment_rfc822) {
+                    char *unique_id;
+
                     forwarded_message_count++;
+                    
+                    /* update sequence count */
+                    nesting_level++;
+                    
+                    if (nesting_level < MAX_FWD_MSG_NESTING_LEVEL) {
+                        nesting_level_sequence[nesting_level]++;
+                        
+                        trio_asprintf(&unique_id, "%d-%d", nesting_level,
+                                      nesting_level_sequence[nesting_level]);
+                    } else {
+                        /* this won't be useful for associating a fwd message
+                           with a corresponding list of stored attachments, but
+                           at least we won't generate duplicate ids */
+                        trio_asprintf(&unique_id, "%d-%d", nesting_level,
+                                      forwarded_message_count);
+                    }
+                    
                     fprintf(fp, "<section%s class=\"message-body-part\">\n",
                             (body_start) ? body_start_attribute : "");
                     fprintf(fp, "<article class=\"message-forwarded\" "
-                            "aria-labelledby=\"fm%d\">\n",
-                            forwarded_message_count);
-                    fprintf(fp, "<h2 id=\"fm%d\" class=\"forwarded-message-notice\">%s</h2>\n",
-                            forwarded_message_count,
-                            lang[MSG_FORWARDED_MESSAGE_NOTICE]);
+                            "aria-labelledby=\"fm-%s\">\n",
+                            unique_id);
+                    fprintf(fp, "<h2 id=\"fm-%s\" class=\"forwarded-message-notice\">%s %s</h2>\n",
+                            unique_id,
+                            lang[MSG_FORWARDED_MESSAGE_NOTICE],
+                            unique_id);
+                    
+                    free(unique_id);
+                    
                 } else {
                     fprintf(fp, "<section%s class=\"message-body-part\">\n",
                             (body_start) ? body_start_attribute : "");
                 }
+                
                 if (body_start) {
                     body_start = FALSE;
                 }
+                
                 /* when debugging, reveal the sections */
                 if (set_debug_level == 4 && !bp->attachment_rfc822) {
                     fprintf(fp, "<h2 class=\"attached-message-notice\">%s:</h2>\n",
@@ -1544,6 +1575,7 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
                                     &inlinehtml_open, &attachment_open);
                 if (bp->attachment_rfc822) {
                     fprintf(fp, "</article>\n");
+                    nesting_level--;
                 }
                 fprintf(fp, "</section>\n");
             }
@@ -1557,21 +1589,41 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
            and avoid closing all open sections */
         else if (bp->attachment_links_flags) {
             if (bp->attachment_links_flags & BODY_ATTACHMENT_LINKS_START) {
+                char *unique_id;
+                
                 /* close open sections */
                 close_open_sections(fp, &pre_open, &showhtml_open,
                                     &inlinehtml_open, &attachment_open);
 
-                list_of_stored_attachments_count++;
+                if (nesting_level < MAX_FWD_MSG_NESTING_LEVEL) {
+                    trio_asprintf(&unique_id, "%d-%d", nesting_level,
+                                  nesting_level_sequence[nesting_level]);
+                } else {
+                    trio_asprintf(&unique_id, "%d-%d", nesting_level,
+                                  forwarded_message_count);                    
+                }
+                
                 fprintf(fp, "<section%s class=\"message-body-part attachment-links\" "
-                        "aria-labelledby=\"lsa%d\">\n",
+                        "aria-labelledby=\"lsa-%s\">\n",
                         (body_start) ? body_start_attribute : "",
-                        list_of_stored_attachments_count);
-                fprintf(fp, "<h2 id=\"lsa%d\">%s</h2>\n",
-                        list_of_stored_attachments_count,
-                        lang[MSG_LIST_OF_STORED_ATTACHMENTS_NOTICE]);
+                        unique_id);
+                
+                if (nesting_level > 0) {
+                    fprintf(fp, "<h2 id=\"lsa-%s\">%s %s</h2>\n",
+                            unique_id,
+                            lang[MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE],
+                            unique_id);
+                } else {
+                    fprintf(fp, "<h2 id=\"lsa-%s\">%s</h2>\n",
+                            unique_id,
+                            lang[MSG_ATTACHMENTS_NOTICE]);
+                }
+                
+                free(unique_id);
+                
                 fprintf(fp, "<ul>\n");
                 attachment_link_open = TRUE;
-                
+
             } else if (bp->attachment_links_flags & BODY_ATTACHMENT_LINKS_END) {
                 /* close open list and open section */
                 fprintf(fp, "</ul>\n"

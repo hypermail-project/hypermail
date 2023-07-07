@@ -136,6 +136,7 @@
 #define MAXLINE	     1024
 #define MAXURLLEN    4096
 #define MAXFILELEN   256
+#define MAX_FWD_MSG_NESTING_LEVEL 100
 #define NAMESTRLEN   320
 #define MAILSTRLEN   80
 #define DATESTRLEN   80
