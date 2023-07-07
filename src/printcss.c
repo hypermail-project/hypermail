@@ -55,7 +55,7 @@ void print_default_css_file(char *filename)
     fprintf(fp, "/*\n");
     fprintf(fp, "** Default stylesheet for hypermail archives\n");
     fprintf(fp, "** \n");
-    fprintf(fp, "** Last revised: 05/July/2023\n");
+    fprintf(fp, "** Last revised: 07/July/2023\n");
     fprintf(fp, "**/\n");
     fprintf(fp, "\n");
     fprintf(fp, "/* Use this CSS rule to choose the background color\n");
@@ -117,10 +117,17 @@ void print_default_css_file(char *filename)
     fprintf(fp, "}\n");
     fprintf(fp, "\n");
     fprintf(fp, "/* default settings for narrow screens (smaller headings and padding) */\n");
+    fprintf(fp, "/* height and min-height: 100%% are to make backgrounds fill the window */\n");
+    fprintf(fp, "html {\n");
+    fprintf(fp, "    height: 100%%;\n");
+    fprintf(fp, "}\n");
+    fprintf(fp, "\n");
     fprintf(fp, "body {\n");
     fprintf(fp, "    font-family: sans-serif;\n");
-    fprintf(fp, "    margin: 1em;\n");
+    fprintf(fp, "    margin: 0;\n");
+    fprintf(fp, "    padding: 0.5em 1em;\n");
     fprintf(fp, "    line-height: 1.4;\n");
+    fprintf(fp, "    min-height: 100%%;\n");
     fprintf(fp, "}\n");
     fprintf(fp, "h1 {\n");
     fprintf(fp, "    font-size: 1.25em;\n");
@@ -144,7 +151,7 @@ void print_default_css_file(char *filename)
     fprintf(fp, "/* bigger headings and padding on wider screens (desktops, tablets) */\n");
     fprintf(fp, "@media screen and (min-width: 48em) {\n");
     fprintf(fp, "    body {\n");
-    fprintf(fp, "	margin: 1em 2.5em;\n");
+    fprintf(fp, "	padding: 0.5em 2.5em;\n");
     fprintf(fp, "    }\n");
     fprintf(fp, "    h1 {\n");
     fprintf(fp, "	font-size: 1.5em;\n");
@@ -332,7 +339,7 @@ void print_default_css_file(char *filename)
     fprintf(fp, "}\n");
     fprintf(fp, ".message-forwarded > h2 {\n");
     fprintf(fp, "    color: #303030;\n");
-    fprintf(fp, "    padding: 0 1em;\n");
+    fprintf(fp, "    padding: 0.25rem 1rem 0.1em;\n");
     fprintf(fp, "    background: #DEE7CA;\n");
     fprintf(fp, "    margin: 0 -1rem 0.5rem;\n");
     fprintf(fp, "    border-radius: 0.3rem 0.3rem 0 0;\n");

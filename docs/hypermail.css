@@ -17,7 +17,7 @@
 /*
 ** Default stylesheet for hypermail archives
 ** 
-** Last revised: 05/July/2023
+** Last revised: 07/July/2023
 **/
 
 /* Use this CSS rule to choose the background color
@@ -79,10 +79,17 @@ h2.theading + ul {
 }
 
 /* default settings for narrow screens (smaller headings and padding) */
+/* height and min-height: 100% are to make backgrounds fill the window */
+html {
+    height: 100%;
+}
+
 body {
     font-family: sans-serif;
-    margin: 1em;
+    margin: 0;
+    padding: 0.5em 1em;
     line-height: 1.4;
+    min-height: 100%;
 }
 h1 {
     font-size: 1.25em;
@@ -106,7 +113,7 @@ h3 {
 /* bigger headings and padding on wider screens (desktops, tablets) */
 @media screen and (min-width: 48em) {
     body {
-	margin: 1em 2.5em;
+	padding: 0.5em 2.5em;
     }
     h1 {
 	font-size: 1.5em;
@@ -294,7 +301,7 @@ p.spamfooter{
 }
 .message-forwarded > h2 {
     color: #303030;
-    padding: 0 1em;
+    padding: 0.25rem 1rem 0.1em;
     background: #DEE7CA;
     margin: 0 -1rem 0.5rem;
     border-radius: 0.3rem 0.3rem 0 0;
