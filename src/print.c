@@ -1514,10 +1514,21 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
                     nesting_level++;
                     
                     if (nesting_level < MAX_FWD_MSG_NESTING_LEVEL) {
+                        /* 
+                           trying to use a simpler numbering scheme by skipping
+                           the nesting level and just using the forwarded_message
+                           count 
+                        */
+                        /*
                         nesting_level_sequence[nesting_level]++;
-                        
                         trio_asprintf(&unique_id, "%d-%d", nesting_level,
                                       nesting_level_sequence[nesting_level]);
+                        */
+
+                        nesting_level_sequence[nesting_level] = forwarded_message_count;
+
+                        trio_asprintf(&unique_id, "%d", forwarded_message_count,
+                                      forwarded_message_count);
                     } else {
                         /* this won't be useful for associating a fwd message
                            with a corresponding list of stored attachments, but
@@ -1596,7 +1607,11 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
                                     &inlinehtml_open, &attachment_open);
 
                 if (nesting_level < MAX_FWD_MSG_NESTING_LEVEL) {
-                    trio_asprintf(&unique_id, "%d-%d", nesting_level,
+                    /*
+                      trio_asprintf(&unique_id, "%d-%d", nesting_level,
+                      nesting_level_sequence[nesting_level]);
+                    */
+                    trio_asprintf(&unique_id, "%d", 
                                   nesting_level_sequence[nesting_level]);
                 } else {
                     trio_asprintf(&unique_id, "%d-%d", nesting_level,

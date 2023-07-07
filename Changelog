@@ -10,8 +10,9 @@ HYPERMAIL VERSION 3.0.0
 	Two enhancements to simplify the understanding of complex structured
 	messages when using screen readers.
 
-	For forwarded messages, appending the nesting level-sequence for the
-	message.
+	For forwarded messages, appending a forwarded message counter
+	to identify each message and its optional list of stored
+	attachmens..
 
 	Reduced the text "List of stored attachments" to "Attachments for
 	message nesting level-sequence" for forwarded messages and just
