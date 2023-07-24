@@ -6,6 +6,11 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
+	* src/parse.c
+	Fixes an error when a multipart/alternative message is missing 
+	its end boundary immediately followed by another message that 
+	has a multipart/alternative.
+
 	* src/{hypermail.h, print.c}
 	Two enhancements to simplify the understanding of complex structured
 	messages when using screen readers.
