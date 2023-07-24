@@ -3230,6 +3230,7 @@ int parsemail(char *mbox,	/* file name */
                     /* free memory allocated to message nodes */
                     message_node_free(root_message_node);
                     root_message_node = current_message_node = NULL;
+                    root_alt_message_node = current_alt_message_node = NULL;
                 } else {
                     /* it was not a multipart message, remove all empty lines
                        at the end of the message */
@@ -3642,7 +3643,7 @@ int parsemail(char *mbox,	/* file name */
 				    alternative_lastfile[0] = '\0';
                                 last_alternative_type[0] = '\0';
                                 type[0] = '\0';
-                                current_alt_message_node = NULL;
+                                root_alt_message_node = current_alt_message_node = NULL;
 #if DEBUG_PARSE
 				printf("We DUMP the chosen alternative\n");
 #endif
@@ -4329,6 +4330,7 @@ int parsemail(char *mbox,	/* file name */
             /* free memory allocated to message nodes */
             message_node_free(root_message_node);
             root_message_node = current_message_node = NULL;
+            root_alt_message_node = current_alt_message_node = NULL;
 	} else {
             /* it was not a multipart message, remove all empty lines
                at the end of the message */
