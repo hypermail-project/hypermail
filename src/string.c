@@ -484,6 +484,30 @@ unsigned char *i18n_numref2utf(char *string){
   return headofutfstr;
 }
 
+/*
+** replaces any non US-ASCII chars except for
+** \r\n\t with a '?' char.
+** returns how many characters it replaced
+*/
+int i18n_replace_non_ascii_chars(char *string)
+{
+    char *ptr = string;
+    unsigned int c;
+    int count = 0;
+    
+    while (*ptr) {
+        c = (unsigned int) *ptr;
+        if ((c < 0x20 || c > 0x7E)
+            && *ptr != '\n' && *ptr != '\r' && *ptr != '\t') {
+            *ptr = '?';
+            count++;
+        }
+        ptr++;
+    }
+
+    return count;
+}
+
 /* replaces all control characters in string with a ?
 ** exceptions: \n, \r, and \t
 ** This should be safe for all UTF-8 and ASCII chars

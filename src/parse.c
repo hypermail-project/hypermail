@@ -954,6 +954,10 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 
     char didanything = FALSE;
 
+    /* replace any non US-ASCII characters that are not \r\n\t with a
+       '?' character */
+    i18n_replace_non_ascii_chars(iptr);
+
     while (*iptr) {
 	if (!strncmp(iptr, "=?", 2) &&
 	    (3 == sscanf(iptr + 2, "%128[^?]?%32[^?]?%128[^ ]",

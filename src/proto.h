@@ -119,6 +119,7 @@ char *obfuscate_email_address (char *);
 char *unobfuscate_email_address (char *);
 
 char *i18n_convstring(char *, char *, char *, size_t *);
+int i18n_replace_non_ascii_chars(char *);
 char *i18n_utf2numref(char *, int);
 unsigned char *i18n_numref2utf(char *);
 int i18n_replace_control_chars(char *);
