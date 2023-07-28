@@ -38,7 +38,7 @@ FNV_DEP=@FNV_DEP@
 
 # While waiting to put this in configure.ac
 # Note: if you're debugging memory issues (leaks, overruns, unallocated memory use)
-# Add the folowing two warnings -fsanitize=address -fno-omit-frame-pointe
+# Add the folowing two warnings -fsanitize=address -fno-omit-frame-pointer
 # and  -static-libasan to LIBS
 
 CFLAGS=@CFLAGS@ $(WARNINGS)
@@ -50,7 +50,8 @@ OPT_LIBS=@EXTRA_LIBS@
 
 INCS=		domains.h hypermail.h lang.h proto.h \
 		../config.h ../patchlevel.h dsprintf.h threadprint.h \
-		getdate.h getname.h finelink.h txt2html.h search.h
+		getdate.h getname.h finelink.h txt2html.h search.h \
+		utf8.h
 
 SRCS=		base64.c date.c domains.c file.c hypermail.c lang.c lock.c \
 		mem.c parse.c print.c printfile.c printcss.c string.c struct.c uudecode.c\
@@ -177,7 +178,7 @@ search.o: search.c hypermail.h ../config.h ../patchlevel.h proto.h lang.h \
 setup.o: setup.c hypermail.h ../config.h ../patchlevel.h proto.h lang.h \
  defaults.h setup.h struct.h print.h
 string.o: string.c hypermail.h ../config.h ../patchlevel.h proto.h lang.h \
- setup.h parse.h uconvert.h
+ setup.h parse.h uconvert.h utf8.h
 struct.o: struct.c hypermail.h ../config.h ../patchlevel.h proto.h lang.h \
  dmatch.h setup.h struct.h parse.h getname.h
 threadprint.o: threadprint.c hypermail.h ../config.h ../patchlevel.h \
