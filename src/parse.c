@@ -954,9 +954,11 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 
     char didanything = FALSE;
 
-    /* replace any non US-ASCII characters that are not \r\n\t with a
-       '?' character */
-    i18n_replace_non_ascii_chars(iptr);
+#ifdef HAVE_ICONV
+    /* RFC6532 allows for using UTF-8 as a header value; we make
+       sure that it is valid UTF-8 */
+    i18n_make_valid_utf8(iptr);
+#endif
 
     while (*iptr) {
 	if (!strncmp(iptr, "=?", 2) &&
@@ -1110,15 +1112,21 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 	    puts("");
 	}
 #endif
+#ifdef HAVE_ICONV
+        /* replace any invalid UTF8 characters that are not \r\n\t with a
+           '?' character */
+        i18n_replace_control_chars(storage);
+#endif
 	return storage;		/* return new */
     }
     else {
 	free(storage);
-#ifdef HAVE_ICONV
-        /* make sure there are only ascii chars in the string
-        ** for messages that don't respect rfc2047 */
+
+#ifdef HAVE_ICONV        
+        /* replace any invalid UTF8 characters that are not \r\n\t with a
+           '?' character */
         i18n_replace_control_chars(string);
-#endif
+#endif        
 	return string;
     }
 }

@@ -7,8 +7,11 @@ HYPERMAIL VERSION 3.0.0
 
 2023-00-00 Jose Kahan
 	* src/{parse.c, string.c, proto.h}
-	extend mdecode_RFC2047() so that it replaces all non US-ASCII
-	characters with a '?' character before decoding headers
+	extend mdecode_RFC2047() so that;
+	1) it partially supports FC6532 by replacing all
+	invalid UTF-8 characters with 	a '?'.
+	2) replaces all control characters in the
+	header values that are not \r\n\t with a '?'.
 
 	* src/parse.c
 	Fixes an error when a multipart/alternative message is missing
