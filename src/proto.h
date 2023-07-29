@@ -124,7 +124,8 @@ unsigned char *i18n_numref2utf(char *);
 int i18n_replace_non_ascii_chars(char *);
 int i18n_replace_control_chars(char *);
 int i18n_replace_unicode_spaces(char *, size_t);
-void i18n_make_valid_utf8(char *);
+int i18n_is_valid_utf8(const char *);
+char *i18n_make_valid_utf8(const char *);
 
 char *PushByte(struct Push *, char);
 char *PushString(struct Push *, const char *);
@@ -152,8 +153,8 @@ char *strcasestr(const char *, const char *);
 char *strsav(const char *);
 char *strreplace(char *, char *);
 void strcpymax(char *, const char *, int);
-void strtolower (char *);
-int strisspace (char *);
+void strtolower(char *);
+int strisspace(char *);
 
 int is_start_boundary(const char *, const char *);
 int is_end_boundary(const char *, const char *);

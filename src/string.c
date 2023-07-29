@@ -485,16 +485,31 @@ unsigned char *i18n_numref2utf(char *string){
 }
 
 /*
+** checks if a string is made of valid utf8 characters.
+** returns TRUE if its valid, FALSE, otherwise
+*/
+bool i18n_is_valid_utf8(const char *string)
+{
+    utf8_int8_t *rv = utf8valid(string);
+
+    return (rv) ? FALSE : TRUE;
+}
+
+/*
 ** replaces invalid UTF-chars
 ** with a '?' char.
 */
-void i18n_make_valid_utf8(char *string)
+char *i18n_make_valid_utf8(const char *invalid_string)
 {
-    if (utf8valid(string)) {
-        /* not a valid utf-8 string,
-           we'll replace all non 7-bit ascii characters with a ? */
-        i18n_replace_non_ascii_chars(string);
-    }
+    char *valid_string;
+    size_t len;
+    
+    valid_string = i18n_convstring((char *)invalid_string, "UTF-8", "UTF-8//IGNORE", &len);
+    /* the following function would have converted all invalid utf8 characters
+       with a '?' but it's apparently not working */
+    /* utf8makevalid (converted_string, '?'); */
+
+    return valid_string;
 }
 
 /* replaces all non 7-bit ascii characters with a '?'

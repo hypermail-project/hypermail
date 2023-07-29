@@ -893,6 +893,40 @@ char *getreply(char *line)
     RETURN_PUSH(buff);
 }
 
+/*
+** takes a header: value line and converts
+** the header_value to a valid UTF-8 string
+** or, if unable, to "(wrong string)"
+** caller has to free return value
+*/
+static char *
+make_header_valid_utf8(const char *header)
+{
+    char *header_value;
+    char *converted_header_value;
+    bool addnl;
+    struct Push buff;
+
+    /* replace any invalid UTF8 characters that are not \r\n\t with a
+       '?' character */
+    
+    header_value = strchr(header, ':') + 2*sizeof(char);
+    converted_header_value = i18n_make_valid_utf8(header_value);
+
+    INIT_PUSH(buff);
+    PushNString(&buff, header, header_value - header);
+    PushString(&buff, converted_header_value);
+    
+    if (converted_header_value && *converted_header_value
+        && converted_header_value[strlen(converted_header_value) - 1] != '\n') {
+        PushByte(&buff, '\n');
+    }
+
+    free(converted_header_value);
+
+    RETURN_PUSH(buff);
+}
+
 static char *
 extract_rfc2047_content(char *iptr)
 {
@@ -953,12 +987,6 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
     unsigned int value;
 
     char didanything = FALSE;
-
-#ifdef HAVE_ICONV
-    /* RFC6532 allows for using UTF-8 as a header value; we make
-       sure that it is valid UTF-8 */
-    i18n_make_valid_utf8(iptr);
-#endif
 
     while (*iptr) {
 	if (!strncmp(iptr, "=?", 2) &&
@@ -1113,8 +1141,13 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 	}
 #endif
 #ifdef HAVE_ICONV
-        /* replace any invalid UTF8 characters that are not \r\n\t with a
-           '?' character */
+        if (!i18n_is_valid_utf8(storage)) {
+            char *tmp;
+            
+            tmp = make_header_valid_utf8(storage);
+            free(storage);
+            storage = tmp;
+        }
         i18n_replace_control_chars(storage);
 #endif
 	return storage;		/* return new */
@@ -1122,9 +1155,16 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
     else {
 	free(storage);
 
-#ifdef HAVE_ICONV        
-        /* replace any invalid UTF8 characters that are not \r\n\t with a
-           '?' character */
+#ifdef HAVE_ICONV
+        /* RFC6532 allows for using UTF-8 as a header value; we make
+           sure that it is valid UTF-8 */
+        if (!i18n_is_valid_utf8(string)) {
+            char *tmp;
+            
+            tmp = make_header_valid_utf8(string);
+            free(string);
+            string = tmp;
+        }
         i18n_replace_control_chars(string);
 #endif        
 	return string;
