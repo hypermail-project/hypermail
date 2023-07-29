@@ -490,7 +490,31 @@ unsigned char *i18n_numref2utf(char *string){
 */
 void i18n_make_valid_utf8(char *string)
 {
-    utf8makevalid (string, '?');
+    if (utf8valid(string)) {
+        /* not a valid utf-8 string,
+           we'll replace all non 7-bit ascii characters with a ? */
+        i18n_replace_non_ascii_chars(string);
+    }
+}
+
+/* replaces all non 7-bit ascii characters with a '?'
+** returns the number of replaced chars
+*/
+int i18n_replace_non_ascii_chars(char *string)
+{
+    char *ptr = string;
+    int count = 0;
+  
+    while (*ptr) {
+        if (*ptr != '\n' && *ptr != '\r' && *ptr != '\t'
+            && (*ptr < 0x20 || *ptr > 0x7E)) {
+            *ptr = '?';
+            count++;
+        }
+        ptr++;
+    }
+    
+    return count;
 }
 
 /* replaces all control characters in string with a ?
