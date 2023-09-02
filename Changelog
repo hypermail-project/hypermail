@@ -6,7 +6,7 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 	2023-00-00 Jose Kahan
-	* src/{parse.c, print.c}
+	* src/{parse.c, print.c, hypermail.h}
 	Fixes an issue when parsing a message with one or more invalid email
 	headers could make hypermail crash. If hypermail detects an invalid
 	header, it will mark it as such and skip it during the rest of the
@@ -18,7 +18,7 @@ HYPERMAIL VERSION 3.0.0
 	1) it partially supports RFC6532
 	2) if a header value is not valid UTF-8,
 	replaces it with "(invalid string)"
-	2) if a header value is given as a binary unencoded string,
+	3) if a header value is given as a binary unencoded string,
 	it tries to detect the charset with libchardet. In case of failure,
 	it will replace the header value with "(invalid string)"
 

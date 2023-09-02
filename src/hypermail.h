@@ -252,6 +252,8 @@ struct body {
     char html;			/* set to TRUE if already converted to HTML */
     char header;		/* part of header */
     char parsedheader;		/* this header line has been parsed once */
+    char invalid_header;        /* this is an invalid header line, it's missing its
+                                   header name, header value, and or has an invalid value */
     char antispam_disabled;     /* no antispam was applied to this line */
 #ifdef DELETE_ME
     char attached;		/* part of attachment */
