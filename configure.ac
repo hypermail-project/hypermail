@@ -523,7 +523,7 @@ if test x"$PKG_CONFIG" != x ; then
       unset cflags
       unset ldflags
       found_chardet=yes
-      AC_DEFINE_UNQUOTED(HAVE_LIBCHARDET,[1],[Have chardet support])
+      AC_DEFINE_UNQUOTED(HAVE_CHARDET,[1],[Have libchardet support])
    fi
 fi
 

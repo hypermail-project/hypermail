@@ -6590,7 +6590,7 @@ if test x"$PKG_CONFIG" != x ; then
       unset ldflags
       found_chardet=yes
 
-printf "%s\n" "#define HAVE_LIBCHARDET 1" >>confdefs.h
+printf "%s\n" "#define HAVE_CHARDET 1" >>confdefs.h
 
    fi
 fi

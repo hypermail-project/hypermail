@@ -34,7 +34,7 @@
 #include <iconv.h>
 #endif
 
-#ifdef HAVE_LIBCHARDET
+#ifdef HAVE_CHARDET
 #include <chardet.h>
 #endif
 
@@ -488,7 +488,7 @@ unsigned char *i18n_numref2utf(char *string){
   return headofutfstr;
 }
 
-#ifdef HAVE_LIBCHARDET
+#ifdef HAVE_CHARDET
 
 #ifdef CHARDET_BINARY_SAFE
 #  define detect_handledata_str(x,y,z) detect_handledata_r(x, y, strlen(y), z)
@@ -517,7 +517,7 @@ char *i18n_charset_detect(const char *string)
     detect_reset (&d);
     obj = detect_obj_init ();
     rv = detect_handledata_str (&d, string, &obj);
-#ifdef _HAVE_LIBCHARDET_DEBUG
+#ifdef _HAVE_CHARDET_DEBUG
     printf ("#1 %s : %s : %f\n", string, obj->encoding, obj->confidence);
 #endif    
     if (rv == CHARDET_SUCCESS) {
@@ -538,7 +538,7 @@ char *i18n_detect_charset(const char *string)
 {
     return NULL;
 }
-#endif /* HAVE_LIBCHARDET */
+#endif /* HAVE_CHARDET */
 
 /*
 ** checks if a string is made of valid utf8 characters.
