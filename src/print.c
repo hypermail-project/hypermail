@@ -1255,6 +1255,12 @@ static struct body *printheaders(FILE *fp, struct emailinfo *email, struct body 
                 if ((bp->line)[0] == '\n') {   /* don't try to convert newline */
                     break;
                 }
+
+                /* skip invalid header lines */
+                if (bp->invalid_header) {
+                    bp = bp->next;
+                    continue;
+                }
                 
                 if (sscanf(bp->line, "%127[^:]", head) == 1 && showheader_match(head, shp->val)) {
                     /* this is a header we want to show */

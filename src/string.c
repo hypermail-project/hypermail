@@ -34,6 +34,10 @@
 #include <iconv.h>
 #endif
 
+#ifdef HAVE_LIBCHARDET
+#include <chardet.h>
+#endif
+
 #define HAVE_PCRE2
 #ifdef HAVE_PCRE2
 #ifdef __LCC__
@@ -331,14 +335,14 @@ char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *
       if(set_showprogress){
 	printf("I18N: invalid multibyte sequence, from %s to %s: %s.\n",fromcharset,tocharset,string);
       }
-      origlen=trio_snprintf(origconvbuf, origbuflen,"(wrong string) %s",string);
+      origlen=trio_snprintf(origconvbuf, origbuflen,"(invalid string) %s",string);
       error = 1;
       break;
     case EINVAL:
       if(set_showprogress){
 	printf("I18N: incomplete multibyte sequence, from %s to %s: %s.\n",fromcharset,tocharset,string);
       }
-      origlen=trio_snprintf(origconvbuf, origbuflen,"(wrong string) %s",string);
+      origlen=trio_snprintf(origconvbuf, origbuflen,"(invalid string) %s",string);
       error = 1;
       break;
     }
@@ -484,6 +488,58 @@ unsigned char *i18n_numref2utf(char *string){
   return headofutfstr;
 }
 
+#ifdef HAVE_LIBCHARDET
+
+#ifdef CHARDET_BINARY_SAFE
+#  define detect_handledata_str(x,y,z) detect_handledata_r(x, y, strlen(y), z)
+#else
+#  define detect_handledata_str(x,y,z) detect_handledata(x, y, z)
+#endif
+
+/*
+** tries to detect the charset associated with a string
+** if the charset is detected, returns the charset string
+** otherwise, returns NULL.
+** Caller must free the returned string.
+*/
+char *i18n_charset_detect(const char *string)
+{
+    Detect * d;
+    DetectObj *obj;
+    char *charset = NULL;
+    short rv;
+
+    if (!string || *string == '\0') {
+        return NULL;
+    }
+    
+    d = detect_init ();
+    detect_reset (&d);
+    obj = detect_obj_init ();
+    rv = detect_handledata_str (&d, string, &obj);
+#ifdef _HAVE_LIBCHARDET_DEBUG
+    printf ("#1 %s : %s : %f\n", string, obj->encoding, obj->confidence);
+#endif    
+    if (rv == CHARDET_SUCCESS) {
+        if (obj->encoding && *(obj->encoding) != '\0') {
+            charset = emalloc(strlen(obj->encoding) + 1);
+            strcpy (charset, obj->encoding);
+        } 
+    }
+    if (rv != CHARDET_NULL_OBJECT) {
+        detect_obj_free (&obj);
+    }
+    detect_destroy(&d);
+
+    return charset;
+}
+#else
+char *i18n_detect_charset(const char *string)
+{
+    return NULL;
+}
+#endif /* HAVE_LIBCHARDET */
+
 /*
 ** checks if a string is made of valid utf8 characters.
 ** returns TRUE if its valid, FALSE, otherwise
@@ -495,23 +551,6 @@ bool i18n_is_valid_utf8(const char *string)
     return (rv) ? FALSE : TRUE;
 }
 
-/*
-** replaces invalid UTF-chars
-** with a '?' char.
-*/
-char *i18n_make_valid_utf8(const char *invalid_string)
-{
-    char *valid_string;
-    size_t len;
-    
-    valid_string = i18n_convstring((char *)invalid_string, "UTF-8", "UTF-8//IGNORE", &len);
-    /* the following function would have converted all invalid utf8 characters
-       with a '?' but it's apparently not working */
-    /* utf8makevalid (converted_string, '?'); */
-
-    return valid_string;
-}
-
 /* replaces all non 7-bit ascii characters with a '?'
 ** returns the number of replaced chars
 */
@@ -521,8 +560,8 @@ int i18n_replace_non_ascii_chars(char *string)
     int count = 0;
   
     while (*ptr) {
-        if (*ptr != '\n' && *ptr != '\r' && *ptr != '\t'
-            && (*ptr < 0x20 || *ptr > 0x7E)) {
+        if ((*ptr < 0x20) && !isspace(*ptr)
+            || *ptr > 0x7E) {
             *ptr = '?';
             count++;
         }
@@ -543,11 +582,10 @@ int i18n_replace_control_chars(char *string)
     int count = 0;
   
     while (*ptr) {
-        if (iscntrl(*ptr) && *ptr != '\n' && *ptr != '\r' && *ptr != '\t') {
+        if (*ptr < 0x20 && !isspace(*ptr)) {
             *ptr = '?';
             count++;
-
-            }
+        }
         ptr++;
     }
     
@@ -556,6 +594,85 @@ int i18n_replace_control_chars(char *string)
 #endif
 
 /* end of I18N hack */
+
+
+/*
+** checks if a string is made of valid printable
+** US-ASCII characters.
+**
+**
+** returns -1 if none found, otherwise the position
+** of the first invalid character in the string
+**
+** returns -2 if src is NULL.
+*/
+static int _has_non_us_ascii_chars(const char *src)
+{
+    int rv = -1;
+    
+    int pos = 0;
+    size_t sz;
+    int i;
+
+    if (src == NULL) {
+        return -2;
+    }
+
+    sz = strlen(src);
+    for (i = 0; i < sz; i++) {
+        char c = src[i];
+        if ((c < 0x20 || c > 0x7E)
+            && !isspace(c)) {
+            rv = i;
+            break;
+        }
+    }
+
+    return rv;
+}
+
+/*
+** checks if a string is made of valid printable
+** US-ASCII characters.
+** returns TRUE if its valid, FALSE, otherwise
+*/
+bool i18n_is_valid_us_ascii(const char *src)
+{
+    if (src == NULL) {
+        return FALSE;
+    }
+
+    return (_has_non_us_ascii_chars(src) < 0) ? TRUE : FALSE;
+}
+
+/*
+** checks if a string is made of valid printable
+** US-ASCII characters. It replaces the first
+** non ASCII character with a '\0', truncating
+** the string.
+** returns TRUE if it truncated the string,
+** FALSE otherwise.
+*/
+bool i18n_truncate_inalid_us_ascii(char *src)
+{
+    int pos;
+    bool rv;
+    
+    if (src == NULL) {
+        return FALSE;
+    }
+
+    pos = _has_non_us_ascii_chars((const char *) src);
+
+    if (pos < 0) {
+        rv = FALSE;
+    } else {
+        src[pos] = '\0';
+        rv = TRUE;
+    }
+
+    return rv;
+}
 
 /* replaces all unicode spaces in string with ascii spaces.
 ** input must be in utf-8.  Returns the number of replacements or -1

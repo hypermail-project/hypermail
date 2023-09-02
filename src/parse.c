@@ -893,40 +893,6 @@ char *getreply(char *line)
     RETURN_PUSH(buff);
 }
 
-/*
-** takes a header: value line and converts
-** the header_value to a valid UTF-8 string
-** or, if unable, to "(wrong string)"
-** caller has to free return value
-*/
-static char *
-make_header_valid_utf8(const char *header)
-{
-    char *header_value;
-    char *converted_header_value;
-    bool addnl;
-    struct Push buff;
-
-    /* replace any invalid UTF8 characters that are not \r\n\t with a
-       '?' character */
-    
-    header_value = strchr(header, ':') + 2*sizeof(char);
-    converted_header_value = i18n_make_valid_utf8(header_value);
-
-    INIT_PUSH(buff);
-    PushNString(&buff, header, header_value - header);
-    PushString(&buff, converted_header_value);
-    
-    if (converted_header_value && *converted_header_value
-        && converted_header_value[strlen(converted_header_value) - 1] != '\n') {
-        PushByte(&buff, '\n');
-    }
-
-    free(converted_header_value);
-
-    RETURN_PUSH(buff);
-}
-
 static char *
 extract_rfc2047_content(char *iptr)
 {
@@ -1140,33 +1106,79 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 	    puts("");
 	}
 #endif
-#ifdef HAVE_ICONV
-        if (!i18n_is_valid_utf8(storage)) {
-            char *tmp;
-            
-            tmp = make_header_valid_utf8(storage);
-            free(storage);
-            storage = tmp;
-        }
-        i18n_replace_control_chars(storage);
-#endif
+        /* here we should add calls to validate the utf8 string,
+           to avoid security issues */
 	return storage;		/* return new */
     }
     else {
 	free(storage);
-
-#ifdef HAVE_ICONV
+        
+        if ( i18n_is_valid_us_ascii(string) ) {
+            /* nothing to do, passing thru */
+        }
+        
         /* RFC6532 allows for using UTF-8 as a header value; we make
            sure that it is valid UTF-8 */
-        if (!i18n_is_valid_utf8(string)) {
-            char *tmp;
+        else if ( i18n_is_valid_utf8(string) ) {
+            /* "default" UTF-8 charset */
+            strcpy(charsetsave, "UTF-8");
+
+        } else {
             
-            tmp = make_header_valid_utf8(string);
+            /*
+             * try to detect the charset of the string and convert it to UTF-8;
+             * in case of failure, replace the header value with "(invalid string)"
+            */
+
+#if defined HAVE_CHARDET && HAVE_ICONV
+            char *charset;
+            char *conv_string;
+            char *header_name, *header_value;
+            struct Push pbuf;
+            
+            INIT_PUSH(pbuf);
+
+            sscanf(string, "%127[^:]", header_name);
+
+            /* save the header_name:\s */
+            PushString(&pbuf, header_name);
+
+            header_value = string + strlen(header_name);
+            PushByte(&pbuf, *header_value);
+            header_value++;
+            PushByte(&pbuf, *header_value);
+            header_value++;
+            
+            /* consider the header_value everything after header_name:\s */
+            charset = i18n_charset_detect(header_value);
+            
+            if (!charset || charset[0] == '\0' && !strcmp(charset, "UTF-8") ) {
+                PushString (&pbuf, "(invalid string)");
+            }
+            else {
+                size_t conv_string_sz;
+                conv_string = i18n_convstring(header_value, charset, "UTF-8", &conv_string_sz);
+                if ( !i18n_is_valid_utf8(conv_string) ) {
+                    free(conv_string);
+                    PushString (&pbuf, "(invalid string)");
+                } else {
+                    int charsetlen = strlen(charset) < 255 ? strlen(charset) : 255;
+                    memcpy(charsetsave,charset,charsetlen);
+                    charsetsave[charsetlen] = '\0';
+                    PushString(&pbuf, conv_string);
+                    free(conv_string);
+                }
+                free(charset);
+            }
+            
             free(string);
-            string = tmp;
+            string = PUSH_STRING(pbuf);
+#else
+            free(string);
+            string = strsav("(invalid string)");
+#endif                    
         }
-        i18n_replace_control_chars(string);
-#endif        
+        
 	return string;
     }
 }
@@ -1710,6 +1722,49 @@ static void _control_attachname(char *content_type, char *attachname, size_t att
     }
 }
 
+/* validates that a header name is RFC282 compliant
+   returns TRUE if valid, FALSE otherwise
+*/
+static bool _validate_header(const char *header_line)
+{
+    char header_name[128];
+    const char *ptr;
+    
+    /* control that we have a header_name: header_value */
+    if (!header_line
+        || *header_line=='\0'
+        || !(ptr = strstr(header_line, ":"))
+        || ptr == header_line
+        || *(ptr + 1) == '\0'
+        || (*(ptr + 1) != ' ' && *(ptr + 1) != '\t')) {
+
+        return FALSE;
+    }
+    
+    /* control length of header-name and its requirement
+       to be only valid printable US-ASCII */
+    
+    if (!sscanf(header_line, "%127[^:]", header_name)
+        /* line doesn't start with : */
+        || header_line[strlen(header_name)] != ':'
+        /* header name is us_ascii */
+        || !i18n_is_valid_us_ascii(header_name)) {
+        
+        return FALSE;
+    }
+
+    /* control that we have a value that is not spaces */
+    ptr = header_line + strlen(header_name) + 1;
+    while (*ptr) {
+        if (*ptr != ' ' && *ptr != '\t' && *ptr != '\r' && *ptr != '\n') {
+            return TRUE;
+        }
+        ptr++;
+    }
+        
+    return FALSE;
+}
+    
 /*
 ** Parsing...the heart of Hypermail!
 ** This loads in the articles from stdin or a mailbox, adding the right
@@ -2074,21 +2129,41 @@ int parsemail(char *mbox,	/* file name */
                 /* parsing of all headers except for Content-* related ones */
 		for (head = bp; head; head = head->next) {
 		    char head_name[129];
+
+                    /* if we have a single \n, we just mark it as head->demimed
+                       and skip the rest of the checks, which would give the
+                       same result */
+                    if (head->line && rfc3676_ishardlb(head->line)) {
+                        head->demimed = TRUE;
+                        continue;
+                    }
+                    
 		    if (head->header && !head->demimed) {
-		      head->line =
-			mdecodeRFC2047(head->line, strlen(head->line),charsetsave);
-		      head->demimed = TRUE;
+                        char *ptr;
+                        
+                        /* control that we have a valid header line */
+                        if ( !_validate_header(head->line) ) {
+                            /* not a valid header line, we mark it as so to ignore it
+                               later on */
+                            head->invalid_header = TRUE;
+                            head->parsedheader = TRUE;
+                            /* the following line is probably overkill and can be skipped */
+                            head->demimed = TRUE;
+                            continue;
+                        }
+                        
+                        head->line =
+                            mdecodeRFC2047(head->line, strlen(head->line),charsetsave);
+                        head->demimed = TRUE;
 		    }
 
 		    if (head->parsedheader
 #ifdef DELETE_ME
-                        || head->attached ||
+                        || head->attached
 #endif
 			|| !head->header) {
 			continue;
 		    }
-		    if (!sscanf(head->line, "%127[^:]", head_name))
-		        continue;
 
 		    if (inlist(set_deleted, head_name)) {
                         if (!message_headers_parsed) {
@@ -2315,7 +2390,7 @@ int parsemail(char *mbox,	/* file name */
                 /* extract content-type and other values from the headers */
                 content_type_ptr = NULL;
                 for (head = headp; head; head = head->next) {
-                    if (head->parsedheader || !head->header)
+                    if (head->parsedheader || !head->header || head->invalid_header)
                         continue;
                     
                     if (!strncasecmp(head->line, "Content-Type:", 13)) {
@@ -2461,7 +2536,7 @@ int parsemail(char *mbox,	/* file name */
                 /* parsing of all Content-* related headers except for Content-Type */
 		description = NULL;
 		for (head = headp; head; head = head->next) {
-		    if (head->parsedheader || !head->header)
+		    if (head->parsedheader || !head->header || head->invalid_header)
 			continue;
                     
 		    /* Content-Description is defined ... where?? */

@@ -5,14 +5,22 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 3.0.0
 ============================
 
-2023-00-00 Jose Kahan
-	* src/{parse.c, string.c, proto.h}
+	2023-00-00 Jose Kahan
+	* src/{parse.c, print.c}
+	Fixes an issue when parsing a message with one or more invalid email
+	headers could make hypermail crash. If hypermail detects an invalid
+	header, it will mark it as such and skip it during the rest of the
+	parsing and markup generation. Some examples of invalid headers
+	are those missing a header name, value, ':\s', etc.
+
+	* src/{parse.c, string.c, proto.h} configure.in
 	extend mdecode_RFC2047() so that;
 	1) it partially supports RFC6532
 	2) if a header value is not valid UTF-8,
-	replaces it with "(wrong string)"
-	2) replaces all control characters in the
-	header values that are not \r\n\t with a '?'.
+	replaces it with "(invalid string)"
+	2) if a header value is given as a binary unencoded string,
+	it tries to detect the charset with libchardet. In case of failure,
+	it will replace the header value with "(invalid string)"
 
 	* src/parse.c
 	Fixes an error when a multipart/alternative message is missing

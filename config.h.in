@@ -35,6 +35,9 @@
 #undef HAVE_ICONV
 #undef HAVE_ICONV_H
 
+/* Define if you're using the chardet library */
+#undef HAVE_LIBCHARDET
+
 /* Define if you're using the FNV hash library */
 #undef HAVE_LIBFNV
 

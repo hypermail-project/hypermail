@@ -1,10 +1,10 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.71])
 AC_REVISION($Revision: 1.2 $)dnl
 AC_INIT
 AC_CONFIG_SRCDIR([src/hypermail.c])
-AC_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIRS([m4])
 AC_PREFIX_DEFAULT(/usr/local)
 LDFLAGS=""
@@ -58,6 +58,7 @@ if test -z "$no_ranlib"; then
 else
   RANLIB=":"
 fi
+AC_CHECK_TOOL([PKG_CONFIG], [pkg-config])
 
 dnl ===========================================================================
 dnl Determine the host type and set compliation flags as needed
@@ -159,7 +160,15 @@ dnl ===========================================================================
 dnl Checks headers
 dnl ===========================================================================
 
-AC_HEADER_STDC
+m4_warn([obsolete],
+[The preprocessor macro `STDC_HEADERS' is obsolete.
+  Except in unusual embedded environments, you can safely include all
+  ISO C90 headers unconditionally.])dnl
+# Autoupdate added the next two lines to ensure that your configure
+# script's behavior did not change.  They are probably safe to remove.
+AC_CHECK_INCLUDES_DEFAULT
+AC_PROG_EGREP
+
 
 AC_CHECK_HEADERS(alloca.h arpa/inet.h ctype.h dirent.h errno.h \
 	fcntl.h inttypes.h locale.h malloc.h netdb.h netinet/in.h pwd.h stdarg.h \
@@ -168,7 +177,20 @@ AC_CHECK_HEADERS(alloca.h arpa/inet.h ctype.h dirent.h errno.h \
 
 AC_HEADER_STAT
 AC_HEADER_DIRENT
-AC_HEADER_TIME
+m4_warn([obsolete],
+[Update your code to rely only on HAVE_SYS_TIME_H,
+then remove this warning and the obsolete code below it.
+All current systems provide time.h; it need not be checked for.
+Not all systems provide sys/time.h, but those that do, all allow
+you to include it and time.h simultaneously.])dnl
+AC_CHECK_HEADERS_ONCE([sys/time.h])
+# Obsolete code to be removed.
+if test $ac_cv_header_sys_time_h = yes; then
+  AC_DEFINE([TIME_WITH_SYS_TIME],[1],[Define to 1 if you can safely include both <sys/time.h>
+	     and <time.h>.  This macro is obsolete.])
+fi
+# End of obsolete code.
+
 
 AC_CHECK_DECLS([isblank, strcasecmp, strcasestr])
 
@@ -485,6 +507,36 @@ else
   		    [--with-pcre2=*|\'--with-pcre2=*])
   AC_SUBST([PCRE2_DEP])
 fi
+
+dnl
+dnl check for libchardet
+dnl
+
+AC_MSG_NOTICE(checking for a system libchardet)
+found_chardet=""
+if test x"$PKG_CONFIG" != x ; then 
+   cflags=`$PKG_CONFIG chardet --cflags-only-I 2>/dev/null`
+   if test $? -eq 0; then
+      APR_ADDTO(INCLUDES, [$cflags])
+      ldflags=`$PKG_CONFIG chardet --libs-only-l 2>/dev/null`
+      APR_ADDTO(EXTRA_LIBS, [$ldflags])
+      unset cflags
+      unset ldflags
+      found_chardet=yes
+      AC_DEFINE_UNQUOTED(HAVE_LIBCHARDET,[1],[Have chardet support])
+   fi
+fi
+
+if test "${found_chardet}" = "yes"; then
+      AC_MSG_RESULT(yes)
+else
+      AC_MSG_RESULT(no)
+      AC_MSG_WARN(hypermail's automatic charset detection won't be available unless you install libchardet)
+      AC_MSG_WARN(See hypermail's release notes)
+      AC_MSG_WARN(https://github.com/Joungkyun/libchardet)
+fi
+
+unset found_chardet
 
 dnl
 dnl The FNV hash library used for the nonsequential filenames
