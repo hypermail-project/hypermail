@@ -335,14 +335,14 @@ char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *
       if(set_showprogress){
 	printf("I18N: invalid multibyte sequence, from %s to %s: %s.\n",fromcharset,tocharset,string);
       }
-      origlen=trio_snprintf(origconvbuf, origbuflen,"(invalid string) %s",string);
+      origlen=trio_snprintf(origconvbuf, origbuflen,"(invalid string)");
       error = 1;
       break;
     case EINVAL:
       if(set_showprogress){
 	printf("I18N: incomplete multibyte sequence, from %s to %s: %s.\n",fromcharset,tocharset,string);
       }
-      origlen=trio_snprintf(origconvbuf, origbuflen,"(invalid string) %s",string);
+      origlen=trio_snprintf(origconvbuf, origbuflen,"(invalid string)");
       error = 1;
       break;
     }
