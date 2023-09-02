@@ -1133,7 +1133,8 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 #if defined HAVE_CHARDET && HAVE_ICONV
             char *charset;
             char *conv_string;
-            char *header_name, *header_value;
+            char header_name[129];
+            char *header_value;
             struct Push pbuf;
             
             INIT_PUSH(pbuf);
@@ -1727,7 +1728,7 @@ static void _control_attachname(char *content_type, char *attachname, size_t att
 */
 static bool _validate_header(const char *header_line)
 {
-    char header_name[128];
+    char header_name[129];
     const char *ptr;
     
     /* control that we have a header_name: header_value */
@@ -2165,6 +2166,14 @@ int parsemail(char *mbox,	/* file name */
 			continue;
 		    }
 
+                    /* we probably would be ok just with the sscanf as we
+                       validated the header line some lines above */
+                    if (!sscanf(head->line, "%127[^:]", head_name)) {
+                        head->invalid_header = TRUE;
+                        head->parsedheader = TRUE;
+                        continue;
+                    }
+                    
 		    if (inlist(set_deleted, head_name)) {
                         if (!message_headers_parsed) {
                             char *val = getsubject(head->line); /* revisit me */
