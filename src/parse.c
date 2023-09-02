@@ -2154,7 +2154,7 @@ int parsemail(char *mbox,	/* file name */
                         }
                         
                         head->line =
-                            mdecodeRFC2047(head->line, strlen(head->line),charsetsave);
+                            mdecodeRFC2047(head->line, strlen(head->line), charsetsave);
                         head->demimed = TRUE;
 		    }
 
@@ -2427,9 +2427,15 @@ int parsemail(char *mbox,	/* file name */
 				cp++;	/* pass a quote too if one is there */
                             
 			    sscanf(cp, "%128[^;\"\n\r]", charbuffer);
+                            /* @@ we need a better filter here, to remove all non US-ASCII */
                             filter_content_type_values(charbuffer);
+                            /* some old messages use DEFAULT_CHARSET or foo_CHARSET,
+                               we strip it out */
+                            filter_charset_value(charbuffer);
 			    /* save the charset info */
-			    charset = strsav(charbuffer);
+                            if (charbuffer[0] != '\0') {
+                                charset = strsav(charbuffer);
+                            }
                         }
 
 			/* now check if there's a format indicator */

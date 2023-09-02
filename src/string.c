@@ -1187,6 +1187,31 @@ bool filter_content_type_values(char *_string)
     return rv;
 }
 
+/* 
+** strips known broken UA charset names / suffixes
+**
+** returns true if any filtering was done, false
+** otherwise
+*/
+bool filter_charset_value(char *_string)
+{
+    char *cp;
+    bool rv = FALSE;
+    char *filters[] = {"DEFAULT_CHARSET", "default_charset", "_CHARSET", "_charset", NULL};
+    int i;
+
+    for (i = 0; filters[i] != NULL; i++) {
+        cp = strstr(_string, filters[i]);
+        if (cp) {
+            *cp = '\0';
+            rv = TRUE;
+            break;
+        }
+    }
+
+    return rv;
+}
+                     
 /*
 ** Strips the timezone information from long date strings, so more correct
 ** comparisons can be made between dates when looking for article replies.

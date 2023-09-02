@@ -5,7 +5,16 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 3.0.0
 ============================
 
-	2023-00-00 Jose Kahan
+2023-00-00 Jose Kahan
+	* src/{parse.c, string.c, proto.h}
+	Some old messages or broken UA used "DEFAULT_CHARSET" or "foo_CHARSET"
+	as a value for the charset attribute. We now filter out those broken
+	values from the charset value. In the case of "DEFAULT_CHARSET", the
+	end result will be equivalent to not having a charset attribute.  In
+	that case, the parser will either use the charset associated with
+	another header value or the first body part or, by default, use
+	US-ASCII.
+
 	* src/{parse.c, print.c, hypermail.h}
 	Fixes an issue when parsing a message with one or more invalid email
 	headers could make hypermail crash. If hypermail detects an invalid
