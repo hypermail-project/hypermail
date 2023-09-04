@@ -7,9 +7,10 @@ HYPERMAIL VERSION 3.0.0
 
 2023-00-00 Jose Kahan
 	* src/{parse.c}
-	If a multipart/* message had preamble with a line comprised of only the
-	RFC2046 delimiter "--" string, the parser would stop parsing the rest
-	of the message parts.
+	If a multipart/* message had an RFC2046 MIME preamble with a line
+	having "--\n" or "--\s\n", the parser would assume there was an issue
+	with the boundaries and would stop parsing the rest of the message
+	parts.
 
 	* src/{parse.c}
 	For attachment filenames, if the line was folded after the attribute
