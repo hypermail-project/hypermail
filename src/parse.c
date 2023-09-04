@@ -317,7 +317,7 @@ char *safe_filename(char *name)
     while (*np && (*np == ' ' || *np == '\t'))
 	np++;
 
-    if (!*np == '\n' || *np == '\r') {
+    if (!*np || !*np == '\n' || *np == '\r') {
         /* filename is made of only spaces; replace them with
            REPLACEMENT_CHAR */
         np = name;
