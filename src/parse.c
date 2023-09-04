@@ -1688,7 +1688,22 @@ static char *_single_content_get_charset(char *charset, char *charsetsave)
 static void _extract_attachname(char *np, char *attachname, size_t attachname_size)
 {
     char *jp;
-    
+
+        
+    /* some UA may have done line folding between filename= and the "foo" attribute value;
+       if this is the case, we skip all spaces until we find the first non-space char */
+    jp = np;
+    while (*jp && isspace(*jp)) {
+        jp++;
+    }
+    /* if we find a non space character, update np to the new position;
+       otherwise we ignore jp and just use np as it was as
+       we'll handle the only spaces case further down */
+    if (*jp && *jp != '\n' && *jp != '\r' && *jp != ';') {
+        np = jp;
+    }
+
+    /* skip the first quote */
     if (*np == '"')
         np++;
                                          
