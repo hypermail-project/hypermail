@@ -308,13 +308,22 @@ char *safe_filename(char *name)
     register char *np;
 
     np = name;
+
+    if (!np || *np == '\0') {
+        return NULL;
+    }
+
+    /* skip leading spaces in the filename */
     while (*np && (*np == ' ' || *np == '\t'))
 	np++;
 
-    if (!*np)
-	return (NULL);
+    if (!*np == '\n' || *np == '\r') {
+        /* filename is made of only spaces; replace them with
+           REPLACEMENT_CHAR */
+        np = name;
+    }
 
-    for (sp = name, np = name; *np && *np != '\n';) {
+    for (sp = name, np = name; *np && *np != '\n' && *np != '\r';) {
 	/* if valid character then store it */
 	if (((*np >= 'a' && *np <= 'z') || (*np >= '0' && *np <= '9') ||
 	     (*np >= 'A' && *np <= 'Z') || (*np == '-') || (*np == '.') ||

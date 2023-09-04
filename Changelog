@@ -6,6 +6,10 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
+	* src/{parse.c}
+	Spaces in attachment filenames were not being replaced with
+	REPLACEMENT_CHAR (_) when the filename was made of only spaces.
+
 	* src/{parse.c, string.c, proto.h}
 	Some old messages or broken UA used "DEFAULT_CHARSET" or "foo_CHARSET"
 	as a value for the charset attribute. We now filter out those broken
