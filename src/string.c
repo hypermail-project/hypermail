@@ -1197,11 +1197,11 @@ bool filter_charset_value(char *_string)
 {
     char *cp;
     bool rv = FALSE;
-    char *filters[] = {"DEFAULT_CHARSET", "default_charset", "_CHARSET", "_charset", NULL};
+    char *filters[] = {"DEFAULT_CHARSET", "_CHARSET", NULL};
     int i;
 
     for (i = 0; filters[i] != NULL; i++) {
-        cp = strstr(_string, filters[i]);
+        cp = strcasestr(_string, filters[i]);
         if (cp) {
             *cp = '\0';
             rv = TRUE;
