@@ -2021,10 +2021,16 @@ struct body *print_headers_rfc822_att(FILE *fp, struct emailinfo *email, struct 
             getname(head->line, &namep, &emailp);
             head->parsedheader = TRUE;
             if (set_spamprotect) {
-                emailp = spamify(strsav(emailp));
+                char *tmp;
+
+                tmp = spamify(emailp);
+                free(emailp);
+                emailp = tmp;
                 /* we need to "fix" the name as well, as sometimes
                    the email ends up in the name part */
-                namep = spamify(strsav(namep));
+                tmp = spamify(namep);
+                free(namep);
+                namep = tmp;
             }
             hasfrom = TRUE;
         }
