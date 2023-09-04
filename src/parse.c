@@ -1717,6 +1717,27 @@ static void _extract_attachname(char *np, char *attachname, size_t attachname_si
 }
 
 /*
+** returns TRUE if line is just a stand-alone
+** "--" or "-- "
+*/
+static bool _is_signature_separator(const char *line)
+{
+    bool rv;
+    int l = strlen(line);
+    
+    if (!strncmp(line, "--", 2)
+        && ((l == 2 &&  line[2] =='\0')
+            || (l > 2
+                && (line[2] == ' ' || line[2] == '\r' || line[2] == '\n')))) {
+        rv = TRUE;
+    } else {
+        rv= FALSE;
+    }
+
+    return rv;
+}
+
+/*
 ** if the attachname that is given is empty, searchs the Content-Type:
 ** header value for a name attribute and, if found, copies it to
 ** attachname; If in this case, the Content-Type: header value doesn't
@@ -2081,8 +2102,7 @@ int parsemail(char *mbox,	/* file name */
         if (skip_mime_epilogue) {
             int l = strlen(line);
             if ((strncmp(line, "--", 2)
-                 || (l == 2 &&  line[2] =='\0')
-                 || (l > 2 && (line[2] == ' ' || line[2] == '\r' || line[2] == '\n'))
+                 || _is_signature_separator(line)
                  || !boundary_stack_has_id(boundp, line))
                 && strncasecmp(line_buf, "From ", 5)) {
                 continue;
@@ -3028,7 +3048,8 @@ int parsemail(char *mbox,	/* file name */
 
                                 }
                                 /* a preceding non-closed boundary?  */
-                                else if (!strncmp(tmpline, "--", 2)) {
+                                else if (!strncmp(tmpline, "--", 2)
+                                         && ! _is_signature_separator(line)) {
                                     char *tmp_boundary = boundary_stack_has_id(boundp, tmpline);
 
                                     boundary_id = tmp_boundary;
@@ -3635,8 +3656,9 @@ int parsemail(char *mbox,	/* file name */
 
 		if (Mime_B) {
 		    if (boundp &&
-			!strncmp(line, "--", 2) &&
-                        boundary_stack_has_id(boundp, line)) {
+			!strncmp(line, "--", 2)
+                        && ! _is_signature_separator(line)
+                        && boundary_stack_has_id(boundp, line)) {
 			/* right at this point, we have another part coming up */
 #if DEBUG_PARSE
 			printf("hit %s\n", line);

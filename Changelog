@@ -7,6 +7,11 @@ HYPERMAIL VERSION 3.0.0
 
 2023-00-00 Jose Kahan
 	* src/{parse.c}
+	If a multipart/* message had preamble with a line comprised of only the
+	RFC2046 delimiter "--" string, the parser would stop parsing the rest
+	of the message parts.
+
+	* src/{parse.c}
 	For attachment filenames, if the line was folded after the attribute
 	and the value itself (quoted or not), parsing the filename could result
 	in a single space filename.
