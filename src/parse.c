@@ -1676,6 +1676,84 @@ static char *_single_content_get_charset(char *charset, char *charsetsave)
 }
 
 /*
+** returns TRUE if line is just a stand-alone
+** "--" or "-- "
+*/
+static bool _is_signature_separator(const char *line)
+{
+    bool rv;
+    int l = strlen(line);
+    
+    if (!strncmp(line, "--", 2)
+        && ((l == 2 &&  line[2] =='\0')
+            || (l > 2
+                && (line[2] == ' ' || line[2] == '\r' || line[2] == '\n')))) {
+        rv = TRUE;
+    } else {
+        rv= FALSE;
+    }
+
+    return rv;
+}
+
+/*
+** Some old versions of thunderbird, pine, and other UA
+** URL-escaped the <> in the In-Reply-To and first
+** Reference header values.
+** This functions normalizes them by unescaping those
+** characters.
+**
+** If any unescaping takes place, returns a new string
+** that the caller must free.
+**
+** If none unescaping happened, returns NULL.
+**
+*/
+static char * _unescape_reply_and_reference_values(char *line)
+{
+    char *ptr_lower_than;
+    char *ptr_greater_than;
+    char *c;
+    struct Push buff;
+    
+    if (!line || !*line || *line == '\n' || *line == '\r') {
+        return NULL;
+    }
+
+    ptr_lower_than = strstr(line, " %3C");
+    ptr_greater_than = strstr(line, "%3E");
+
+    /* we only do the replacement if we found both <> */
+    if (!ptr_lower_than || !ptr_greater_than) {
+        return NULL;
+    }
+
+    /* verify that we have a contiguous string between both
+     * characters */
+    for (c = ptr_lower_than + sizeof(char) * 1; c < ptr_greater_than; c++) {
+        if (isspace(*c) || *c == '\r' || *c == '\n')
+            return NULL;
+    }
+
+    /* verify what the char immediately after the ptr_greater_than to make
+       sure it's a separator or EOL */
+    c = ptr_greater_than + sizeof(char) * 3;
+    if (!isspace(*c) && *c != '\n' && *c != '\r') {
+        return NULL;
+    }
+
+    INIT_PUSH(buff);
+
+    PushNString(&buff, line, ptr_lower_than - line + 1);
+    PushByte(&buff, '<');
+    PushNString(&buff, ptr_lower_than + sizeof(char) * 4, ptr_greater_than - ptr_lower_than - sizeof(char) *4); 
+    PushString(&buff, ">");
+    PushString(&buff, ptr_greater_than + sizeof(char) * 3);
+
+    RETURN_PUSH(buff);
+}
+
+/*
 **  parses a filename in either a Content-Disposition or Content-Description
 **  line.
 **
@@ -1714,27 +1792,6 @@ static void _extract_attachname(char *np, char *attachname, size_t attachname_si
     }
     *jp = '\0';
     safe_filename(attachname);
-}
-
-/*
-** returns TRUE if line is just a stand-alone
-** "--" or "-- "
-*/
-static bool _is_signature_separator(const char *line)
-{
-    bool rv;
-    int l = strlen(line);
-    
-    if (!strncmp(line, "--", 2)
-        && ((l == 2 &&  line[2] =='\0')
-            || (l > 2
-                && (line[2] == ' ' || line[2] == '\r' || line[2] == '\n')))) {
-        rv = TRUE;
-    } else {
-        rv= FALSE;
-    }
-
-    return rv;
 }
 
 /*
@@ -2342,8 +2399,15 @@ int parsemail(char *mbox,	/* file name */
                         }
 		    }
 		    else if (!strncasecmp(head->line, "In-Reply-To:", 12)) {
+                        char *unescaped_reply_to;
                         head->parsedheader = TRUE;
                         strlftonl(head->line);
+                        unescaped_reply_to = 
+                            _unescape_reply_and_reference_values(head->line);
+                        if (unescaped_reply_to) {
+                            free(head->line);
+                            head->line = unescaped_reply_to;
+                        }
                         if (!message_headers_parsed) {
                             if (inreply) {
                                 /* we already parsed a References: header before, but
@@ -2356,6 +2420,15 @@ int parsemail(char *mbox,	/* file name */
 		    else if (!strncasecmp(head->line, "References:", 11)) {
                         head->parsedheader = TRUE;
                         if (!message_headers_parsed) {
+                            char *unescaped_references;
+                            
+                            unescaped_references =
+                                _unescape_reply_and_reference_values(head->line);
+                            if (unescaped_references) {
+                                free(head->line);
+                                head->line = unescaped_references;
+                            }
+                            
                             /*
                              * Adding threading capability for the "References"
                              * header, ala RFC 822, used only for messages that

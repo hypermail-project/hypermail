@@ -6,13 +6,20 @@ HYPERMAIL VERSION 3.0.0
 ============================
 
 2023-00-00 Jose Kahan
-	* src/{parse.c}
+	* src/parse.c
+	Some old versions of mail clients like Pine and thunderbidURL-escaped
+	the <> that separate the In-Reply-To and the first References header
+	values. This kept hypermail from finding those values and generating an
+	In-Reply-To link. The parser now unescapes those header values before
+	further processing.
+
+	* src/parse.c
 	If a multipart/* message had an RFC2046 MIME preamble with a line
 	having "--\n" or "--\s\n", the parser would assume there was an issue
 	with the boundaries and would stop parsing the rest of the message
 	parts.
 
-	* src/{parse.c}
+	* src/parse.c
 	For attachment filenames, if the line was folded after the attribute
 	and the value itself (quoted or not), parsing the filename could result
 	in a single space filename.
