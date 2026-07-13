@@ -1,10 +1,10 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.72])
 AC_REVISION($Revision: 1.2 $)dnl
 AC_INIT
 AC_CONFIG_SRCDIR([src/hypermail.c])
-AC_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS([config.h])
 AC_PREFIX_DEFAULT(/usr/local)
 LDFLAGS=""
 LIBS=""
@@ -88,7 +88,7 @@ export CFLAGS CC
 AC_SUBST(INSTALL)
 
 AC_MSG_CHECKING([that the compiler works])
-AC_RUN_IFELSE([AC_LANG_SOURCE([[ main(int ac, char **av) { return 0; } ]])],[AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)
+AC_RUN_IFELSE([AC_LANG_SOURCE([[ int main(int ac, char **av) { return 0; } ]])],[AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)
     AC_MSG_ERROR(Could not compile and run even a trivial ANSI C program - check CC.)],[AC_MSG_ERROR(Could not compile and run even a trivial ANSI C program - check CC.)])
 
 dnl ===========================================================================
@@ -163,7 +163,15 @@ dnl ===========================================================================
 dnl Checks headers
 dnl ===========================================================================
 
-AC_HEADER_STDC
+m4_warn([obsolete],
+[The preprocessor macro 'STDC_HEADERS' is obsolete.
+  Except in unusual embedded environments, you can safely include all
+  C89 headers unconditionally.])dnl
+# Autoupdate added the next two lines to ensure that your configure
+# script's behavior did not change.  They are probably safe to remove.
+AC_CHECK_INCLUDES_DEFAULT
+AC_PROG_EGREP
+
 
 AC_CHECK_HEADERS(alloca.h arpa/inet.h ctype.h dirent.h errno.h \
 	fcntl.h locale.h malloc.h netdb.h netinet/in.h pwd.h stdarg.h \
@@ -172,7 +180,20 @@ AC_CHECK_HEADERS(alloca.h arpa/inet.h ctype.h dirent.h errno.h \
 
 AC_HEADER_STAT
 AC_HEADER_DIRENT
-AC_HEADER_TIME
+m4_warn([obsolete],
+[Update your code to rely only on HAVE_SYS_TIME_H,
+then remove this warning and the obsolete code below it.
+All current systems provide time.h; it need not be checked for.
+Not all systems provide sys/time.h, but those that do, all allow
+you to include it and time.h simultaneously.])dnl
+AC_CHECK_HEADERS_ONCE([sys/time.h])
+# Obsolete code to be removed.
+if test $ac_cv_header_sys_time_h = yes; then
+  AC_DEFINE([TIME_WITH_SYS_TIME],[1],[Define to 1 if you can safely include both <sys/time.h>
+	     and <time.h>.  This macro is obsolete.])
+fi
+# End of obsolete code.
+
 
 dnl ===========================================================================
 dnl Checks for library functions.
