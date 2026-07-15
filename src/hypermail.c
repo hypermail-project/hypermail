@@ -153,6 +153,7 @@ void usage(void)
     printf("  -V            : %s\n", lang[MSG_OPTION_VERSION]);
     printf("  -x            : %s\n", lang[MSG_OPTION_X]);
     printf("  -X            : %s\n", lang[MSG_OPTION_XML]);
+    printf("  -y            : %s\n", lang[MSG_OPTION_Y]);    
     printf("  -1            : %s\n", lang[MSG_OPTION_1]);
     printf("  -L lang       : %s (", lang[MSG_OPTION_LANG]);
 
@@ -196,7 +197,7 @@ int main(int argc, char **argv)
 
     opterr = 0;
 
-#define GETOPT_OPTSTRING ("a:Ab:c:d:gil:L:m:n:o:ps:tTuvVxX0:1M?")
+#define GETOPT_OPTSTRING ("a:Ab:c:d:gil:L:m:n:o:ps:tTuvVxXy0:1M?")
 
     /* get pre config options here */
 	while ((i = getopt(argc, argv, GETOPT_OPTSTRING)) != -1) {
@@ -226,6 +227,7 @@ int main(int argc, char **argv)
 	case 'u':
 	case 'x':
 	case 'X':
+	case 'y':
 	case '0':
 	case '1':
 	case 'M':
@@ -318,6 +320,9 @@ int main(int argc, char **argv)
 	case 'X':
 	    set_writehaof = TRUE;
 	    break;
+	case 'y':
+	    set_dry_run = TRUE;
+	    break;                        
 	case '0':
 	    set_delete_msgnum = add_list(set_delete_msgnum, optarg);
 	    break;
@@ -603,12 +608,15 @@ int main(int argc, char **argv)
      * there first...
      */
 
-    checkdir(set_dir);
+    if (!set_dry_run) {
+        checkdir(set_dir);
+    }
 
     /* write the default css if any of the two custom ones was not
        declared */
-    if (! (set_icss_url && *set_icss_url) ||
-        ! (set_mcss_url && *set_mcss_url)) {
+    if (!set_dry_run
+        && ( ! (set_icss_url && *set_icss_url) ||
+             ! (set_mcss_url && *set_mcss_url))) {
         
         char *filename;
 
@@ -625,7 +633,7 @@ int main(int argc, char **argv)
      * Let's do it.
      */
 
-    if (set_uselock)
+    if (!set_dry_run && set_uselock)
 	lock_archive(set_dir);
 
     if (set_increment == -1) {
@@ -687,8 +695,15 @@ int main(int argc, char **argv)
 	    max_msgnum = set_startmsgnum - 1;
 	    loadoldheaders(set_dir);
 	}
+
 	amount_new = parsemail(set_mbox, use_stdin, set_readone, set_increment, set_dir, 
 			       set_inlinehtml, set_startmsgnum);	/* number from 0 */
+
+        if (set_dry_run) {
+            printdryrun(0, max_msgnum + 1);
+            exit(0);
+        }
+        
 	if (!set_mbox_shortened && !matches_existing(0)) {
 	    progerr("First message in mailbox does not "
 		    "match first message in archive\n"

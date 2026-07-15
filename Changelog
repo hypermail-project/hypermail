@@ -10,9 +10,14 @@ HYPERMAIL VERSION 3.0.0
 	Upgraded to 1.17, 2.72, respectively
 	Added return type to main for C compiler test in configure.ac
 
+	* hypermail.c setup.c setup.h file.c print.c print.h lang.h
+	Added a new CLI option, -y, to do a dry-run of hypermail, without
+	generating any archive; it will output to STDOUT the filenames
+	and associated Message-IDs it would have created.
+
 2024-11-08 Jose Kahan
 	* src/string.c
-	truncate Content-Type and charset field values at first illegal
+	Truncate Content-Type and charset field values at first illegal
 	character
 
 	* src/parse.c

@@ -261,6 +261,9 @@ struct language_entry {
 #define MSG_EMPTY_ARCHIVE_NOTICE                 176
 #define MSG_CSS_NORMAL_VIEW                      177
 
+/* another option that should be in hypermail.c */
+#define MSG_OPTION_Y                             178
+
 #ifdef MAIN_FILE
 
 /*
@@ -462,6 +465,7 @@ char *de[] = {       /* German */
   "Attachments for message", /* MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE */  
   "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */
   "Normal view", /* MSG_CSS_NORMAL_VIEW */
+  "Do a dry-run of hypermail, without generating any file", /* MSG_OPTION_Y -  STDOUT */
   NULL,                              /* End Of Message Table - NOWHERE*/
 };
 
@@ -650,6 +654,7 @@ char *pl[] = {                      /* English */
   "Attachments for message", /* MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE */    
   "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
   "Normal view", /* MSG_CSS_NORMAL_VIEW */
+  "Do a dry-run of hypermail, without generating any file", /* MSG_OPTION_Y - STDOUT */  
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -839,6 +844,7 @@ char *en[] = {       /* English */
   "Attachments for message", /* MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE */      
   "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
   "Normal view", /* MSG_CSS_NORMAL_VIEW */
+  "Do a dry-run of hypermail, without generating any file", /* MSG_OPTION_Y - STDOUT */  
   NULL,                         /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1039,6 +1045,7 @@ char *es[] = {       /* Espanol/Spanish */
   "Attachments for message", /* MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE */      
   "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
   "Normal view", /* MSG_CSS_NORMAL_VIEW */
+  "Do a dry-run of hypermail, without generating any file", /* MSG_OPTION_Y - STDOUT */  
   NULL,                               /* End Of Message Table */
 };
 
@@ -1230,6 +1237,7 @@ char *pt[] = {                     /* Brazilian Portuguese */
   "Attachments for message", /* MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE */        
   "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
   "Normal view", /* MSG_CSS_NORMAL_VIEW */
+  "Do a dry-run of hypermail, without generating any file", /* MSG_OPTION_Y - STDOUT */  
   NULL,                                /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1417,6 +1425,7 @@ char *fi[] = {       /* Finnish */
   "Attachments for message", /* MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE */          
   "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
   "Normal view", /* MSG_CSS_NORMAL_VIEW */
+  "Do a dry-run of hypermail, without generating any file", /* MSG_OPTION_Y - STDOUT */  
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1607,6 +1616,7 @@ char *it[] = {       /* Italian */
   "Attachments for message", /* MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE */            
   "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
   "Normal view", /* MSG_CSS_NORMAL_VIEW */
+  "Do a dry-run of hypermail, without generating any file", /* MSG_OPTION_Y - STDOUT */  
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1796,6 +1806,7 @@ char *fr[] = {       /* French */
   "Attachments for message", /* MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE */              
   "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
   "Normal view", /* MSG_CSS_NORMAL_VIEW */
+  "Do a dry-run of hypermail, without generating any file", /* MSG_OPTION_Y - STDOUT */  
   NULL,                                    /* End Of Message Table  - NOWHERE*/
 };
 
@@ -1987,6 +1998,7 @@ char *is[] = {       /* Icelandic */
   "Attachments for message", /* MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE */                
   "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
   "Normal view", /* MSG_CSS_NORMAL_VIEW */
+  "Do a dry-run of hypermail, without generating any file", /* MSG_OPTION_Y - STDOUT */  
   NULL,                               /* End Of Message Table      - NOWHERE*/
 };
 
@@ -2181,6 +2193,7 @@ char *sv[] = {
   "Attachments for message", /* MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE */                  
   "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */
   "Normal view", /* MSG_CSS_NORMAL_VIEW */
+  "Do a dry-run of hypermail, without generating any file", /* MSG_OPTION_Y - STDOUT */  
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 
@@ -2375,6 +2388,7 @@ char *no[] = {
   "Attachments for message", /* MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE */                    
   "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
   "Normal view", /* MSG_CSS_NORMAL_VIEW */
+  "Do a dry-run of hypermail, without generating any file", /* MSG_OPTION_Y - STDOUT */  
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 
@@ -2570,6 +2584,7 @@ char *gr[] = {       /* Greek */
   "Attachments for message", /* MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE */                      
   "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
   "Normal view", /* MSG_CSS_NORMAL_VIEW */
+  "Do a dry-run of hypermail, without generating any file", /* MSG_OPTION_Y - STDOUT */  
   NULL,                           	/* End Of Message Table - NOWHERE*/
 };
 
@@ -2757,6 +2772,7 @@ char *ru[] = {     /* Russian */
   "Attachments for message", /* MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE */                        
   "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
   "Normal view", /* MSG_CSS_NORMAL_VIEW */
+  "Do a dry-run of hypermail, without generating any file", /* MSG_OPTION_Y - STDOUT */  
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 
