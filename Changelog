@@ -5,6 +5,11 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 3.0.0
 ============================
 
+2026-07-15 Jose Kahan
+	* aclocale.m4 configure.ac
+	Upgraded to 1.17, 2.72, respectively
+	Added return type to main for C compiler test in configure.ac
+
 2024-11-08 Jose Kahan
 	* src/string.c
 	truncate Content-Type and charset field values at first illegal
