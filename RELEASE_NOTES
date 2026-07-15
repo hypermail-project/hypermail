@@ -1,9 +1,11 @@
 Hypermail 3.0.0
 
+* IMPORTANT * IMPORTANT * IMPORTANT * IMPORTANT
+
 If you are migrating to 3.0.0 from 2.4.0, please consult the UPGRADE
 file.
 
-*** NEW FEATURES
+*** NEW FEATURES AND CHANGES
 
 - HTML5
 
@@ -63,11 +65,12 @@ anymore.
 - Switch to PCRE2
 
 Up to now hypermail had been using PCRE behind the scenes of its
-message filtering options (docs/hmrc.html#filters). PCRE being now
-at end of life, and is no longer being actively maintained, we have now
-updated hypermail to support its successor, PCRE2. If you were using any
-of Hypermail's filtering options, we advise you to check out PCRE2's
-doc to see if there have been any changes there that may impact you:
+message filtering options (docs/hmrc.html#filters). PCRE being now at
+end of life, and is no longer being actively maintained, we have now
+updated hypermail to support its successor, PCRE2. If you were using
+any of Hypermail's filtering options, we advise you to check out
+PCRE2's doc to see if there have been any changes there that may
+impact you:
 
   https://www.pcre.org/current/doc/html/pcre2pattern.html
 
@@ -79,24 +82,30 @@ the future.
 
 - Other configuration option changes
 
-Two new configuration options, "archive_date" and "hypermail_colophon",
-allow you choose whether you want to display a line that says when the
-archive was generated (only in the indexes) as well as a a line that
-states that the archive was generated with hypermail and the
-generation date (both in messages and indexes). Both these options may
-be considered mutually exclusive as they both display the archive
-generation date. You can disable both of them.
+Two new configuration options, "archive_date" and
+"hypermail_colophon", allow you choose whether you want to display a
+line that says when the archive was generated (only in the indexes) as
+well as a a line that states that the archive was generated with
+hypermail and the generation date (both in messages and indexes). Both
+these options may be considered mutually exclusive as they both
+display the archive generation date. You can disable both of them.
 
 "empty_archive_notice" will let you customize the markup and text that
 is displayed in indices when you're converting a mbox that consists
-exclusively of messages that have been annotated as 'spam' or 'deleted'.
+exclusively of messages that have been annotated as 'spam' or
+'deleted'.
 
 "show_headers_msg_rfc822" will let you customize the list of headers
 that you want to be shown in message/rfc822 attachments. If not
 defined, hypermail will use the value of "show_headers".
 
-"archived_date" lets you control whether you want to add a line
-in the indices giving the date the archive was generated.
+"archived_date" lets you control whether you want to add a line in the
+indices giving the date the archive was generated.
+
+"ignore_content_disposition" allows you ignore the Content-Disposition
+header for a given list of MIME types. This is particularly useful for
+old Apple Mail UA that associated Content-Type: attachment with
+multipart/appledouble.
 
 Please refer to refer to hmrc.html hmrc.4 or use  hypermail -v for a
 more detailed description of the configuration options.
@@ -113,9 +122,25 @@ to.
 This new parser has allowed us to better handle message/rfc822 and
 multipart/alternative attachments, simplify hypermail's parsing code,
 and use better heuristics for determining the charset that will be
-associated with a processed message. The new parser also greatly
-simplifies adding new markup changes as it allowed to separate the
-parsing from the markup generation.
+associated with a processed message (some of these heuristics use
+libchardet). The new parser also greatly simplifies adding new markup
+changes as it allowed to separate the parsing from the markup
+generation.
+
+- libchardet
+
+Hypermail now uses libchardet (if installed) to help detect a
+message's character set when the message's Content-Type has no
+declared charset, header values are not ASCII, and there are not
+either RFC2047 encoded.
+
+  https://github.com/Joungkyun/libchardet/
+   
+- libiconv
+
+Due to the predominance of UTF-8 and the wide availabilty of libiconv,
+we have made this library mandatory, rather than optional, for the
+compilation of hypermail.
 
 - Compiler warnings and memory leaks
 
@@ -126,16 +151,31 @@ Although all major runtime cumulative memory leaks that gcc's
 code that were not tested as they depend on the use and combination of
 different hypermail configuration options.
 
+- Sample configuration file
+
+An annotated configuration file and related files is now
+available in docs/examples/hmrc.conf.
+
 - Other code improvements
 
-Read the Changelog for more details.
+Please consult the Changelog
+
+*** UNMAINTAINED FEATURES, USE AT YOUR RISK
+
+It's been a while since Hypermail's support of gdbm (--with-gdbm) for
+storing message's metadata and libfnv (--enable-libfnv) for creating
+unique filenames have been reviewed and tested.
+
+They're now downgraded to UNMAINTAINED status and may be deprecated in
+a future version unless users report they are using them and that they
+work as expected.
 
 *** DEPRECATED FEATURES
 
-The configuration variable "indextable", which let hypermail
-generate message indexes using tables has been deprecated in favor of
-using HTML and CSS. This option has been disabled.  The pertaining
-code will be removed from the code base in a future release.
+The configuration variable "indextable", which let hypermail generate
+message indexes using tables has been deprecated in favor of using
+HTML and CSS. This option has been disabled.  The pertaining code will
+be removed from the code base in a future release.
 
 The "quotes" and "finequotes" options are now in the to be deprecated
 list. The code that handles these options hasn't been updated or
@@ -184,6 +224,9 @@ those issue trackers to send your feedback.
 - translation of messages: some languagess are behind since years and
   need update. Unmaintained languages risk being dropped out in a
   future version of hypermail. Issue #78 on github.
+  All these messages should also probably be converted to UTF-8 and
+  have hypermail change them on-the-fly and hypermail should require
+  UTF-8 locales.
 
 - compilation: windows LCC support (not updated, seems very
   old). Issue #79 on github.
@@ -203,3 +246,5 @@ facilitating discussions and work on this version of hypermail.
 
 Thanks to Baptiste Daroussin, Jim (@AverageGuy), @cacsar, @schlomif,
 and Andy Valencia (@vandys) for their bug reports and code contributions.
+
+Thanks to @Joungkyun for libchardet and insights into its use and status.

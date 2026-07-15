@@ -211,7 +211,7 @@ HYPERMAIL VERSION 3.0.0
 	be taken into account internally (e.g., for threads).
 
 	* src/{hypermail.h, struct.c}
-	When a message/rfc body part contained only a stored
+	When a message/rfc822 body part contained only a stored
 	attachment (e.g., text/html), even if the attachment
 	was being added to the attachments dir, both the message/rfc822
 	headers and the link to the stored attachment were not being
