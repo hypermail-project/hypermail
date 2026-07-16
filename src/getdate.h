@@ -34,7 +34,7 @@
 # ifdef HAVE_TIME_H
 #  include <time.h>
 # endif
-#endif
+#endif /* defined (vms) */
 
 #ifdef NO_MACRO
 #undef isspace
