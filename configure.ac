@@ -49,6 +49,7 @@ AC_PROG_CPP
 AC_PROG_YACC
 AC_CHECK_PROG(YACC_CHECK,$YACC,yes)
 AS_IF([test x"$YACC_CHECK" != x"yes"], [AC_MSG_ERROR([Please install either bison or yacc and run configure again])])
+AC_PROG_EGREP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
@@ -160,16 +161,6 @@ dnl ===========================================================================
 dnl Checks headers
 dnl ===========================================================================
 
-m4_warn([obsolete],
-[The preprocessor macro `STDC_HEADERS' is obsolete.
-  Except in unusual embedded environments, you can safely include all
-  ISO C90 headers unconditionally.])dnl
-# Autoupdate added the next two lines to ensure that your configure
-# script's behavior did not change.  They are probably safe to remove.
-AC_CHECK_INCLUDES_DEFAULT
-AC_PROG_EGREP
-
-
 AC_CHECK_HEADERS(alloca.h arpa/inet.h ctype.h dirent.h errno.h \
 	fcntl.h inttypes.h locale.h malloc.h netdb.h netinet/in.h pwd.h stdarg.h \
 	stdint.h stdio.h stdlib.h string.h sys/dir.h sys/param.h sys/socket.h \
@@ -177,20 +168,6 @@ AC_CHECK_HEADERS(alloca.h arpa/inet.h ctype.h dirent.h errno.h \
 
 AC_HEADER_STAT
 AC_HEADER_DIRENT
-m4_warn([obsolete],
-[Update your code to rely only on HAVE_SYS_TIME_H,
-then remove this warning and the obsolete code below it.
-All current systems provide time.h; it need not be checked for.
-Not all systems provide sys/time.h, but those that do, all allow
-you to include it and time.h simultaneously.])dnl
-AC_CHECK_HEADERS_ONCE([sys/time.h])
-# Obsolete code to be removed.
-if test $ac_cv_header_sys_time_h = yes; then
-  AC_DEFINE([TIME_WITH_SYS_TIME],[1],[Define to 1 if you can safely include both <sys/time.h>
-	     and <time.h>.  This macro is obsolete.])
-fi
-# End of obsolete code.
-
 
 AC_CHECK_DECLS([isblank, strcasecmp, strcasestr])
 
