@@ -53,7 +53,7 @@ archive, and output to STDOUT the archive message number followed by
 the message-id associated with it for each message in the mailbox.
 
 You can scrap the same info from an existing 2.4 archive by using the
-contrib/hyp-msgid-scrapper.pl Perl script on that archive.
+contrib/hyparchive-msgid-scrapper.pl Perl script on that archive.
 
 Comparing both results will let you know which messages have been
 moved around to help you plan your strategy in upgrading an existing
@@ -71,7 +71,8 @@ that the mbox used to generate this archive is stored under
 hypermail -y -m /var/lib/my-mailing-list.mbox  >/tmp/30dryrun.txt
 
 # 2. scrap the filenames and msgid from the 2.4 archive
-contrib/hyp-msgid-scrapper.pl /var/www/my-mailing-list >/tmp/24scrapper.txt
+contrib/hyparchive-msgid-scrapper.pl /var/www/my-mailing-list \
+    >/tmp/24scrapper.txt
 
 # 3. compare the dry-run output with the scrapper; if there are no differences
 # you won't have any Message-ID issues.
