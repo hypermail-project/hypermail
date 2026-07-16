@@ -5,6 +5,19 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 2.4.1:
 ============================
 
+2026-07-16 Jose Kahan
+        * 2.4.1 released
+        This will be the last release of the 2.4.x branch.
+
+        It includes all the changes that were only available
+        on the repository as well as the autoconf updates that
+        will allow to compile this version on debian trixie and
+        other current platforms.
+
+        2.4.x can now be considered unmaintained.
+        The 3.x branch, in development since some years,
+        will replace 2.4 as the main branch.
+
 2026-07-13 Jose Kahan
         * config.ac / configure
         The C test program was missing the return type for main()
