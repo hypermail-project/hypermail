@@ -93,6 +93,7 @@ extern bool set_gmtime;
 extern bool set_isodate;
 extern bool set_require_msgids;
 extern bool set_discard_dup_msgids;
+extern bool set_dry_run;
 extern bool set_usemeta;
 extern bool set_userobotmeta;
 extern bool set_uselock;

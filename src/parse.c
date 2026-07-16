@@ -317,7 +317,7 @@ char *safe_filename(char *name)
     while (*np && (*np == ' ' || *np == '\t'))
 	np++;
 
-    if (!*np || !*np == '\n' || *np == '\r') {
+    if (!*np || !(*np == '\n') || *np == '\r') {
         /* filename is made of only spaces; replace them with
            REPLACEMENT_CHAR */
         np = name;
@@ -352,7 +352,7 @@ create_attachname(char *attachname, int max_len)
     if(max_i >= max_len)
 	max_i = max_len - 1;
     i = max_i;
-    while(i >= 0 && i > max_i - sizeof(suffix) && attachname[i] != '.')
+    while( i >= 0 && i > (max_i - (int) sizeof(suffix)) && attachname[i] != '.' )
 	--i;
     if(i >= 0 && attachname[i] == '.')
 	strncpy(suffix, attachname + i, sizeof(suffix) - 1);
@@ -902,6 +902,135 @@ char *getreply(char *line)
     RETURN_PUSH(buff);
 }
 
+/* Converts an RFC-822 header line to UTF-8. If there's no declared
+** charset, it will try to use the Content-Type charset. If it fails,
+** it will call the chardet library.
+** If the function fails to detect the charset, it will return an
+** "(invalid string)" string.
+** Input:
+** string: RFC-822 header line to convert
+** ct_charset: charset as declared in the Content-Type line
+** charsetsave: the previous detected charset for this message
+** Output
+** converted line (must be freed by caller)
+
+** charsetsave: If libchardet detects a chardet that is different from
+** the current charsetsave for this message, charsetsave will be
+** update to the newly detected charset.
+*/   
+static char *
+header_detect_charset_and_convert_to_utf8 (char *string,  char *ct_charset, char *charsetsave)
+{
+    if ( i18n_is_valid_us_ascii(string) ) {
+        /* nothing to do, passing thru */
+    }
+        
+    /* RFC6532 allows for using UTF-8 as a header value; we make
+       sure that it is valid UTF-8 */
+    else if ( i18n_is_valid_utf8(string) ) {
+        /* "default" UTF-8 charset */
+        strcpy(charsetsave, "UTF-8");
+        
+    } else {
+        char header_name[129];
+        char *header_value;
+        struct Push pbuf;
+
+        /*
+        ** save the header_name:\s
+        */
+        INIT_PUSH(pbuf);
+        
+        sscanf(string, "%127[^:]", header_name);
+        PushString(&pbuf, header_name);
+        
+        header_value = string + strlen(header_name);
+        PushByte(&pbuf, *header_value);
+        header_value++;
+        PushByte(&pbuf, *header_value);
+        header_value++;
+
+#if defined HAVE_CHARDET && HAVE_ICONV
+        {
+            /*
+             * try to detect the charset of the string and convert it to UTF-8;
+             * in case of failure, replace the header value with "(invalid string)"
+             */
+            bool did_anything = FALSE;
+        
+
+            char *detected_charset;
+            char *conv_string;
+ 
+            size_t conv_string_sz;
+        
+            /*
+            **consider the header_value everything after header_name:\s
+            */
+            
+            /* let's try the charset if present in Content-Type */
+            if (ct_charset && *ct_charset) {
+                conv_string = i18n_convstring(header_value, ct_charset, "UTF-8", &conv_string_sz);
+                if (conv_string) {
+                    if ( i18n_is_valid_utf8(conv_string) ) {
+                        PushString(&pbuf, conv_string);
+                        did_anything = TRUE;
+                    }
+                    free(conv_string);
+                }
+            }
+        
+            /* nope, let's try the previous saved_charset */
+            if ( !did_anything && charsetsave && *charsetsave) {
+                conv_string = i18n_convstring(header_value, ct_charset, "UTF-8", &conv_string_sz);
+                if (conv_string) {
+                    if ( i18n_is_valid_utf8(conv_string) ) {
+                        PushString(&pbuf, conv_string);
+                        did_anything = TRUE;
+                    }
+                    free(conv_string);
+                }        
+            }
+             
+            /* nope, let's try to libchardet */
+            if ( !did_anything ) {
+                detected_charset = i18n_charset_detect(header_value);
+                
+                if ( detected_charset ) {
+                    /* we detected a charset */
+                    if ( detected_charset[0] != '\0' ) {
+                        conv_string = i18n_convstring(header_value,
+                                                      detected_charset, "UTF-8", &conv_string_sz);
+                        if ( conv_string) {
+                            if ( i18n_is_valid_utf8(conv_string) ) {
+                                int detected_charsetlen =
+                                    strlen(detected_charset) < 255 ? strlen(detected_charset) : 255;
+                                memcpy(charsetsave, detected_charset, detected_charsetlen);
+                                charsetsave[detected_charsetlen] = '\0';
+                                PushString(&pbuf, conv_string);
+                                did_anything = TRUE;
+                            }
+                            free(conv_string);
+                        }
+                    }
+                    free(detected_charset);
+                }
+            }
+        
+            if (!did_anything) {
+                PushString (&pbuf, "(invalid string)");            
+            }
+        }        
+#else /* ! CHARDET &&  ICONV */
+        PushString (&pbuf, "(invalid string)");
+#endif        
+        free(string);
+        string = PUSH_STRING(pbuf);
+    }
+    
+    return string;
+}
+
 static char *
 extract_rfc2047_content(char *iptr)
 {
@@ -1121,75 +1250,7 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
     }
     else {
 	free(storage);
-        
-        if ( i18n_is_valid_us_ascii(string) ) {
-            /* nothing to do, passing thru */
-        }
-        
-        /* RFC6532 allows for using UTF-8 as a header value; we make
-           sure that it is valid UTF-8 */
-        else if ( i18n_is_valid_utf8(string) ) {
-            /* "default" UTF-8 charset */
-            strcpy(charsetsave, "UTF-8");
-
-        } else {
-            
-            /*
-             * try to detect the charset of the string and convert it to UTF-8;
-             * in case of failure, replace the header value with "(invalid string)"
-            */
-
-#if defined HAVE_CHARDET && HAVE_ICONV
-            char *charset;
-            char *conv_string;
-            char header_name[129];
-            char *header_value;
-            struct Push pbuf;
-            
-            INIT_PUSH(pbuf);
-
-            sscanf(string, "%127[^:]", header_name);
-
-            /* save the header_name:\s */
-            PushString(&pbuf, header_name);
-
-            header_value = string + strlen(header_name);
-            PushByte(&pbuf, *header_value);
-            header_value++;
-            PushByte(&pbuf, *header_value);
-            header_value++;
-            
-            /* consider the header_value everything after header_name:\s */
-            charset = i18n_charset_detect(header_value);
-            
-            if (!charset || charset[0] == '\0' && !strcmp(charset, "UTF-8") ) {
-                PushString (&pbuf, "(invalid string)");
-            }
-            else {
-                size_t conv_string_sz;
-                conv_string = i18n_convstring(header_value, charset, "UTF-8", &conv_string_sz);
-                if ( !i18n_is_valid_utf8(conv_string) ) {
-                    free(conv_string);
-                    PushString (&pbuf, "(invalid string)");
-                } else {
-                    int charsetlen = strlen(charset) < 255 ? strlen(charset) : 255;
-                    memcpy(charsetsave,charset,charsetlen);
-                    charsetsave[charsetlen] = '\0';
-                    PushString(&pbuf, conv_string);
-                    free(conv_string);
-                }
-                free(charset);
-            }
-            
-            free(string);
-            string = PUSH_STRING(pbuf);
-#else
-            free(string);
-            string = strsav("(invalid string)");
-#endif                    
-        }
-        
-	return string;
+        return string;
     }
 }
 
@@ -2157,7 +2218,6 @@ int parsemail(char *mbox,	/* file name */
         /* skip the mime epilogue until we find a known boundary or
            a new message */
         if (skip_mime_epilogue) {
-            int l = strlen(line);
             if ((strncmp(line, "--", 2)
                  || _is_signature_separator(line)
                  || !boundary_stack_has_id(boundp, line))
@@ -2228,6 +2288,171 @@ int parsemail(char *mbox,	/* file name */
 		 * variables
 		 */
 
+                /* the first header we'll extract is Content-Type
+                   so that we can get the charset and use it if we
+                   get messages that are not using UTF-8 but encoding
+                   their header values with 8-bit */
+                
+                /* testing separating parsing from post-processing */
+                /* extract content-type and other values from the headers */
+                content_type_ptr = NULL;
+                
+                /* @@ we were using headp and here it is bp... test with attachments */
+                   
+                for (head = bp; head; head = head->next) {
+                    if (head->parsedheader || !head->header || head->invalid_header)
+                        continue;
+                    
+                    if (!strncasecmp(head->line, "Content-Type:", 13)) {
+			char *ptr = head->line + 13;
+#define DISP_HREF 1
+#define DISP_IMG  2
+#define DISP_IGNORE 3
+			/* we must make sure this is not parsed more times
+			   than this */
+			head->parsedheader = TRUE;
+
+			while (isspace(*ptr))
+			    ptr++;
+
+                        /* @@ if ptr is bogus, initialize it to default text/plain? */
+                        /* some bogus mail messages have empty Content-Type headers */
+                        if (*ptr) {
+                            content_type_ptr = ptr;
+                            sscanf(ptr, "%128[^;]", type);
+                            filter_content_type_values(type);
+                        }
+                          
+			/* now, check if there's a charset indicator here too! */
+			cp = strcasestr(ptr, "charset=");
+			if (cp) {
+			    cp += 8;	/* pass charset= */
+			    if ('\"' == *cp)
+				cp++;	/* pass a quote too if one is there */
+                            
+			    sscanf(cp, "%128[^;\"\n\r]", charbuffer);
+                            /* @@ we need a better filter here, to remove all non US-ASCII */
+                            filter_content_type_values(charbuffer);
+                            /* some old messages use DEFAULT_CHARSET or foo_CHARSET,
+                               we strip it out */
+                            filter_charset_value(charbuffer);
+			    /* save the charset info */
+                            if (charbuffer[0] != '\0') {
+                                charset = strsav(charbuffer);
+                            }
+                        }
+
+			/* now check if there's a format indicator */
+			if (set_format_flowed) {
+                            cp = strcasestr(ptr, "format=");
+                            if (cp) {
+                                cp += 7;	/* pass charset= */
+                                if ('\"' == *cp)
+                                    cp++;	/* pass a quote too if one is there */
+                                
+                                sscanf(cp, "%128[^;\"\n\r]", charbuffer);
+                                /* save the format info */
+                                if (!strcasecmp (charbuffer, "flowed"))
+                                    textplain_format = FORMAT_FLOWED;
+                            }
+
+                            /* now check if there's a delsp indicator */
+                            cp = strcasestr(ptr, "delsp=");
+                            if (cp) {
+                                cp += 6;	/* pass charset= */
+                                if ('\"' == *cp)
+                                    cp++;	/* pass a quote too if one is there */
+                                
+                                sscanf(cp, "%128[^;\"\n\r]", charbuffer);
+                                /* save the delsp info */
+                                if (!strcasecmp (charbuffer, "yes"))
+                                    delsp_flag = TRUE;
+                            }
+			}
+                        break;
+                    }
+                    
+                } /* for content-type */
+
+                /* post-processing Content-Type:
+                   check if we have the a Content=Type, a boundary parameter,
+                   and a corresponding start bondary
+                   revert to a default type otherwise.
+                */
+                if (content_type_ptr == NULL) {
+                    /* missing Content-Type header, use default text/plain unless
+                       immediate parent is multipart/digest; in that case, use 
+                       message/rfc822 (RFC 2046) */
+                    if (multipart_stack_top_has_type(multipartp, "multipart/digest")
+                        && !attachment_rfc822) {
+                        strcpy(type, "message/rfc822");
+                    } else {
+                        strcpy(type, "text/plain");
+                    }
+                    content_type_ptr = type;
+#if DEBUG_PARSE
+                    printf("Missing Content-Type header, defaulting to %s\n", type);
+#endif
+                } else if (!strncasecmp(type, "multipart/", 10)) {
+                    boundary_id = strcasestr(content_type_ptr, "boundary=");
+#if DEBUG_PARSE
+                    printf("boundary found in %s\n", content_type_ptr);
+#endif
+                    if (boundary_id) {
+                        boundary_id = strchr(boundary_id, '=');
+                        if (boundary_id) {
+                            boundary_id++;
+                            while (isspace(*boundary_id))
+                                boundary_id++;
+                            *boundbuffer ='\0';
+                            if ('\"' == *boundary_id) {
+                                sscanf(++boundary_id, "%255[^\"]",
+                                       boundbuffer);
+                            }
+                            else
+                                sscanf(boundary_id, "%255[^;\n]",
+                                       boundbuffer);
+                            boundary_id = (*boundbuffer) ? boundbuffer : NULL;
+                        }
+                    }
+
+                    /* if we have multipart/ but there's no missing
+                       boundary attribute, downgrade the content type to
+                       text/plain */
+                    if (!boundary_id) {
+                        strcpy(type, "text/plain");
+                        content_type_ptr = type;
+#if DEBUG_PARSE
+                        printf("Missing boundary attribute in multipart/*, downgrading to text/plain\n");
+#endif                        
+                    }
+                }
+
+                /* have we reached the too many attachments per message limit?
+                   this protects against the message_node tree growing
+                   uncontrollably */
+                if ((set_max_attach_per_msg != 0)
+                    && (att_counter > set_max_attach_per_msg)) {
+                    content = CONTENT_IGNORE;
+#if DEBUG_PARSE
+                    printf("Hit max_attach_per_msg limit; ignoring further attachments for msgid %s\n", msgid);
+#endif                        
+                }
+                
+                if (content == CONTENT_IGNORE) {
+                    continue;
+                } else if (ignorecontent(type)) {
+                    /* don't save this */
+                    content = CONTENT_IGNORE;
+                    continue;
+                }
+#if 0
+                /* not sure if we should add charset save here or wait until later */
+                if (charset[0] == NULL) {
+                    strcpy(charset, set_default_charset);
+                }
+#endif
+                
                 /* parsing of all headers except for Content-* related ones */
 		for (head = bp; head; head = head->next) {
 		    char head_name[129];
@@ -2241,7 +2466,6 @@ int parsemail(char *mbox,	/* file name */
                     }
                     
 		    if (head->header && !head->demimed) {
-                        char *ptr;
                         
                         /* control that we have a valid header line */
                         if ( !_validate_header(head->line) ) {
@@ -2351,6 +2575,10 @@ int parsemail(char *mbox,	/* file name */
                                    ignore them */
                                 continue;
                             }
+                            head->line = header_detect_charset_and_convert_to_utf8 (head->line,
+                                                                                    charset,
+                                                                                    charsetsave);
+                            
                             getname(head->line, &namep, &emailp);
                             if (set_spamprotect) {
                                 char *tmp;
@@ -2371,6 +2599,9 @@ int parsemail(char *mbox,	/* file name */
                            processing it over and over here below
                         */
                         head->parsedheader = TRUE;
+                        head->line = header_detect_charset_and_convert_to_utf8 (head->line,
+                                                                                charset,
+                                                                                charsetsave);
                         strlftonl(head->line);
                     }
 		    else if (!strncasecmp(head->line, "Message-Id:", 11)) {
@@ -2387,6 +2618,9 @@ int parsemail(char *mbox,	/* file name */
 		    }
 		    else if (!strncasecmp(head->line, "Subject:", 8)) {
                         head->parsedheader = TRUE;
+                        head->line = header_detect_charset_and_convert_to_utf8 (head->line,
+                                                                                charset,
+                                                                                charsetsave);
                         strlftonl(head->line);
                         if (!message_headers_parsed) {
                             if (hassubject) {
@@ -2512,6 +2746,7 @@ int parsemail(char *mbox,	/* file name */
 		attach_force = FALSE;
 
 #if NEW_PARSER
+#if 0
                 /* testing separating parsing from post-processing */
                 /* extract content-type and other values from the headers */
                 content_type_ptr = NULL;
@@ -2640,7 +2875,7 @@ int parsemail(char *mbox,	/* file name */
 #endif                        
                     }
                 }
-
+#endif /* 0 */
                 /* a limit to avoid having the message_node tree growing
                    uncontrollably */
                 if ((set_max_attach_per_msg != 0)
@@ -5707,7 +5942,7 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
            the replies anchor */
         trio_snprintf(current_maybe_pattern, sizeof(current_maybe_pattern),
                       "<li><span class=\"heading\">%s</span>: <a href=", lang[MSG_MAYBE_REPLY]);
-        trio_snprintf(current_link_maybe_pattern, sizeof(current_maybe_pattern),
+        trio_snprintf(current_link_maybe_pattern, sizeof(current_link_maybe_pattern),
                       "<li id=\"replies\"><span class=\"heading\">%s</span>: <a href=", lang[MSG_MAYBE_REPLY]);
         trio_snprintf(current_reply_pattern, sizeof(current_reply_pattern),
                       "<li><span class=\"heading\">%s</span>: <a href=", lang[MSG_REPLY]);
@@ -5723,6 +5958,8 @@ void fixreplyheader(char *dir, int num, int remove_maybes, int max_update)
 	/* backwards compatiblity */
 	trio_snprintf(old2_maybe_pattern, sizeof(old2_maybe_pattern),
                       "<li><strong>%s:</strong> <a href=", lang[MSG_MAYBE_REPLY]);
+        trio_snprintf(old2_link_maybe_pattern, sizeof(old2_link_maybe_pattern),
+                      "<li><strong>%s</strong>: <a href=", lang[MSG_MAYBE_REPLY]);        
         trio_snprintf(old2_reply_pattern, sizeof(old2_reply_pattern),
                       "<li><strong>%s:</strong> <a href=", lang[MSG_REPLY]);
         trio_snprintf(old2_nextinthread_pattern,

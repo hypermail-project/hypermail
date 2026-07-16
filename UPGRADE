@@ -4,76 +4,263 @@ Upgrade Notes
 From Hypermail 2.4.0 to Hypermail 3.0.0
 -----------------------------------------
 
-Due to the markup changes to support HTML5 and enhance the WAI
-support, it is strongly recommended that you delete all existing HTML
-files and directories in the archive directory and that you rebuild
-your archive completely using version 3.0.0 Failure to do so may
-produce invalid markup in some of your messages or have duplicate
-links that point to replies and other messages (the 2.4.0 + the 3.0.0
-ones) in your current messages.
+!!!!WARNING!!!!
 
-Except for some few exceptions related to specific options (see here
-below), all generated markup was reviewed with the help of experts of
-the WAI community to make sure it is accessible. We may have missed
-some files that are only generated when using specific configuration
-options; if that's the case, please open an issue and we'll look at
-it.
+Read this section if you're planning to upgrade an existing archive from
+Hypermail 2.4 to 3.0. Otherwise, you may skip it.
 
-Hypermail is now using PCRE2. If you were using any of the filtering
-options, you should check if your regular expressions need updating.
-For more info see for example:
+* Important: potential backward incompatible changes when rebuilding a
+  2.4 archive with 3.0 : Message-ID headers and attachments
+
+If you're going to migrate an existing hypermail 2.4 archive to 3.0
+you have two choices:
+
+- Freeze the 2.4 archive and start a new one with the new messages
+- Upgrade your 2.4 archive to 3.0
+
+We don't recommend having an archive which mixes both 2.4 and 3.0
+messages in an active period.
+
+If you plan to upgrade an existing 2.4 archive to 3.0 please take
+notice that the parser in 3.0 has fixed issues on how it parses
+the Message-ID header and a message attachment: from the same mailbox,
+2.4 and 3.0 may generate different archives which may break existing links
+to those archives. We go into detail here below.
+
+** Message-ID headers
+  
+Hypermail uses the Message-ID associated with a message to identify if
+it has already parsed a message. When hypermail parses a message that
+has a Message-ID it has already seen, it will always skip that
+message.
+
+Hypermail 3.0 changes and fixes issues related to the Message-ID. If
+you are rebuilding an HTML archive that was created with hypermail
+2.4, the resulting hypermail 3.0 archive may have messages that were
+previously skipped existing in the new archive, or, conversely,
+messages that exited in the 2.4 archive being skipped in the new
+archive. This will break existing links to the archive.
+
+If this does matter to you, you will need to identify the messages
+that have an issue and either patch them or, in some cases, move them
+around or remove them from the archive, in order to preserve message
+sequence and existing links. More information below.
+
+If you're upgrading a 2.4 archive to 3.0, we recommend you do a
+dry-run of hypermail 3.0 by adding the -y CLI argument. This
+will instruct hypermail to process your mailbox, without generating an
+archive, and output to STDOUT the archive message number followed by
+the message-id associated with it for each message in the mailbox.
+
+You can scrap the same info from an existing 2.4 archive by using the
+contrib/hyparchive-msgid-scrapper.pl Perl script on that archive.
+
+Comparing both results will let you know which messages have been
+moved around to help you plan your strategy in upgrading an existing
+2.4 archive to 3.0.  Note that in many cases, the errors come from
+badly formed messages, often related to spam.
+
+Here's an example. Let's assume that your existing hypermail 2.4
+generated HTML archive directory is called "my-mailing-list" and that,
+for simpliciy, it is stored under /var/www/. In addition, let's assume
+that the mbox used to generate this archive is stored under
+/var/mail/my-mailing-list.mbox.
+
+[[
+# 1. do a dry-run with hypermail 3.0 and store the result in a file
+hypermail -y -m /var/lib/my-mailing-list.mbox  >/tmp/30dryrun.txt
+
+# 2. scrap the filenames and msgid from the 2.4 archive
+contrib/hyparchive-msgid-scrapper.pl /var/www/my-mailing-list \
+    >/tmp/24scrapper.txt
+
+# 3. compare the dry-run output with the scrapper; if there are no differences
+# you won't have any Message-ID issues.
+diff /tmp/30dryrun.txt /tmp/24scrapper.txt
+]]
+
+Keep in mind that the Message-IDs that both the dry-run and the
+scrapper script return are partially escaped; if you want to find the
+equivalent Message-Id in your source mailbox, you'll have to replace
+the string '&ndash;' with the '-' character and replace the string
+'_at_' with a '@' character.
+
+We give a summary of potential Message-ID issues in the sections here below
+
+The file tests/msgid-parsing.mbox is a sample and annoted mbox that
+illustrates all these issues. You can use it to generate an archive
+with both 2.4 and 3.0 to see the differences in context:
+
+[[
+   # generate an archive with hypermail 2.4
+   hypermail -m tests/msgid-parsing.mbox -d /tmp/24msgid
+   
+   # do a dry-run with hypermail 3.0 and store the result in a file
+   hypermail -y -m tests/msgid-parsing.mbox -d /tmp/30msgi >/tmp/30dryrun.txt
+
+   # scrap the filenames and msgid from the 2.4 archive
+   contrib/hyp-msgid-scrapper.pl /tmp/24msgid >/tmp/24scrapper.txt
+
+   # compare the dry-run output with the scrapper
+   diff /tmp/30dryrun.txt /tmp/24scrapper.txt
+]]
+
+*** Issue: messages having more than one Message-ID header
+
+In 2.4, the last Message-ID will be the one associated with the message.
+
+In 3.0, the first Message-ID will be the one associated with the message.
+
+*** Issue: Mime attachment headers include a Message-ID header
+
+In 2.4, if found, this Message-ID would wrongly replace the Message-ID
+associated with the parent message.
+
+In 3.0, this Message-Id header is ignored.
+
+Note that both 2.4 and 3.0 ignore Message-ID headers found in the body of
+message/rfc822 attachments.
+
+*** Possible solutions for dealing with Message-ID issues when
+    upgrading an archive from 2.4 to 3.4, to preserve message numbering
+    and links:
+
+- If a message is being skipped due to having a duplicate Message-ID
+  and you want to retain it to preserve numbering (and its content),
+  edit the original message and slightly alter the Message-ID, e.g.,
+  by adding a "dup-" prefix. You can also add a comment header
+  describing the modification you did:
+
+  Original:
+     Message-ID: <foo@example.com>
+
+  Edited:
+     Message-ID: <dup-foo@example.com>
+     X-Comment: "Edited on 20260714 to port archive to hypermail 3.0"
+
+- If a message is being shown and you want to skip it to preserve
+  numbering, you can either:
+  
+    - remove the message from the archive if it's not relevant
+    
+    - edit its Message-ID to be a duplicate of a previous one so it
+      will be skipped
+
+Example: 
+  Original:
+    Message-ID: <bar@example.com>
+    
+  Edited to use previously seen Message-ID value:
+    Message-ID: <foo@example.com>
+    X-Original-Message-ID: <bar@example.com>
+    X-Comment: "Edited on 20260714 to port archive to hypermail 3.0"
+     
+  Alternatively, you can move this message to the end of the period if
+  you still want to keep it visible and preserve numbering.
+
+** Attachment filenames
+
+When hypermail parses a message that has attachments, it will store
+those attachments in a directory called att-nnnn, where nnnn is the
+archive message number associated with that attachment.
+
+When hypermail wasn't able to correctly identify an attachments name
+from its headers, it would generate its own; likewise, if an
+attachment name already existed, it will add a number prefix to the
+filename to differentiate it.
+
+Hypermail 3.0 has an improved parser that lets it detect attachment
+names correctly. 3.0's parser also fixes issues that 2.4 had in
+detecting and handling attachments, specially in message/rfc822
+attachments that themselves that contain multipart/mixed or
+multipart/alternative attachments Due to this, the attachments that
+3.0 stores in the attachment dir as well as their names may slightly
+differ to those that 2.4 generates for the same archive. In this case,
+if you want to upgrade a 2.4 archive to 3.0 and preserve existing
+links to attachments, you should identify which attachment names (and
+content) changed in 3.0 and add links pointing the old names to the
+new ones in your server configuration.
+
+The dry-run won't generate this information. You'll need to create a
+test 3.0 archive and compare the attachments it generates against the
+2.4 archive.  * IMPORTANT: Potential backward incompatibility between
+2.4.x and 3.0.0.
+
+* Due to the markup changes to support HTML5 and enhance the WAI
+  support, it is strongly recommended that you delete all existing
+  HTML files and directories in the archive directory and that you
+  rebuild your archive completely using version 3.0.0 Failure to do so
+  may produce invalid markup in some of your messages or have
+  duplicate links that point to replies and other messages (the 2.4
+  plus the 3.0 ones) in your current messages.
+
+* Except for some few cases related to specific options (see here
+  below), all generated markup was reviewed with the help of experts
+  of the WAI community to make sure it is accessible. We may have
+  missed some files that are only generated when using specific
+  configuration options; if that's the case, please open an issue and
+  we'll look at it.
+
+* Hypermail is now using PCRE2. If you were using any of the filtering
+  options, you should check if your regular expressions need updating.
+  For more info see for example:
 
   https://wiki.php.net/rfc/pcre2-migration:
 
-All style that used to be embeeded in hypermail's generated archive
-files was moved to an external stylesheet. This stylesheet,
-hypermail.css, will be generated by default in your archive directory
-unless you use options to give a link to an external one. Together
-with this move, more markup was added to allow a better use of CSS and
-better accessibility and use of screen readers.
+* All style that used to be embedded in hypermail's generated archive
+  files was moved to an external stylesheet. This stylesheet,
+  hypermail.css, will be generated by default in your archive
+  directory unless you use options to give a link to an external
+  one. Together with this move, more markup was added to allow a
+  better use of CSS and better accessibility and use of screen
+  readers.
 
-You can find hypermail's current stylesheet under docs/hypermail.css.
-If you were already relying on an external stylesheet file, we advise
-you to check hypermail's default shipped one to see if there are
-changes you'd be interested in supporting in your own stylesheet file.
+  You can find hypermail's current stylesheet under docs/hypermail.css.
+  
+  If you were already relying on an external stylesheet file, we
+  advise you to check hypermail's default shipped one to see if there
+  are changes you'd be interested in supporting in your own stylesheet
+  file.
 
-The following configuration options are now considered deprecated and
-will be ignored. They will be removed from the code base in the next
-hypermail release:
+* The following configuration options are now considered deprecated
+  and will be ignored. They will be removed from the code base in the
+  next hypermail release:
 
-- showhr, usetable, iquotes. All of these options have been made
-  obsolete by markup changes in hypermail. You can emulate their
-  behavior by using CSS.
+  - showhr, usetable, iquotes. All of these options have been made
+    obsolete by markup changes in hypermail. You can emulate their
+    behavior by using CSS.
 
-The following options are being considered as future candidates for
-deprecation:
+* The following options are being considered as future candidates for
+  deprecation:
 
-- showhtml. We are not sure if people are using this option with
-  values 1 and 2. The markup that's produced isn't so special and we
-  think that it'd be better to merge whatever features people deem
-  useful there to the normal markup and use CSS to control
-  presentation. Minimal work has been done with this option other than
-  to make sure the produced markup is valid. The markup that's
-  produced with this option was not given a WAI review.
+  - showhtml. We are not sure if people are using this option with
+    values 1 and 2. The markup that's produced isn't so special and we
+    think that it'd be better to merge whatever features people deem
+    useful there to the normal markup and use CSS to control
+    presentation. Minimal work has been done with this option other
+    than to make sure the produced markup is valid. The markup that's
+    produced with this option was not given a WAI review.
 
-The following options are now considered unstable since version 2.4
-and are considered future candidates for deprecation unless people
-state they are being used and someone proposes to adopt their code and
-gives it more love and maintenance:
+* The following options are now considered unstable since version 2.4
+  and are considered future candidates for deprecation unless people
+  state they are being used and someone proposes to adopt their code
+  and gives it more love and maintenance:
 
-- linkquotes, searchbackmsgnum, link_to_replies, quote_hide_threshold,
-  quote_link_string. Note that all these options are related to
-  linkquotes. No work was done in 3.0.0 regarding these options.
+  - linkquotes, searchbackmsgnum, link_to_replies,
+    quote_hide_threshold, quote_link_string. Note that all these
+    options are related to linkquotes. No work was done in 3.0.0
+    regarding these options.
 
-By default, hypermail will warn you if your configuration file includes
-deprecated or planned to be deprecated options. You can switch off this
-warning by using the new "warn_deprecated_options" configuration option.
+* By default, hypermail will warn you if your configuration file
+  includes deprecated or planned to be deprecated options. You can
+  switch off this warning by using the new "warn_deprecated_options"
+  configuration option.
 
-The yearly and monthly summaries seem to have been broken since some
-long time ago. Some few updates were done but they require more
-love to make them more useful. In particular, messages are missing
-links pointing back to the summaries. Note that you could do this
-by using the different navbar options.
+* The yearly and monthly summaries seem to have been broken since some
+  long time ago. Some few updates were done but they require more love
+  to make them more useful. In particular, messages are missing links
+  pointing back to the summaries. Note that you could do this by using
+  the different navbar options.
 
 From Hypermail 2.3.0 to Hypermail 2.4.0
 -----------------------------------------
@@ -92,6 +279,7 @@ with legacy archives, it will continue to be honored.
 
 From Hypermail 1.x to Hypermail 2.x 
 -----------------------------------
+
 !!!!WARNING!!!!
 
 Hypermail 2.x HTML output files, indexes, etc are not compatible with 1.x 

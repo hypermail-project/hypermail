@@ -1,0 +1,155 @@
+From foo.bar@example.org Tue Oct 20 03:47:43 2015
+Date: Tue, 20 Oct 2015 03:47:14 +0000
+From: Foo Bar <foo.bar@example.org>
+To: sample-list@example.org
+Message-ID: <5625b942877b0_66b486533020897@example.org>
+Message-ID: <tmp@example.org>
+Mime-Version: 1.0
+Content-Type: text/plain; UTF-8
+Subject: Message-1 : Malformed message with two Message-IDs
+Status: O
+Content-Length: 391
+Lines: 14
+
+This message is malformed and has two Message-ID headers.
+
+  Message-ID: <5625b942877b0_66b486533020897@example.org>
+  Message-ID: <tmp@example.org>
+
+In hypermail 2.4, the parser takes into account only the last found
+Message-ID it finds:
+
+   tmp@example.org
+
+In hypermail 3.0, the parser takes into account only the first
+Message-ID it finds:
+
+   5625b942877b0_66b486533020897@example.org 
+
+From foo.bar@example.org Tue Oct 20 03:48:43 2015
+Date: Tue, 20 Oct 2015 03:48:14 +0000
+From: Foo Bar <foo.bar@example.org>
+To: sample-list@example.org
+Message-ID: <tmp@example.org>
+In-Reply-To: <5625b942877b0_66b486533020897@example.org>
+Mime-Version: 1.0
+Content-Type: text/plain; UTF-8
+Subject: Message-2 : duplicate message ID effect
+Status: O
+Content-Length: 548
+Lines: 13
+
+The Message-ID of this message has the same value as the second Message-ID
+of Message-1.
+
+Hypermail's parser uses the Message-ID to identify each message. If it
+finds a message with a Message-ID it parsed, it assumes it is a duplicate
+message and skips the message.
+
+In hypermail 2.4, this message won't be added to the HTML archive; It already
+parsed Message-1, which has the same Message-ID value; the parser will skip
+this message.
+
+In hypermail 3.0, this message will be added to the HTML archive; the
+parser hasn't yet parsed this Message-ID.
+
+From foo.bar@example.org Tue Oct 20 03:50:43 2015
+Date: Tue, 20 Oct 2015 03:50:14 +0000
+From: Foo Bar <foo.bar@example.org>
+To: sample-list@example.org
+Message-ID: <5625b942877b0_66b486533020899@example.org>
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary="boundary"
+Subject: Message-3:  malformed attachment that includes a Message-ID
+Status: O
+Content-Length: 1102
+Lines: 36
+
+This is a multi-part message in MIME format.
+
+--boundary
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This message has a text/plain attachment that is malformed; that
+attachment's headers include includes a Message-ID that has the same
+value as the second Message-ID of Message-1; it is also the same
+Message-ID as that of Message-2:
+
+   tmp@example.org
+
+This message has a unique Message-ID that hasn't yet been parsed:
+
+   5625b942877b0_66b486533020899@example.org
+
+Hypermail 2.4 parser will wrongly replace the Message-ID of the main
+message with that of the attachment. It will then skip the message
+because it already saw it when it parsed Message-1.
+
+Hypermail 3.0's parser doesn't have this issue. It only uses the main
+message's Message-ID, sees it has not yet seen it and parses and adds
+Message-3 to the HTML archive.
+
+--boundary
+Message-Id: tmp@example.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encodig: 8bit
+
+Second attachment for Message 3.
+
+It is malformed because it contains a Message-ID header that has already
+been parsed.
+
+--boundary--
+
+From foo.bar@example.org Tue Oct 20 03:50:43 2015
+Date: Tue, 20 Oct 2015 03:50:14 +0000
+From: Foo Bar <foo.bar@example.org>
+To: sample-list@example.org
+Message-ID: <5625b942877b0_66b486533020900@example.org>
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary="boundary"
+Subject: Message 3 showing different parsing of Message-ID between hypermail 2.4 and 3.0
+Status: RO
+Content-Length: 1285
+Lines: 38
+
+This is a multi-part message in MIME format.
+
+--boundary
+Content-Type: text/plain; charset=UTF-8
+Content-Disposition: inline
+
+This message has a message/rfc822 attachment that is forwarding
+Message 1 in this mailbox.
+
+Hypermail 2.4's parser will not add it to the archive because it will
+incorrectly use that attachment's MessageID as the one associated with
+Message 3, which it has already processed; that is, it will consider
+this message a duplicate.
+
+Hypermail 3.0's parser doesn't make that confusion and will add this message
+to the archive: Message 1 and Message 3 have different Message-ID values.
+
+--boundary
+Content-Type: message/rfc822
+Content-Description: (FWD) Message 1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+
+Date: Tue, 20 Oct 2015 03:49:14 +0000
+From: Foo Bar <foo.bar@example.org>
+To: sample-list@example.org
+Message-ID: <5625b942877b0_66b486533020897@example.org>
+Message-ID: <tmp@example.org>
+Mime-Version: 1.0
+Content-Type: text/plain; UTF-8
+Subject: Message 1 showing different parsing of Message-ID between hypermail 2.4 and 3.0
+
+In hypermail 2.4, the Message-ID for this message is tmp@example.org
+(last one found)
+
+In hypermail 3.0 the Message-ID for this message is
+5625b942877b0_66b486533020897@example.org (first one found)
+
+--boundary--

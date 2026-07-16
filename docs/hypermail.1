@@ -137,6 +137,13 @@ to submit new messages to the list the hypermail archive serves.
 This is a means of setting any variable that can be specified in a config
 file.
 .TP
+.B \-y
+This tells Hypermail to do a
+.B dry\-run
+that won't generate any archive; however it will output
+the file names and Message-IDs associated with the archive. It can help you visualize the
+issues you may have when upgrading from an older Hypermail archive to a more recent one.
+.TP
 .B \-p
 This shows a progress report as Hypermail reads in and writes out messages \- the number of files that Hypermail is reading and writing and the file names of the directory and files created are shown.
 .TP

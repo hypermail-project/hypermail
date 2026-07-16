@@ -5,6 +5,38 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 3.0.0
 ============================
 
+2026-07-15 Jose Kahan
+	* aclocale.m4 configure.ac
+	Upgraded to 1.17, 2.72, respectively
+	Added return type to main for C compiler test in configure.ac
+
+	* hypermail.c setup.c setup.h file.c print.c print.h lang.h
+	Added a new CLI option, -y, to do a dry-run of hypermail, without
+	generating any archive; it will output to STDOUT the filenames
+	and associated Message-IDs it would have created.
+
+2024-11-08 Jose Kahan
+	* src/string.c
+	Truncate Content-Type and charset field values at first illegal
+	character
+
+	* src/parse.c
+	Improve integration of libchardet for converting mail header values to
+	utf-8 / remove compiler warnings
+
+	This change let's the parset detect the charset of a message when the
+	Content-Type: header is missing the charset field or if a header value
+	is in another charset and it's not encoded using RFC2047.  To do so,
+	the parser calls a function that examines the To:, From: and Subject:
+	header values and, when they don't have valid ASCII or UTF-8 strings,
+	if it detects the charset, it will convert the header value to UTF-8
+	and use that charset for the rest of the message. If it fails to detect
+	it, it will replace the whole header value with a "(invalid string)"
+	string.
+
+	Fixed compiler warnings as reported by pedantic, unused variables
+	flags.  src/parse.c
+
 2024-11-07 Jose Kahan
 	* configure.ac, configure
 	Improve detection of libchardet (system, local dir) and enable
@@ -12,7 +44,7 @@ HYPERMAIL VERSION 3.0.0
 
 	* pkgconf, libiconv
 	Make pkgconf and libiconv mandatory for compiling hypermail
-	
+
 2024-11-06 Jose Kahan
 	* src/hypermail.c
 	If hypermail was called with its default configuration values,
@@ -189,7 +221,7 @@ HYPERMAIL VERSION 3.0.0
 	be taken into account internally (e.g., for threads).
 
 	* src/{hypermail.h, struct.c}
-	When a message/rfc body part contained only a stored
+	When a message/rfc822 body part contained only a stored
 	attachment (e.g., text/html), even if the attachment
 	was being added to the attachments dir, both the message/rfc822
 	headers and the link to the stored attachment were not being
