@@ -3,7 +3,7 @@
 # This script goes thru a hypermail html archive and outputs the file
 # name and the message-id associated with each message to stdout
 
-# usage hyp-msgid-scrapper /path/to/hypermail/archive
+# usage hyparchive-msgid-scrapper /path/to/hypermail/archive
 
 use strict;
 use warnings;
