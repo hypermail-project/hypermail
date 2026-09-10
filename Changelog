@@ -5,6 +5,11 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 3.0.0
 ============================
 
+2026-09-10 Jose Kahan
+	* str/parse.c:_validate_header()
+	Ease the requirement that there's a space between header-name and value
+	as some old UA didn't respect it.
+
 2026-07-15 Jose Kahan
 	* aclocale.m4 configure.ac
 	Upgraded to 1.17, 2.72, respectively

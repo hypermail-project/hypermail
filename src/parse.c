@@ -1900,8 +1900,10 @@ static bool _validate_header(const char *header_line)
         || !(ptr = strstr(header_line, ":"))
         || ptr == header_line
         || *(ptr + 1) == '\0'
-        || (*(ptr + 1) != ' ' && *(ptr + 1) != '\t')) {
-
+        /* relax the requirement that there's a space between header-name: value
+           as some old UA didn't respect that */
+        /* || (*(ptr + 1) != ' ' && *(ptr + 1) != '\t') */
+        ) {
         return FALSE;
     }
     
