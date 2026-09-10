@@ -1050,13 +1050,17 @@ void message_node_clear(struct message_node *node,
     if (node->bp) {
         free_body(node->bp);
     }
-    
+
     if (release_details & MN_DELETE_ATTACHMENTS) {
-        if (node->bin_filename) {
-            unlink(node->bin_filename);
-        }
-        if (node->meta_filename) {
-            unlink (node->meta_filename);
+        /* during a dry-run no attachments are created, so no need to
+           delete them */
+        if (!set_dry_run) {
+            if (node->bin_filename) {
+                unlink(node->bin_filename);
+            }
+            if (node->meta_filename) {
+                unlink(node->meta_filename);
+            }
         }
     }
     
