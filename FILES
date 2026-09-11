@@ -55,6 +55,7 @@ configs/hypermail.rc
 # 
 #  - Contributed utilities
 #
+contrib/hyparchive-scrapper.pl
 contrib/hoaf-28/haof-0.1.dtd
 contrib/hoaf-28/README
 contrib/hoaf-28/collect_snipplets.py
@@ -625,6 +626,7 @@ src/fnv/ltmain.sh
 tests/stdintest.pl
 tests/README
 tests/diff_hypermail_archives.pl
+tests/msgid-parsing.mbox
 tests/test-footer.hyp
 tests/test-index.hyp
 tests/test-msg.hyp
