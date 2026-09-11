@@ -29,7 +29,7 @@ HYPERMAIL VERSION 3.0.0
 	Improve integration of libchardet for converting mail header values to
 	utf-8 / remove compiler warnings
 
-	This change let's the parset detect the charset of a message when the
+	This change let's the parser detect the charset of a message when the
 	Content-Type: header is missing the charset field or if a header value
 	is in another charset and it's not encoded using RFC2047.  To do so,
 	the parser calls a function that examines the To:, From: and Subject:
