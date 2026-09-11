@@ -77,6 +77,7 @@ bool set_gmtime;
 bool set_isodate;
 bool set_require_msgids;
 bool set_discard_dup_msgids;
+bool set_dry_run;
 bool set_usemeta;
 bool set_userobotmeta;
 bool set_uselock;
@@ -441,6 +442,13 @@ struct Config cfg[] = {
      "# Set this to Off to accept messages without a Message-ID header.\n"
      "# By default such messages are discarded.\n", FALSE},
 
+    {"dry_run", &set_dry_run, BFALSE, CFG_SWITCH,
+     "# Set this to On if you want to do a dry-run of hypermail,\n"
+     "# This will output to stdout the archive filenames and their\n"
+     "# associated Message-ID that hypermail would have created.\n"
+     "# This can be useful to detect differences between two hypermail\n"
+     "# versions.\n", FALSE},
+        
     {"usemeta", &set_usemeta, BFALSE, CFG_SWITCH,
      "# Set this to On to store the content type of a MIME attachment in\n"
      "# a metadata file.\n", FALSE},

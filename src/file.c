@@ -88,6 +88,10 @@ void check1dir(char *dir)
 {
     struct stat sbuf;
 
+    if (set_dry_run) {
+        return;
+    }
+    
     if (stat(dir, &sbuf)) {
     /*
     ** LCC only has the short mkdir().  Fortunately, we do a chmod

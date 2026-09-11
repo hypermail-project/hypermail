@@ -1176,7 +1176,7 @@ bool filter_content_type_values(char *_string)
        value and the ; char, if yes, cut the string there;
        some spam messages craft this kind of msgs.  */
     cp = _string;
-    while (*cp && !isspace(*cp) && !iscntrl(*cp)) {
+    while (*cp && !isspace(*cp) && *cp > 0x20 && *cp < 0x7E) {
         cp++;
     }
     if (*cp != '\0') {
@@ -1200,6 +1200,22 @@ bool filter_charset_value(char *_string)
     char *filters[] = {"DEFAULT_CHARSET", "_CHARSET", NULL};
     int i;
 
+    if (!cp)
+        return FALSE;
+    
+    cp = _string;
+    /* truncates charset at first invalid character */
+    while (*cp) {
+        /* these seem to be the only valid characters for charset names
+           according to IANA
+           https://www.iana.org/assignments/character-sets/character-sets.xhtml */
+        if (!isalnum(*cp) && *cp != '_' && *cp != '-' && *cp !=':' && !isspace(*cp)) {
+            *cp = '\0';
+            break;
+        }
+        cp++;
+    }
+    
     for (i = 0; filters[i] != NULL; i++) {
         cp = strcasestr(_string, filters[i]);
         if (cp) {

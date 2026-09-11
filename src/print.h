@@ -39,6 +39,7 @@ char *print_leading_whitespace(FILE *, char *);
 
 void update_deletions(int);
 void writearticles(int, int);
+void printdryrun(int, int);
 void writedates(int, struct emailinfo *);
 void writesubjects(int, struct emailinfo *);
 void writethreads(int, struct emailinfo *);

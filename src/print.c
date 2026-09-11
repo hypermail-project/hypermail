@@ -2975,7 +2975,41 @@ void writearticles(int startnum, int maxnum)
     if (set_showprogress)
       printf("\b\b\b\b    \n");
 } /* end writearticles() */
- 
+
+/* this function is similar to writearticles but it will
+   only output filenames and their associated msgid to STDOUT */
+void printdryrun(int startnum, int maxnum)
+{
+    int num;
+    struct emailinfo *email;
+    struct body *bp;
+
+    num = startnum;
+
+    while (num < maxnum) {
+	char *msgid;
+        
+	if ((bp = hashnumlookup(num, &email)) == NULL) {
+	    ++num;
+	    continue;
+	}
+
+	if (strstr (email->msgid, "--")) {
+            msgid = convdash(email->msgid);
+        } else {
+            msgid = email->msgid;
+        }
+
+        printf("%s.%s:%s\n", message_name(email), set_htmlsuffix, msgid);
+
+        if (msgid != email->msgid) {
+            free (msgid);
+        }
+        
+	num++;
+    }
+} /* end printdryrun() */
+
 /*
 ** Write the date index...
 ** If email != NULL, write index for the subdir in which that email is.

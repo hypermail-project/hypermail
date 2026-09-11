@@ -40,11 +40,13 @@ UTF-8 inside hypermail, we need to:
    not sure at this point if we should convert all message body into
    UCS-4 and just output UTF-8 when writing the converted message.
 
-- Support for a json output
+- Support for a JSON output
 
 The idea here is to add an option to be able to output a headless
-archive, formatted into json and let other applications transform this
+archive, formatted into JSON and let other applications transform this
 data into markup. This would help separate the parsing and updating of
 messages from their presentation and probably help ease the
 customization of markup into something more modern or reactive as
 needed.
+
+Note that JSON's default encoding is UTF-8.
