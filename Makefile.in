@@ -20,13 +20,10 @@ srcdir=@srcdir@
 # This is where the HTML documentation goes
 htmldir=@htmldir@
 
-# This is where your CGI programs live
-cgidir=@cgidir@
-
 INSTALL_PROG=@INSTALL@
 
 #WNOERROR=-Werror
-#WARNINGS=$(WNOERROR) -ansi -pedantic -Wall -Wtraditional -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Dlint
+#WARNINGS=$(WNOERROR) -ansi -pedantic -Wall -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Dlint
  
 # Compiler to use
 CC=@CC@
@@ -41,7 +38,7 @@ hypermail:
 	@cd src; $(MAKE) all CC="$(CC)" \
 		CFLAGS="$(CFLAGS)" \
 		CPPFLAGS="$(CPPFLAGS)" \
-		cgidir="$(cgidir)" bindir="$(bindir)" LIBS="$(LIBS)"
+		bindir="$(bindir)" LIBS="$(LIBS)"
 
 support:   
 	@cd archive; $(MAKE) all CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" 
@@ -49,7 +46,7 @@ support:
 install: 
 	@cd src; $(MAKE) install CC="$(CC)" CFLAGS="$(CFLAGS)" \
 		CPPFLAGS="$(CPPFLAGS)"  \
-		cgidir="$(cgidir)" bindir="$(bindir)" LIBS="$(LIBS)"
+		bindir="$(bindir)" LIBS="$(LIBS)"
 	@cd docs; $(MAKE) install CC="$(CC)" CFLAGS="$(CFLAGS)" \
 		CPPFLAGS="$(CPPFLAGS)"  \
 		$(MAKEFLAGS) mandir="$(mandir)" htmldir="$(htmldir)"
@@ -58,7 +55,7 @@ install:
 		bindir="$(bindir)"
 
 uninstall: 
-	@cd src; $(MAKE) uninstall cgidir="$(cgidir)" bindir="$(bindir)" 
+	@cd src; $(MAKE) uninstall bindir="$(bindir)" 
 	@cd docs; $(MAKE) uninstall mandir="$(mandir)" htmldir="$(htmldir)"
 	@cd archive; $(MAKE) uninstall bindir="$(bindir)"
 
@@ -79,7 +76,6 @@ clobber: clean
 	rm -f config.status
 	rm -f archive/Makefile
 	rm -f docs/Makefile
-	rm -f libcgi/Makefile
 	rm -f src/Makefile
 	rm -f src/defaults.h
 	rm -f tests/testhm
@@ -90,9 +86,23 @@ clobber: clean
 distclean: clobber
 	rm -f tests/testmail
 
+# creates a distribution tar file.
+# taking care to replace the git checkout dirname by
+# by hypermail-version[-extraversion]/
+# from the values found in patchlevel.h
 tgz:
-	@(dir=`pwd`;name=`basename $$dir`;echo Creates $$name.tar.gz; cd .. ; \
-	tar -cf $$name.tar \
-           `cat $$name/FILES | grep -v "^#" | sed "s:^:$$name/:g"` ; \
-	gzip $$name.tar ; chmod a+r $$name.tar.gz ; mv $$name.tar.gz $$name/)
+	@(dir=`pwd`; source_dir=`basename $$dir`; \
+	version=`sed -nr '1s/.*VERSION\s+\"(.*)\"/\1/p' patchlevel.h`; \
+	extraversion=`sed -nr '2s/.*EXTRAVERSION\s+\"(.*)\"/-\1/p' patchlevel.h`; \
+	version=$$version$$extraversion; \
+	target_dir="hypermail-$$version"; \
+	echo creates $$target_dir.tgz from $$source_dir; \
+	cd .. ; \
+	transform_exp=s,^$$source_dir/,$$target_dir/,; \
+	tar -cf $$target_dir.tar \
+	    --transform=$$transform_exp \
+	    `cat $$source_dir/FILES | grep -v "^#" | sed "s:^:$$source_dir/:g"`; \
+	gzip $$target_dir.tar ; chmod a+r $$target_dir.tar.gz ; \
+	mv $$target_dir.tar.gz $$source_dir/ ; \
+	)
 

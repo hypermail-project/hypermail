@@ -14,9 +14,6 @@ bindir=@bindir@
 # This is where the man page goes
 mandir=@mandir@
 
-# This is where your CGI programs live
-cgidir=@cgidir@
-
 # Executable program suffix (.exe for windows, null for Unix systems)
 SUFFIX=@suffix@
 
@@ -28,44 +25,51 @@ INSTALL_PROG=@INSTALL@
 
 SPLINTFLAGS=@INCLUDES@
 
-PCRE_DEP=@PCRE_DEP@
+PCRE2_DEP=@PCRE2_DEP@
 TRIO_DEP=@TRIO_DEP@
 FNV_DEP=@FNV_DEP@
 
 #WNOERROR=-Werror
-#WARNINGS=$(WNOERROR) -ansi -pedantic -Wall -Wtraditional -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Dlint
+# Note that -ansi and -std=iso9899:199409 seem to be equivalent in gcc as it
+# doesn't support the
+# for clang -std=c90
+# @@ make this part of autoconf?
+#WARNINGS=$(WNOERROR) -Wall -Wextra -std=iso9899:199409  -pedantic -Wno-overlength-strings -Wall -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Dlint
+
+# While waiting to put this in configure.ac
+# Note: if you're debugging memory issues (leaks, overruns, unallocated memory use)
+# Add the folowing two warnings -fsanitize=address -fno-omit-frame-pointer
+# and  -static-libasan to LIBS
 
 CFLAGS=@CFLAGS@ $(WARNINGS)
 CPPFLAGS=@CPPFLAGS@ @INCLUDES@
 YACC=@YACC@
-NETLIBS=@LIBS@
 LDFLAGS=@LDFLAGS@
-MISC_LIBS= -lpcre -ltrio -lm
+MISC_LIBS= -lpcre2-8 -ltrio -lm
 OPT_LIBS=@EXTRA_LIBS@
 
 INCS=		domains.h hypermail.h lang.h proto.h \
 		../config.h ../patchlevel.h dsprintf.h threadprint.h \
-		getdate.h getname.h finelink.h txt2html.h search.h
+		getdate.h getname.h finelink.h txt2html.h search.h \
+		utf8.h
 
 SRCS=		base64.c date.c domains.c file.c hypermail.c lang.c lock.c \
-		mem.c parse.c print.c printfile.c string.c struct.c uudecode.c\
+		mem.c parse.c print.c printfile.c printcss.c string.c struct.c uudecode.c\
 		dmatch.c setup.c threadprint.c getdate.c getname.c\
 		finelink.c txt2html.c search.c quotes.c
 
 OBJS=		base64.o date.o domains.o file.o hypermail.o lang.o lock.o \
-		mem.o parse.o print.o printfile.o string.o struct.o uudecode.o\
+		mem.o parse.o print.o printfile.o printcss.o string.o struct.o uudecode.o\
 		dmatch.o setup.o threadprint.o getdate.o getname.o\
 		finelink.o txt2html.o search.o quotes.o
-
-MAILOBJS=	mail.o ../libcgi/libcgi.a
 
 .c.o:
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) $<
 
-all:    @PCRE_DEP@ @TRIO_DEP@ @FNV_DEP@ hypermail$(SUFFIX) mail$(SUFFIX) lang$(SUFFIX)
+all:    @PCRE2_DEP@ @TRIO_DEP@ @FNV_DEP@ hypermail$(SUFFIX) lang$(SUFFIX)
 
-pcre/.libs/libpcre.a:
-	@cd pcre; $(MAKE) CC="$(CC)" ; rm -f .libs/lib*.so*
+pcre2/.libs/libpcre2-8.a:
+	@cd pcre2; $(MAKE) CC="$(CC)" ; rm -f .libs/lib*.so*
 
 trio/libtrio.a:
 	@cd trio; $(MAKE) CC="$(CC)"
@@ -77,32 +81,24 @@ hypermail$(SUFFIX): $(OBJS)
 	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(OBJS) $(OPT_LIBS) $(MISC_LIBS)
 	chmod 0755 $@
 
-mail$(SUFFIX):	$(MAILOBJS)
-	$(CC) -o $@ $(CFLAGS) $(MAILOBJS) $(NETLIBS) -lm
-	chmod 0755 $@
-
 lang$(SUFFIX): lang.c lang.h
 	$(CC) -DLANG_PROG $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) -o $@ lang.c $(MISC_LIBS)
-
-../libcgi/libcgi.a:
-	@cd ../libcgi; $(MAKE) all CC="$(CC)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)"
 
 getdate.c: getdate.y getdate.h
 	@echo "Expect 13 shift/reduce conflicts."
 	$(YACC) getdate.y
 	@mv -f y.tab.c getdate.c
 
+convert-css: ../docs/hypermail.css ../contrib/css_to_c.pl
+	@echo "Converting ../docs/hypermail.css to printcss.c"
+	@perl ../contrib/css_to_c.pl ../docs/hypermail.css > printcss.c
+
 install: all
 	@if [ ! -d $(bindir) ]; then mkdir -p $(bindir); fi
 	$(INSTALL_PROG) -s -c -m 0755 hypermail$(SUFFIX) $(bindir)
 
-mail.install:
-	@if [ ! -d $(cgidir) ]; then mkdir -p $(cgidir); fi
-	$(INSTALL_PROG) -s -c -m 0755 mail$(SUFFIX) $(cgidir)
-
 uninstall:
 	rm -f $(bindir)/hypermail$(SUFFIX)
-	rm -f $(cgidir)/mail$(SUFFIX)
 
 insight:
 	$(MAKE) CC="insight" 
@@ -122,31 +118,24 @@ splint:
 lint:	
 	lint $(SRCS) 2>&1 | tee lint.out
 
-lint_mail:	
-	lint mail.c 2>&1 | tee lint.out
-	@(cd ../libcgi; $(MAKE) lint 2>&1 | tee -a ../lint.out)
-
 clean:
-	rm -f hypermail$(SUFFIX) mail$(SUFFIX) lang$(SUFFIX)
+	rm -f hypermail$(SUFFIX) lang$(SUFFIX)
 	rm -f *.o .pure *qx *qv *.ln core
 	rm -f .inslog tca.map lint.out splint.out
 	rm -f getdate.c
-	@(if test "$(PCRE_DEP)" != "" ; then cd pcre; $(MAKE) clean; fi)
+	@(if test "$(PCRE2_DEP)" != "" ; then cd pcre2; $(MAKE) clean; fi)
 	@(if test "$(TRIO_DEP)" != "" ; then cd trio; $(MAKE) clean; fi)
 	@(if test "$(FNV_DEP)" != "" ; then cd fnv; $(MAKE) clean; fi)
-	@cd ../libcgi; $(MAKE) clean
 
 clobber: clean
-	@(if test "$(PCRE_DEP)" != "" ; then cd pcre; rm -f *.lock; fi)
+	@(if test "$(PCRE_DEP2)" != "" ; then cd pcre2; rm -f *.lock; fi)
 	@(if test "$(TRIO_DEP)" != ""; then cd trio; rm -f *.lock; fi)
 	@(if test "$(FNV_DEP)" != "" ; then cd fnv; $(MAKE) clobber; fi)
-	@cd ../libcgi; $(MAKE) clobber
 
 distclean: clobber
-	@(if test "$(PCRE_DEP)" != "" ; then cd pcre; $(MAKE) distclean; fi)
+	@(if test "$(PCRE2_DEP)" != "" ; then cd pcre2; $(MAKE) distclean; fi)
 	@(if test "$(TRIO_DEP)" != ""; then cd trio; $(MAKE) clean; fi)
 	@(if test "$(FNV_DEP)" != "" ; then cd fnv; $(MAKE) distclean; fi)
-	@cd ../libcgi; $(MAKE) distclean
 
 #
 # Regenerate this dependency list with gcc -MM *.c:
@@ -170,15 +159,18 @@ hypermail.o: hypermail.c hypermail.h ../config.h ../patchlevel.h proto.h \
 lang.o: lang.c hypermail.h ../config.h ../patchlevel.h proto.h lang.h
 lock.o: lock.c hypermail.h ../config.h ../patchlevel.h proto.h lang.h \
  setup.h
-mail.o: mail.c ../libcgi/cgi.h ../libcgi/../config.h ../config.h
 mem.o: mem.c hypermail.h ../config.h ../patchlevel.h proto.h lang.h
 parse.o: parse.c hypermail.h ../config.h ../patchlevel.h proto.h lang.h \
  setup.h struct.h uudecode.h base64.h search.h getname.h parse.h print.h
 print.o: print.c hypermail.h ../config.h ../patchlevel.h proto.h lang.h \
  setup.h struct.h printfile.h print.h parse.h txt2html.h finelink.h \
  threadprint.h
+printcss.o: printcss.c hypermail.h ../config.h ../patchlevel.h proto.h \
+ lang.h setup.h
 printfile.o: printfile.c hypermail.h ../config.h ../patchlevel.h proto.h \
  lang.h setup.h print.h printfile.h struct.h
+printcss.o: printcss.c hypermail.h ../config.h ../patchlevel.h proto.h \
+ lang.h  setup.h
 quotes.o: quotes.c hypermail.h ../config.h ../patchlevel.h proto.h lang.h \
  setup.h
 search.o: search.c hypermail.h ../config.h ../patchlevel.h proto.h lang.h \
@@ -186,7 +178,7 @@ search.o: search.c hypermail.h ../config.h ../patchlevel.h proto.h lang.h \
 setup.o: setup.c hypermail.h ../config.h ../patchlevel.h proto.h lang.h \
  defaults.h setup.h struct.h print.h
 string.o: string.c hypermail.h ../config.h ../patchlevel.h proto.h lang.h \
- setup.h parse.h uconvert.h
+ setup.h parse.h uconvert.h utf8.h
 struct.o: struct.c hypermail.h ../config.h ../patchlevel.h proto.h lang.h \
  dmatch.h setup.h struct.h parse.h getname.h
 threadprint.o: threadprint.c hypermail.h ../config.h ../patchlevel.h \
@@ -195,3 +187,4 @@ txt2html.o: txt2html.c hypermail.h ../config.h ../patchlevel.h proto.h \
  lang.h setup.h print.h finelink.h txt2html.h
 uudecode.o: uudecode.c hypermail.h ../config.h ../patchlevel.h proto.h \
  lang.h setup.h uudecode.h
+

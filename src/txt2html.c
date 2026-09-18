@@ -2,6 +2,20 @@
 ** Copyright (C) 1997, Peter McCluskey (pcm@rahul.net)
 ** Based fairly closely on Seth Golub's txt2html.pl, Revision: 1.24
 ** (http://www.cs.wustl.edu/~seth/txt2html/)
+**
+** This program and library is free software; you can redistribute it and/or 
+** modify it under the terms of the GNU (Library) General Public License 
+** as published by the Free Software Foundation; either version 3
+** of the License, or any later version. 
+** 
+** This program is distributed in the hope that it will be useful, 
+** but WITHOUT ANY WARRANTY; without even the implied warranty of 
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+** GNU (Library) General Public License for more details. 
+** 
+** You should have received a copy of the GNU (Library) General Public License
+** along with this program; if not, write to the Free Software 
+** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA 
 */
 
 #include "hypermail.h"
@@ -68,17 +82,19 @@ static char *chomp(char *line)
 static int convert_to_hrule(const char *line)
 {
     int count_hrule_chars = 0;
-    while (*line && isspace(*line))
+    while (*line && isspace(*line)) {
 	++line;
-	while (*line == '-' || *line == '_' || *line == '~' || *line == '=' || *line == '*') {
+    }
+    while (*line == '-' || *line == '_' || *line == '~' || *line == '=' || *line == '*') {
 	if (!count_hrule_chars || *line == line[-1])
 	    ++count_hrule_chars;
 	else
 	    return 0;
 	++line;
     }
-    while (isspace(*line))
+    while (isspace(*line)) {
 	++line;
+    }
     return (!*line && count_hrule_chars >= hrule_min);
 }
 
@@ -91,9 +107,10 @@ static int find_vertical_repeats(const struct body *bp)
 	return 0;
     }
     i = (isquote(bp->line) ? strlen(get_quote_prefix()) : 0);
-    if (i > strlen(bp->line))
+    if (i > strlen(bp->line)) {
 	return 0;
-	for (; i < MAXLINE; ++i) {
+    }
+    for (; i < MAXLINE; ++i) {
 	int j;
 	const struct body *bp2 = bp->next;
 	if (!bp->line[i] || i > strlen(bp2->line) || !bp2->line[i]) {
@@ -270,9 +287,9 @@ static void endlist(FILE *fp, int n)
 	    fprintf(fp, "\n%s</ol>\n", list_indent);
 	}
 	else {
-            snprintf(errmsg, sizeof(errmsg),
-                "Encountered list of unknown type %d\n", list[listnum - 1]);
-	    progerr(errmsg);
+            trio_snprintf(errmsg, sizeof(errmsg),
+                          "Encountered list of unknown type %d\n", list[listnum - 1]);
+            progerr(errmsg);
 	}
     }
     islist = (listnum != 0);
@@ -423,8 +440,10 @@ static int iscaps(const char *line)
 	if (islower(*line) || *line == '<')
 	    return 0;
 	if (isupper(*line)) {
-	    if (++count_uppercase >= min_caps_length)
+	    if (++count_uppercase >= min_caps_length) {
 		found_enough_uppercase = 1;
+                break;
+            }
 	}
 	else
 	    count_uppercase = 0;
@@ -440,10 +459,12 @@ static char *unhyphenate1(struct Push *uwbuf, const char *next_line, char *line,
 	PushByte(uwbuf, *next_line++);
     if (*next_line == '-')	/* something like 'one-of-a-kind'? */
 	return line;
-    while (*next_line && strchr(")}].,:;'\">", *next_line))
+    while (*next_line && strchr(")}].,:;'\">", *next_line)) {
 	PushByte(uwbuf, *next_line++);	/* include any punct with word */
-	if (isupper(PUSH_STRING(*uwbuf)[0]) && islower((PUSH_STRING(*uwbuf))[1]))
-		return line;	/* capitalization probably means separate word */
+    }
+    if (isupper(PUSH_STRING(*uwbuf)[0]) && islower((PUSH_STRING(*uwbuf))[1])) {
+        return line;	/* capitalization probably means separate word */
+    }
     INIT_PUSH(buffer);
     PushNString(&buffer, line, len - 2);
     PushString(&buffer, PUSH_STRING(*uwbuf));	/* concatenate 2 parts of word */
@@ -527,7 +548,7 @@ void txt2html(FILE *fp, struct emailinfo *email, const struct body *bp, bool rep
 	fprintf(fp, "</pre>\n");
     }
     if (!in_pre_block && convert_to_hrule(line)) {
-	fprintf(fp, "<hr>\n");
+	fprintf(fp, "<hr />\n");
 	line[0] = 0;
 	was_hrule = 1;
     }
@@ -556,7 +577,7 @@ void txt2html(FILE *fp, struct emailinfo *email, const struct body *bp, bool rep
     }
 
 	if (!islist && !in_pre_block && !is_blank_line && !inquote && !is_blank_prev && prev_line_length < short_line_length && !was_hrule && !was_par && !islist && !was_break) {
-	fprintf(fp, "<br>\n");
+	fprintf(fp, "<br />\n");
 	was_break = 1;
     }
 
@@ -573,13 +594,13 @@ void txt2html(FILE *fp, struct emailinfo *email, const struct body *bp, bool rep
 
     if (isquote(line)) {
 	if (!was_quote_prefix && !was_break && !was_par && !was_hrule) {
-	    fprintf(fp, "<br>\n");
+	    fprintf(fp, "<br />\n");
 	    was_break = 1;
 	}
 	if (!set_linkquotes) {
-	    fprintf(fp, "<i class=\"%s\">", find_quote_class(line));
+	    fprintf(fp, "<span class=\"quote %s\">", find_quote_class(line));
 	    ConvURLs(fp, chomp(line), email->msgid, email->subject, email->charset);
-	    fprintf(fp, "</i><br>\n");
+	    fprintf(fp, "</span><br />\n");
 	}
 		else if (handle_quoted_text(fp, email, bp, line, inquote, quote_num, replace_quoted, maybe_reply)) {
 	    ++quote_num;
@@ -600,6 +621,10 @@ void txt2html(FILE *fp, struct emailinfo *email, const struct body *bp, bool rep
     }
     if (is_caps_line)
 	fprintf(fp, "</%s>\n", caps_tag);
+    if (was_par) {
+	fprintf(fp, "</p>\n");
+        was_par = 0;
+    }
     is_blank_prev = is_blank_line;
     if (!isquote(line))
 	inquote = was_quote_prefix = 0;

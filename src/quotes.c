@@ -18,10 +18,9 @@
 
 #include "hypermail.h"
 #include "setup.h"
-#include "string.h"
 #include <ctype.h>
 #if ! HAVE_MEMMOVE
-#include "pcre/internal.h"
+#include "pcre2/src/pcre2_internal.h"
 #endif
 
 #define MAX_QPREFIX_GUESSES 8
@@ -112,22 +111,22 @@ char *remove_hypermail_tags(char *line)
 		memmove(p, p + 4, strlen(p + 4) + 1);
 	}
 	else if (set_mailcommand) {
-	    const char *p2 = set_mailcommand;
-	    int len = strlen(p2);
-	    if (strchr(p2, '$'))
-		len = strchr(p2, '$') - p2;
-	    if (!strncmp(p + 9, p2, len)) {
-		char *p3 = strstr(p + 9 + len, "\">");
-		if (p3) {
-		    memmove(p, p3 + 2, strlen(p3 + 2) + 1);
-		    p3 = strcasestr(p, "</a>");
-		    if (p3)
-			memmove(p3, p3 + 4, strlen(p3 + 4) + 1);
+	    const char *local_p2 = set_mailcommand;
+	    int len = strlen(local_p2);
+	    if (strchr(local_p2, '$'))
+		len = strchr(local_p2, '$') - local_p2;
+	    if (!strncmp(p + 9, local_p2, len)) {
+		char *local_p3 = strstr(p + 9 + len, "\">");
+		if (local_p3) {
+		    memmove(p, local_p3 + 2, strlen(local_p3 + 2) + 1);
+		    local_p3 = strcasestr(p, "</a>");
+		    if (local_p3)
+			memmove(local_p3, local_p3 + 4, strlen(local_p3 + 4) + 1);
 		}
 	    }
 	}
     }
-    while ((p = strcasestr(buffer, "<a name=\"")) && isdigit(p[9])
+    while ((p = strcasestr(buffer, "<a id=\"")) && isdigit(p[9])
 	   && isdigit(p[10]) && isdigit(p[11]) && isdigit(p[12])
 	   && (p1 = strstr(p, "qlink"))) {
 	const char *p2 = strstr(p1, "\">");
@@ -324,18 +323,27 @@ char *find_quote_class(char *line)
 int compute_quoted_percent(struct body *bp)
 {
     int inheader = 1;
+#ifdef IS_THIS_USED_20230503
     int insig = 0;
+#endif
     int count_quoted = 0;
     int count_lines = 0;
+
     while (bp != NULL) {
-	if ((bp->line)[0] == '\n')
+        if (!bp->line) {
+            bp = bp->next;
+            continue;
+        } else if ((bp->line)[0] == '\n') {
 	    inheader = 0;
-	else if (inheader) {
-	    bp = bp->next;
-	    continue;
-	}
+        } else if (inheader) {
+            bp = bp->next;
+            continue;
+        }
+
+#ifdef IS_THIS_USED_20230503
 	if (is_sig_start(bp->line))
 	    insig = 1;
+#endif
 
 	if (isquote(bp->line))
 	    ++count_quoted;

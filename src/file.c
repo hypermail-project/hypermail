@@ -3,11 +3,12 @@
 **         VeriFone Inc./Hewlett-Packard. All Rights Reserved.
 ** Kevin Hughes, kev@kevcom.com 3/11/94
 ** Kent Landfield, kent@landfield.com 4/6/97
+** Hypermail Project 1998-2023
 ** 
 ** This program and library is free software; you can redistribute it and/or 
 ** modify it under the terms of the GNU (Library) General Public License 
-** as published by the Free Software Foundation; either version 2 
-** of the License, or any later version. 
+** as published by the Free Software Foundation; either version 3
+** of the License, or any later version.
 ** 
 ** This program is distributed in the hope that it will be useful, 
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of 
@@ -63,7 +64,7 @@ int isfile(char *path)
 
     if (stat(path, &stbuf))
 	return 0;
-    return ((stbuf.st_mode & S_IFMT) == S_IFREG) ? 1 : 0;
+    return (S_ISREG(stbuf.st_mode)) ? 1 : 0;
 }
 
 /*
@@ -76,7 +77,7 @@ int isdir(char *path)
 
     if (stat(path, &stbuf))
 	return 0;
-    return ((stbuf.st_mode & S_IFMT) == S_IFDIR) ? 1 : 0;
+    return (S_ISDIR(stbuf.st_mode)) ? 1 : 0;
 }
 
 /*
@@ -87,6 +88,10 @@ void check1dir(char *dir)
 {
     struct stat sbuf;
 
+    if (set_dry_run) {
+        return;
+    }
+    
     if (stat(dir, &sbuf)) {
     /*
     ** LCC only has the short mkdir().  Fortunately, we do a chmod
@@ -98,7 +103,7 @@ void check1dir(char *dir)
 	if (errno != ENOENT || mkdir(dir, set_dirmode) < 0) {
 #endif
             if (errno != EEXIST) {
-		snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_CANNOT_CREATE_DIRECTORY], dir);
+		trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_CANNOT_CREATE_DIRECTORY], dir);
 		progerr(errmsg);
 	    }
 	}
@@ -106,7 +111,7 @@ void check1dir(char *dir)
 			printf(" %s \"%s\", %s %o.\n", lang[MSG_CREATING_DIRECTORY], dir, lang[MSG_MODE], set_dirmode);
 
 	if (chmod(dir, set_dirmode) == -1) {
-			snprintf(errmsg, sizeof(errmsg), "%s \"%s\" to %o.", lang[MSG_CANNOT_CHMOD], dir, set_dirmode);
+            trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\" to %o.", lang[MSG_CANNOT_CHMOD], dir, set_dirmode);
 	    progerr(errmsg);
 	}
     }
@@ -139,7 +144,7 @@ void checkdir(char *dir)
 		if (errno != ENOENT || mkdir(dir, set_dirmode) < 0) {
 #endif
 		    if (errno != EEXIST) {
-			snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_CANNOT_CREATE_DIRECTORY], dir);
+			trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\".", lang[MSG_CANNOT_CREATE_DIRECTORY], dir);
 			progerr(errmsg);
 		    }
 		}
@@ -150,7 +155,7 @@ void checkdir(char *dir)
 		    printf(" %s \"%s\", %s %o.\n", lang[MSG_CREATING_DIRECTORY], dir, lang[MSG_MODE], set_dirmode);
 
 		if (chmod(dir, set_dirmode) == -1) {
-		    snprintf(errmsg, sizeof(errmsg), "%s \"%s\" to %o.", lang[MSG_CANNOT_CHMOD], dir, set_dirmode);
+		    trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\" to %o.", lang[MSG_CANNOT_CHMOD], dir, set_dirmode);
 		    progerr(errmsg);
 		}
 	    }
@@ -288,13 +293,13 @@ void readconfigs(char *path, int cmd_show_variables)
 	** location for the config file and go on to try $HOME.
 	*/
         if ((pp = getpwuid(getuid())) != NULL) {
-			snprintf(tmppath, sizeof(tmppath), "%s%s", pp->pw_dir, path + 1);	/* AUDIT biege: who gurantees that path+1 contains data? */
+            trio_snprintf(tmppath, sizeof(tmppath), "%s%s", pp->pw_dir, path + 1);	/* AUDIT biege: who gurantees that path+1 contains data? */
             ConfigInit(tmppath);
         } 
 	else
 #endif
             if ((ep = getenv("HOME")) != NULL) { /* AUDIT biege: possible BOF.. but it's not setuid.. so why to care? */
-			snprintf(tmppath, sizeof(tmppath), "%s%s", ep, path + 1);	/* AUDIT biege: who gurantees that path+1 contains data? */
+                trio_snprintf(tmppath, sizeof(tmppath), "%s%s", ep, path + 1);	/* AUDIT biege: who gurantees that path+1 contains data? */
             ConfigInit(tmppath);
         }
         /* 
@@ -317,7 +322,7 @@ void symlink_latest()
     ** skip that whole thing and ignore that option.
     */
 #ifdef __LCC__
-    snprintf(errmsg, sizeof(errmsg),
+    trio_snprintf(errmsg, sizeof(errmsg),
 	"WARNING: latest_folder not supported in Win32 environment.\n");
     fprintf(stderr, "%s", errmsg);
 #else
@@ -330,13 +335,13 @@ void symlink_latest()
     trio_snprintf(filename, MAXFILELEN, "%s%s", set_dir, set_latest_folder);
 
     if (!stat(filename, &stbuf) && unlink(filename)) {
-		snprintf(errmsg, sizeof(errmsg), "%s \"%s\" (latest_folder option).", lang[MSG_CANNOT_UNLINK], filename);
+        trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\" (latest_folder option).", lang[MSG_CANNOT_UNLINK], filename);
 	progerr(errmsg);
 	return;
     }
 
     if (symlink(latest_folder_path, filename)) {
-		snprintf(errmsg, sizeof(errmsg), "%s \"%s\" (latest_folder option).", lang[MSG_CANNOT_CREATE_SYMLINK], filename);
+        trio_snprintf(errmsg, sizeof(errmsg), "%s \"%s\" (latest_folder option).", lang[MSG_CANNOT_CREATE_SYMLINK], filename);
 	progerr(errmsg);
 	return;
     }
@@ -392,7 +397,7 @@ int find_max_msgnum()
 	    return -1;
 	dir = opendir(s_dir);
 	if (dir == NULL) {
-			snprintf(errmsg, sizeof(errmsg), "internal error find_max_msgnum opening \"%s\".", s_dir);
+            trio_snprintf(errmsg, sizeof(errmsg), "internal error find_max_msgnum opening \"%s\".", s_dir);
 	    progerr(errmsg);
 	}
     }

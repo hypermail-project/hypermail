@@ -242,7 +242,7 @@ static int addb(const char *token, struct body *bp)
     if (!text_tree) {
 	next_token = (struct search_text *)malloc(max_tokens * sizeof(struct search_text));
 	if (!next_token) {
-	    snprintf(errmsg, sizeof(errmsg), "Couldn't allocate %d bytes of memory.", max_tokens * sizeof(struct search_text));
+	    trio_snprintf(errmsg, sizeof(errmsg), "Couldn't allocate %d bytes of memory.", max_tokens * sizeof(struct search_text));
 	    progerr(errmsg);
 	}
 	memset(next_token, 0, max_tokens * sizeof(struct search_text));
@@ -254,7 +254,7 @@ static int addb(const char *token, struct body *bp)
 	if (!p) {
 	    *pp = p = next_token++;
 	    if (next_token >= text_tree + max_tokens) {
-		snprintf(errmsg, sizeof(errmsg), "Too many distinct tokens(%d)", max_tokens);
+		trio_snprintf(errmsg, sizeof(errmsg), "Too many distinct tokens(%d)", max_tokens);
 		progerr(errmsg);
 	    }
 	    p->left = p->right = NULL;
@@ -269,8 +269,8 @@ static int addb(const char *token, struct body *bp)
 #ifdef COUNT_TOKEN_FREQ
 	    p->count = 1;
 #endif
-	    if (!next_itoken >= max_tokens) {
-		snprintf(errmsg, sizeof(errmsg), "Internal error - too many distinct tokens.");
+	    if (!(next_itoken >= max_tokens)) {
+		trio_snprintf(errmsg, sizeof(errmsg), "Internal error - too many distinct tokens.");
 		progerr(errmsg);
 	    }
 	    return p->itok;
@@ -303,10 +303,10 @@ static void add_bigram(BIGRAM_TYPE b1, BIGRAM_TYPE b2, struct body *bp, char *pt
 	    printf("bigram_count %d\n\n", bigram_count);
 		bigram_tree = (struct bigram_tree_entry *)malloc(bigram_count * sizeof(struct bigram_tree_entry));
 	if (!bigram_tree) {
-			snprintf(errmsg, sizeof(errmsg), "Couldn't allocate %d bytes of memory.", bigram_count * sizeof(struct bigram_tree_entry));
+            trio_snprintf(errmsg, sizeof(errmsg), "Couldn't allocate %d bytes of memory.", bigram_count * sizeof(struct bigram_tree_entry));
 	    progerr(errmsg);
 	}
-		memset(bigram_tree, 0, bigram_count * sizeof(struct bigram_tree_entry));
+        memset(bigram_tree, 0, bigram_count * sizeof(struct bigram_tree_entry));
 	next_bigram = bigram_tree;
     }
     ++bi_times_entered;
@@ -454,9 +454,10 @@ static void add_search_text(struct body *bp, int msgnum)
     char *ptr = bp->line;
     int bigram_index = 0;
     char token[MAXLINE];
-    if (!start_time)
+    if (!start_time) {
 	start_time = time(NULL);
-	while ((bp = tokenize_body(bp, token, &ptr, &bigram_index, TRUE)) != NULL) {
+    }
+    while ((bp = tokenize_body(bp, token, &ptr, &bigram_index, TRUE)) != NULL) {
 	addb(token, bp);
 	++bigram_count;
     }
@@ -474,9 +475,10 @@ static void add_bigrams(struct body *bp, int msgnum)
     char *ptr = bp->line;
     char token[MAXLINE];
     int itok;
-    if (!start_time)
+    if (!start_time) {
 	start_time = time(NULL);
-	while ((bp = tokenize_body(bp, token, &ptr, &bigram_index, TRUE)) != NULL) {
+    }
+    while ((bp = tokenize_body(bp, token, &ptr, &bigram_index, TRUE)) != NULL) {
 	itok = ENCODE_TOKEN(token);
 	if (last_itok)
 	    add_bigram(last_itok, itok, bp, ptr);
@@ -574,6 +576,8 @@ void analyze_headers(int max_num)
     add_old_replies();
 }
 
+#ifdef IS_THIS_USED_20230503
+/* maybe this function was used for debugging? */
 static void print_count(struct search_text *t)
 {
     if (t->left)
@@ -584,6 +588,7 @@ static void print_count(struct search_text *t)
     if (t->right)
 	print_count(t->right);
 }
+#endif
 
 static int better_match(struct body *bp, const char *matched_string, const char *last_matched_string)
 {
@@ -610,7 +615,7 @@ static int better_match(struct body *bp, const char *matched_string, const char 
     return 0;
 }
 
-static void check_match(struct bigram_list *bigram, struct body *bp, char *ptr, int max_msgnum, String_Match * match_info, const char *match_start_ptr, const char *exact_line)
+static void check_match(struct bigram_list *bigram, struct body *bp, char *ptr, int local_max_msgnum, String_Match * match_info, const char *match_start_ptr, const char *exact_line)
 {
     int match_len = 1;
     int alloc_len = 0;
@@ -626,7 +631,7 @@ static void check_match(struct bigram_list *bigram, struct body *bp, char *ptr, 
     int b_index = 0;
     int msgnum = bigram->bp->msgnum;
     bp3 = bigram->bp;
-    if (msgnum < max_msgnum && bp3) {
+    if (msgnum < local_max_msgnum && bp3) {
 	ptr3 = bp3->line + bigram->offset;
 	while (1) {
 	    bp2 = tokenize_body(bp2, token2, &ptr2, &b2_index, TRUE);
@@ -693,7 +698,7 @@ static void check_match(struct bigram_list *bigram, struct body *bp, char *ptr, 
 ** Find the best match for a line from the bodies of prior messages  
 */
 
-int search_for_quote(char *search_line, char *exact_line, int max_msgnum, String_Match * match_info)
+int search_for_quote(char *search_line, char *exact_line, int local_max_msgnum, String_Match * match_info)
 {
     char *ptr = search_line;
     char token[MAXLINE];
@@ -729,11 +734,11 @@ int search_for_quote(char *search_line, char *exact_line, int max_msgnum, String
 	struct bigram_list *bigram;
 	bigram = find_bigram(last_itok, itok);
 	if (!bigram)
-			printf("Warning, internal inconsistency in search_for_quote:\n(%d,%d) %s %d best %d, msg %d %s || %s\n", last_itok, itok, token, dummy, match_info->match_len_tokens, max_msgnum, ptr, search_line);
+			printf("Warning, internal inconsistency in search_for_quote:\n(%d,%d) %s %d best %d, msg %d %s || %s\n", last_itok, itok, token, dummy, match_info->match_len_tokens, local_max_msgnum, ptr, search_line);
 	++count_tokens;
 	while (bigram) {
 	    ++count_matches;
-			check_match(bigram, bp, ptr, max_msgnum, match_info, match_start_ptr, exact_line);
+			check_match(bigram, bp, ptr, local_max_msgnum, match_info, match_start_ptr, exact_line);
 	    if (match_info->match_len_bytes == search_len)
 		break;
 	    bigram = bigram->next;
@@ -750,9 +755,9 @@ int search_for_quote(char *search_line, char *exact_line, int max_msgnum, String
 	tokenize_body(bp, token, &next_exact_ptr, &dummy, TRUE);
     }
     if (0)
-		printf("%d times %d searches %d tokens %d matches tries %f\n", max_msgnum, count_searched, count_tokens, count_matches, (float)count_matches / count_tokens);
+		printf("%d times %d searches %d tokens %d matches tries %f\n", local_max_msgnum, count_searched, count_tokens, count_matches, (float)count_matches / count_tokens);
     len = match_info->match_len_bytes;
-    if (max_msgnum == -1)
+    if (local_max_msgnum == -1)
 		printf("best_match_len %d (%d) len %d search_len %d %d; %s.\n", match_info->match_len_tokens, match_info->msgnum, len, search_len, match_info->match_len_bytes, match_info->last_matched_string);
 	if (match_info->match_len_tokens > 1 && (len > search_len / 2 || len > 40)) {
 	if ((ptr = strchr(match_info->last_matched_string, '\n')) != NULL)
@@ -762,7 +767,7 @@ int search_for_quote(char *search_line, char *exact_line, int max_msgnum, String
 	if (match_info->match_len_tokens > 1 && (len > search_len / 2 || len > 40)
 	&& len > match_info->match_len_bytes / 2)
 	if (0)
-			printf("#almost %d best_match_len %d len %d search_len %d %d.\n", max_msgnum, match_info->match_len_tokens, len, search_len, match_info->match_len_bytes);
+			printf("#almost %d best_match_len %d len %d search_len %d %d.\n", local_max_msgnum, match_info->match_len_tokens, len, search_len, match_info->match_len_bytes);
 
     if (match_info->last_matched_string != NULL)
 	free(match_info->last_matched_string);

@@ -1,9 +1,9 @@
 
                              Hypermail
 
-                          Version:  2.4.x
+                          Version:  3.0.x
 
-This is a release of the 2.4.x version of hypermail.
+This is a release of the 3.0.x version of hypermail.
 
 Hypermail is a program that takes a file of mail messages in UNIX mailbox
 format and generates a set of cross-referenced HTML documents. 
@@ -13,25 +13,17 @@ SECURITY WARNING:
    server side includes (SSI) enabled unless you are sure you know what 
    you are doing. 
 
-WARNING: 
-   There once existed a program call "mail" that came with hypermail.
-   'mail' utility has not installed by default for the last two years.  
-   This program has been disabled because it was probably easy for spammers 
-   to use as an open relay. It also had problems with enabling malicious 
-   use of JavaScript and CRLF Injection.  The 'mail' utility is a historic 
-   reclic and will not be supplied in future versions.  Its functionality 
-   has been replaced with a warning that anyone using it should remove it 
-   immediately.  
-
 See the INSTALL file to get started. For a description of how to use it,
 see the hypermail.html, hmrc.html, and hypermail-faq.html files that come
 in the docs/ directory.
-Please refer to Changelog for the list of recent changes.
 
-Hypermail is distributed under the GNU GPL license (see the file COPYING for
-details). Some programs that are distributed with it in the archive and
-contrib directories have different licenses - check the individual files for
-details.
+Please refer to Release Notes and the Changelog for the list of recent
+changes.
+
+Hypermail is distributed under the GNU GPL license (see the file
+LICENSE.txt for details). Some programs that are distributed with it
+in the archive and contrib directories have different licenses - check
+the individual files for details.
 
 Hypermail Background:
 =====================
@@ -59,7 +51,7 @@ EIT's net.disappearance:
 A very old and established government contractor company called 
 Electronic Instrumentation and Technology Inc. made legal moves to 
 obtain the eit.com domain. Since VeriFone/HP had no interest in keeping 
-EIT, dissolved it completely.  As this company had a trademark on EIT, 
+EIT, it dissolved it completely.  As this company had a trademark on EIT, 
 the domain name was given to them. Elizabeth Batson of EIT/VeriFone/HP 
 informed Kevin he could maintain all his old software himself wherever 
 he wished to put it.
@@ -109,7 +101,6 @@ accordingly.
    * contrib - contributed hypermail relate utilities
    * configs - sample hypermail configuration files,
    * docs    - documentation and documentation support files,
-   * libcgi  - support library for the mail utility,
    * src     - here's the beef,
    * tests   - directory for supporting local testing,
 
@@ -154,7 +145,7 @@ Getting Help:
 Additionally:
 =============
 
-    You'll find the image "hypermail.gif" included with the source;
+    You'll find the image "hypermail.png" included with the source;
     this icon is for your use in your Hypermail-related pages and links 
     to them. If you are talented with graphics and would like to donate
     new icons and images to the hypermail effort, please feel free.

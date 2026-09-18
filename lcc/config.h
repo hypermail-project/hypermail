@@ -142,7 +142,7 @@
 #define GDBM 1
 
 /* PCRE (Perl regular expressions) */
-#define HAVE_PCRE 1
+#define HAVE_PCRE2 1
 
 /* Whether you want function version of ctype functions  */
 #undef NO_MACRO

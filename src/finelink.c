@@ -59,7 +59,7 @@ static struct body *place_anchor(const String_Match * match_info,
 	    if (*ptr == match_info->start_match) {
 		strcpy(token, last_ptr);
 		*last_ptr = 0;
-		fprintf(fp2, "%s<a name=\"%s\">", buffer, anchor);
+		fprintf(fp2, "%s<a id=\"%s\">", buffer, anchor);
 		strcpy(buffer, token);
 		*ptr = last_ptr0;
 		return bp;
@@ -86,7 +86,7 @@ static struct body *place_anchor(const String_Match * match_info,
 	if (0)
 	    printf("No match found %s; %s", anchor, buffer);
     }
-    fprintf(fp2, "<a name=\"%s\">", anchor);
+    fprintf(fp2, "<a id=\"%s\">", anchor);
     return bp;
 }
 
@@ -95,7 +95,9 @@ static int place_a_end(const String_Match * match_info, struct body **bp, char *
     int index;
     char token[MAXLINE];
     char *ptr1 = buffer;
+#ifdef IS_THIS_NEEDED_20230503
     char *last_ptr = ptr1;
+#endif
     char *tptr;
     if (!*bp)
 	return FALSE;
@@ -106,7 +108,9 @@ static int place_a_end(const String_Match * match_info, struct body **bp, char *
 	    fprintf(fp2, "%s</a>%s", buffer, token);
 	    return TRUE;
 	}
+#ifdef IS_THIS_NEEDED_20230503        
 	last_ptr = ptr1;
+#endif
 	if (!(tptr = strstr(ptr1, *ptr))) {
 	    int len = (4 * strlen(*ptr)) / 5;
 	    char *temp1 = (char *)emalloc(len + 1);
@@ -168,7 +172,7 @@ static int add_anchor(int msgnum, int quoting_msgnum, int quote_num, const char 
     }
     tmpfilename = htmlfilename("tmp", ep, "tmp");	/* AUDIT biege: where is the tmp-file created? cwd? what about checking the return-value */
     if ((fp2 = fopen(tmpfilename, "w")) == NULL) {
-	snprintf(errmsg, sizeof(errmsg), "Couldn't write \"%s\".", tmpfilename);
+	trio_snprintf(errmsg, sizeof(errmsg), "Couldn't write \"%s\".", tmpfilename);
 	progerr(errmsg);
     }
     while (fgets(buffer, sizeof(buffer), fp1)) {
@@ -242,11 +246,11 @@ static int add_anchor(int msgnum, int quoting_msgnum, int quote_num, const char 
 	remove(tmpfilename);
     else {
 	if (rename(tmpfilename, filename) == -1) {
-	    snprintf(errmsg, sizeof(errmsg), "Couldn't rename \"%s\" to %s.", tmpfilename, filename);
+	    trio_snprintf(errmsg, sizeof(errmsg), "Couldn't rename \"%s\" to %s.", tmpfilename, filename);
 	    progerr(errmsg);
 	}
 	if (chmod(filename, set_filemode) == -1) {
-	    snprintf(errmsg, sizeof(errmsg), "Couldn't chmod \"%s\" to %o.", filename, set_filemode);
+	    trio_snprintf(errmsg, sizeof(errmsg), "Couldn't chmod \"%s\" to %o.", filename, set_filemode);
 	    progerr(errmsg);
 	}
     }
@@ -430,7 +434,7 @@ int handle_quoted_text(FILE *fp, struct emailinfo *email, const struct body *bp,
 	    tmpline[part2 - line] = 0;
 	}
 	if (set_link_to_replies)
-	    fprintf(fp, "<a name=\"qlink%d\"></a>", quote_num);
+	    fprintf(fp, "<a id=\"qlink%d\"></a>", quote_num);
 	p2 = ConvURLsString(part2, email->msgid, email->subject, email->charset);
 	if (replacing)
 	    fprintf(fp, fmt1, url1, set_quote_link_string, p2 ? p2 : "");
@@ -510,7 +514,7 @@ int get_new_reply_to()
  * "In reply to"
 */
 
-void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_reply_to)
+void replace_maybe_replies(const char *filename, struct emailinfo *ep, int local_new_reply_to)
 {
     char tmpfilename[MAXFILELEN];
     char buffer[MAXLINE];
@@ -520,15 +524,15 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
     char *ptr;
     static const char *prev_patt0 = ".html\">[ Previous ]</a>";
 
-    if (!hashnumlookup(new_reply_to, &ep2))
+    if (!hashnumlookup(local_new_reply_to, &ep2))
 	return;
-    snprintf(tmpfilename, sizeof(tmpfilename), "%s/aaaa.tmp", set_dir);	/* AUDIT biege: poss. BOF. */
+    trio_snprintf(tmpfilename, sizeof(tmpfilename), "%s/aaaa.tmp", set_dir);	/* AUDIT biege: poss. BOF. */
     if ((fp1 = fopen(filename, "r")) == NULL) {
-        snprintf(errmsg, sizeof(errmsg), "Couldn't read \"%s\".", filename);
+        trio_snprintf(errmsg, sizeof(errmsg), "Couldn't read \"%s\".", filename);
 	progerr(errmsg);
     }
     if ((fp2 = fopen(tmpfilename, "w")) == NULL) {
-        snprintf(errmsg, sizeof(errmsg), "Couldn't write \"%s\".", tmpfilename);
+        trio_snprintf(errmsg, sizeof(errmsg), "Couldn't write \"%s\".", tmpfilename);
 	progerr(errmsg);
     }
     while (fgets(buffer, sizeof(buffer), fp1)) {
@@ -541,9 +545,9 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
 		char *tmpptr = convchars(ep2->subject, ep2->charset);
 		if (tmpptr) {
 		    char *path = get_path(ep, ep2);
-                    fprintf(fp2,"[ <a href=\"%s%.4d.%s\" title=\"%s: &quot;%s&quot;\">%s</a> ]\n", 
-			    path, new_reply_to, set_htmlsuffix, lang[MSG_LTITLE_IN_REPLY_TO], 
-			    ep2->name, tmpptr ? tmpptr : "");
+                    fprintf(fp2,"<li><a href=\"%s%.4d.%s\">%s</a></li>\n", 
+			    path, local_new_reply_to, set_htmlsuffix,
+			    tmpptr ? tmpptr : "");
 		    free(tmpptr);
 		}
 	  }
@@ -552,10 +556,10 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
 	        char *tmpptr = convchars(ep2->subject, ep2->charset);
 		if (tmpptr) {
 		    char *path = get_path(ep, ep2);
-                    fprintf(fp2, "<li><dfn>%s</dfn> " 
-			    "<a href=\"%s%.4d.%s\" title=\"%s\">%s: \"%s\"</a></li>\n", 
+                    fprintf(fp2, "<li><span class=\"heading\">%s</span> " 
+			    "<a href=\"%s%.4d.%s\">%s: \"%s\"</a></li>\n", 
 			    lang[MSG_IN_REPLY_TO], path, 
-			    new_reply_to, set_htmlsuffix, lang[MSG_LTITLE_IN_REPLY_TO], 
+			    local_new_reply_to, set_htmlsuffix,
 			    ep2->name, tmpptr ? tmpptr : "");
 		    free(tmpptr);
 		}
@@ -565,7 +569,7 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
 		char *tmpptr = convchars(ep2->subject, ep2->charset);
 		if (tmpptr) {
 		    char *path = get_path(ep, ep2);
-                    fprintf(fp2, "<li> <strong>%s:</strong> " "<a href=\"%s%.4d.%s\">%s: \"%s\"</a>\n", lang[MSG_IN_REPLY_TO], path, new_reply_to, set_htmlsuffix, ep2->name, tmpptr ? tmpptr : "");
+                    fprintf(fp2, "<li> <strong>%s:</strong> " "<a href=\"%s%.4d.%s\">%s: \"%s\"</a>\n", lang[MSG_IN_REPLY_TO], path, local_new_reply_to, set_htmlsuffix, ep2->name, tmpptr ? tmpptr : "");
 		    free(tmpptr);
 		}
 	  }
@@ -577,9 +581,9 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
 		    "<strong>%s:</strong>",
 		    "<li> <b>Previous message:</b> <a href=\"",
 		    "<li> <strong>%s:</strong> <a href=\"",
-		    "<li><dfn>%s</dfn>: <a href=\"",
-		    "<li><dfn>%s</dfn>: <a href=\"",
-		    "<li><dfn>%s</dfn>: <a href=\"",
+		    "<li><span class=\"heading\">%s</span>: <a href=\"",
+		    "<li><span class=\"heading\">%s</span>: <a href=\"",
+		    "<li><span class=\"heading\">%s</span>: <a href=\"",
 		    NULL
 		};
 		static const int indices[] = { MSG_MAYBE_IN_REPLY_TO,
@@ -596,9 +600,9 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
 		int suppress = 0;
 		for (i = 0; patts[i]; ++i) {
 		    char temp[256];
-		    snprintf(temp,sizeof(temp), patts[i], lang[indices[i]]);
+		    trio_snprintf(temp,sizeof(temp), patts[i], lang[indices[i]]);
 		    if ((ptr = strcasestr(buffer, temp))
-			&& (i < 4 || new_reply_to == atoi(ptr + strlen(temp)))) {
+			&& (i < 4 || local_new_reply_to == atoi(ptr + strlen(temp)))) {
 			suppress = 1;
 			break;
 		    }
@@ -608,7 +612,7 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
 	    }
 	    /* check for old critmail format */
 	    if ((ptr = strstr(buffer, prev_patt0))
-		&& new_reply_to == atoi(ptr - 4)
+		&& local_new_reply_to == atoi(ptr - 4)
 		&& !strncasecmp(ptr - 13, "<a href", 7)) {
 		ptr[-13] = 0;
 	    }
@@ -619,7 +623,7 @@ void replace_maybe_replies(const char *filename, struct emailinfo *ep, int new_r
     fclose(fp2);
 
     if (rename(tmpfilename, filename) == -1) {
-	snprintf(errmsg, sizeof(errmsg), "Couldn't rename \"%s\" to %s.", tmpfilename, filename);
+	trio_snprintf(errmsg, sizeof(errmsg), "Couldn't rename \"%s\" to %s.", tmpfilename, filename);
 	progerr(errmsg);
     }
 }

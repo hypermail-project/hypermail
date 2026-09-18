@@ -1,6 +1,240 @@
 Upgrade Notes
 ==============
 
+From Hypermail 2.4.0 to Hypermail 3.0.0
+-----------------------------------------
+
+!!!!WARNING!!!!
+
+Read this section if you're planning to upgrade an existing archive
+from Hypermail 2.4 to 3.0. Otherwise, you may skip it.
+
+* Important: potential backward incompatible changes when rebuilding a
+  2.4 archive with 3.0 : Message-ID headers and attachments
+
+If you're going to migrate an existing hypermail 2.4 archive to 3.0
+you have two choices:
+
+- freeze the 2.4 archive and start a new one with the new messages
+
+- upgrade your 2.4 archive to 3.0 by deleting the previous archive and
+  making a new one with 3.0 from the original mbox files.
+
+Due to markup changes, you should not keep a hypermail archive which
+mixes both version 2.4 and 3.0 messages in an active period.
+
+If you plan to upgrade an existing 2.4 archive to 3.0 please take
+notice that the parser in 3.0 has fixed issues on how it parses the
+Message-ID header and MIME message attachments: from the same mailbox,
+2.4 and 3.0 may generate different archives which may break existing
+links to a given archive's messages and attachments. Here below we go
+into detail into these two parser changes and how they may affect an
+existing archive.
+
+** Message-ID headers
+  
+Hypermail uses the Message-ID associated with a message to identify if
+it has already parsed a message. When hypermail parses a message that
+has a Message-ID it has already seen, it will always skip that
+message.
+
+Hypermail 3.0 changes and fixes issues related to the Message-ID. If
+you are rebuilding an HTML archive that was created with hypermail
+2.4, the resulting hypermail 3.0 archive may have messages that were
+previously skipped existing in the new archive, or, conversely,
+messages that exited in the 2.4 archive being skipped in the new
+archive. This will break existing links to the archive.
+
+If this does matter to you, you will need to identify the messages
+that have an issue and either patch them or, in some cases, move them
+around or remove them from the archive, in order to preserve message
+sequence and existing links. More information below.
+
+If you're upgrading a 2.4 archive to 3.0, we recommend you do a
+dry-run of hypermail 3.0 by adding the -y CLI argument. This will
+instruct hypermail to process your mailbox, without generating an
+archive, and output to STDOUT the archive message number followed by
+the message-id associated with it for each message in the mailbox.
+
+You can scrap the same info from an existing 2.4 archive by using the
+contrib/hyparchive-scrapper.pl Perl script on that archive.
+
+Comparing both results will let you know which messages have been
+moved around to help you plan your strategy in upgrading an existing
+2.4 archive to 3.0.  Note that in many cases, the errors come from
+badly formed messages, often related to spam.
+
+Here's an example. Let's assume that your existing hypermail 2.4
+generated HTML archive directory is called "my-mailing-list" and that,
+for simpliciy, it is stored under /var/www/. In addition, let's assume
+that the mbox used to generate this archive is stored under
+/var/mail/my-mailing-list.mbox.
+
+[[
+
+# 1. do a dry-run with hypermail 3.0 and store the result in a file
+
+  hypermail3.0 -y -m /var/lib/my-mailing-list.mbox  >/tmp/30dryrun.txt
+
+# 2. scrap the filenames and msgid from the 2.4 archive
+
+  contrib/hyparchive-scrapper.pl /var/www/my-mailing-list \
+      >/tmp/24scrapper.txt
+
+# 3. compare the dry-run output with the scrapper; if there are no differences
+# you won't have any Message-ID issues.
+
+  diff /tmp/30dryrun.txt /tmp/24scrapper.txt
+  
+]]
+
+Keep in mind that the Message-IDs that both the dry-run and the
+scrapper script return are partially escaped; if you want to find the
+equivalent Message-Id in your source mailbox, you'll have to replace
+the string '&ndash;' with the '-' character and replace the string
+'_at_' with a '@' character. (N.B., if needed the scrapper script can
+unescape the Message-ID if you use the CLI option -u).
+
+We give a summary of potential Message-ID issues in the sections here
+below.
+
+The file tests/msgid-parsing.mbox is a sample and annoted mbox that
+illustrates all these issues. You can use it to generate an archive
+with both 2.4 and 3.0 to see the differences in context:
+
+[[
+
+# 1. generate an archive with hypermail 2.4
+   
+   hypermail2.4 -m tests/msgid-parsing.mbox -d /tmp/24msgid
+   
+# 2. do a dry-run with hypermail 3.0 and store the result in a file
+   
+   hypermail3.0 -y -m tests/msgid-parsing.mbox -d /tmp/30msgi >/tmp/30dryrun.txt
+
+# 3. scrap the filenames and msgid from the 2.4 archive
+   
+   contrib/hyparchive-scrapper.pl /tmp/24msgid >/tmp/24scrapper.txt
+
+# 4. compare the dry-run output with the scrapper
+   
+   diff /tmp/30dryrun.txt /tmp/24scrapper.txt
+   
+]]
+
+*** Issue: messages having more than one Message-ID header
+
+In 2.4, the last Message-ID will be the one associated with the message.
+
+In 3.0, the first Message-ID will be the one associated with the message.
+
+*** Issue: Mime attachment headers include a Message-ID header
+
+In 2.4, if found, this Message-ID would wrongly replace the Message-ID
+associated with the parent message.
+
+In 3.0, this Message-Id header is ignored.
+
+Note that both 2.4 and 3.0 ignore Message-ID headers found in the body
+of message/rfc822 attachments.
+
+*** Possible solutions for dealing with Message-ID issues when
+    upgrading an archive from 2.4 to 3.4, to preserve message
+    numbering and links:
+
+- If a message is being skipped due to having a duplicate Message-ID
+  and you want to retain it to preserve numbering (and its content),
+  edit the original message and slightly alter the Message-ID, e.g.,
+  by adding a "dup-" prefix. You can also add a comment header
+  describing the modification you did:
+
+  Original:
+     Message-ID: <foo@example.com>
+
+  Edited:
+     Message-ID: <dup-foo@example.com>
+     X-Comment: "Edited on 20260714 to port archive to hypermail 3.0"
+
+- If a message is being shown and you want to skip it to preserve
+  numbering, you can either:
+  
+    - remove the message from the archive if it's not relevant
+    
+    - edit its Message-ID to be a duplicate of a previous one so it
+      will be skipped
+
+Example:
+
+  Original:
+    Message-ID: <bar@example.com>
+    
+  Edited to use previously seen Message-ID value:
+    Message-ID: <foo@example.com>
+    X-Original-Message-ID: <bar@example.com>
+    X-Comment: "Edited on 20260714 to port archive to hypermail 3.0"
+     
+  Alternatively, you can move this message to the end of the period if
+  you still want to keep it visible and preserve numbering.
+
+** Attachment filenames
+
+When hypermail parses a message that has attachments, it will store
+those attachments in a directory called att-nnnn, where nnnn is the
+archive message number associated with that attachment.
+
+When hypermail isn't able to correctly identify an attachments name
+from its headers, it enerates its own; likewise, if an attachment name
+already exists, it will add a number prefix to the filename to
+differentiate it.
+
+Hypermail 3.0 has an improved parser that lets it detect attachment
+names correctly. 3.0's parser also fixes issues that 2.4 had in
+detecting and handling attachments, specially in message/rfc822
+attachments that themselves that contain multipart/mixed or
+multipart/alternative attachments.  Due to this, the attachments that
+3.0 stores in the attachment dir as well as their names may slightly
+differ to those that 2.4 generates for the same archive. In this case,
+if you want to upgrade a 2.4 archive to 3.0 and preserve existing
+links to attachments, you should identify which attachment names (and
+content) changed in 3.0 and, if you want to preseve old links, add
+rewrite rules (or something equivalent) pointing the old names to the
+new ones in your web server's configuration.
+
+The dry-run won't generate this information. You'll need to create a
+test 3.0 archive and compare the attachments it generates against the
+2.4 archive.
+
+The archive scrapper script can still help you in this situation.
+You can tell it to display the attachment names, content-type, and file-size
+by using the -a CLI option. If you run the script on the 2.4 and 3.0
+generated archive, you can spot any differences with respect to the
+attachments.
+
+[[
+
+# 1. generate a 3.0 archive from the same mbox you used to populate
+     your 2.4 archive (add hypermail configuration options as needed).
+     
+  hypermail3.0  -m /var/lib/my-mailing-list.mbox -d /tmp/my-mailing-list-3.0
+
+# 2. scrap the filenames and msgid from the 2.4 archive
+
+  contrib/hyparchive-scrapper.pl -a /var/www/my-mailing-list \
+    >/tmp/24scrapper.txt
+
+# 3. scrap the filenames and msgid from the 3.0 archive
+
+  contrib/hyparchive-scrapper.pl -a /tmp/my-mailing-list-3.0 \
+    >/tmp/30scrapper.txt
+
+# 4. compare the dry-run output with the scrapper; if there are no differences
+# you won't have any Message-ID or attachment issues.
+
+  diff /tmp/24scrapper.txt /tmp/30scrapper.txt
+
+]]
+
+
 From Hypermail 2.3.0 to Hypermail 2.4.0
 -----------------------------------------
 
@@ -16,8 +250,10 @@ The "deleted" configuration directive has been deprecated
 in favor of "annotated". However, for backwards compatibility
 with legacy archives, it will continue to be honored.
 
+
 From Hypermail 1.x to Hypermail 2.x 
 -----------------------------------
+
 !!!!WARNING!!!!
 
 Hypermail 2.x HTML output files, indexes, etc are not compatible with 1.x 

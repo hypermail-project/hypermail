@@ -709,17 +709,17 @@ EXTRA_LIBS
 HAVE_STRERROR
 HAVE_MEMMOVE
 FNV_DEP
-PCRE_DEP
-PCRE_CONFIG
+PCRE2_DEP
+PCRE2_CONFIG
 TRIO_DEP
 domainaddr
 defaultindex
 htmlsuffix
 language
-cgidir
 httpddir
 suffix
 INSTALL
+PKGCONF
 RANLIB
 AR
 SET_MAKE
@@ -796,17 +796,16 @@ ac_user_opts='
 enable_option_checking
 enable_warnings
 with_httpddir
-with_cgidir
 with_htmldir
 with_language
 with_htmlsuffix
 enable_defaultindex
 with_domainaddr
 with_gdbm
-enable_i18n
 enable_system_libtrio
 enable_bundled_pcre
-with_external_pcre
+with_external_pcre2
+with_libchardet
 enable_libfnv
 '
       ac_precious_vars='build_alias
@@ -1443,28 +1442,29 @@ Optional Features:
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --enable-warnings       Enable -Wall if using gcc.
   --enable-defaultindex=type	Default index page type thread
-  --disable-i18n           Disable I18N support
   --enable-system-libtrio Use the system libtrio instead of compiling the
                           bundled one
-  --enable-bundled-pcre   Force the use of the bundled PCRE library instead of
-                          the system one
-	      --enable-libfnv         use the fnv hash library for generating
-                          non-sequential filenames [no]
+  --enable-bundled-pcre2  Force the use of the bundled PCRE2 library instead
+                          of the system one
+  --enable-libfnv         (EXPERIMENTAL, UNMAINTAINED) use the fnv hash
+                          library for generating non-sequential filenames [no]
 
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-httpddir=DIR	  webserver's root directory /usr/local/apache
-  --with-cgidir=DIR	  where to install CGI scripts
   --with-htmldir=DIR	  where to install Hypermail HTML pages
   --with-language=xx	  two character language indicator en
   --with-htmlsuffix=xx	  two character language indicator html
   --with-domainaddr=YOURDOMAIN	  domain address of local domain
-  --with-gdbm=DIR         Include GDBM support
-  --with-external-pcre=PATH_TO_PCRE_DIR|PATH_TO_PCRE_CONFIG_SCRIPT
-                          Use an external PCRE library instead of the system
+  --with-gdbm=DIR         (UNMAINTAINED) Include GDBM support
+  --with-external-pcre2=PATH_TO_PCRE2_DIR|PATH_TO_PCRE2_CONFIG_SCRIPT
+                          Use an external PCRE2 library instead of the system
                           or the bundled one
+  --with-libchardet=DIR   Use libchardet for character set detection, optional
+                          DIR points to path to local installed libchardet;
+                          leave empty for using system libchardet
 
 Some influential environment variables:
   CC          C compiler command
@@ -1768,6 +1768,60 @@ fi
   as_fn_set_status $ac_retval
 
 } # ac_fn_c_try_link
+
+# ac_fn_check_decl LINENO SYMBOL VAR INCLUDES EXTRA-OPTIONS FLAG-VAR
+# ------------------------------------------------------------------
+# Tests whether SYMBOL is declared in INCLUDES, setting cache variable VAR
+# accordingly. Pass EXTRA-OPTIONS to the compiler, using FLAG-VAR.
+ac_fn_check_decl ()
+{
+  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
+  as_decl_name=`echo $2|sed 's/ *(.*//'`
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether $as_decl_name is declared" >&5
+printf %s "checking whether $as_decl_name is declared... " >&6; }
+if eval test \${$3+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) as_decl_use=`echo $2|sed -e 's/(/((/' -e 's/)/) 0&/' -e 's/,/) 0& (/g'`
+  eval ac_save_FLAGS=\$$6
+  as_fn_append $6 " $5"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$4
+int
+main (void)
+{
+#ifndef $as_decl_name
+#ifdef __cplusplus
+  (void) $as_decl_use;
+#else
+  (void) $as_decl_name;
+#endif
+#endif
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  eval "$3=yes"
+else case e in #(
+  e) eval "$3=no" ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+  eval $6=\$ac_save_FLAGS
+ ;;
+esac
+fi
+eval ac_res=\$$3
+	       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+printf "%s\n" "$ac_res" >&6; }
+  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
+
+} # ac_fn_check_decl
 
 # ac_fn_c_check_func LINENO FUNC VAR
 # ----------------------------------
@@ -2692,6 +2746,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 ac_config_headers="$ac_config_headers config.h"
 
 
+
 LDFLAGS=""
 LIBS=""
 EXTRA_LIBS=""
@@ -2701,8 +2756,8 @@ GDBM_INCLUDE=""
 GDBM_LIB=""
 FNV_DEP=""
 TRIO_DEP=""
-PCRE_DEP=""
-PCRE_MIN_VERSION="8.39"
+PCRE2_DEP=""
+PCRE2_MIN_VERSION="10.32"
 
 
 
@@ -4552,6 +4607,110 @@ fi
 else
   RANLIB=":"
 fi
+if test -n "$ac_tool_prefix"; then
+  # Extract the first word of "${ac_tool_prefix}pkgconf", so it can be a program name with args.
+set dummy ${ac_tool_prefix}pkgconf; ac_word=$2
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+printf %s "checking for $ac_word... " >&6; }
+if test ${ac_cv_prog_PKGCONF+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) if test -n "$PKGCONF"; then
+  ac_cv_prog_PKGCONF="$PKGCONF" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
+    ac_cv_prog_PKGCONF="${ac_tool_prefix}pkgconf"
+    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi ;;
+esac
+fi
+PKGCONF=$ac_cv_prog_PKGCONF
+if test -n "$PKGCONF"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $PKGCONF" >&5
+printf "%s\n" "$PKGCONF" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+
+fi
+if test -z "$ac_cv_prog_PKGCONF"; then
+  ac_ct_PKGCONF=$PKGCONF
+  # Extract the first word of "pkgconf", so it can be a program name with args.
+set dummy pkgconf; ac_word=$2
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+printf %s "checking for $ac_word... " >&6; }
+if test ${ac_cv_prog_ac_ct_PKGCONF+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) if test -n "$ac_ct_PKGCONF"; then
+  ac_cv_prog_ac_ct_PKGCONF="$ac_ct_PKGCONF" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
+    ac_cv_prog_ac_ct_PKGCONF="pkgconf"
+    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi ;;
+esac
+fi
+ac_ct_PKGCONF=$ac_cv_prog_ac_ct_PKGCONF
+if test -n "$ac_ct_PKGCONF"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_ct_PKGCONF" >&5
+printf "%s\n" "$ac_ct_PKGCONF" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+  if test "x$ac_ct_PKGCONF" = x; then
+    PKGCONF=""
+  else
+    case $cross_compiling:$ac_tool_warned in
+yes:)
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
+printf "%s\n" "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
+ac_tool_warned=yes ;;
+esac
+    PKGCONF=$ac_ct_PKGCONF
+  fi
+else
+  PKGCONF="$ac_cv_prog_PKGCONF"
+fi
+
 
 
 INSTALL="install-sh"
@@ -4640,18 +4799,6 @@ then :
   withval=$with_httpddir; httpddir=$with_httpddir
 else case e in #(
   e) httpddir=/usr/local/apache ;;
-esac
-fi
-
-
-
-
-# Check whether --with-cgidir was given.
-if test ${with_cgidir+y}
-then :
-  withval=$with_cgidir; cgidir=$with_cgidir
-else case e in #(
-  e) cgidir=$httpddir/cgi-bin ;;
 esac
 fi
 
@@ -4785,6 +4932,12 @@ then :
   printf "%s\n" "#define HAVE_FCNTL_H 1" >>confdefs.h
 
 fi
+ac_fn_c_check_header_compile "$LINENO" "inttypes.h" "ac_cv_header_inttypes_h" "$ac_includes_default"
+if test "x$ac_cv_header_inttypes_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_INTTYPES_H 1" >>confdefs.h
+
+fi
 ac_fn_c_check_header_compile "$LINENO" "locale.h" "ac_cv_header_locale_h" "$ac_includes_default"
 if test "x$ac_cv_header_locale_h" = xyes
 then :
@@ -4819,6 +4972,12 @@ ac_fn_c_check_header_compile "$LINENO" "stdarg.h" "ac_cv_header_stdarg_h" "$ac_i
 if test "x$ac_cv_header_stdarg_h" = xyes
 then :
   printf "%s\n" "#define HAVE_STDARG_H 1" >>confdefs.h
+
+fi
+ac_fn_c_check_header_compile "$LINENO" "stdint.h" "ac_cv_header_stdint_h" "$ac_includes_default"
+if test "x$ac_cv_header_stdint_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_STDINT_H 1" >>confdefs.h
 
 fi
 ac_fn_c_check_header_compile "$LINENO" "stdio.h" "ac_cv_header_stdio_h" "$ac_includes_default"
@@ -5120,6 +5279,132 @@ fi
 
 fi
 
+# m4_warn([obsolete],
+# [Update your code to rely only on HAVE_SYS_TIME_H,
+# then remove this warning and the obsolete code below it.
+# All current systems provide time.h; it need not be checked for.
+# Not all systems provide sys/time.h, but those that do, all allow
+# you to include it and time.h simultaneously.])dnl
+# AC_CHECK_HEADERS_ONCE([sys/time.h])
+# # Obsolete code to be removed.
+# if test $ac_cv_header_sys_time_h = yes; then
+#   AC_DEFINE([TIME_WITH_SYS_TIME],[1],[Define to 1 if you can safely include both <sys/time.h>
+# 	     and <time.h>.  This macro is obsolete.])
+# fi
+# # End of obsolete code.
+
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $CC options needed to detect all undeclared functions" >&5
+printf %s "checking for $CC options needed to detect all undeclared functions... " >&6; }
+if test ${ac_cv_c_undeclared_builtin_options+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) ac_save_CFLAGS=$CFLAGS
+   ac_cv_c_undeclared_builtin_options='cannot detect'
+   for ac_arg in '' -fno-builtin; do
+     CFLAGS="$ac_save_CFLAGS $ac_arg"
+     # This test program should *not* compile successfully.
+     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main (void)
+{
+(void) strchr;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+
+else case e in #(
+  e) # This test program should compile successfully.
+        # No library function is consistently available on
+        # freestanding implementations, so test against a dummy
+        # declaration.  Include always-available headers on the
+        # off chance that they somehow elicit warnings.
+        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <float.h>
+#include <limits.h>
+#include <stdarg.h>
+#include <stddef.h>
+extern void ac_decl (int, char *);
+
+int
+main (void)
+{
+(void) ac_decl (0, (char *) 0);
+  (void) ac_decl;
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  if test x"$ac_arg" = x
+then :
+  ac_cv_c_undeclared_builtin_options='none needed'
+else case e in #(
+  e) ac_cv_c_undeclared_builtin_options=$ac_arg ;;
+esac
+fi
+          break
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+    done
+    CFLAGS=$ac_save_CFLAGS
+   ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c_undeclared_builtin_options" >&5
+printf "%s\n" "$ac_cv_c_undeclared_builtin_options" >&6; }
+  case $ac_cv_c_undeclared_builtin_options in #(
+  'cannot detect') :
+    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in '$ac_pwd':" >&5
+printf "%s\n" "$as_me: error: in '$ac_pwd':" >&2;}
+as_fn_error $? "cannot make $CC report undeclared builtins
+See 'config.log' for more details" "$LINENO" 5; } ;; #(
+  'none needed') :
+    ac_c_undeclared_builtin_options='' ;; #(
+  *) :
+    ac_c_undeclared_builtin_options=$ac_cv_c_undeclared_builtin_options ;;
+esac
+
+ac_fn_check_decl "$LINENO" "isblank" "ac_cv_have_decl_isblank" "$ac_includes_default" "$ac_c_undeclared_builtin_options" "CFLAGS"
+if test "x$ac_cv_have_decl_isblank" = xyes
+then :
+  ac_have_decl=1
+else case e in #(
+  e) ac_have_decl=0 ;;
+esac
+fi
+printf "%s\n" "#define HAVE_DECL_ISBLANK $ac_have_decl" >>confdefs.h
+ac_fn_check_decl "$LINENO" "strcasecmp" "ac_cv_have_decl_strcasecmp" "$ac_includes_default" "$ac_c_undeclared_builtin_options" "CFLAGS"
+if test "x$ac_cv_have_decl_strcasecmp" = xyes
+then :
+  ac_have_decl=1
+else case e in #(
+  e) ac_have_decl=0 ;;
+esac
+fi
+printf "%s\n" "#define HAVE_DECL_STRCASECMP $ac_have_decl" >>confdefs.h
+ac_fn_check_decl "$LINENO" "strcasestr" "ac_cv_have_decl_strcasestr" "$ac_includes_default" "$ac_c_undeclared_builtin_options" "CFLAGS"
+if test "x$ac_cv_have_decl_strcasestr" = xyes
+then :
+  ac_have_decl=1
+else case e in #(
+  e) ac_have_decl=0 ;;
+esac
+fi
+printf "%s\n" "#define HAVE_DECL_STRCASESTR $ac_have_decl" >>confdefs.h
+
 
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether struct tm is in sys/time.h or time.h" >&5
@@ -5226,28 +5511,28 @@ esac
 fi
 
 done
-ac_fn_c_check_func "$LINENO" "mkdir" "ac_cv_func_mkdir"
-if test "x$ac_cv_func_mkdir" = xyes
+ac_fn_c_check_func "$LINENO" "getopt" "ac_cv_func_getopt"
+if test "x$ac_cv_func_getopt" = xyes
 then :
-  printf "%s\n" "#define HAVE_MKDIR 1" >>confdefs.h
+  printf "%s\n" "#define HAVE_GETOPT 1" >>confdefs.h
 
 fi
-ac_fn_c_check_func "$LINENO" "strdup" "ac_cv_func_strdup"
-if test "x$ac_cv_func_strdup" = xyes
+ac_fn_c_check_func "$LINENO" "getpwuid" "ac_cv_func_getpwuid"
+if test "x$ac_cv_func_getpwuid" = xyes
 then :
-  printf "%s\n" "#define HAVE_STRDUP 1" >>confdefs.h
+  printf "%s\n" "#define HAVE_GETPWUID 1" >>confdefs.h
 
 fi
-ac_fn_c_check_func "$LINENO" "strstr" "ac_cv_func_strstr"
-if test "x$ac_cv_func_strstr" = xyes
+ac_fn_c_check_func "$LINENO" "isblank" "ac_cv_func_isblank"
+if test "x$ac_cv_func_isblank" = xyes
 then :
-  printf "%s\n" "#define HAVE_STRSTR 1" >>confdefs.h
+  printf "%s\n" "#define HAVE_ISBLANK 1" >>confdefs.h
 
 fi
-ac_fn_c_check_func "$LINENO" "strtol" "ac_cv_func_strtol"
-if test "x$ac_cv_func_strtol" = xyes
+ac_fn_c_check_func "$LINENO" "lstat" "ac_cv_func_lstat"
+if test "x$ac_cv_func_lstat" = xyes
 then :
-  printf "%s\n" "#define HAVE_STRTOL 1" >>confdefs.h
+  printf "%s\n" "#define HAVE_LSTAT 1" >>confdefs.h
 
 fi
 ac_fn_c_check_func "$LINENO" "memcpy" "ac_cv_func_memcpy"
@@ -5256,16 +5541,28 @@ then :
   printf "%s\n" "#define HAVE_MEMCPY 1" >>confdefs.h
 
 fi
+ac_fn_c_check_func "$LINENO" "memmove" "ac_cv_func_memmove"
+if test "x$ac_cv_func_memmove" = xyes
+then :
+  printf "%s\n" "#define HAVE_MEMMOVE 1" >>confdefs.h
+
+fi
 ac_fn_c_check_func "$LINENO" "memset" "ac_cv_func_memset"
 if test "x$ac_cv_func_memset" = xyes
 then :
   printf "%s\n" "#define HAVE_MEMSET 1" >>confdefs.h
 
 fi
-ac_fn_c_check_func "$LINENO" "lstat" "ac_cv_func_lstat"
-if test "x$ac_cv_func_lstat" = xyes
+ac_fn_c_check_func "$LINENO" "mkdir" "ac_cv_func_mkdir"
+if test "x$ac_cv_func_mkdir" = xyes
 then :
-  printf "%s\n" "#define HAVE_LSTAT 1" >>confdefs.h
+  printf "%s\n" "#define HAVE_MKDIR 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "snprintf" "ac_cv_func_snprintf"
+if test "x$ac_cv_func_snprintf" = xyes
+then :
+  printf "%s\n" "#define HAVE_SNPRINTF 1" >>confdefs.h
 
 fi
 ac_fn_c_check_func "$LINENO" "strcasecmp" "ac_cv_func_strcasecmp"
@@ -5280,28 +5577,10 @@ then :
   printf "%s\n" "#define HAVE_STRCASESTR 1" >>confdefs.h
 
 fi
-ac_fn_c_check_func "$LINENO" "getpwuid" "ac_cv_func_getpwuid"
-if test "x$ac_cv_func_getpwuid" = xyes
+ac_fn_c_check_func "$LINENO" "strdup" "ac_cv_func_strdup"
+if test "x$ac_cv_func_strdup" = xyes
 then :
-  printf "%s\n" "#define HAVE_GETPWUID 1" >>confdefs.h
-
-fi
-ac_fn_c_check_func "$LINENO" "getopt" "ac_cv_func_getopt"
-if test "x$ac_cv_func_getopt" = xyes
-then :
-  printf "%s\n" "#define HAVE_GETOPT 1" >>confdefs.h
-
-fi
-ac_fn_c_check_func "$LINENO" "snprintf" "ac_cv_func_snprintf"
-if test "x$ac_cv_func_snprintf" = xyes
-then :
-  printf "%s\n" "#define HAVE_SNPRINTF 1" >>confdefs.h
-
-fi
-ac_fn_c_check_func "$LINENO" "memmove" "ac_cv_func_memmove"
-if test "x$ac_cv_func_memmove" = xyes
-then :
-  printf "%s\n" "#define HAVE_MEMMOVE 1" >>confdefs.h
+  printf "%s\n" "#define HAVE_STRDUP 1" >>confdefs.h
 
 fi
 ac_fn_c_check_func "$LINENO" "strerror" "ac_cv_func_strerror"
@@ -5309,6 +5588,55 @@ if test "x$ac_cv_func_strerror" = xyes
 then :
   printf "%s\n" "#define HAVE_STRERROR 1" >>confdefs.h
 
+fi
+ac_fn_c_check_func "$LINENO" "strstr" "ac_cv_func_strstr"
+if test "x$ac_cv_func_strstr" = xyes
+then :
+  printf "%s\n" "#define HAVE_STRSTR 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "strtol" "ac_cv_func_strtol"
+if test "x$ac_cv_func_strtol" = xyes
+then :
+  printf "%s\n" "#define HAVE_STRTOL 1" >>confdefs.h
+
+fi
+
+
+
+  ac_fn_c_check_type "$LINENO" "intptr_t" "ac_cv_type_intptr_t" "$ac_includes_default"
+if test "x$ac_cv_type_intptr_t" = xyes
+then :
+
+printf "%s\n" "#define HAVE_INTPTR_T 1" >>confdefs.h
+
+else case e in #(
+  e) for ac_type in 'int' 'long int' 'long long int'; do
+       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+int
+main (void)
+{
+static int test_array [1 - 2 * !(sizeof (void *) <= sizeof ($ac_type))];
+test_array [0] = 0;
+return test_array [0];
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+
+printf "%s\n" "#define intptr_t $ac_type" >>confdefs.h
+
+	  ac_type=
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+       test -z "$ac_type" && break
+     done ;;
+esac
 fi
 
 
@@ -5344,6 +5672,14 @@ fi
 
 
 
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for pkg-config" >&5
+printf "%s\n" "$as_me: checking for pkg-config" >&6;}
+if test x"$PKGCONF" == x ; then
+   as_fn_error $? "'pkgconf' is missing; please install it." "$LINENO" 5
+fi
+
+
+
 # Check whether --with-gdbm was given.
 if test ${with_gdbm+y}
 then :
@@ -5351,20 +5687,29 @@ then :
 fi
 
 
-if test "$given_gdbm" != "no"; then
-    for i in /usr/local /usr $withval; do
-      if test -f "$i/include/gdbm.h"; then
-        GDBM_INCLUDE="$i/include"
-        THIS_PREFIX="$i"
-      fi
-    done
+if test "${given_gdbm}" = "no"; then
+   given_gdbm=""
+fi
 
-    unset ac_cv_lib_gdbm_gdbm_open
+if test -n "${given_gdbm}" -a "${given_gdbm}" != "yes" -a "${given_gdbm}" != "/usr"; then
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for \"${given_gdbm}/include/gdbm.h\"" >&5
+printf %s "checking for \"${given_gdbm}/include/gdbm.h\"... " >&6; }
+   if test -f "${given_gdbm}/include/gdbm.h"; then
+      GDBM_INCLUDE="${given_gdbm}/include"
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
+   else
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+   fi
+
+   if test -n "${GDBM_INCLUDE}"; then
+      unset ac_cv_lib_gdbm_gdbm_open
 
   old_LDFLAGS="$LDFLAGS"
-  LDFLAGS="-L$THIS_PREFIX/lib $LDFLAGS"
+  LDFLAGS="-L${given_gdbm}/lib $LDFLAGS"
 
-       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for gdbm_open in -lgdbm" >&5
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for gdbm_open in -lgdbm" >&5
 printf %s "checking for gdbm_open in -lgdbm... " >&6; }
 if test ${ac_cv_lib_gdbm_gdbm_open+y}
 then :
@@ -5410,22 +5755,100 @@ printf "%s\n" "$ac_cv_lib_gdbm_gdbm_open" >&6; }
 if test "x$ac_cv_lib_gdbm_gdbm_open" = xyes
 then :
   GDBM_LIB="-lgdbm"
+else case e in #(
+  e) GDBM_INCLUDE="" ;;
+esac
 fi
 
 
   LDFLAGS="$old_LDFLAGS"
 
 
-    if test "$THIS_PREFIX" != "" && test "$THIS_PREFIX" != "/usr"; then
-      THIS_LFLAGS="$THIS_PREFIX/lib"
-    fi
+      if test -n "${GDBM_LIB}"; then
+
+  if test "x$LDFLAGS" = "x"; then
+    test "x$silent" != "xyes" && echo "  setting LDFLAGS to \""-L${given_gdbm}/lib"\""
+    LDFLAGS=""-L${given_gdbm}/lib""
+  else
+    apr_addto_bugger=""-L${given_gdbm}/lib""
+    for i in $apr_addto_bugger; do
+      apr_addto_duplicate="0"
+      for j in $LDFLAGS; do
+        if test "x$i" = "x$j"; then
+          apr_addto_duplicate="1"
+          break
+        fi
+      done
+      if test $apr_addto_duplicate = "0"; then
+        test "x$silent" != "xyes" && echo "  adding \"$i\" to LDFLAGS"
+        LDFLAGS="$LDFLAGS $i"
+      fi
+    done
+  fi
+
+      else
+         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: gdbm includes and/or libs not found under \"${given_gdbm}\"" >&5
+printf "%s\n" "$as_me: WARNING: gdbm includes and/or libs not found under \"${given_gdbm}\"" >&2;}
+      fi
+   fi
 fi
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for GDBM support" >&5
-printf %s "checking for GDBM support... " >&6; }
+if test -n "${given_gdbm}" -a -z "${GDBM_INCLUDE}"; then
+  gdbm_headers_found=1
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: Trying /usr/include/gdbm.h" >&5
+printf "%s\n" "$as_me: Trying /usr/include/gdbm.h" >&6;}
+  ac_fn_c_check_header_compile "$LINENO" "gdbm.h" "ac_cv_header_gdbm_h" "$ac_includes_default"
+if test "x$ac_cv_header_gdbm_h" = xyes
+then :
+   GDBM_INCLUDE=""
+else case e in #(
+  e)
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: Trying /usr/local/include/gdbm.h" >&5
+printf "%s\n" "$as_me: Trying /usr/local/include/gdbm.h" >&6;}
+      ac_fn_c_check_header_compile "$LINENO" "/usr/local/include/gdbm.h" "ac_cv_header__usr_local_include_gdbm_h" "$ac_includes_default"
+if test "x$ac_cv_header__usr_local_include_gdbm_h" = xyes
+then :
+   GDBM_INCLUDE="-I/usr/local/include"
+else case e in #(
+  e)
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: Trying /opt/local/include/gdbm.h" >&5
+printf "%s\n" "$as_me: Trying /opt/local/include/gdbm.h" >&6;}
+        ac_fn_c_check_header_compile "$LINENO" "/opt/local/include/gdbm.h" "ac_cv_header__opt_local_include_gdbm_h" "$ac_includes_default"
+if test "x$ac_cv_header__opt_local_include_gdbm_h" = xyes
+then :
+   GDBM_INCLUDE="-I/opt/local/include"
+else case e in #(
+  e)
+                    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: Trying /usr/pkg/include/gdbm.h" >&5
+printf "%s\n" "$as_me: Trying /usr/pkg/include/gdbm.h" >&6;}
+          ac_fn_c_check_header_compile "$LINENO" "/usr/pkg/include/gdbm.h" "ac_cv_header__usr_pkg_include_gdbm_h" "$ac_includes_default"
+if test "x$ac_cv_header__usr_pkg_include_gdbm_h" = xyes
+then :
+   GDBM_INCLUDE=""
+else case e in #(
+  e)
+            { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: gdbm.h not found" >&5
+printf "%s\n" "gdbm.h not found" >&6; }
+	    gdbm_headers_found=0
+           ;;
+esac
+fi
 
-if test "$GDBM_LIB" = "" && test "$given_gdbm" != "no"; then
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for gdbm_open in -lgdbm" >&5
+         ;;
+esac
+fi
+
+       ;;
+esac
+fi
+
+   ;;
+esac
+fi
+
+
+  if test ${gdbm_headers_found} -eq 1; then
+     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for gdbm_open in -lgdbm" >&5
 printf %s "checking for gdbm_open in -lgdbm... " >&6; }
 if test ${ac_cv_lib_gdbm_gdbm_open+y}
 then :
@@ -5470,83 +5893,23 @@ fi
 printf "%s\n" "$ac_cv_lib_gdbm_gdbm_open" >&6; }
 if test "x$ac_cv_lib_gdbm_gdbm_open" = xyes
 then :
-
-printf "%s\n" "#define GDBM 1" >>confdefs.h
- DBM_TYPE=gdbm; GDBM_LIB=-lgdbm
+  DBM_TYPE=gdbm; GDBM_LIB=-lgdbm
 else case e in #(
   e) DBM_TYPE="" ;;
 esac
 fi
 
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking gdbm library" >&5
-printf %s "checking gdbm library... " >&6; }
-  if test "a$DBM_TYPE" = a; then
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: none found" >&5
-printf "%s\n" "none found" >&6; }
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: No gdbm library found - will limit a few features" >&5
-printf "%s\n" "$as_me: WARNING: No gdbm library found - will limit a few features" >&2;}
-  else
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $DBM_TYPE found" >&5
-printf "%s\n" "$DBM_TYPE found" >&6; }
   fi
-else
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
-printf "%s\n" "no" >&6; }
+
+  unset gdbm_headers_found
 fi
 
-if test "$GDBM_LIB" = "-lgdbm" && test "$GDBM_INCLUDE" = ""; then
-  ac_fn_c_check_header_compile "$LINENO" "gdbm.h" "ac_cv_header_gdbm_h" "$ac_includes_default"
-if test "x$ac_cv_header_gdbm_h" = xyes
-then :
-   GDBM_INCLUDE=""
-else case e in #(
-  e)
-      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: Try /usr/local/include/gdbm.h" >&5
-printf "%s\n" "Try /usr/local/include/gdbm.h" >&6; }
-      ac_fn_c_check_header_compile "$LINENO" "/usr/local/include/gdbm.h" "ac_cv_header__usr_local_include_gdbm_h" "$ac_includes_default"
-if test "x$ac_cv_header__usr_local_include_gdbm_h" = xyes
-then :
-   GDBM_INCLUDE="-I/usr/local/include"
-else case e in #(
-  e)
-        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: Try /opt/local/include/gdbm.h" >&5
-printf "%s\n" "Try /opt/local/include/gdbm.h" >&6; }
-        ac_fn_c_check_header_compile "$LINENO" "/opt/local/include/gdbm.h" "ac_cv_header__opt_local_include_gdbm_h" "$ac_includes_default"
-if test "x$ac_cv_header__opt_local_include_gdbm_h" = xyes
-then :
-   GDBM_INCLUDE="-I/opt/local/include"
-else case e in #(
-  e)
-                    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: Try /usr/pkg/include/gdbm.h" >&5
-printf "%s\n" "Try /usr/pkg/include/gdbm.h" >&6; }
-          ac_fn_c_check_header_compile "$LINENO" "/usr/pkg/include/gdbm.h" "ac_cv_header__usr_pkg_include_gdbm_h" "$ac_includes_default"
-if test "x$ac_cv_header__usr_pkg_include_gdbm_h" = xyes
-then :
-   GDBM_INCLUDE=""
-else case e in #(
-  e)
-            { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: Giving up - You need to install gdbm.h somewhere" >&5
-printf "%s\n" "Giving up - You need to install gdbm.h somewhere" >&6; }
-            exit
-           ;;
-esac
-fi
+if test -n "${GDBM_LIB}"; then
+   printf "%s\n" "#define HAVE_GDBM_H 1" >>confdefs.h
 
-         ;;
-esac
-fi
 
-       ;;
-esac
-fi
+printf "%s\n" "#define GDBM 1" >>confdefs.h
 
-     ;;
-esac
-fi
-
-fi
-
-if test -n "$GDBM_LIB"; then
 
   if test "$GDBM_INCLUDE" != "/usr/include"; then
 
@@ -5574,37 +5937,40 @@ if test -n "$GDBM_LIB"; then
 
   fi
 
-    printf "%s\n" "#define HAVE_GDBM_H 1" >>confdefs.h
-
-    EXTRA_LIBS="$EXTRA_LIBS $GDBM_LIB"
-fi
-
-
-
-# Check whether --enable-i18n was given.
-if test ${enable_i18n+y}
-then :
-  enableval=$enable_i18n; given_iconv=$enableval
-fi
-
-if test "$given_iconv" = "no"; then
-  echo "disabled I18N support."
+   EXTRA_LIBS="$EXTRA_LIBS $GDBM_LIB"
 else
-  ac_fn_c_check_func "$LINENO" "iconv" "ac_cv_func_iconv"
-if test "x$ac_cv_func_iconv" = xyes
-then :
-  printf "%s\n" "#define HAVE_ICONV 1" >>confdefs.h
-
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: hypermail's usegdbm config option won't be available unless you install libgdbm-dev" >&5
+printf "%s\n" "$as_me: WARNING: hypermail's usegdbm config option won't be available unless you install libgdbm-dev" >&2;}
 fi
 
+
+       for ac_header in iconv.h
+do :
   ac_fn_c_check_header_compile "$LINENO" "iconv.h" "ac_cv_header_iconv_h" "$ac_includes_default"
 if test "x$ac_cv_header_iconv_h" = xyes
 then :
   printf "%s\n" "#define HAVE_ICONV_H 1" >>confdefs.h
 
+else case e in #(
+  e) as_fn_error $? "unable to find iconv.h headers (libc6-dev may be missing)" "$LINENO" 5 ;;
+esac
 fi
 
+done
+
+  for ac_func in iconv
+do :
+  ac_fn_c_check_func "$LINENO" "iconv" "ac_cv_func_iconv"
+if test "x$ac_cv_func_iconv" = xyes
+then :
+  printf "%s\n" "#define HAVE_ICONV 1" >>confdefs.h
+
+else case e in #(
+  e) as_fn_error $? "unable to find iconv() function" "$LINENO" 5 ;;
+esac
 fi
+
+done
 
 
 # Check whether --enable-system_libtrio was given.
@@ -5879,7 +6245,7 @@ rm -f confcache
   for apr_configure_arg in $ac_configure_args
   do
     case "$apr_configure_arg" in
-      --with-pcre=*|\'--with-pcre=*)
+      --with-pcre2=*|\'--with-pcre2=*)
         continue ;;
     esac
     apr_configure_args="$apr_configure_args$apr_sep'$apr_configure_arg'"
@@ -5932,47 +6298,47 @@ fi
 
 
 
-# Check whether --with-external_pcre was given.
-if test ${with_external_pcre+y}
+# Check whether --with-external_pcre2 was given.
+if test ${with_external_pcre2+y}
 then :
-  withval=$with_external_pcre;
+  withval=$with_external_pcre2;
 fi
 
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for PCRE regular expressions library" >&5
-printf "%s\n" "$as_me: checking for PCRE regular expressions library" >&6;}
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for PCRE2 regular expressions library" >&5
+printf "%s\n" "$as_me: checking for PCRE2 regular expressions library" >&6;}
 
-if test ! -z ${enable_bundled_pcre}; then
-   with_external_pcre=""
+if test ! -z ${enable_bundled_pcre2}; then
+   with_external_pcre2=""
 fi
 
-case $with_external_pcre in
- /*) { printf "%s\n" "$as_me:${as_lineno-$LINENO}: --with-external-pcre => checking for an external libpcre" >&5
-printf "%s\n" "$as_me: --with-external-pcre => checking for an external libpcre" >&6;}
-     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for pcre-config" >&5
-printf %s "checking for pcre-config... " >&6; }
-     if test -d "$with_external_pcre" && test -x "$with_external_pcre/pcre-config"; then
-       PCRE_CONFIG=$with_external_pcre/pcre-config
-     elif test -x "$with_external_pcre"; then
-       PCRE_CONFIG=$with_external_pcre
+case $with_external_pcre2 in
+ /*) { printf "%s\n" "$as_me:${as_lineno-$LINENO}: --with-external-pcre2 => checking for an external libpcre2" >&5
+printf "%s\n" "$as_me: --with-external-pcre2 => checking for an external libpcre2" >&6;}
+     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for pcre2-config" >&5
+printf %s "checking for pcre2-config... " >&6; }
+     if test -d "$with_external_pcre" && test -x "$with_external_pcre2/pcre2-config"; then
+       PCRE2_CONFIG=$with_external_pcre2/pcre2-config
+     elif test -x "$with_external_pcre2"; then
+       PCRE2_CONFIG=$with_external_pcre2
      else
        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
 printf "%s\n" "no" >&6; }
-       as_fn_error $? "${PCRE_CONFIG} does not point to a directory or pcre-config" "$LINENO" 5
+       as_fn_error $? "${PCRE2_CONFIG} does not point to a directory or pcre2-config" "$LINENO" 5
      fi
-     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${PCRE_CONFIG}" >&5
-printf "%s\n" "${PCRE_CONFIG}" >&6; }
+     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${PCRE2_CONFIG}" >&5
+printf "%s\n" "${PCRE2_CONFIG}" >&6; }
 
-     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for pcre version equal or greater than ${PCRE_MIN_VERSION}" >&5
-printf %s "checking for pcre version equal or greater than ${PCRE_MIN_VERSION}... " >&6; }
-     if test -f "${PCRE_CONFIG}" && test -x "${PCRE_CONFIG}"; then
-        PCRE_VERSION=$(${PCRE_CONFIG} --version)
-        as_arg_v1="${PCRE_VERSION}"
-as_arg_v2="${PCRE_MIN_VERSION}"
+     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for pcre2 version equal or greater than ${PCRE2_MIN_VERSION}" >&5
+printf %s "checking for pcre2 version equal or greater than ${PCRE2_MIN_VERSION}... " >&6; }
+     if test -f "${PCRE2_CONFIG}" && test -x "${PCRE2_CONFIG}"; then
+        PCRE2_VERSION=$(${PCRE2_CONFIG} --version)
+        as_arg_v1="${PCRE2_VERSION}"
+as_arg_v2="${PCRE2_MIN_VERSION}"
 awk "$as_awk_strverscmp" v1="$as_arg_v1" v2="$as_arg_v2" /dev/null
 case $? in #(
   1) :
-    PCRE_CONFIG=false ;; #(
+    PCRE2_CONFIG=false ;; #(
   0) :
      ;; #(
   2) :
@@ -5980,39 +6346,39 @@ case $? in #(
   *) :
      ;;
 esac
-        if test "${PCRE_CONFIG}" != false; then
+        if test "${PCRE2_CONFIG}" != false; then
            { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; }
         else
            { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
 printf "%s\n" "no" >&6; }
-           as_fn_error $? "the PCRE library version must be equal or greater than ${PCRE_MIN_VERSION}" "$LINENO" 5
+           as_fn_error $? "the PCRE2 library version must be equal or greater than ${PCRE2_MIN_VERSION}" "$LINENO" 5
         fi
      else
         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
 printf "%s\n" "no" >&6; }
-        as_fn_error $? "${PCRE_CONFIG} does not point to a script" "$LINENO" 5
+        as_fn_error $? "${PCRE2_CONFIG} does not point to a script" "$LINENO" 5
      fi
      ;;
 
-  *) PCRE_CONFIG=false
+  *) PCRE2_CONFIG=false
      ;;
 esac
 
-if test -z "${enable_bundled_pcre}" && test -z "${PCRE_CONFIG}" -o "${PCRE_CONFIG}" = "false"; then
-   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for a system libpcre" >&5
-printf "%s\n" "$as_me: checking for a system libpcre" >&6;}
-   # Extract the first word of "pcre-config", so it can be a program name with args.
-set dummy pcre-config; ac_word=$2
+if test -z "${enable_bundled_pcre2}" && test -z "${PCRE2_CONFIG}" -o "${PCRE2_CONFIG}" = "false"; then
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for a system libpcre2" >&5
+printf "%s\n" "$as_me: checking for a system libpcre2" >&6;}
+   # Extract the first word of "pcre2-config", so it can be a program name with args.
+set dummy pcre2-config; ac_word=$2
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 printf %s "checking for $ac_word... " >&6; }
-if test ${ac_cv_path_PCRE_CONFIG+y}
+if test ${ac_cv_path_PCRE2_CONFIG+y}
 then :
   printf %s "(cached) " >&6
 else case e in #(
-  e) case $PCRE_CONFIG in
+  e) case $PCRE2_CONFIG in
   [\\/]* | ?:[\\/]*)
-  ac_cv_path_PCRE_CONFIG="$PCRE_CONFIG" # Let the user override the test with a path.
+  ac_cv_path_PCRE2_CONFIG="$PCRE2_CONFIG" # Let the user override the test with a path.
   ;;
   *)
   as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
@@ -6026,7 +6392,7 @@ do
   esac
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
-    ac_cv_path_PCRE_CONFIG="$as_dir$ac_word$ac_exec_ext"
+    ac_cv_path_PCRE2_CONFIG="$as_dir$ac_word$ac_exec_ext"
     printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -6038,26 +6404,26 @@ IFS=$as_save_IFS
 esac ;;
 esac
 fi
-PCRE_CONFIG=$ac_cv_path_PCRE_CONFIG
-if test -n "$PCRE_CONFIG"; then
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $PCRE_CONFIG" >&5
-printf "%s\n" "$PCRE_CONFIG" >&6; }
+PCRE2_CONFIG=$ac_cv_path_PCRE2_CONFIG
+if test -n "$PCRE2_CONFIG"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $PCRE2_CONFIG" >&5
+printf "%s\n" "$PCRE2_CONFIG" >&6; }
 else
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
 printf "%s\n" "no" >&6; }
 fi
 
 
-   if test ! -z "${PCRE_CONFIG}"; then
-      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking checking pcre version equal or greater than ${PCRE_MIN_VERSION}" >&5
-printf %s "checking checking pcre version equal or greater than ${PCRE_MIN_VERSION}... " >&6; }
-      PCRE_VERSION=$(${PCRE_CONFIG} --version)
-      as_arg_v1="${PCRE_VERSION}"
-as_arg_v2="${PCRE_MIN_VERSION}"
+   if test ! -z "${PCRE2_CONFIG}"; then
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking checking pcre2 version equal or greater than ${PCRE2_MIN_VERSION}" >&5
+printf %s "checking checking pcre2 version equal or greater than ${PCRE2_MIN_VERSION}... " >&6; }
+      PCRE2_VERSION=$(${PCRE2_CONFIG} --version)
+      as_arg_v1="${PCRE2_VERSION}"
+as_arg_v2="${PCRE2_MIN_VERSION}"
 awk "$as_awk_strverscmp" v1="$as_arg_v1" v2="$as_arg_v2" /dev/null
 case $? in #(
   1) :
-    PCRE_CONFIG=false ;; #(
+    PCRE2_CONFIG=false ;; #(
   0) :
      ;; #(
   2) :
@@ -6065,7 +6431,7 @@ case $? in #(
   *) :
      ;;
 esac
-      if test "${PCRE_CONFIG}" != false; then
+      if test "${PCRE2_CONFIG}" != false; then
          { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; }
       else
@@ -6073,33 +6439,34 @@ printf "%s\n" "yes" >&6; }
 printf "%s\n" "no" >&6; }
       fi
    else
-      PCRE_CONFIG=false
+      PCRE2_CONFIG=false
    fi
 fi
 
-if test "${PCRE_CONFIG}" != false; then
-  PCRE_PATH=$(${PCRE_CONFIG} --prefix)
-  as_ac_Header=`printf "%s\n" "ac_cv_header_"$PCRE_PATH/include/pcre.h"" | sed "$as_sed_sh"`
-ac_fn_c_check_header_compile "$LINENO" ""$PCRE_PATH/include/pcre.h"" "$as_ac_Header" "$ac_includes_default"
+if test "${PCRE2_CONFIG}" != false; then
+  PCRE2_PATH=$(${PCRE2_CONFIG} --prefix)
+  as_ac_Header=`printf "%s\n" "ac_cv_header_"$PCRE2_PATH/include/pcre2.h"" | sed "$as_sed_sh"`
+ac_fn_c_check_header_compile "$LINENO" ""$PCRE2_PATH/include/pcre2.h"" "$as_ac_Header" "#define PCRE2_CODE_UNIT_WIDTH 8
+"
 if eval test \"x\$"$as_ac_Header"\" = x"yes"
 then :
 
 else case e in #(
-  e) PCRE_CONFIG=false ;;
+  e) PCRE2_CONFIG=false ;;
 esac
 fi
 
 fi
 
-if test "$PCRE_CONFIG" != "false"; then
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: using system PCRE regular expressions library" >&5
-printf "%s\n" "$as_me: using system PCRE regular expressions library" >&6;}
+if test "$PCRE2_CONFIG" != "false"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: using system PCRE2 regular expressions library" >&5
+printf "%s\n" "$as_me: using system PCRE2 regular expressions library" >&6;}
 
   if test "x$CFLAGS" = "x"; then
-    test "x$silent" != "xyes" && echo "  setting CFLAGS to \"`$PCRE_CONFIG --cflags`\""
-    CFLAGS="`$PCRE_CONFIG --cflags`"
+    test "x$silent" != "xyes" && echo "  setting CFLAGS to \"`$PCRE2_CONFIG --cflags`\""
+    CFLAGS="`$PCRE2_CONFIG --cflags`"
   else
-    apr_addto_bugger="`$PCRE_CONFIG --cflags`"
+    apr_addto_bugger="`$PCRE2_CONFIG --cflags`"
     for i in $apr_addto_bugger; do
       apr_addto_duplicate="0"
       for j in $CFLAGS; do
@@ -6117,10 +6484,10 @@ printf "%s\n" "$as_me: using system PCRE regular expressions library" >&6;}
 
 
   if test "x$LIBS" = "x"; then
-    test "x$silent" != "xyes" && echo "  setting LIBS to \"`$PCRE_CONFIG --libs`\""
-    LIBS="`$PCRE_CONFIG --libs`"
+    test "x$silent" != "xyes" && echo "  setting LIBS to \"`$PCRE2_CONFIG --libs8`\""
+    LIBS="`$PCRE2_CONFIG --libs8`"
   else
-    apr_addto_bugger="`$PCRE_CONFIG --libs`"
+    apr_addto_bugger="`$PCRE2_CONFIG --libs8`"
     for i in $apr_addto_bugger; do
       apr_addto_duplicate="0"
       for j in $LIBS; do
@@ -6137,14 +6504,14 @@ printf "%s\n" "$as_me: using system PCRE regular expressions library" >&6;}
   fi
 
 else
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: using bundled PCRE regular expressions library" >&5
-printf "%s\n" "$as_me: using bundled PCRE regular expressions library" >&6;}
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: using bundled PCRE2 regular expressions library" >&5
+printf "%s\n" "$as_me: using bundled PCRE2 regular expressions library" >&6;}
 
   if test "x$INCLUDES" = "x"; then
-    test "x$silent" != "xyes" && echo "  setting INCLUDES to \"-Ipcre\""
-    INCLUDES="-Ipcre"
+    test "x$silent" != "xyes" && echo "  setting INCLUDES to \"-Ipcre2/src\""
+    INCLUDES="-Ipcre2/src"
   else
-    apr_addto_bugger="-Ipcre"
+    apr_addto_bugger="-Ipcre2/src"
     for i in $apr_addto_bugger; do
       apr_addto_duplicate="0"
       for j in $INCLUDES; do
@@ -6162,10 +6529,10 @@ printf "%s\n" "$as_me: using bundled PCRE regular expressions library" >&6;}
 
 
   if test "x$LDFLAGS" = "x"; then
-    test "x$silent" != "xyes" && echo "  setting LDFLAGS to \""-Lpcre/.libs"\""
-    LDFLAGS=""-Lpcre/.libs""
+    test "x$silent" != "xyes" && echo "  setting LDFLAGS to \""-Lpcre2/.libs"\""
+    LDFLAGS=""-Lpcre2/.libs""
   else
-    apr_addto_bugger=""-Lpcre/.libs""
+    apr_addto_bugger=""-Lpcre2/.libs""
     for i in $apr_addto_bugger; do
       apr_addto_duplicate="0"
       for j in $LDFLAGS; do
@@ -6181,7 +6548,7 @@ printf "%s\n" "$as_me: using bundled PCRE regular expressions library" >&6;}
     done
   fi
 
-  PCRE_DEP="pcre/.libs/libpcre.a"
+  PCRE2_DEP="pcre2/.libs/libpcre2-8.a"
 
   # save our work to this point; this allows the sub-package to use it
   cat >confcache <<\_ACEOF
@@ -6270,12 +6637,12 @@ printf "%s\n" "$as_me: not updating unwritable cache $cache_file" >&6;}
 fi
 rm -f confcache
 
-  echo "configuring package in src/pcre now"
+  echo "configuring package in src/pcre2 now"
   ac_popdir=`pwd`
-  apr_config_subdirs="src/pcre"
-  test -d src/pcre || $mkdir_p src/pcre
-  ac_abs_srcdir=`(cd $srcdir/src/pcre && pwd)`
-  cd src/pcre
+  apr_config_subdirs="src/pcre2"
+  test -d src/pcre2 || $mkdir_p src/pcre2
+  ac_abs_srcdir=`(cd $srcdir/src/pcre2 && pwd)`
+  cd src/pcre2
 
       # A "../" for each directory in /$config_subdirs.
       ac_dots=`echo $apr_config_subdirs|sed -e 's%^\./%%' -e 's%[^/]$%&/%' -e 's%[^/]*/%../%g'`
@@ -6296,7 +6663,7 @@ rm -f confcache
   for apr_configure_arg in $ac_configure_args
   do
     case "$apr_configure_arg" in
-      --with-pcre=*|\'--with-pcre=*)
+      --with-pcre2=*|\'--with-pcre2=*)
         continue ;;
     esac
     apr_configure_args="$apr_configure_args$apr_sep'$apr_configure_arg'"
@@ -6310,9 +6677,9 @@ rm -f confcache
 
               if eval $SHELL $ac_abs_srcdir/configure $apr_configure_args --cache-file=$ac_sub_cache_file --srcdir=$ac_abs_srcdir
   then :
-    echo "src/pcre configured properly"
+    echo "src/pcre2 configured properly"
   else
-    echo "configure failed for src/pcre"
+    echo "configure failed for src/pcre2"
     exit 1
   fi
 
@@ -6341,12 +6708,132 @@ fi
 fi
 
 
+
+# Check whether --with-libchardet was given.
+if test ${with_libchardet+y}
+then :
+  withval=$with_libchardet;  given_libchardet=$withval
+else case e in #(
+  e)  given_libchardet='yes'  ;;
+esac
+fi
+
+
+found_libchardet=""
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether to use libchardet for automatic character set detection" >&5
+printf %s "checking whether to use libchardet for automatic character set detection... " >&6; }
+if test -n "${given_libchardet}" -a "${given_libchardet}" != "no"; then
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
+
+    user_pkg_config_path=""
+    pkg_config_print_libs=""
+
+        if test "${given_libchardet}" != "yes" -a "${given_libchardet}" != "/usr"; then
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for libchardet in \"${given_libchardet}\"" >&5
+printf %s "checking for libchardet in \"${given_libchardet}\"... " >&6; }
+        if test -d "${given_libchardet}/lib/pkgconfig"; then
+            user_pkg_config_path="${given_libchardet}/lib/pkgconfig"
+	    pkg_config_print_libs="--libs"
+	else
+	    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+	    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \"${given_libchardet}\"/lib/pkgconfig doesn't exist" >&5
+printf "%s\n" "$as_me: \"${given_libchardet}\"/lib/pkgconfig doesn't exist" >&6;}
+        fi
+    fi
+
+    if test -z "${user_pkg_config_path}"; then
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for system libchardet" >&5
+printf %s "checking for system libchardet... " >&6; }
+	pkg_config_print_libs="--libs-only-l"
+    fi
+
+    cflags=`PKGCONFIG_PATH="${user_pkg_config_path}:${PKG_CONFIG_PATH}" $PKGCONF chardet --cflags-only-I 2>/dev/null`
+
+    if test $? -eq 0; then
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
+
+  if test "x$INCLUDES" = "x"; then
+    test "x$silent" != "xyes" && echo "  setting INCLUDES to \"$cflags\""
+    INCLUDES="$cflags"
+  else
+    apr_addto_bugger="$cflags"
+    for i in $apr_addto_bugger; do
+      apr_addto_duplicate="0"
+      for j in $INCLUDES; do
+        if test "x$i" = "x$j"; then
+          apr_addto_duplicate="1"
+          break
+        fi
+      done
+      if test $apr_addto_duplicate = "0"; then
+        test "x$silent" != "xyes" && echo "  adding \"$i\" to INCLUDES"
+        INCLUDES="$INCLUDES $i"
+      fi
+    done
+  fi
+
+	ldflags=`PKG_CONFIG_PATH="${user_pkg_config_path}:${PKG_CONFIG_PATH}" $PKGCONF chardet ${pkg_config_print_libs} 2>/dev/null`
+
+  if test "x$EXTRA_LIBS" = "x"; then
+    test "x$silent" != "xyes" && echo "  setting EXTRA_LIBS to \"$ldflags\""
+    EXTRA_LIBS="$ldflags"
+  else
+    apr_addto_bugger="$ldflags"
+    for i in $apr_addto_bugger; do
+      apr_addto_duplicate="0"
+      for j in $EXTRA_LIBS; do
+        if test "x$i" = "x$j"; then
+          apr_addto_duplicate="1"
+          break
+        fi
+      done
+      if test $apr_addto_duplicate = "0"; then
+        test "x$silent" != "xyes" && echo "  adding \"$i\" to EXTRA_LIBS"
+        EXTRA_LIBS="$EXTRA_LIBS $i"
+      fi
+    done
+  fi
+
+	unset ldflags
+	found_libchardet=yes
+
+printf "%s\n" "#define HAVE_CHARDET 1" >>confdefs.h
+
+    else
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+    fi
+
+    unset cflags
+    unset user_pkg_config_path
+    unset pkg_config_print_libs
+else
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+if test "${found_libchardet}" != "yes"; then
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: hypermail's automatic charset detection won't" >&5
+printf "%s\n" "$as_me: WARNING: hypermail's automatic charset detection won't" >&2;}
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: be available unless you install libchardet." >&5
+printf "%s\n" "$as_me: WARNING: be available unless you install libchardet." >&2;}
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: See hypermail's release notes" >&5
+printf "%s\n" "$as_me: WARNING: See hypermail's release notes" >&2;}
+    fi
+
+unset found_libchardet
+
+
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether to use fnv hash library for non-sequential filenames" >&5
 printf %s "checking whether to use fnv hash library for non-sequential filenames... " >&6; }
 # Check whether --enable-libfnv was given.
 if test ${enable_libfnv+y}
 then :
-  enableval=$enable_libfnv;  given_libfnv=$enableval
+  enableval=$enable_libfnv; given_libfnv=$enableval
 fi
 
 
@@ -6561,294 +7048,13 @@ fi
 
 
 
-USENSL=no
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for gethostbyaddr in -lsocket" >&5
-printf %s "checking for gethostbyaddr in -lsocket... " >&6; }
-if test ${ac_cv_lib_socket_gethostbyaddr+y}
-then :
-  printf %s "(cached) " >&6
-else case e in #(
-  e) ac_check_lib_save_LIBS=$LIBS
-LIBS="-lsocket  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.
-   The 'extern "C"' is for builds by C++ compilers;
-   although this is not generally supported in C code supporting it here
-   has little cost and some practical benefit (sr 110532).  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char gethostbyaddr (void);
-int
-main (void)
-{
-return gethostbyaddr ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"
-then :
-  ac_cv_lib_socket_gethostbyaddr=yes
-else case e in #(
-  e) ac_cv_lib_socket_gethostbyaddr=no ;;
-esac
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS ;;
-esac
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_socket_gethostbyaddr" >&5
-printf "%s\n" "$ac_cv_lib_socket_gethostbyaddr" >&6; }
-if test "x$ac_cv_lib_socket_gethostbyaddr" = xyes
-then :
-  result=yes
-else case e in #(
-  e) result=no ;;
-esac
-fi
-
-if test $result = yes; then
-        LIBS="$LIBS -lsocket"
-else
-        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for gethostbyaddr in -lsocket" >&5
-printf %s "checking for gethostbyaddr in -lsocket... " >&6; }
-if test ${ac_cv_lib_socket_gethostbyaddr+y}
-then :
-  printf %s "(cached) " >&6
-else case e in #(
-  e) ac_check_lib_save_LIBS=$LIBS
-LIBS="-lsocket -lnsl $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.
-   The 'extern "C"' is for builds by C++ compilers;
-   although this is not generally supported in C code supporting it here
-   has little cost and some practical benefit (sr 110532).  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char gethostbyaddr (void);
-int
-main (void)
-{
-return gethostbyaddr ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"
-then :
-  ac_cv_lib_socket_gethostbyaddr=yes
-else case e in #(
-  e) ac_cv_lib_socket_gethostbyaddr=no ;;
-esac
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS ;;
-esac
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_socket_gethostbyaddr" >&5
-printf "%s\n" "$ac_cv_lib_socket_gethostbyaddr" >&6; }
-if test "x$ac_cv_lib_socket_gethostbyaddr" = xyes
-then :
-  result=yes
-else case e in #(
-  e) result=no ;;
-esac
-fi
-
-        if test $result = yes; then
-                LIBS = "$LIBS -lsocket -lnsl"
-                USENSL=yes
-        else
-                { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for inet_addr in -lsocket" >&5
-printf %s "checking for inet_addr in -lsocket... " >&6; }
-if test ${ac_cv_lib_socket_inet_addr+y}
-then :
-  printf %s "(cached) " >&6
-else case e in #(
-  e) ac_check_lib_save_LIBS=$LIBS
-LIBS="-lsocket  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.
-   The 'extern "C"' is for builds by C++ compilers;
-   although this is not generally supported in C code supporting it here
-   has little cost and some practical benefit (sr 110532).  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char inet_addr (void);
-int
-main (void)
-{
-return inet_addr ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"
-then :
-  ac_cv_lib_socket_inet_addr=yes
-else case e in #(
-  e) ac_cv_lib_socket_inet_addr=no ;;
-esac
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS ;;
-esac
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_socket_inet_addr" >&5
-printf "%s\n" "$ac_cv_lib_socket_inet_addr" >&6; }
-if test "x$ac_cv_lib_socket_inet_addr" = xyes
-then :
-  result=yes
-else case e in #(
-  e) result=no ;;
-esac
-fi
-
-                if test $result = yes; then
-                        LIBS="$LIBS -lsocket"
-                else
-                        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for inet_addr in -lsocket" >&5
-printf %s "checking for inet_addr in -lsocket... " >&6; }
-if test ${ac_cv_lib_socket_inet_addr+y}
-then :
-  printf %s "(cached) " >&6
-else case e in #(
-  e) ac_check_lib_save_LIBS=$LIBS
-LIBS="-lsocket -lnsl $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.
-   The 'extern "C"' is for builds by C++ compilers;
-   although this is not generally supported in C code supporting it here
-   has little cost and some practical benefit (sr 110532).  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char inet_addr (void);
-int
-main (void)
-{
-return inet_addr ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"
-then :
-  ac_cv_lib_socket_inet_addr=yes
-else case e in #(
-  e) ac_cv_lib_socket_inet_addr=no ;;
-esac
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS ;;
-esac
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_socket_inet_addr" >&5
-printf "%s\n" "$ac_cv_lib_socket_inet_addr" >&6; }
-if test "x$ac_cv_lib_socket_inet_addr" = xyes
-then :
-  result=yes
-else case e in #(
-  e) result=no ;;
-esac
-fi
-
-                        if test $result = yes; then
-                                LIBS="$LIBS -lsocket -lnsl"
-                                USENSL=yes
-                        fi
-                fi
-        fi
-fi
-if test $USENSL != yes; then
-        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for inet_addr in -lnsl" >&5
-printf %s "checking for inet_addr in -lnsl... " >&6; }
-if test ${ac_cv_lib_nsl_inet_addr+y}
-then :
-  printf %s "(cached) " >&6
-else case e in #(
-  e) ac_check_lib_save_LIBS=$LIBS
-LIBS="-lnsl  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.
-   The 'extern "C"' is for builds by C++ compilers;
-   although this is not generally supported in C code supporting it here
-   has little cost and some practical benefit (sr 110532).  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char inet_addr (void);
-int
-main (void)
-{
-return inet_addr ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"
-then :
-  ac_cv_lib_nsl_inet_addr=yes
-else case e in #(
-  e) ac_cv_lib_nsl_inet_addr=no ;;
-esac
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS ;;
-esac
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_nsl_inet_addr" >&5
-printf "%s\n" "$ac_cv_lib_nsl_inet_addr" >&6; }
-if test "x$ac_cv_lib_nsl_inet_addr" = xyes
-then :
-  result=yes
-else case e in #(
-  e) result=no ;;
-esac
-fi
-
-        if test $result = yes; then
-                LIBS="$LIBS -lnsl"
-        fi
-fi
 
 
 
 
 
 
-
-
-
-ac_config_files="$ac_config_files Makefile archive/Makefile docs/Makefile libcgi/Makefile src/Makefile tests/testhm src/defaults.h"
+ac_config_files="$ac_config_files Makefile archive/Makefile docs/Makefile src/Makefile tests/testhm src/defaults.h"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -7542,7 +7748,6 @@ do
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "archive/Makefile") CONFIG_FILES="$CONFIG_FILES archive/Makefile" ;;
     "docs/Makefile") CONFIG_FILES="$CONFIG_FILES docs/Makefile" ;;
-    "libcgi/Makefile") CONFIG_FILES="$CONFIG_FILES libcgi/Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "tests/testhm") CONFIG_FILES="$CONFIG_FILES tests/testhm" ;;
     "src/defaults.h") CONFIG_FILES="$CONFIG_FILES src/defaults.h" ;;

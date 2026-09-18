@@ -1,12 +1,15 @@
+#ifndef _HYPERMAIL_HYPERMAIL_H
+#define _HYPERMAIL_HYPERMAIL_H
 /* 
 ** Copyright (C) 1994, 1995 Enterprise Integration Technologies Corp.
 **         VeriFone Inc./Hewlett-Packard. All Rights Reserved.
 ** Kevin Hughes, kev@kevcom.com 3/11/94
 ** Kent Landfield, kent@landfield.com 4/6/97
+** Hypermail Project 1998-2023
 ** 
 ** This program and library is free software; you can redistribute it and/or 
 ** modify it under the terms of the GNU (Library) General Public License 
-** as published by the Free Software Foundation; either version 2 
+** as published by the Free Software Foundation; either version 3
 ** of the License, or any later version. 
 ** 
 ** This program is distributed in the hope that it will be useful, 
@@ -18,9 +21,6 @@
 ** along with this program; if not, write to the Free Software 
 ** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA 
 */
-
-#ifndef _HYPERMAIL_HYPERMAIL_H
-#define _HYPERMAIL_HYPERMAIL_H
 
 #ifndef MAIN_FILE
 #define VAR extern
@@ -100,8 +100,8 @@
 #endif
 
 /*
-* this redefines the standard *printf() to use ours 
-*/
+ * this redefines the standard *printf() to use ours 
+ */
 #define TRIO_REPLACE_STDIO
 #define HAVE_SSCANF  /* avoid problems in setup.c with trio_sscanf */
 #include <trio.h>
@@ -116,7 +116,7 @@
 #define TRUE  1
 
 #define PROGNAME    "hypermail"
-#define HMURL       "http://www.hypermail-project.org/"
+#define HMURL       "https://github.com/hypermail-project/hypermail/"
 
 #define INDEXNAME   "index"
 #define DIRNAME     "archive"
@@ -136,7 +136,9 @@
 
 #define NUMSTRLEN    10
 #define MAXLINE	     1024
+#define MAXURLLEN    4096
 #define MAXFILELEN   256
+#define MAX_FWD_MSG_NESTING_LEVEL 100
 #define NAMESTRLEN   320
 #define MAILSTRLEN   80
 #define DATESTRLEN   80
@@ -193,10 +195,27 @@ typedef enum {
   FORMAT_FLOWED = 1
 } textplain_format_t;
 
+typedef enum {
+    MN_KEEP = 0,
+    MN_KEEP_WITH_STORED_ATTACHMENT = 1,
+    MN_SKIP_BUT_KEEP_CHILDREN = 2,
+    MN_SKIP_STORED_ATTACHMENT = 4,
+    MN_SKIP_ALL = 8
+} message_node_skip_t;
+
+typedef enum {
+    MN_KEEP_NODE = 0,
+    MN_FREE_NODE = 1,
+    MN_FREE_ROOT_NODE = 2,    
+    MN_DELETE_ATTACHMENTS = 4
+} message_node_release_details_t;
+    
 /* conversions supported by string.c:parseemail() */
 typedef enum {
-  MAKEMAILCOMMAND = 1, /* makes links clickable */
-  REPLACE_DOMAIN = 2,  /* replaces domain by antispamdomain */
+  MAKEMAILCOMMAND = 1,   /* makes links clickable */
+  OBFUSCATE_ADDRESS = 2, /* only obfuscate the email address */
+  REPLACE_DOMAIN = 3     /* replaces domain by antispamdomain */
+
 } parseemail_conversion_t;
 
 /* 
@@ -235,7 +254,28 @@ struct body {
     char html;			/* set to TRUE if already converted to HTML */
     char header;		/* part of header */
     char parsedheader;		/* this header line has been parsed once */
+    char invalid_header;        /* this is an invalid header line, it's missing its
+                                   header name, header value, and or has an invalid value */
+    char antispam_disabled;     /* no antispam was applied to this line */
+#ifdef DELETE_ME
     char attached;		/* part of attachment */
+#endif
+#ifdef DELETE_ME
+    char attachment_status;     /* says if this is the start / end of an attachment and
+                                   type, expected to replace attached */
+#endif
+    /* review if still used */
+    char attachment_links;      /* part of generated links to attachments */
+    int  attachment_links_flags;
+    char attachment_rfc822;     /* first line of a message/rfc822 attachment */
+    int  attachment_flags;      /* states metadata for generating
+                                   markup when printing out the body,
+                                   like start or end of an attachment,
+                                   or a list of stored attachments,
+                                   and so on. check the flags defined
+                                   in BODY_ATTACHMENT early on this
+                                   section (and convert them to use an
+                                   typedef enum one day */
     char demimed;		/* if this is a header, this is set to TRUE if
 				   it has passed the decoderfc2047() function */
     int format_flowed;          /* TRUE if this a text/plain f=f line */
@@ -243,6 +283,41 @@ struct body {
     struct body *next;
 };
 
+/* here we divide a message into nodes. A message that has no attachments
+   has a single node. A message with attachments has one attachment child.
+   All those attachments then are considered siblings. 
+   An attachment itself may be a message with children attachments, for
+   example a message/rfc822 */
+struct message_node {
+    struct body *bp;
+    struct body *lp;
+#ifdef DEBUG_PARSE_MSGID_TRACE
+    char *msgid;         /* for helping debugging */
+#endif
+    char *charset;       /* the charset declared in the content-type */
+    char *charsetsave;   /* the first charset found in MIME RFC2047 encoded headers */
+    char *content_type;
+    char *bin_filename;  /* gives the path + filename if the part is stored */
+    char *meta_filename; /* gives the path + filename of the metadata filename if it
+                            was created */
+    char *html_link;     /* gives the link that will be added to the stored attachment
+                            list */
+    char *comment_filename;  /* gives the filename that will be mentioned
+                                in the HTML comment underneath the link */
+    char *boundary_part; /* for multipart/mixed and message/rfc822, the
+                            MIME for a given part */
+    char *boundary_type;  /* for multipart/mixed, the boundary declared in 
+                             the content type */
+    char attachment_rfc822; /* set to TRUE if this message node is a
+                                message/rfc822 attachment */
+    char alternative; /* set to TRUE if this message node is a child of multipart/alternative */
+    message_node_skip_t skip; /* different values stating how we should deal with this node
+                                 if we need to fully or partially skip it when flattening it */
+    struct message_node *attachment_child;
+    struct message_node *attachment_next_sibling;
+    struct message_node *parent;
+};
+  
 struct printed {
     int msgnum;
     struct printed *next;
@@ -332,25 +407,52 @@ struct attach {
 #define BODY_CONTINUE (1<<0)	/* this is a continued line */
 #define BODY_HTMLIZED (1<<1)	/* this is already htmlified */
 #define BODY_HEADER   (1<<2)	/* this is a header line */
-#define BODY_ATTACHED (1<<3)	/* this line was attached */
-#define BODY_FORMAT_FLOWED (1<<4) /* this line is format-flowed */
-#define BODY_DEL_SSQ  (1<<5)    /* remove both space stuffing and
+#define BODY_ATTACHMENT (1<<3)	/* this line was attached */
+#define BODY_ATTACHMENT_START (1<<4) /* meta data to help encapsulate attachments */
+#define BODY_ATTACHMENT_END   (1<<5)
+/* beginning and ending of a list of external attachment links */
+#define BODY_ATTACHMENT_LINKS_START (1<<6) 
+#define BODY_ATTACHMENT_LINKS_END   (1<<7)
+#define BODY_ATTACHMENT_LINKS (1<<8)   /* this line is a child of the list of external
+                                          attachment links */
+#define BODY_ATTACHMENT_RFC822 (1<<9)   /* this line is the beginning of an message/rfc822
+					** attachment */
+#define BODY_FORMAT_FLOWED   (1<<10) /* this line is format-flowed */
+#define BODY_DEL_SSQ  (1<<11)    /* remove both space stuffing and
                                  * quotes where applicable for f=f */
+#define BODY_NO_ANTISPAM (1<<12) /* disables anti spam protection for this line */
+#ifdef DELETE_ME
+#define BODY_ATTACHED (1<<13)  /* temp while cleaning code */
+#endif
 
-
-struct boundary {
-    struct boundary *next;
-    struct boundary *prev;
-    char *line;
+/* used to store a MIME boundary and all the context related to it
+** alternative_info, charset, applemail_hack, ... */
+struct boundary_stack {
+    struct boundary_stack *next;
+    struct boundary_stack *prev;
+    char *boundary_id;
+    
+    char alternativeparser;
+    int alternative_weight;
+    struct body *alternative_lp;
+    struct body *alternative_bp;
+    struct message_node *current_alt_message_node;
+    struct message_node *root_alt_message_node;
+    char alternative_message_node_created;
+    char alternative_file[131];
+    char alternative_lastfile[131];
+    char last_alternative_type[131];
+    /* the following three store the context for the applemail hack */
+    int parse_multipart_alternative_force_save_alts;
+    int applemail_old_set_save_alts;
+    int set_save_alts;
 };
 
-struct charset_stack {
-    struct charset_stack *next;
-    struct charset_stack *prev;
-    char *charset;
-    char *charsetsave;
+struct hm_stack {
+    struct hm_stack *prev;
+    void *value;
 };
-
+  
 VAR struct header *subjectlist;
 VAR struct header *authorlist;
 VAR struct header *datelist;
@@ -397,6 +499,7 @@ VAR char *ihtmlhelplowfile;
 VAR char *ihtmlnavbar2upfile;
 VAR char *mhtmlheaderfile;
 VAR char *mhtmlfooterfile;
+VAR char *mhtmlnavbar2upfile;
 
 VAR long firstdatenum;
 VAR long lastdatenum;
@@ -433,4 +536,4 @@ extern int strcasecmp(const char *, const char *);
 extern int strncasecmp(const char *, const char *, size_t);
 #endif
 
-#endif				/* ! _HYPERMAIL_HYPERMAIL_H */
+#endif /* _HYPERMAIL_HYPERMAIL_H */

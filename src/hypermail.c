@@ -3,10 +3,11 @@
 **         VeriFone Inc./Hewlett-Packard. All Rights Reserved.
 ** Kevin Hughes, kev@kevcom.com 3/11/94
 ** Kent Landfield, kent@landfield.com 4/6/97
+** Hypermail Project 1998-2023
 ** 
 ** This program and library is free software; you can redistribute it and/or 
 ** modify it under the terms of the GNU (Library) General Public License 
-** as published by the Free Software Foundation; either version 2 
+** as published by the Free Software Foundation; either version 3
 ** of the License, or any later version. 
 ** 
 ** This program is distributed in the hope that it will be useful, 
@@ -114,7 +115,7 @@ char *setindex(char *dfltindex, char *indextype, char *suffix)
 
 void version(void)
 {
-    printf("%s: %s: %s %s: %s\n", PROGNAME, lang[MSG_VERSION], VERSION, lang[MSG_PATCHLEVEL], PATCHLEVEL);
+    printf("%s: %s: %s\n", PROGNAME, lang[MSG_VERSION], VERSION);
     exit(0);
 }
 
@@ -147,13 +148,12 @@ void usage(void)
     printf("  -o keyword=val: Set config item\n");
     printf("  -p            : %s\n", lang[MSG_OPTION_P]);
     printf("  -s htmlsuffix : %s\n", "HTML file suffix (.html, .htm, ..)");
-    printf("  -t            : %s\n", "Use Tables");
-    printf("  -T            : %s\n", "Use index tables");
     printf("  -u            : %s\n", lang[MSG_OPTION_U]);
     printf("  -v            : %s\n", lang[MSG_OPTION_VERBOSE]);
     printf("  -V            : %s\n", lang[MSG_OPTION_VERSION]);
     printf("  -x            : %s\n", lang[MSG_OPTION_X]);
     printf("  -X            : %s\n", lang[MSG_OPTION_XML]);
+    printf("  -y            : %s\n", lang[MSG_OPTION_Y]);    
     printf("  -1            : %s\n", lang[MSG_OPTION_1]);
     printf("  -L lang       : %s (", lang[MSG_OPTION_LANG]);
 
@@ -165,7 +165,6 @@ void usage(void)
     }
     printf(")\n");
     printf("%s         : %s\n", lang[MSG_VERSION], VERSION);
-    printf("%s      : %s\n", lang[MSG_PATCHLEVEL], PATCHLEVEL);
     printf("%s            : %s\n\n", lang[MSG_DOCS], HMURL);
     exit(1);
 }
@@ -198,7 +197,7 @@ int main(int argc, char **argv)
 
     opterr = 0;
 
-#define GETOPT_OPTSTRING ("a:Ab:c:d:gil:L:m:n:o:ps:tTuvVxX0:1M?")
+#define GETOPT_OPTSTRING ("a:Ab:c:d:gil:L:m:n:o:ps:tTuvVxXy0:1M?")
 
     /* get pre config options here */
 	while ((i = getopt(argc, argv, GETOPT_OPTSTRING)) != -1) {
@@ -225,10 +224,10 @@ int main(int argc, char **argv)
 	case 'p':
 	case 's':
 	case 't':
-	case 'T':
 	case 'u':
 	case 'x':
 	case 'X':
+	case 'y':
 	case '0':
 	case '1':
 	case 'M':
@@ -303,9 +302,12 @@ int main(int argc, char **argv)
 	case 't':
 	    set_usetable = TRUE;
 	    break;
+            /* removed in 2.2.25 */
+            /*
 	case 'T':
 	    set_indextable = TRUE;
 	    break;
+            */
 	case 'u':
 	    set_increment = TRUE;
 	    break;
@@ -318,6 +320,9 @@ int main(int argc, char **argv)
 	case 'X':
 	    set_writehaof = TRUE;
 	    break;
+	case 'y':
+	    set_dry_run = TRUE;
+	    break;                        
 	case '0':
 	    set_delete_msgnum = add_list(set_delete_msgnum, optarg);
 	    break;
@@ -335,7 +340,10 @@ int main(int argc, char **argv)
 	    break;
 	}
     }
-
+ 
+    /* do some postconfig checks for deprecated / obsolete options and inits */
+    PostConfig();
+        
 #ifdef DEBUG
     dump_config();
     exit(0);
@@ -353,35 +361,35 @@ int main(int argc, char **argv)
      */
 
     if (strlen(set_language) > 2) {
-	locale_code = strsav(set_language);
+	locale_code = set_language;
 	set_language[2] = 0;	/* shorten to 2-letter code */
     }
     else
 	locale_code = NULL;
 
     if ((tlang = valid_language(set_language, &locale_code)) == NULL) {
-	snprintf(errmsg, sizeof(errmsg), "\"%s\" %s.", set_language, lang[MSG_LANGUAGE_NOT_SUPPORTED]);
-	cmderr(errmsg);
+        trio_snprintf(errmsg, sizeof(errmsg), "\"%s\" %s.", set_language, lang[MSG_LANGUAGE_NOT_SUPPORTED]);
+        cmderr(errmsg);
     }
 
 #ifdef HAVE_LOCALE_H
-	if (!setlocale(LC_ALL, locale_code)) {
-            char *rv;
-            
-            if (!strcmp(locale_code, "en_US")) {
-                /* many systems now install by defualt en_US.UTF-8.
-                   Here we assume that the mapping between en_US and en_US.UTF-8
-                   in system messages is identical. 
-                   We cannot do the same for other languages, though */
-                rv = setlocale(LC_ALL, "en_US.UTF-8");
-            }
-            if (!rv) {
-                snprintf(errmsg, sizeof(errmsg), "WARNING: locale \"%s\", not supported.\n", locale_code);
-                fprintf(stderr, "%s", errmsg);/* AUDIT biege: avoid format-bug warning */
-            }
+    if (!setlocale(LC_ALL, locale_code)) {
+        char *rv = NULL;
+        
+        if (!strcmp(locale_code, "en_US")) {
+            /* many systems now install by defualt en_US.UTF-8.
+               Here we assume that the mapping between en_US and en_US.UTF-8
+               in system messages is identical. 
+               We cannot do the same for other languages, though */
+            rv = setlocale(LC_ALL, "en_US.UTF-8");
+        }
+        if (!rv) {
+            trio_snprintf(errmsg, sizeof(errmsg), "WARNING: locale \"%s\", not supported.\n", locale_code);
+            fprintf(stderr, "%s", errmsg);/* AUDIT biege: avoid format-bug warning */
+        }
     }
 #endif
-	
+
     lang = tlang;		/* A good language, make it so. */
 
     if (print_usage)		/* Print the usage message and terminate */
@@ -389,17 +397,17 @@ int main(int argc, char **argv)
 
 #ifndef GDBM
     if (set_usegdbm) {
-    fprintf(stderr, "%s: %s\n", PROGNAME, lang[MSG_OPTION_G_NOT_BUILD_IN]);
-    usage();
+        fprintf(stderr, "%s: %s\n", PROGNAME, lang[MSG_OPTION_G_NOT_BUILD_IN]);
+        usage();
     }
 #endif
-
+    
 #ifndef HAVE_LIBFNV
     if (set_nonsequential)
-      progerr("Hypermail isn't built with the libfnv hash library.\n"
-	     "You cannot use the nonsequential option.\n");
+        progerr("Hypermail isn't built with the libfnv hash library.\n"
+                "You cannot use the nonsequential option.\n");
 #endif /* HAVE_LIBFNV */
-
+    
     if (set_mbox && !strcasecmp(set_mbox, "NONE")) {
 	use_stdin = TRUE;
     }
@@ -425,24 +433,39 @@ int main(int argc, char **argv)
 	    use_stdin = FALSE;
     }
     else {
-	if (set_mbox)
+	if (set_mbox) {
 	    free(set_mbox);
+        }
 	set_mbox = NULL;
     }
 
+    if (set_dir) {
+        char *dp = dirpath(set_dir);
+	set_dir = strreplace(set_dir, dp);
+        free (dp);
+    }
+    
     /*
-    ** Deprecated options 
-    */
-    if (set_showhr) {
-      fprintf (stderr, "The \"showhr\" option has been deprecated. Ignoring it.\n");
-      set_showhr = FALSE;
+     * Default names for directories and labels need to be figured out.
+     */
+
+    if (use_stdin && (!set_dir || !strcasecmp(set_dir, "NONE")))
+	set_dir = strreplace(set_dir, DIRNAME);
+
+    if (!set_dir || !strcasecmp(set_dir, "NONE"))
+	set_dir = strreplace(set_dir, (strrchr(set_mbox, '/')) ? strrchr(set_mbox, '/') + 1 : set_mbox);
+
+    if (set_dir[strlen(set_dir) - 1] != PATH_SEPARATOR) {
+        char *t = set_dir;
+        
+        trio_asprintf(&set_dir, "%s%c", t, PATH_SEPARATOR);
+        free(t);
     }
 
-    if (set_usetable) {
-      fprintf (stderr, "The \"usetable\" option has been deprecated. Ignoring it.\n");
-      set_usetable = FALSE;
+    if (!set_label || !strcasecmp(set_label, "NONE")) {
+	set_label = set_mbox ? (strreplace(set_label, (strrchr(set_mbox, '/')) ? strrchr(set_mbox, '/') + 1 : set_mbox)) : strsav("stdin");
     }
-
+    
     /*
      * Read the contents of the file into the variables to be used
      * in printing out the pages.
@@ -456,26 +479,19 @@ int main(int argc, char **argv)
     ihtmlnavbar2upfile = expand_contents(set_ihtmlnavbar2up);
     mhtmlheaderfile = expand_contents(set_mhtmlheader);
     mhtmlfooterfile = expand_contents(set_mhtmlfooter);
+    if (set_mhtmlnavbar2up) {
+        mhtmlnavbar2upfile = expand_contents(set_mhtmlnavbar2up);
+    } else {
+        mhtmlnavbar2upfile = expand_contents(set_ihtmlnavbar2up);
+    }
 
-    if (set_dir)
-	set_dir = strreplace(set_dir, dirpath(set_dir));
-
-    /*
-     * Default names for directories and labels need to be figured out.
-     */
-
-    if (use_stdin && (!set_dir || !strcasecmp(set_dir, "NONE")))
-	set_dir = strreplace(set_dir, DIRNAME);
-
-    if (!set_dir || !strcasecmp(set_dir, "NONE"))
-	set_dir = strreplace(set_dir, (strrchr(set_mbox, '/')) ? strrchr(set_mbox, '/') + 1 : set_mbox);
-
-    if (set_dir[strlen(set_dir) - 1] != PATH_SEPARATOR)
-	trio_asprintf(&set_dir, "%s%c", set_dir, PATH_SEPARATOR);
-
-    if (!set_label || !strcasecmp(set_label, "NONE"))
-	set_label = set_mbox ? (strreplace(set_label, (strrchr(set_mbox, '/')) ? strrchr(set_mbox, '/') + 1 : set_mbox)) : "stdin";
-
+    /* if the user didn't specify a message navbar for messages, we
+       set up a generic one using the archives's label and linking
+       back to the main index */
+    if (!mhtmlnavbar2upfile || !*mhtmlnavbar2upfile) {
+        trio_asprintf(&mhtmlnavbar2upfile, DEFAULT_MHTML_NAVBAR2UP, set_label);
+    }
+    
     /*
      * Which index file will be called "index.html"?
      */
@@ -592,13 +608,32 @@ int main(int argc, char **argv)
      * there first...
      */
 
-    checkdir(set_dir);
+    if (!set_dry_run) {
+        checkdir(set_dir);
+    }
 
+    /* write the default css if any of the two custom ones was not
+       declared */
+    if (!set_dry_run
+        && ( ! (set_icss_url && *set_icss_url) ||
+             ! (set_mcss_url && *set_mcss_url))) {
+        
+        char *filename;
+
+	if (set_default_css_url && !strcmp (set_default_css_url, "hypermail.css")) {
+            trio_asprintf(&filename, "%s%s", set_dir, "hypermail.css");
+            if (!isfile(filename)) {
+                print_default_css_file (filename);
+            }
+            free(filename);
+	}
+    }
+	
     /*
      * Let's do it.
      */
 
-    if (set_uselock)
+    if (!set_dry_run && set_uselock)
 	lock_archive(set_dir);
 
     if (set_increment == -1) {
@@ -660,8 +695,15 @@ int main(int argc, char **argv)
 	    max_msgnum = set_startmsgnum - 1;
 	    loadoldheaders(set_dir);
 	}
+
 	amount_new = parsemail(set_mbox, use_stdin, set_readone, set_increment, set_dir, 
 			       set_inlinehtml, set_startmsgnum);	/* number from 0 */
+
+        if (set_dry_run) {
+            printdryrun(0, max_msgnum + 1);
+            exit(0);
+        }
+        
 	if (!set_mbox_shortened && !matches_existing(0)) {
 	    progerr("First message in mailbox does not "
 		    "match first message in archive\n"
@@ -678,8 +720,18 @@ int main(int argc, char **argv)
 	writearticles(0, max_msgnum + 1);
     }
 
-    if (amount_new) {		/* Always write the index files */
-	if (set_linkquotes) {
+    /* only update the indices when we either have a new
+       message (if set_increment) is set or when inputting
+       a whole mbox. 
+       This is a lame way to take into account msgid collision
+       when adding a new message. Without binding the condition
+       to set_condition, this could result in the indices stating
+       the archive is empty */
+    if ((set_increment && amount_new > 0)
+        || (!set_increment
+            && (amount_new > 0 || count_deleted(max_msgnum + 1)))) {
+	/* Always write the index files */
+	if (amount_new && set_linkquotes) {
 	    threadlist = NULL;
 	    threadlist_end = NULL;
 	    printedthreadlist = NULL;
@@ -703,7 +755,7 @@ int main(int argc, char **argv)
 		/* if (ep->flags & THREADING_ALTERED) */
 	    }
 	}
-	count_deleted(max_msgnum + 1);
+        
 	if (show_index[0][DATE_INDEX])
 	    writedates(amount_new, NULL);
 	if (show_index[0][THREAD_INDEX])
@@ -731,24 +783,16 @@ int main(int argc, char **argv)
     if (set_uselock)
 	unlock_archive();
 
+    /* 
+    ** do some cleanup 
+    */
+    printed_free(printedlist);
+    printed_free(printedthreadlist);
+
+    ConfigCleanup();
+    
     if (configfile)
 	free(configfile);
-    if (ihtmlheaderfile)
-	free(ihtmlheaderfile);
-    if (ihtmlfooterfile)
-	free(ihtmlfooterfile);
-    if (ihtmlheadfile)
-	free(ihtmlheadfile);
-    if (ihtmlhelpupfile)
-	free(ihtmlhelpupfile);
-    if (ihtmlhelplowfile)
-	free(ihtmlhelplowfile);
-    if (ihtmlnavbar2upfile)
-	free(ihtmlnavbar2upfile);
-    if (mhtmlheaderfile)
-	free(mhtmlheaderfile);
-    if (mhtmlfooterfile)
-	free(mhtmlfooterfile);
-
+    
     return (0);
 }

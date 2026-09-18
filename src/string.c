@@ -3,7 +3,8 @@
 **         VeriFone Inc./Hewlett-Packard. All Rights Reserved.
 ** Kevin Hughes, kev@kevcom.com 3/11/94
 ** Kent Landfield, kent@landfield.com 4/6/97
-** 
+** Hypermail Project 1998-2023
+**
 ** This program and library is free software; you can redistribute it and/or 
 ** modify it under the terms of the GNU (Library) General Public License 
 ** as published by the Free Software Foundation; either version 2 
@@ -23,15 +24,29 @@
 ** All the nasty string functions live here.
 */
 
-#include <iconv.h>
-#include <errno.h>
-#include <ctype.h>
-#include <sys/stat.h>
-
 #include "hypermail.h"
 #include "setup.h"
 #include "parse.h"
 #include "uconvert.h"
+#include "utf8.h"
+
+#ifdef HAVE_ICONV_H
+#include <iconv.h>
+#endif
+
+#ifdef HAVE_CHARDET
+#include <chardet.h>
+#endif
+
+#define HAVE_PCRE2
+#ifdef HAVE_PCRE2
+#ifdef __LCC__
+#include "../lcc/pcre2.h"
+#else
+#define PCRE2_CODE_UNIT_WIDTH 8
+#include <pcre2.h>
+#endif
+#endif
 
 #ifdef HAVE_STRING_H
 #include <string.h>
@@ -73,6 +88,10 @@ char *obfuscate_email_address(char *address)
   RETURN_PUSH(buf);
 }
 
+/* 
+** undoes the work of obfuscate_email_address.
+** caller must return value
+*/ 
 char *unobfuscate_email_address(char *address){
 
 #define uea_sbufsize 6
@@ -172,10 +191,9 @@ char *unobfuscate_email_address(char *address){
   RETURN_PUSH(buf);
 }
 
-/* I18N hack */
-#ifdef HAVE_ICONV_H
-#include <iconv.h>
-#endif
+/*
+** I18N hack 
+*/
 
 #ifdef HAVE_ICONV
 struct i18n_alt_charset_table {
@@ -229,7 +247,8 @@ struct i18n_alt_charset_table i18n_charsettable[] = {
 };
 #define I18N_CHARSET_TABLE_SIZE (sizeof(i18n_charsettable)/sizeof(struct i18n_alt_charset_table))
 
-char *i18n_canonicalize_charset(char *cs){
+static char *i18n_canonicalize_charset(char *cs)
+{
 
   int x=0;
 
@@ -243,11 +262,17 @@ char *i18n_canonicalize_charset(char *cs){
 }
 
 
+/*
+** converts a string from a charset to another charset
+** returns the converted string and the len of the string
+** caller must free returned string 
+*/
 char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *len){
 
   size_t origlen,strleft,bufleft;
   size_t origbuflen;
   char *convbuf,*origconvbuf;
+  char *tocharset_iconv;
   iconv_t iconvfd;
   size_t ret;
   int error;
@@ -267,10 +292,19 @@ char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *
     *len=origlen;
     memcpy(origconvbuf,string,origlen);
     origconvbuf[origlen]=0x0;
+    if (!strcasecmp(fromcharset, "UTF-8")) {
+        /* substitute all invalid UTF-8 chars with a '?' */
+        utf8makevalid (origconvbuf, '?');
+    }
     return origconvbuf;
   }
 
-  iconvfd=iconv_open(i18n_canonicalize_charset(tocharset),i18n_canonicalize_charset(fromcharset));
+  /* quick patch, add translit to the tocharset if fromcharset == UTF-8 */
+  trio_asprintf (&tocharset_iconv, "%s%s", i18n_canonicalize_charset(tocharset),
+                 (!strcasecmp(fromcharset, "UTF-8")) ? "//TRANSLIT" : "");
+  
+  iconvfd=iconv_open(tocharset_iconv,i18n_canonicalize_charset(fromcharset));
+  free(tocharset_iconv);
   if(iconvfd==(iconv_t)(-1)){
     if(set_showprogress){
       if(errno==EINVAL){
@@ -279,7 +313,7 @@ char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *
         printf("I18N: libiconv open error.\n");
       }
     }
-    origlen=snprintf(origconvbuf,origbuflen, "(unknown charset) %s",string);
+    origlen=trio_snprintf(origconvbuf,origbuflen, "(unknown charset) %s",string);
     origconvbuf[origlen]=0x0;
     *len=origlen;
     return origconvbuf;
@@ -294,21 +328,21 @@ char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *
       if(set_showprogress){
 	printf("I18N: buffer overflow.\n");
       }
-      origlen=snprintf(origconvbuf, origbuflen,"(buffer overflow) %s",string);
+      origlen=trio_snprintf(origconvbuf, origbuflen,"(buffer overflow) %s",string);
       error = 1;
       break;
     case EILSEQ:
       if(set_showprogress){
 	printf("I18N: invalid multibyte sequence, from %s to %s: %s.\n",fromcharset,tocharset,string);
       }
-      origlen=snprintf(origconvbuf, origbuflen,"(wrong string) %s",string);
+      origlen=trio_snprintf(origconvbuf, origbuflen,"(invalid string)");
       error = 1;
       break;
     case EINVAL:
       if(set_showprogress){
 	printf("I18N: incomplete multibyte sequence, from %s to %s: %s.\n",fromcharset,tocharset,string);
       }
-      origlen=snprintf(origconvbuf, origbuflen,"(wrong string) %s",string);
+      origlen=trio_snprintf(origconvbuf, origbuflen,"(invalid string)");
       error = 1;
       break;
     }
@@ -352,7 +386,9 @@ char *i18n_utf2numref(char *instr,int escape){
   size_t len;
   struct Push buff;
   char strbuf[10];
-
+  unsigned int p;
+  int i;
+  
   INIT_PUSH(buff);
 
   if (!set_i18n){
@@ -362,10 +398,10 @@ char *i18n_utf2numref(char *instr,int escape){
 
   headofucs=ucs=i18n_convstring(instr, "UTF-8", "UCS-2BE", &len);
 
-  unsigned int p;
-  int i = (int) len;
+  i = (int) len;
+  
   for(; i > 0; i-=2){
-    p=(unsigned char)*ucs*256+(unsigned char)*(ucs+1);
+    p = (unsigned char)*ucs*256+(unsigned char)*(ucs+1);
     if (p<128){
       /* keep ASCII characters human readable */
       if (escape){
@@ -392,7 +428,7 @@ char *i18n_utf2numref(char *instr,int escape){
         PushByte(&buff,p);
       }
     }else{
-      snprintf(strbuf,10,"&#%04d;",p);
+      trio_snprintf(strbuf,10,"&#%04d;",p);
       PushString(&buff,strbuf);
     }
     ucs+=2;
@@ -452,7 +488,70 @@ unsigned char *i18n_numref2utf(char *string){
   return headofutfstr;
 }
 
-/* replaces all non 7-bit ascii chars in string by a ? 
+#ifdef HAVE_CHARDET
+
+#ifdef CHARDET_BINARY_SAFE
+#  define detect_handledata_str(x,y,z) detect_handledata_r(x, y, strlen(y), z)
+#else
+#  define detect_handledata_str(x,y,z) detect_handledata(x, y, z)
+#endif
+
+/*
+** tries to detect the charset associated with a string
+** if the charset is detected, returns the charset string
+** otherwise, returns NULL.
+** Caller must free the returned string.
+*/
+char *i18n_charset_detect(const char *string)
+{
+    Detect * d;
+    DetectObj *obj;
+    char *charset = NULL;
+    short rv;
+
+    if (!string || *string == '\0') {
+        return NULL;
+    }
+    
+    d = detect_init ();
+    detect_reset (&d);
+    obj = detect_obj_init ();
+    rv = detect_handledata_str (&d, string, &obj);
+#ifdef _HAVE_CHARDET_DEBUG
+    printf ("#1 %s : %s : %f\n", string, obj->encoding, obj->confidence);
+#endif    
+    if (rv == CHARDET_SUCCESS) {
+        if (obj->encoding && *(obj->encoding) != '\0') {
+            charset = emalloc(strlen(obj->encoding) + 1);
+            strcpy (charset, obj->encoding);
+        } 
+    }
+    if (rv != CHARDET_NULL_OBJECT) {
+        detect_obj_free (&obj);
+    }
+    detect_destroy(&d);
+
+    return charset;
+}
+#else
+char *i18n_detect_charset(const char *string)
+{
+    return NULL;
+}
+#endif /* HAVE_CHARDET */
+
+/*
+** checks if a string is made of valid utf8 characters.
+** returns TRUE if its valid, FALSE, otherwise
+*/
+bool i18n_is_valid_utf8(const char *string)
+{
+    utf8_int8_t *rv = utf8valid(string);
+
+    return (rv) ? FALSE : TRUE;
+}
+
+/* replaces all non 7-bit ascii characters with a '?'
 ** returns the number of replaced chars
 */
 int i18n_replace_non_ascii_chars(char *string)
@@ -461,8 +560,8 @@ int i18n_replace_non_ascii_chars(char *string)
     int count = 0;
   
     while (*ptr) {
-        if (!isascii(*ptr) ||
-            (*ptr < 0x20 && *ptr != 0x0a && *ptr != 0x0d && *ptr != 0x09)) {
+        if ((*ptr < 0x20) && !isspace(*ptr)
+            || *ptr > 0x7E) {
             *ptr = '?';
             count++;
         }
@@ -472,8 +571,191 @@ int i18n_replace_non_ascii_chars(char *string)
     return count;
 }
 
+/* replaces all control characters in string with a ?
+** exceptions: \n, \r, and \t
+** This should be safe for all UTF-8 and ASCII chars
+** returns the number of replaced chars
+*/
+int i18n_replace_control_chars(char *string)
+{
+    char *ptr = string;
+    int count = 0;
+  
+    while (*ptr) {
+        if (*ptr < 0x20 && !isspace(*ptr)) {
+            *ptr = '?';
+            count++;
+        }
+        ptr++;
+    }
+    
+    return count;
+}
 #endif
+
 /* end of I18N hack */
+
+
+/*
+** checks if a string is made of valid printable
+** US-ASCII characters.
+**
+**
+** returns -1 if none found, otherwise the position
+** of the first invalid character in the string
+**
+** returns -2 if src is NULL.
+*/
+static int _has_non_us_ascii_chars(const char *src)
+{
+    int rv = -1;
+    
+    int pos = 0;
+    size_t sz;
+    int i;
+
+    if (src == NULL) {
+        return -2;
+    }
+
+    sz = strlen(src);
+    for (i = 0; i < sz; i++) {
+        char c = src[i];
+        if ((c < 0x20 || c > 0x7E)
+            && !isspace(c)) {
+            rv = i;
+            break;
+        }
+    }
+
+    return rv;
+}
+
+/*
+** checks if a string is made of valid printable
+** US-ASCII characters.
+** returns TRUE if its valid, FALSE, otherwise
+*/
+bool i18n_is_valid_us_ascii(const char *src)
+{
+    if (src == NULL) {
+        return FALSE;
+    }
+
+    return (_has_non_us_ascii_chars(src) < 0) ? TRUE : FALSE;
+}
+
+/*
+** checks if a string is made of valid printable
+** US-ASCII characters. It replaces the first
+** non ASCII character with a '\0', truncating
+** the string.
+** returns TRUE if it truncated the string,
+** FALSE otherwise.
+*/
+bool i18n_truncate_inalid_us_ascii(char *src)
+{
+    int pos;
+    bool rv;
+    
+    if (src == NULL) {
+        return FALSE;
+    }
+
+    pos = _has_non_us_ascii_chars((const char *) src);
+
+    if (pos < 0) {
+        rv = FALSE;
+    } else {
+        src[pos] = '\0';
+        rv = TRUE;
+    }
+
+    return rv;
+}
+
+/* replaces all unicode spaces in string with ascii spaces.
+** input must be in utf-8.  Returns the number of replacements or -1
+** in case of error */
+int i18n_replace_unicode_spaces(char *string, size_t sz)
+{
+#ifdef HAVE_PCRE2
+    int rv;
+
+    /* compile the re only once */
+    static const pcre2_code *re;
+  
+    /* PCRE2_SPTR is a pointer to unsigned code units of */
+    PCRE2_SPTR8 pattern = (PCRE2_SPTR8) "\\h";
+
+    /* the appropriate width (in this case, 8 bits). */
+    PCRE2_SPTR8 subject = (PCRE2_SPTR8) string;
+    PCRE2_SPTR8 replacement = (PCRE2_SPTR8) " ";
+    static PCRE2_UCHAR outputbuffer[MAXLINE];
+
+    PCRE2_SIZE outputbuffer_length = MAXLINE;
+    
+    int errornumber;
+    PCRE2_SIZE erroroffset;
+    /* PCRE2_SIZE *ovector; */
+
+    if (sz > MAXLINE) {
+        return -1;
+    }
+    
+    if (!re) {
+        re = pcre2_compile(
+            pattern,               /* the pattern */
+            PCRE2_ZERO_TERMINATED, /* indicates pattern is zero-terminated */
+            PCRE2_UTF,                     /* default options */
+            &errornumber,          /* for error number */
+            &erroroffset,          /* for error offset */
+            0);                    /* use default compile context */;
+
+        if (!re) {
+            PCRE2_UCHAR buffer[256];
+            pcre2_get_error_message(errornumber, buffer, sizeof(buffer));
+            trio_snprintf(errmsg, sizeof(errmsg), "Error at position %d of regular expression '%s': %s", erroroffset, pattern, buffer);
+            progerr(errmsg);
+        }
+    }
+
+    rv = pcre2_substitute(
+        re, /* pointer to compiled re */
+        subject, /* pointer to subject */
+        PCRE2_ZERO_TERMINATED, /* subject length */
+        0, /* start offset */
+        PCRE2_SUBSTITUTE_GLOBAL,  /* options, */
+        NULL,  /* match_data */
+        NULL, /*match_context */
+        replacement, /* replacement */
+        PCRE2_ZERO_TERMINATED|PCRE2_LITERAL, /* replacement length */
+        outputbuffer,  /* outputbuffer */
+        &outputbuffer_length);  /* outputbutter length ptr */
+
+#ifdef DEBUG_UNICODE_SPACES
+    if (rv < 0) {
+        fprintf(stderr, "replace_unicode_spaces: substitution failed: %s\n", "ovector", stderr);
+    } else {
+        fprintf (stderr, "replace_unicode_spaces: %d substitutions\n", rv);
+        fprintf (stderr, "replace_unicode_spaces: new string %s\n", outputbuffer);
+    }
+#endif /* DEBUG_UNICODE_SPACES */
+
+    if (rv > 0) {
+        int i = 0;
+        for (i=0; outputbuffer[i]; i++) {
+            string[i] = outputbuffer[i];
+        }
+        string[i] = '\0';
+    }
+    
+    return rv;
+#else
+    return -1;
+#endif /* HAVE_PCRE2 */
+    
+} /* i18n_replace_unicode_spaces */
 
 /*
 ** Push byte onto a buffer realloc the buffer if needed.
@@ -610,6 +892,16 @@ char *strsav(const char *s)
     return p;
 }
 
+/* 
+** Replaces present with new, by either
+** allocating or reallocating more memory
+** if needed.
+** Special case. If new is NULL, it will
+** free present and return NULL.
+**
+** Caller must free returned value.
+**
+*/
 char *strreplace(char *present, char *new)
 {
     char *retval;
@@ -755,8 +1047,187 @@ foundneedle:
 ret0:
   return 0;
 }
-#endif
+#endif /* ! HAVE_STRCASESTR */
 
+#ifndef HAVE_STRCASECMP
+/* borrowed from OpenBSD
+ * $OpenBSD: strcasecmp.c,v 1.7 2015/08/31 02:53:57
+ */
+
+/* linux has its own u_char */
+/* typedef unsigned char u_char;*/
+
+/*
+ * This array is designed for mapping upper and lower case letter
+ * together for a case independent comparison.  The mappings are
+ * based upon ascii character sequences.
+ */
+static const u_char charmap[] = {
+	'\000', '\001', '\002', '\003', '\004', '\005', '\006', '\007',
+	'\010', '\011', '\012', '\013', '\014', '\015', '\016', '\017',
+	'\020', '\021', '\022', '\023', '\024', '\025', '\026', '\027',
+	'\030', '\031', '\032', '\033', '\034', '\035', '\036', '\037',
+	'\040', '\041', '\042', '\043', '\044', '\045', '\046', '\047',
+	'\050', '\051', '\052', '\053', '\054', '\055', '\056', '\057',
+	'\060', '\061', '\062', '\063', '\064', '\065', '\066', '\067',
+	'\070', '\071', '\072', '\073', '\074', '\075', '\076', '\077',
+	'\100', '\141', '\142', '\143', '\144', '\145', '\146', '\147',
+	'\150', '\151', '\152', '\153', '\154', '\155', '\156', '\157',
+	'\160', '\161', '\162', '\163', '\164', '\165', '\166', '\167',
+	'\170', '\171', '\172', '\133', '\134', '\135', '\136', '\137',
+	'\140', '\141', '\142', '\143', '\144', '\145', '\146', '\147',
+	'\150', '\151', '\152', '\153', '\154', '\155', '\156', '\157',
+	'\160', '\161', '\162', '\163', '\164', '\165', '\166', '\167',
+	'\170', '\171', '\172', '\173', '\174', '\175', '\176', '\177',
+	'\200', '\201', '\202', '\203', '\204', '\205', '\206', '\207',
+	'\210', '\211', '\212', '\213', '\214', '\215', '\216', '\217',
+	'\220', '\221', '\222', '\223', '\224', '\225', '\226', '\227',
+	'\230', '\231', '\232', '\233', '\234', '\235', '\236', '\237',
+	'\240', '\241', '\242', '\243', '\244', '\245', '\246', '\247',
+	'\250', '\251', '\252', '\253', '\254', '\255', '\256', '\257',
+	'\260', '\261', '\262', '\263', '\264', '\265', '\266', '\267',
+	'\270', '\271', '\272', '\273', '\274', '\275', '\276', '\277',
+	'\300', '\301', '\302', '\303', '\304', '\305', '\306', '\307',
+	'\310', '\311', '\312', '\313', '\314', '\315', '\316', '\317',
+	'\320', '\321', '\322', '\323', '\324', '\325', '\326', '\327',
+	'\330', '\331', '\332', '\333', '\334', '\335', '\336', '\337',
+	'\340', '\341', '\342', '\343', '\344', '\345', '\346', '\347',
+	'\350', '\351', '\352', '\353', '\354', '\355', '\356', '\357',
+	'\360', '\361', '\362', '\363', '\364', '\365', '\366', '\367',
+	'\370', '\371', '\372', '\373', '\374', '\375', '\376', '\377',
+};
+
+int
+strcasecmp(const char *s1, const char *s2)
+{
+	const u_char *cm = charmap;
+	const u_char *us1 = (const u_char *)s1;
+	const u_char *us2 = (const u_char *)s2;
+
+	while (cm[*us1] == cm[*us2++])
+		if (*us1++ == '\0')
+			return (0);
+	return (cm[*us1] - cm[*--us2]);
+}
+
+int
+strncasecmp(const char *s1, const char *s2, size_t n)
+{
+	if (n != 0) {
+		const u_char *cm = charmap;
+		const u_char *us1 = (const u_char *)s1;
+		const u_char *us2 = (const u_char *)s2;
+
+		do {
+			if (cm[*us1] != cm[*us2++])
+				return (cm[*us1] - cm[*--us2]);
+			if (*us1++ == '\0')
+				break;
+		} while (--n != 0);
+	}
+	return (0);
+}
+#endif /* ! HAVE_STRCASECMP */
+
+#ifndef HAVE_ISBLANK
+int
+isblank(int c)
+{
+    return (c == ' ' || c == '\t');
+}
+#endif /* ! HAVE_ISBLANK */
+
+/*
+** Returns true if a string is made of only spaces
+** 
+*/
+bool strisspace(char *p)
+{
+   while(p && *p && isspace(*p++));
+   return (*p ? FALSE : TRUE);
+}
+
+/* 
+** filters spaces and control characters from
+** content-type header and parameter values
+**
+** returns true if any char was removed, false
+** otherwise
+*/
+bool filter_content_type_values(char *_string)
+{
+    char *cp;
+    bool rv = FALSE;
+
+    if (!_string || !*_string) {
+        return FALSE;
+    }
+    
+    /* removing trailing spaces, newlines and other control chars  */
+    cp = _string + strlen(_string) - 1;
+    while (cp > _string && (isspace(*cp) || iscntrl(*cp))) {
+        *cp = '\0';
+        --cp;
+        rv = TRUE;
+    }
+    
+    /* check if the text has any control characters
+       inserted between the end of the attribute
+       value and the ; char, if yes, cut the string there;
+       some spam messages craft this kind of msgs.  */
+    cp = _string;
+    while (*cp && !isspace(*cp) && *cp > 0x20 && *cp < 0x7E) {
+        cp++;
+    }
+    if (*cp != '\0') {
+        *cp = '\0';
+        rv = TRUE;
+    }
+    
+    return rv;
+}
+
+/* 
+** strips known broken UA charset names / suffixes
+**
+** returns true if any filtering was done, false
+** otherwise
+*/
+bool filter_charset_value(char *_string)
+{
+    char *cp;
+    bool rv = FALSE;
+    char *filters[] = {"DEFAULT_CHARSET", "_CHARSET", NULL};
+    int i;
+
+    if (!cp)
+        return FALSE;
+    
+    cp = _string;
+    /* truncates charset at first invalid character */
+    while (*cp) {
+        /* these seem to be the only valid characters for charset names
+           according to IANA
+           https://www.iana.org/assignments/character-sets/character-sets.xhtml */
+        if (!isalnum(*cp) && *cp != '_' && *cp != '-' && *cp !=':' && !isspace(*cp)) {
+            *cp = '\0';
+            break;
+        }
+        cp++;
+    }
+    
+    for (i = 0; filters[i] != NULL; i++) {
+        cp = strcasestr(_string, filters[i]);
+        if (cp) {
+            *cp = '\0';
+            rv = TRUE;
+            break;
+        }
+    }
+
+    return rv;
+}
+                     
 /*
 ** Strips the timezone information from long date strings, so more correct
 ** comparisons can be made between dates when looking for article replies.
@@ -786,6 +1257,132 @@ char *stripzone(char *date)
     return (tmpdate);
 }
 
+/* returns true if line is the start boundary_id, 
+   i.e., starts with -- */
+bool is_start_boundary(const char *boundary_id, const char *line)
+{
+    const char *ptr;
+    
+    int bl = strlen(boundary_id);
+    int ll = strlen(line);
+
+    if (ll < bl + 2) {
+        return FALSE;
+    }
+
+    /* starts with -- followed by boundar_id? */
+    if (strncmp(line, "--", 2) != 0
+        || strncmp(line + 2, boundary_id, bl) != 0) {
+        return FALSE;
+    }
+        
+    ptr = &line[bl + 2];
+    
+    if (*ptr == '\0'
+        || (strncmp(ptr, "\n", 1) == 0
+            || strncmp(ptr, "\r\n", 2) == 0)) {
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
+/* returns true if line is the end boundary_id, 
+   i.e., starts and terminates with -- */
+bool is_end_boundary(const char *boundary_id, const char *line)
+{
+    bool rv = FALSE;
+
+    int bl = strlen(boundary_id);
+    int ll = strlen(line);
+    const char *ptr;
+
+    if (ll < bl + 4) {
+        return FALSE;
+    }
+
+    /* starts with -- ? */
+    if (strncmp(line, "--", 2) != 0
+        || strncmp(line + 2, boundary_id, bl) != 0) {
+        return FALSE;
+    }
+
+    /* ends with -- ? */
+    ptr = &line[bl + 2];
+    if (*ptr != '\0'
+        && (strncmp(ptr, "--\n", 3) == 0
+            || strncmp(ptr, "--\r\n", 4) == 0)) {
+        rv = TRUE;
+    }
+
+    return rv;
+}
+
+/* returns a boundary_id stripped of -- (prefix)
+** and of ending newline sequence \n | \r\n 
+** caller must free returned string */
+char *strip_boundary_id(const char *boundary_id, int boundary_len)
+{
+    char *stripped_boundary_id;
+    
+    /* remove -- prefix */
+    if (strncmp(boundary_id, "--", 2) == 0) {
+        stripped_boundary_id = strsav(boundary_id + 2);
+    } else {
+        stripped_boundary_id = strsav(boundary_id);
+    }
+
+    /* broken.. because we need to know the strlen of the boundary.. otherwise
+       we don't know if we remove valid -- or end boundary */
+    /* remove -- suffix && \r\n || \n */
+#if 0
+    /* This doesn't work as -- is a valid can be a valid string inside a boundary,
+    and not the end boundary necessarily.
+    *// 
+    if (boundary_len != 0
+        && strncmp(stripped_boundary_id + boundary_len, "--", 2) == 0) {
+        *(stripped_boundary_id + boundary_len) = '\0';
+    } else
+#endif
+
+    return (strchomp(stripped_boundary_id));
+}
+
+/* 
+** removes trailing \r\n | \n from a string
+*/
+char *strchomp(char *s) {
+    char *c;
+
+    if (s && *s) {
+        c = strrchr(s, '\r');
+        if (!c) {
+            c = strrchr(s, '\n');
+        }
+        
+        if (c) {
+            *c = '\0';
+        }
+    }
+    
+    return s;
+}
+
+/* replaces \r with a \n */
+char *strlftonl(char *s) {
+    char *c;
+
+    if (s && *s) {
+        c = strrchr(s, '\r');
+        if (c && *(c+1) == '\n' ) {
+            *c = '\n';
+            *(c+1) = '\0';
+        }
+    }
+    
+    return s;
+}
+
 /*
 ** How many times does the character c appear in string s?
 */
@@ -805,6 +1402,8 @@ int numstrchr(char *s, char c)
 /*
 ** Grabs whatever happens to be between the outermost double quotes in a line.
 ** This is for grabbing the values in comments.
+** 
+** caller must free returned value
 */
 
 char *getvalue(char *line)
@@ -819,7 +1418,8 @@ char *getvalue(char *line)
     c = strchr(line, '\"');
     d = strrchr(line, '\"');
     if (c == NULL)
-	return "";
+	return strsav("");
+    
     for (c++, i = 0, len = MAXLINE - 1; *c && c != d && i < len; c++)
 	PushByte(&buff, *c);
 
@@ -851,6 +1451,11 @@ char *unre(char *subject)
     while (*s && isspace(*s))
 	s++;
 
+    if (strlen(s) == 0) {
+        /* the subject consists only of Re:... use NOSUBJECT */
+        s = NOSUBJECT;
+    }
+    
     c = s;			/* the first non-space position after the last re: */
 
     while (*c) {
@@ -1055,7 +1660,7 @@ char *convdash (char *line)
 ** Returns an ALLOCATED string!
 */
 
-char *convcharsreal(char *line, char *charset, int spamprotect)
+static char *convcharsreal(char *line, char *charset, int spamprotect)
 {
     struct Push buff;
     int in_ascii = TRUE, esclen = 0;
@@ -1146,7 +1751,7 @@ char *convchars(char *line, char *charset)
 static bool unconvwinlatin1 (char *entity, char *conv_char)
 {
   int i;
-  int value = 0;
+  unsigned int value = 0;
 
   if (!entity || *entity == '\0' || *entity != '#')
     return FALSE;
@@ -1268,19 +1873,21 @@ static void translatechars(char *start, char *end, struct Push *buff)
  * translateurl(), to escape URI strings only.
  *  this should be divided from convchars().
  *
+ *  we assume line is always given in UTF-8
+ *
  *   in_mailcommand: line is MAILCOMMAND, if 1
  *
  */
 static char *translateurl(char *line, int in_mailcommand)
 {
-
-  int hexbuflen;
   char hexbuf[16];
   struct Push buff;
   INIT_PUSH(buff);		/* init macro */
+  unsigned char c;
   
   for(; *line; line++){
-    if(isalnum((int)*line)){
+      c = (unsigned char) *line;
+      if(isalnum(c) && c < 127) {
       PushByte(&buff,*line);
     }else{
       switch (*line){
@@ -1350,7 +1957,7 @@ static char *translateurl(char *line, int in_mailcommand)
       default:
 	/* URIs MUST NOT have non-ascii characters */
 	/* otherwise, we must use IRI */
-	hexbuflen=snprintf(hexbuf,4,"%%%02X",*line);
+        trio_snprintf(hexbuf,4,"%%%02X",(unsigned char)*line);
 	PushString(&buff,hexbuf);
 	break;
       }
@@ -1512,14 +2119,18 @@ char *makemailcommand(char *mailcommand, char *email, char *id, char *subject)
 
 char *makeinreplytocommand(char *inreplytocommand, char *subject, char *id)
 {
-  char *newcmd = NULL;
+  char *newcmd = NULL, *newcmd2 = NULL;
   char *convid = NULL;
+  char *convsubj=NULL;
 
   /* if id was interpolated from the subject, skip it */
   if (strstr (subject, id)) {
       return NULL;
   }
-  
+
+  /* escape subject */
+  convsubj=translateurl(subject,0);
+
   /* escape id */
   if (set_email_address_obfuscation){
     convid = obfuscate_email_address (id);
@@ -1534,10 +2145,23 @@ char *makeinreplytocommand(char *inreplytocommand, char *subject, char *id)
     newcmd = replace (inreplytocommand, "$ID", "");
   }
   free (convid);
-   
-  return newcmd;
+
+  /* put subject */
+  if (subject && strlen(subject)>0){
+      newcmd2 = replace(newcmd, "$SUBJECT", convsubj);
+  }else{
+      newcmd2 = replace(newcmd, "$SUBJECT", "");
+  }
+  free(newcmd);
+  free(convsubj);
+  
+  return newcmd2;
 }
 
+/*
+** replaces '@' and domain, depending on the config settings
+** caller must free returned string
+*/
 char *spamify(char *input)
 {
     if (set_antispamdomain) {
@@ -1548,53 +2172,63 @@ char *spamify(char *input)
     }
 }
 
+/* 
+** replaces the '@' character in an email address with set_antispam_at
+**  caller must free the returned string
+*/
 char *spamify_small(char *input)
 {
-  /* we should replace the @-letter in the email address */
+    if (input && *input) { 
+        char *atptr = strchr(input, '@');
 
-  char *atptr = strchr(input, '@');
-
-  if (atptr) {
-      char *newbuf = replacechar(input, '@', set_antispam_at);
+        if (atptr) {
+            char *newbuf = replacechar(input, '@', set_antispam_at);
     
-      /* correct the pointer and free the old */
-      free(input);
-      return newbuf;
-  }
-  /* weird email, bail out */
-  return input;
+            /* return the spamified email address */
+            return newbuf;
+        }
+    }
+    /* weird email, bail out */
+    return strsav(input);
 }
 
-char *spamify_replacedomain(char *input, char *antispamdomain)
+/* 
+** replaces the domain and '@' character depending on the
+** the configuration settings
+** caller must free returned string
+*/
+char *spamify_replacedomain(char *input, char *new_domain)
 {
-    char *atptr = strchr(input, '@');
-    
-    if (atptr) {
-        char *buff;
-
-        buff = parseemail(input, NULL, antispamdomain, REPLACE_DOMAIN);
-        free(input);
-        return(buff);
+    if (input && *input) {
+        char *atptr = strchr(input, '@');
+        
+        if (atptr) {
+            char *buff;
+            
+            buff = parseemail(input, NULL, new_domain, REPLACE_DOMAIN);
+            return(buff);
+        }
     }
     
     /* weird email, bail out */
-    return input;
+    return strsav(input);
 }
 
 char *unspamify(char *s)
 {
     char *p;
-    if (!s)
-	return s;
-    if (!strchr(s, '@') && ((p = strstr(s, set_antispam_at)) != NULL)) {
+    
+    if (s && *s && !strchr(s, '@') && ((p = strstr(s, set_antispam_at)) != NULL)) {
 	struct Push buff;
 	INIT_PUSH(buff);
 	PushNString(&buff, s, p - s);
 	PushByte(&buff, '@');
 	PushString(&buff, p + strlen(set_antispam_at));
 	return PUSH_STRING(buff);
+    } else {
+        /* weird string, bail out */
+        return strsav(s);
     }
-    return strsav(s);
 }
 
 /*
@@ -1620,7 +2254,7 @@ char *parseemail(char *input,	/* string to parse */
 {				/* message subject */
     char mailbuff[256];
     char mailaddr[MAILSTRLEN];
-    char tempbuff[MAXLINE];
+    char *tempbuff;
     char *ptr;
     char *lastpos = input;
     char *start = NULL;
@@ -1720,23 +2354,41 @@ char *parseemail(char *input,	/* string to parse */
                             char *mailcmd = makemailcommand(set_mailcommand,
                                                             mailaddr, mid,
                                                             msubject);
-                            trio_snprintf(tempbuff, sizeof(tempbuff),
-                                          "<a href=\"%s\">%s</a>", mailcmd,
-                                          obfuscate_email_address(mailaddr));
+                            char *obfuscated_email_address = obfuscate_email_address(mailaddr);
                             
+                            trio_asprintf(&tempbuff, "<a href=\"%s\">%s</a>",
+					  mailcmd,
+                                          obfuscated_email_address);
+                            
+                            if (set_email_address_obfuscation){
+                                free(obfuscated_email_address);
+                            }
                             free(mailcmd);
                         }
+                        else if (conversion == OBFUSCATE_ADDRESS) {
+                            char *obfuscated_email_address = obfuscate_email_address(mailaddr);
+                            
+                            trio_asprintf(&tempbuff, "%s", 
+                                          obfuscated_email_address);
+                            if (set_email_address_obfuscation){
+                                free(obfuscated_email_address);
+                            }
+                            
+                        }
                         else if (conversion == REPLACE_DOMAIN) {
-                            trio_snprintf(tempbuff, sizeof(mailaddr),"%.*s%s%s", 
+                            trio_asprintf(&tempbuff, "%.*s%s%s", 
                                           ptr-email, email, at, msubject);
                             
                         }
                         else {
-                            strcpy (tempbuff, mailaddr);
+                            trio_asprintf(&tempbuff, "%s",
+                                          mailaddr);
 			}
 			
 			PushString(&buff, tempbuff);
-
+                        
+                        free (tempbuff);
+                        
 			input = ptr + strlen(mailbuff) + at_len;
 			start = input;
 			lastpos = input;
@@ -1812,8 +2464,8 @@ static char *url[] = {
 char *parseurl(char *input, char *charset)
 {
     struct Push buff;		/* output buffer */
-    char urlbuff[256];
-    char tempbuff[MAXLINE];
+    char urlbuff[MAXURLLEN];
+    char tempbuff[MAXURLLEN];
     char *inputp;
     char *match[sizeof(url) / sizeof(char **)];
     int first;
@@ -1961,10 +2613,17 @@ char *parseurl(char *input, char *charset)
 		&& ((istelprotocol && (*inputp == '+' || isdigit(*inputp)))
 		    || (!istelprotocol && !ispunct(*inputp)))) {
 
-                if (set_iso2022jp)
-		    urlscan = sscanf(inputp, "%255[^] \033)<>\"\'\n[\t\\]", urlbuff);
-                else
-		    urlscan = sscanf(inputp, "%255[^] )<>\"\'\n[\t\\]", urlbuff);
+                char *format;
+                
+                if (set_iso2022jp) {
+                    trio_asprintf(&format, "%%%d[^] \033)<>\"\'\n[\t\\]", MAXURLLEN - 1);
+		    urlscan = sscanf(inputp, format, urlbuff);
+                }
+                else {
+                    trio_asprintf(&format, "%%%d[^] )<>\"\'\n[\t\\]", MAXURLLEN - 1);
+		    urlscan = sscanf(inputp, format, urlbuff);
+                }
+                free(format);
             }
 
 	    if (urlscan == 1) {
@@ -2093,7 +2752,7 @@ char *
 hm_strchr(const char *str, int ch)
 {
 	if (!set_iso2022jp) {
-		return(strchr(str, ch));
+            return(strchr(str, ch));
 	} else {
 		int in_ascii = TRUE, esclen = 0;
 	
@@ -2101,8 +2760,9 @@ hm_strchr(const char *str, int ch)
 			iso2022_state(str, &in_ascii, &esclen);
 			if (esclen) str += esclen;
 			if (in_ascii == TRUE) {
-				if (*str == ch)
-					return((char *)str);
+                            if (*str == ch) {
+                                return((char *) str);
+                            }
 			}
 		}
 		return((char *)NULL);

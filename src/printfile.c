@@ -1,3 +1,21 @@
+/*
+** Copyright (C) 1997-2023 Hypermail Project
+** 
+** This program and library is free software; you can redistribute it and/or 
+** modify it under the terms of the GNU (Library) General Public License 
+** as published by the Free Software Foundation; either version 3
+** of the License, or any later version. 
+** 
+** This program is distributed in the hope that it will be useful, 
+** but WITHOUT ANY WARRANTY; without even the implied warranty of 
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+** GNU (Library) General Public License for more details. 
+** 
+** You should have received a copy of the GNU (Library) General Public License
+** along with this program; if not, write to the Free Software 
+** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA 
+*/
+
 #include "hypermail.h"
 #include "setup.h"
 #include "print.h"
@@ -45,9 +63,8 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
     register char *cp;
     register char *aptr;
     char c;
-    char *ptr,*tmpptr=NULL;
-    size_t tmplen;
-
+    char *ptr,*tmpptr=NULL, *tmp_oea=NULL;
+    
     aptr = format;
 
     while ((c = *aptr++)) {
@@ -76,22 +93,26 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 	    case 'A':		/* %e - email address of message author */
 		if (email && name) {
 #ifdef HAVE_ICONV
+                  size_t tmplen;
+                    
 		  tmpptr=i18n_convstring(name,"UTF-8",charset,&tmplen);
 		  cp = convchars(tmpptr,charset);
 		  if(tmpptr)
 		    free(tmpptr);
 		  fprintf(fp,
 			"<meta name=\"Author\" content=\"%s (%s)\" />",
-			cp, obfuscate_email_address(email));
+			cp, tmp_oea = obfuscate_email_address(email));
 		  if (cp)
 		    free(cp);
 #else
 		fprintf(fp,
 			"<meta name=\"Author\" content=\"%s (%s)\" />",
-			tmpptr=convchars(name,charset), obfuscate_email_address(email));
+			tmpptr=convchars(name,charset), tmp_oea = obfuscate_email_address(email));
 		if (tmpptr)
 		  free(tmpptr);
 #endif
+		if (set_email_address_obfuscation && tmp_oea)
+		  free(tmp_oea);
 		}
 		continue;
 	    case 'a':		/* %a - Other Archives URL */
@@ -178,7 +199,10 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 		free(ptr);
 		continue;
 	    case 'S':		/* %s - Subject of message or Index Title */
+            {
 #ifdef HAVE_ICONV
+                size_t tmplen;
+                
 	        tmpptr=i18n_convstring(subject,"UTF-8",charset, &tmplen);
 		fprintf(fp, "<meta name=\"Subject\" content=\"%s\" />",
 			cp = convchars(tmpptr,charset));
@@ -188,6 +212,7 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 #endif
 		free(cp);
 		continue;
+            }
 	    case 't':
 	      {
 		struct emailinfo *ep;
@@ -222,32 +247,34 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 
 void print_main_header(FILE *fp, bool index_header, char *label, char *name,
 		       char *email, char *subject, char *charset,
-		       char *date, char *filename, int is_deleted, int annotation_robot)
+		       char *date, char *filename, char *rel_path_to_top,
+		       int is_deleted, int annotation_robot)
 {
     char *title;
     char *rp;
     char *rp2;
-
-    /* @@ JK: Don't know what to do with US-ASCII. If there's no charset,
+    char *css_url;
+    char *buffer;
+    char *tmp_oea=NULL;
+    
+    /* JK: Don't know what to do with US-ASCII. If there's no charset,
        assume the default one is ISO-8859-1 */
     if (charset && *charset)
       rp = charset;
     else
       rp = "ISO-8859-1";
     fprintf(fp,
-	    "<?xml version=\"1.0\" encoding=\"%s\"?>\n"
-	    "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n"
-	    "    \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n",
-	    rp);
-    fprintf(fp, "<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"%s\">\n", set_language);
+	    "<!DOCTYPE html>\n"
+	    "<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"%s\">\n",
+	    set_language);
     fprintf(fp, "<head>\n");
 
     if (charset && *charset) {
 	/* charset info "as early as possible within the HEAD of the document"
 	 */
-	fprintf(fp, "<meta http-equiv=\"Content-Type\""
-		" content=\"text/html; charset=%s\" />\n", charset);
+	fprintf(fp, "<meta charset=\"%s\" />\n", rp);
     }
+    fprintf(fp, "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n");
     fprintf(fp, "<meta name=\"generator\" content=\"%s %s, see %s\" />\n",
                 PROGNAME, VERSION, HMURL);
 
@@ -294,7 +321,12 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
     free(title);
 
     if (name && email){
-      fprintf(fp, "<meta name=\"Author\" content=\"%s (%s)\" />\n",convchars(name,charset),obfuscate_email_address(email));
+        char *tmp_name = convchars(name,charset);
+        fprintf(fp, "<meta name=\"Author\" content=\"%s (%s)\" />\n", tmp_name,
+                tmp_oea = obfuscate_email_address(email));
+        free(tmp_name);
+        if (set_email_address_obfuscation && tmp_oea)
+            free(tmp_oea);
     }
     fprintf(fp, "<meta name=\"Subject\" content=\"%s\" />\n", rp =
 	    convchars(subject, charset));
@@ -309,67 +341,59 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
       fprintf(fp,"<meta name=\"robots\" content=\"noindex\" />\n");
 
     } else if (is_deleted || annotation_robot) {
-      char *value;
+        char *value;
 
       /* if the message is deleted, avoid bots, else set the value
 	 of the robots robots meta tag according to the info supplied by the message */
-      if (is_deleted)
-	value = "noindex";
-      else if (annotation_robot == 1) 
-	value = "nofollow";
-      else if (annotation_robot == 2)
-	value = "noindex";
-      else if (annotation_robot == 3)
-	value = "nofollow, noindex";
-      fprintf(fp,"<meta name=\"robots\" content=\"%s\" />\n", value);
+        if (is_deleted)
+            value = "noindex";
+        else if (annotation_robot == 1) 
+            value = "nofollow";
+        else if (annotation_robot == 2)
+            value = "noindex";
+        else if (annotation_robot == 3)
+            value = "nofollow, noindex";
+        else
+            value = "noindex"; /* default value, removing gcc warning */
+        
+        fprintf(fp,"<meta name=\"robots\" content=\"%s\" />\n", value);
     }
 
     /* print the css url according to the type of header */
     if (index_header && set_icss_url && *set_icss_url) {
-      fprintf(fp, "<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\" />\n",
-              set_icss_url);
+        css_url = set_icss_url;
 
     } else if (!index_header && set_mcss_url && *set_mcss_url) {
-      fprintf(fp, "<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\" />\n",
-              set_mcss_url);
+        css_url = set_mcss_url;
 
     } else {
-      /*
-       * if style sheets are not specified, emit a default one.
-       */
-       /* @@ JK: the new css */
-      fprintf (fp, "<style type=\"text/css\">\n");
-      
-      fprintf (fp,"/*<![CDATA[*/\n");
-      fprintf (fp, "/* To be incorporated in the main stylesheet, don't code it in hypermail! */\n");
-      fprintf (fp, "body {color: black; background: #ffffff;}\n");
-      fprintf (fp, "dfn {font-weight: bold;}\n");
-      fprintf (fp, "pre { background-color:inherit;}\n");
-      fprintf (fp, ".head { border-bottom:1px solid black;}\n");
-      fprintf (fp, ".foot { border-top:1px solid black;}\n");
-      fprintf (fp, "th {font-style:italic;}\n");
-      fprintf (fp, "table { margin-left:2em;}");
-
-      /* JK: This was the WAI rule before */
-      /* fprintf (fp, "#body {background-color:#fff;}\n"); */
-      fprintf (fp, "map ul {list-style:none;}\n");
-      fprintf (fp, "#mid { font-size:0.9em;}\n");
-      fprintf (fp, "#received { float:right;}\n");
-      fprintf (fp, "address { font-style:inherit;}\n");
-      fprintf (fp, "/*]]>*/\n");
-      fprintf(fp, ".quotelev1 {color : #990099;}\n");
-      fprintf(fp, ".quotelev2 {color : #ff7700;}\n");
-      fprintf(fp, ".quotelev3 {color : #007799;}\n");
-      fprintf(fp, ".quotelev4 {color : #95c500;}\n");
-      fprintf (fp, ".period {font-weight: bold;}\n");
-      fprintf (fp, "</style>\n");
+        /* no custom css. Use the default css */
+        css_url = set_default_css_url;
     }
 
+    /* concatenate rel_path_to_top if we are using a non-absolute css URL */
+    if (rel_path_to_top && !strchr(css_url, ':')  /* urls with : */
+        && css_url[0] != '/' && css_url[1] != '/' /* relative protocol urls //foo  */
+        && css_url[0] != PATH_SEPARATOR) {        /* absolute local path */
+        
+        trio_asprintf (&buffer, "%s%s", rel_path_to_top, css_url);
+    } else {
+        buffer = NULL;
+    }
+    
+    fprintf(fp, "<link rel=\"stylesheet\" title=\"%s\" href=\"%s\" />\n",
+            lang[MSG_CSS_NORMAL_VIEW],
+            (buffer) ? buffer: css_url);
+    if (buffer) {
+        free(buffer);
+    }
+    
     if (ihtmlheadfile)
       fprintf (fp, "%s", ihtmlheadfile);
 
     fprintf(fp, "</head>\n");
-    fprintf(fp, "<body>\n");
+    fprintf(fp, "<body class=\"%s\">\n",
+            (index_header) ? "index" : "message");
 }
 
 /*
@@ -377,17 +401,26 @@ void print_main_header(FILE *fp, bool index_header, char *label, char *name,
 */
 
 void print_msg_header(FILE *fp, char *label, char *subject,
-		      char *dir, char *name, char *email, char *msgid,
-		      char *charset, time_t date, char *filename,int is_deleted, 
-		      int annotation_robot)
+		      char *dir, char *name,
+                      struct emailinfo *email, 
+		      char *filename, int is_deleted)
 {
-    if (mhtmlheaderfile)
-	printfile(fp, mhtmlheaderfile, set_label, subject, set_dir, name, 
-		  email, msgid, charset, secs_to_iso_meta(date), filename);
-    else {
-	print_main_header(fp, FALSE, set_label, name, email, subject,
-			  charset, secs_to_iso_meta(date), filename, is_deleted, 
-			  annotation_robot);
+    char *rel_path_to_top;
+    char *email_date;
+    
+    rel_path_to_top = (email->subdir) ? email->subdir->rel_path_to_top : NULL;
+    email_date = secs_to_iso_meta(email->date);
+    
+    if (mhtmlheaderfile) {
+	printfile(fp, mhtmlheaderfile, label, subject, dir, name, 
+		  email->emailaddr, email->msgid, email->charset,
+                  email_date, filename);
+    } else {
+	print_main_header(fp, FALSE, label, name,
+                          email->emailaddr, subject,
+			  email->charset, email_date,
+                          filename, rel_path_to_top,
+			  is_deleted, email->annotation_robot);
     }
 }
 
@@ -396,38 +429,45 @@ void print_msg_header(FILE *fp, char *label, char *subject,
 */
 
 void print_index_header(FILE *fp, char *label, char *dir, char *subject,
-			char *filename)
+			char *filename, struct emailinfo *email)
 {
+    char *rel_path_to_top;
+
+    rel_path_to_top = (email && email->subdir) ? email->subdir->rel_path_to_top : NULL;
+  
     if (ihtmlheaderfile)
 #ifdef HAVE_ICONV
       if (set_i18n){
-	printfile(fp, ihtmlheaderfile, label, subject, dir, NULL, NULL,
-		  "UTF-8", NULL, NULL, filename);
-      }else{
-	printfile(fp, ihtmlheaderfile, label, subject, dir, NULL, NULL,
-		  NULL, NULL, NULL, filename);
+          printfile(fp, ihtmlheaderfile, label, subject, dir, NULL, NULL,
+                    "UTF-8", NULL, NULL, filename);
+      }else {
+          printfile(fp, ihtmlheaderfile, label, subject, dir, NULL, NULL,
+                    NULL, NULL, NULL, filename);
       }
 #else
-	printfile(fp, ihtmlheaderfile, label, subject, dir, NULL, NULL,
-		  NULL, NULL, NULL, filename);
+       printfile(fp, ihtmlheaderfile, label, subject, dir, NULL, NULL,
+                 NULL, NULL, NULL, filename);
 #endif
     else {
 	/* print the navigation bar to upper levels */
 #ifdef HAVE_ICONV
         if (set_i18n){
-	  print_main_header(fp, TRUE, label, NULL, NULL, subject, "UTF-8", NULL, NULL, 0, 0);
-	} else{
-	  print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL, NULL, 0, 0);
+            print_main_header(fp, TRUE, label, NULL, NULL, subject, "UTF-8", NULL, NULL,
+                              rel_path_to_top, 0, 0);
+	} else {
+            print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL, NULL,
+                              rel_path_to_top, 0, 0);
 	}
 #else
-        print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL, NULL, 0, 0);
+        print_main_header(fp, TRUE, label, NULL, NULL, subject, NULL, NULL, NULL,
+                          rel_path_to_top, 0, 0);
 #endif
-	fprintf (fp, "<div class=\"head\">\n");
+	fprintf (fp, "<header class=\"head\">\n");
 	if (ihtmlnavbar2upfile)
-	  fprintf(fp, "<map title=\"%s\" id=\"upper\">\n%s</map>\n", 
-		  lang[MSG_NAVBAR2UPPERLEVELS], ihtmlnavbar2upfile);
+	  fprintf(fp, "<nav class=\"breadcrumb\" id=\"upper\">\n%s</nav>\n", 
+		  ihtmlnavbar2upfile);
 
-	fprintf(fp, "<h1>%s %s</h1>\n", label, subject);
+	fprintf(fp, "<h1><span class=\"archive-label\">%s</span> %s</h1>\n", label, subject);
     }
 }
 
@@ -443,28 +483,31 @@ void printfooter(FILE *fp, char *htmlfooter, char *label, char *dir,
     if (htmlfooter)
 	printfile(fp, htmlfooter, label, subject,
 		  dir, NULL, NULL, NULL, NULL, NULL, filename);
-    else {
-	fprintf(fp, "<p><small><em>\n");
+    else if (set_hypermail_colophon) {
+	fprintf(fp, "<p class=\"colophon\">\n");
 	fprintf(fp, "%s ", lang[MSG_ARCHIVE_GENERATED_BY]);
-	fprintf(fp, "<a href=\"%s\">%s %s</a>\n", HMURL, PROGNAME, VERSION);
+	fprintf(fp, "<a href=\"%s\">%s %s</a>", HMURL, PROGNAME, VERSION);
 	fprintf(fp, ": %s\n", getlocaltime());
-	fprintf(fp, "</em></small></p>\n");
+	fprintf(fp, "</p>\n");
     }
-    if (close_div)
-      fprintf (fp, "</div>\n");
-    fprintf(fp, "</body>\n</html>\n");
+    if (close_div) {
+        fprintf (fp, "</footer>\n");
+        fprintf(fp, "</body>\n</html>\n");
+    }
 }
 
 /*
 ** Prints the HTML last message and last archived date (used in the indexes).
 */
 
-void printlaststats (FILE *fp, long lastdatenum)
+void printlaststats (FILE *fp, long local_lastdatenum)
 {
-    fprintf (fp, "<ul>\n");
-    fprintf (fp, "<li><dfn><a id=\"end\" name=\"end\">%s</a></dfn>: <em>%s</em></li>\n",
-	     lang[MSG_LAST_MESSAGE_DATE], getdatestr(lastdatenum));
+    fprintf (fp, "<p id=\"end\" class=\"last-message-date\"><span class=\"heading\">%s</span>: %s</p>\n",
+             lang[MSG_LAST_MESSAGE_DATE], getdatestr(local_lastdatenum));
 
-    fprintf (fp, "<li><dfn>%s</dfn>: %s</li>\n",  lang[MSG_ARCHIVED_ON], getlocaltime());
-    fprintf (fp, "</ul>\n");
+  if (set_archived_on) {
+      fprintf (fp, "<p class=\"archived-on\"><span class=\"heading\">%s</span>: %s</p>\n",  lang[MSG_ARCHIVED_ON], getlocaltime());
+  }
+
 }
+

@@ -137,6 +137,13 @@ to submit new messages to the list the hypermail archive serves.
 This is a means of setting any variable that can be specified in a config
 file.
 .TP
+.B \-y
+This tells Hypermail to do a
+.B dry\-run
+that won't generate any archive; however it will output
+the file names and Message-IDs associated with the archive. It can help you visualize the
+issues you may have when upgrading from an older Hypermail archive to a more recent one.
+.TP
 .B \-p
 This shows a progress report as Hypermail reads in and writes out messages \- the number of files that Hypermail is reading and writing and the file names of the directory and files created are shown.
 .TP
@@ -145,14 +152,6 @@ Use this to specify the html file suffix to be used when Hypermail
 generates the html files. This is dependent on local needs. Do not 
 put a '.' in the value. It would result in "file..html", probably
 not what you want.
-.TP
-.B \-t
- This will tell Hypermail to generate an
-index menu at the top and bottom of each page in a table format.
-.TP
-.B \-T
-This will tell Hypermail to  generate  
-a message index Subject/Author/Date listings using a table format.
 .TP
 .B \-u
 This option tells Hypermail to add message(s) to the end of the existing HTML file archive and integrate them into it by links and cross-references. All archive index files will be regenerated to include the new message.
@@ -554,8 +553,6 @@ recommended for archives with over a few hundred messages.
 Setting this greater than 1 will produce multiple levels of files
 for each thread whose replies are nested by more than 1 level,
 but that is rarely useful. This option is currently disabled
-if the indextable option is turned on, and probably needs to
-be less than thrdlevels.
 
 .SH BUGS
 
@@ -572,15 +569,15 @@ was originally designed and developed by Tom Gruber
 .RI <gruber@intraspect.com>
 for Enterprise Integration Technologies (EIT) in Common Lisp.  It was later rewritten in C by Kevin Hughes
 .RI <kev@kevcom.com>
-while at EIT.  Kevin passed on\-going development and support for Hypermail 
+while at EIT.  Kevin passed development and support for Hypermail 
 to Kent Landfield
 .RI <kent@landfield.com>.
 .LP
-The latest documentation can usually be found at
- .B http://www.hypermail.org/
- but you might also want to check the cvs repository which is the first
-place that changes become available:
- .B http://cvs.hypermail.org/cgi-bin/cvsweb.cgi/hypermail/docs/
+As of today, current on-going development and support for Hypermail are done directly on its github repository
+.B https://github.com/hypermail-project/hypermail
+.LP
+The latest documentation can be found at
+.B https://github.com/hypermail-project/hypermail/docs
 .LP
 .SH CREDITS
 .LP

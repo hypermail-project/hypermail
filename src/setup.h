@@ -1,5 +1,22 @@
-#ifndef __SETUP_H
-#define __SETUP_H
+#ifndef _HYPERMAIL_SETUP_H
+#define _HYPERMAIL_SETUP_H
+/*
+** Copyright (C) 1997-2023 Hypermail Project
+** 
+** This program and library is free software; you can redistribute it and/or 
+** modify it under the terms of the GNU (Library) General Public License 
+** as published by the Free Software Foundation; either version 3
+** of the License, or any later version. 
+** 
+** This program is distributed in the hope that it will be useful, 
+** but WITHOUT ANY WARRANTY; without even the implied warranty of 
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+** GNU (Library) General Public License for more details. 
+** 
+** You should have received a copy of the GNU (Library) General Public License
+** along with this program; if not, write to the Free Software 
+** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA 
+*/
 
 typedef int bool;
 
@@ -45,6 +62,7 @@ extern char *set_mbox;
 extern char *set_archives;
 extern char *set_custom_archives;
 extern char *set_about;
+extern char *set_empty_archive_notice;
 extern char *set_dir;
 extern char *set_defaultindex;
 extern char *set_default_top_index;
@@ -60,6 +78,7 @@ extern bool set_readone;
 extern bool set_reverse;
 extern bool set_reverse_folders;
 extern bool set_showprogress;
+extern bool set_show_deprecated_warnings;
 extern bool set_showheaders;
 extern bool set_showbr;
 extern bool set_showhr;
@@ -74,6 +93,7 @@ extern bool set_gmtime;
 extern bool set_isodate;
 extern bool set_require_msgids;
 extern bool set_discard_dup_msgids;
+extern bool set_dry_run;
 extern bool set_usemeta;
 extern bool set_userobotmeta;
 extern bool set_uselock;
@@ -102,6 +122,7 @@ extern char *set_applemail_ua_header;
 
 extern int set_showhtml;
 extern int set_thrdlevels;
+extern int set_max_attach_per_msg;
 extern int set_dirmode;
 extern int set_filemode;
 extern int set_locktime;
@@ -125,6 +146,7 @@ extern char *set_domainaddr;
 
 extern char *set_icss_url;
 extern char *set_mcss_url;
+extern char *set_default_css_url;
 
 extern char *set_dateformat;
 extern char *set_indexdateformat;
@@ -138,6 +160,7 @@ extern struct hmlist *set_inline_types;
 extern struct hmlist *set_prefered_types;
 extern struct hmlist *set_ignore_types;
 extern struct hmlist *set_show_headers;
+extern struct hmlist *set_show_headers_msg_rfc822;
 extern struct hmlist *set_skip_headers;
 extern struct hmlist *set_avoid_indices;
 extern struct hmlist *set_avoid_top_indices;
@@ -146,6 +169,7 @@ extern struct hmlist *set_filter_require;
 extern struct hmlist *set_filter_out_full_body;
 extern struct hmlist *set_filter_require_full_body;
 extern struct hmlist *set_applemail_ua_value;
+extern struct hmlist *set_ignore_content_disposition;
 
 extern bool set_format_flowed;
 extern bool set_format_flowed_disable_quoted;
@@ -158,6 +182,10 @@ extern char *set_ihtmlhelplow;
 extern char *set_ihtmlnavbar2up;
 extern char *set_mhtmlheader;
 extern char *set_mhtmlfooter;
+extern char *set_mhtmlnavbar2up;
+
+extern bool set_archived_on;
+extern bool set_hypermail_colophon;
 
 extern char *set_attachmentlink;
 extern char *set_unsafe_chars;
@@ -173,6 +201,8 @@ extern int set_msgsperfolder;
 extern char *set_describe_folder;
 
 extern bool set_iso2022jp;
+extern char *set_default_charset;
+extern int set_replace_us_ascii_with_utf8;
 
 extern bool set_noindex_onindexes;
 extern struct hmlist *set_annotated;
@@ -189,5 +219,11 @@ enum { DELETE_REMOVES_FILES,
        DELETE_LEAVES_EXPIRED_TEXT, /* stubs for deleted msgs, full msg for expired */
        DELETE_LEAVES_TEXT /* leave full message */
 };
-
-#endif
+extern int set_debug_level;
+/* values for debug_level: */
+enum { DEBUG_DISABLED,
+       DEBUG_DUMP_ATT,
+       DEBUG_DUMP_ATT_VERBOSE, /* always replace msg body with lang[MSG_DELETED/MSG_EXPIRED] */
+       DEBUG_DUMP_BODY /* stubs for deleted msgs, full msg for expired */
+};
+#endif /* _HYPERMAIL_SETUP_H */

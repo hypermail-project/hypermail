@@ -1,0 +1,383 @@
+/*
+** This program and library is free software; you can redistribute it and/or 
+** modify it under the terms of the GNU (Library) General Public License 
+** as published by the Free Software Foundation; either version 2 
+** of the License, or any later version. 
+** 
+** This program is distributed in the hope that it will be useful, 
+** but WITHOUT ANY WARRANTY; without even the implied warranty of 
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+** GNU (Library) General Public License for more details. 
+** 
+** You should have received a copy of the GNU (Library) General Public License
+** along with this program; if not, write to the Free Software 
+** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA 
+**/
+
+/*
+** Default stylesheet for hypermail archives
+** 
+** Last revised: 07/July/2023
+**/
+
+/* Use this CSS rule to choose the background color
+   for your archive */
+html {
+  color: black;
+  background: #e2edfe;
+  /** you may also try #FFF6E0, #FFFFF6 or #FFEEC2.
+   ** For other color combinations, make sure you choices pass
+   ** the WAI contrast criteria
+   ** by using https://webaim.org/resources/contrastchecker/ */
+}
+
+/* wai-menu.css */
+
+/* accessible breadcrumbs */
+nav.breadcrumb ul { padding: 0; }
+nav.breadcrumb ul li { display: inline;}
+nav.breadcrumb ul li+li::before { content: " > "; }
+
+
+/* accessible horizontal menus */
+ul.hmenu_container { margin-left: 1em; padding-left: 0; }
+ul.hmenu_container > li { list-style-type: none; }
+ul.hmenu { font-style: normal; padding: 0; display: inline; }
+ul.hmenu li { display: inline; }
+
+ul.hmenu li {
+    border-right: 1.2px solid black;
+    padding-right: 0.4em;
+}
+
+ul.hmenu li:last-child {
+    border-right: none;
+    padding-right: 0;
+}
+
+/* replacement for dfn */
+.heading { font-weight: bold; }
+
+h2.heading, h2.theading {
+    font-size: inherit;
+    font-weight: normal;
+    margin-top: 0.2em;
+    margin-bottom: 0;
+    display: list-item;
+}
+
+h2.theading:before  {
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background: #b83b3b;
+    display:inline-block;
+}
+
+h2.theading + ul {
+    list-style-type: disc;
+}
+
+/* default settings for narrow screens (smaller headings and padding) */
+/* height and min-height: 100% are to make backgrounds fill the window */
+html {
+    height: 100%;
+}
+
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0.5em 1em;
+    line-height: 1.4;
+    min-height: 100%;
+}
+h1 {
+    font-size: 1.25em;
+}
+h2 {
+    font-size: 1.125em;
+}
+h3 {
+    font-size: 1em;
+}
+.messages-list {
+    padding-top: 1em;
+    margin-left: 1em;
+}
+.messages-list ul {
+    margin: 0;
+    padding-left: 1em;
+    list-style-type: disc;
+}
+
+/* bigger headings and padding on wider screens (desktops, tablets) */
+@media screen and (min-width: 48em) {
+    body {
+	padding: 0.5em 2.5em;
+    }
+    h1 {
+	font-size: 1.5em;
+    }
+    h2 {
+	font-size: 1.25em;
+    }
+    h3 {
+	font-size: 1.125em;
+    }
+    ul.hmenu_container {
+	padding-left: 1.5em;
+    }
+    .messages-list {
+	padding-top: 1.5em;
+	margin-left: 2.5em;
+    }
+    .messages-list ul {
+	padding-left: 2em;
+    }
+}
+
+ul.footer_hmenu { padding: 0; display: inline; }
+ul.footer_hmenu::after { content: ""; clear: both; display: block; }
+ul.footer_hmenu > li { list-style-type: none; }
+ul.footer_hmenu li { display: inline; }
+ul.footer_hmenu li.footer_admin { float: right; }
+
+/* make links visible thru focus or hover */
+a:link {
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+}
+
+a:visited {
+    color:#529;
+}
+
+a:focus {
+    outline: 2px solid;
+    outline-offset: 1px;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    outline-color:#005A9C;
+    cursor :pointer;
+}
+
+a:hover {
+    color:#930;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+}
+
+a:active {
+    /* outline: 0; */
+}
+
+
+/* mainindex-wai.css */
+
+table { margin: 1em; }
+
+/* Table head -- should be w3c blue */
+thead tr  { color: #FFFFFF; background-color: rgb(0,90,156); }
+
+tbody tr  { font-family: sans-serif; }
+
+.head img {float:left;}
+.head p {clear: left;}
+/* th {font-style:italic;} */
+nav ul { list-style-type: none; }
+
+table { border: 0px; border-spacing: 3px; }
+td { padding: 2px; }
+/* accessible horizontal menus */
+.cell_message { text-align: center; }
+.cell_period { text-align: right; }
+
+a.sub:link { color: green; }
+a.unsub:link {color: #b22222; }
+
+.header .important { padding: 0.5em 1em; }
+
+.visually_hidden {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+
+.restricted:after {
+    content: " (restricted)";
+}
+
+body.mainindex .head {
+  border-bottom: none;
+}
+
+
+/* messagelist-wai.css */
+
+dfn {font-weight: bold;}
+nav ul {list-style:none;}
+.messages-list {
+  border-bottom:thin solid black;
+}
+
+
+/* message.css */
+
+
+/* Leave message itself white but rest of metadata very pale grey.
+** This makes it more legible.
+** it also by analogy points out that the content of the message
+** someone else's, not W3C material necessarily -- we just run the list
+*/
+
+pre {
+    color: black;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}
+
+
+/* want to be able to identify the author and style it
+** but can't
+*/
+
+dfn {font-weight: bold;}
+/* .mail, .head { border-bottom:1px solid black;} */
+map ul {list-style:none;}
+#message-id { font-size: small;}
+address { font-style:inherit ;}
+
+@media print {
+ #upper, #navbarfoot, #navbar {
+    display:none;
+  }
+}
+
+/* for edited messages */
+div.edit {
+ background: #CCFF99;
+ padding: 0.25em 2em 0.25em 1em;
+ margin-top: 0.25em;
+}
+p.editmes{
+ font-style: italic;
+ font-size: small;
+ padding: 0;
+}
+p.editfooter{
+ font-size: small;
+ padding: 0;
+}
+
+/* for deleted messages */
+div.spam {
+ background: #aaffaa;
+ padding: 1em 2em;
+}
+p.spammes{
+ font-size: x-large;
+ font-weight: bold;
+}
+p.spamfooter{
+ font-size: small;
+}
+
+
+/* updates added by Gerald 27 Apr 2023 */
+
+.message-forwarded {
+    padding: 0 1em;
+    border: 2px solid #888;
+    border-radius: 0.5em;
+}
+
+.message-body-part {
+    margin: 1em 0;
+}
+.message-forwarded > h2 {
+    color: #303030;
+    padding: 0.25rem 1rem 0.1em;
+    background: #DEE7CA;
+    margin: 0 -1rem 0.5rem;
+    border-radius: 0.3rem 0.3rem 0 0;
+}
+
+.message-forwarded ul.headers {
+    margin: 0;
+}
+
+.message-forwarded pre {
+    padding: 0;
+    margin-bottom: 0.25em;
+}
+
+section section {
+    text-indent: 0;
+}
+
+ul.headers {
+    list-style: none;
+    padding-left: 0em;
+}
+
+.attachment-links {
+  background: aliceblue;
+  padding: 0.01em 1em;
+}
+
+section.attachment-links ul {
+    padding-left: 1.5em;
+}
+
+.attachment-links img {
+    padding: 0.5em 0;
+}
+
+img {
+    max-width: 100%;
+}
+
+/* experimental: */
+
+.mail {
+    background: white;
+    /*
+      padding-left: 0.75em;
+      padding-top: 0.025em;
+   */
+    padding: 0.025em 0.75em;
+}
+
+/* the following wo rules apply when you're using the 
+   yearly_index config option */
+.summary-year {
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
+
+main.summary-year th.cell_period + th,
+main.summary-year td.cell_message + td {
+    padding-left: 0.5em;
+}
+
+/* the following rules are used to set the style of quotes
+   when you're using the 'showhtml' config option with
+   values 1 or 2 */
+
+/* use this option to specify the style for a quote line */
+.quote {
+/* enable this one to change the style to italic to emulate
+   the deprecated iquote config option */
+    font-style: italic;
+}
+
+/* add more entries or separate this rule into
+   multiple ones if you want a specific style for
+   quotes depending on their level */	
+.quotelev1, .quotelev2, .quotelev3, .quotelev5, .quotelev6 {
+}

@@ -1,5 +1,22 @@
-#ifndef __PROTO_H_
-#define __PROTO_H_ 1
+#ifndef _HYPERMAIL_PROTO_H_
+#define _HYPERMAIL_PROTO_H_
+/*
+** Copyright (C) 1997-2023 Hypermail Project
+** 
+** This program and library is free software; you can redistribute it and/or 
+** modify it under the terms of the GNU (Library) General Public License 
+** as published by the Free Software Foundation; either version 3
+** of the License, or any later version. 
+** 
+** This program is distributed in the hope that it will be useful, 
+** but WITHOUT ANY WARRANTY; without even the implied warranty of 
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+** GNU (Library) General Public License for more details. 
+** 
+** You should have received a copy of the GNU (Library) General Public License
+** along with this program; if not, write to the Free Software 
+** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA 
+*/
 
 #include "hypermail.h"
 
@@ -91,6 +108,11 @@ void dump_config(void);
 #endif
 
 /*
+** printcss.c functions
+*/
+void print_default_css_file(char *);
+
+/*
 ** string.c functions
 */
 char *obfuscate_email_address (char *);
@@ -99,23 +121,58 @@ char *unobfuscate_email_address (char *);
 char *i18n_convstring(char *, char *, char *, size_t *);
 char *i18n_utf2numref(char *, int);
 unsigned char *i18n_numref2utf(char *);
+int i18n_is_valid_us_ascii(const char *);
+int i18n_truncate_inalid_us_ascii(char *);
 int i18n_replace_non_ascii_chars(char *);
+int i18n_replace_control_chars(char *);
+int i18n_replace_unicode_spaces(char *, size_t);
+int i18n_is_valid_utf8(const char *);
+char *i18n_charset_detect(const char *);
 
 char *PushByte(struct Push *, char);
 char *PushString(struct Push *, const char *);
 char *PushNString(struct Push *, const char *, int);
 
-char *strcasestr (const char *, const char *);
+/* define isblank() if there's no prototype _and_ it's not defined
+   as a macro */
+#if ((HAVE_DECL_ISBLANK==0) || !defined(HAVE_ISBLANK)) && !defined(isblank)
+int isblank(int);
+#endif
+
+/* work around for an autoconf limitation. It detects
+   strcasecmp declared even if it's not available
+   in <string.h> and that we're not using 
+   _GNU_SOURCE */
+#if HAVE_DECL_STRCASECMP==0 || !defined(HAVE_STRINGS_H)
+int strcasecmp(const char *, const char *);
+int strncasecmp(const char *, const char *, size_t);
+#endif
+
+#if HAVE_DECL_STRCASESTR==0
+char *strcasestr(const char *, const char *);
+#endif
+
 char *strsav(const char *);
 char *strreplace(char *, char *);
 void strcpymax(char *, const char *, int);
-void strtolower (char *);
+void strtolower(char *);
+int strisspace(char *);
+
+int is_start_boundary(const char *, const char *);
+int is_end_boundary(const char *, const char *);
 char *stripzone(char *);
+char *strip_boundary_id(const char *, int);
+
+char *strchomp(char *);
+char *strlftonl(char *s);
+
 int numstrchr(char *, char);
 char *getvalue(char *);
 char *getconfvalue(char *, char *, char *);
 char *unre(char *);
 char *oneunre(char *);
+int  filter_content_type_values(char *);
+int  filter_charset_value(char *);
 void rfc3676_trim_softlb(char *);
 char *rfc3676_delsp_quotes(char *);
 int rfc3676_ishardlb(const char *);
@@ -159,4 +216,4 @@ int isxdigit(int);
 #endif
 #endif
 
-#endif
+#endif /* _HYPERMAIL_PROTO_H_ */

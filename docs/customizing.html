@@ -1,478 +1,514 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
-   "http://www.w3.org/TR/REC-html40/loose.dtd">
-<HTML>
-<HEAD>
-<TITLE>Hypermail Documentation</TITLE>
-<LINK REV="made" HREF="mailto:webmaster@hypermail.org">
-</HEAD>
-<BODY BGCOLOR="#ffffff" TEXT="#000000">
-<H1 ALIGN=CENTER><IMG SRC="hypermail.png" WIDTH="60" ALIGN="middle" HEIGHT="60" ALT="">&nbsp;&nbsp;&nbsp;Customizing Hypermail Pages</H1>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    	<meta charset="utf-8"  />
+	<meta name="generator" content=
+	      "HTML Tidy for HTML5 for Linux version 5.6.0" />
+	<title>Hypermail Documentation - Customizing Hypermail Pages</title>
+	<link rel="author" href="https://github.com/hypermail-project" />
+	<style>
+	 /*<![CDATA[*/
+	 body {
+	     background-color: #FFFFFF;
+	     color: #000000;
+	 }
+	 .center {
+	     text-align: center;
+	 }
+	 table.c1
+	 {
+	     width: 100%;
+	     border: 2px solid darkgray;
+	     border-right-color: black;
+	     border-bottom-color: black;
+	 }
+	 table.c1 th
+	 {
+	     border: 1px solid;
+	 }
+	 table.c2
+	 {
+	     width: 75%;
+	     border: none;
+	     padding: 0;
+	     border-collapse: collapse;
+	 } 
+	 /*]]>*/
+	</style>
+</head>
+<body>
+    <h1><img src="hypermail.png" width=
+	     "60" height="60" alt="hypermail logo" />Customizing Hypermail Pages</h1>
+  <hr />
+  <p><strong>Contents:</strong></p>
+  <ul>
+    <li><a href="#1">Hypermail Pages</a></li>
+    <li><a href="#2">Definitions</a></li>
+    <li>
+      <a href="#3">Choosing the Default Look of Your Pages</a>
+      <ul>
+        <li>
+          <a href="#3-1">Standard Page HTML</a>
+          <ul>
+            <li><a href="#3-1-1">Index Page Headers</a></li>
+            <li><a href="#3-1-2">Message Pages</a></li>
+            <li><a href="#3-1-3">Page Footer</a></li>
+          </ul>
+        </li>
+        <li><a href="#3-2">Table Menu Display</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#4">Using Template Files to Customize Your Pages</a>
+      <ul>
+        <li><a href="#4-1">Substitution Cookies</a></li>
+        <li>
+          <a href="#4-2">Specifying template file locations</a>
+          <ul>
+            <li><a href="#4-2-1">Using Environment
+            Variables</a></li>
+            <li><a href="#4-2-2">Using Configuration File
+            Entries</a></li>
+            <li><a href="#4-2-3">Examples</a></li>
+          </ul>
+        </li>
+        <li><a href="#4-3">Message Pages</a></li>
+      </ul>
+    </li>
+    <li><a href="#5">Including Reference Links</a></li>
+    <li><a href="#6">In-lining Images</a></li>
+    <li><a href="#7">Changing The HTML File Suffix</a></li>
+  </ul>
+  <hr />
+  <h2><a href="#" id="1">Hypermail Pages</a></h2>You can
+  customize hypermail generated pages to suit your local web site
+  needs as well as the needs of the list. Hypermail generates three
+  types of files:
+  <ul>
+    <li>HTML index pages,</li>
+    <li>HTML message pages,</li>
+    <li>MIME enclosure attactment files.</li>
+  </ul>
+  <p>The attachment files are a copy of the attachment the user
+  included and are not altered.</p>
+  <p>This version of hypermail allows you to customize both index
+  and message pages separately as described below.</p>
+  <hr />
+  <h2><a href="#" id="2">Definitions</a></h2>
+  <p>In the examples below, the following terms are used.</p>
+  <p><strong><em>label</em></strong> - the label passed in via the
+  command line or specified in the list configuration file.</p>
+  <p><strong><em>indextype</em></strong> - depends on the type of
+  index being presented. It could be <strong><em>By Author, By
+  Date, By Subject, or By Thread</em></strong>.</p>
+  <p><strong><em>mailto-address</em></strong> - the
+  <strong>MAILTO</strong> value compiled into hypermail, specified
+  in the environment with the <strong>HM_MAILTO</strong> variable,
+  or specified in the <strong>hm_mailto</strong> variable in the
+  list specific configuration file.</p>
+  <p><strong><em>subject-of-message</em></strong> - the contents of
+  the message's <a href="http://www.faqs.org/rfcs/rfc2822.html">RFC
+  2822</a> Subject: header.</p>
+  <p><strong><em>HMURL</em></strong> - Used to contain a link to
+  the Hypermail Development Center. Defined in hypermail.h.</p>
+  <p><strong><em>PROGNAME</em></strong> - contains the name of the
+  executable. Defined in hypermail.h.</p>
+  <p><strong><em>VERSION</em></strong> - contains the version of
+  the software that generated the page this appears on. Defined in
+  src/hypermail.h.</p>
+  <hr />
+  <h2><a href="#" id="3">Choosing the Default Look of Your
+  Pages</a></h2>
+  <p>There is no need to customize hypermail pages unless you have
+  a specific need. There are two different default page layouts
+  provided with hypermail, the Table Menu Display and the Standard
+  Display.</p>
+  <h3><a href="#" id="3-1">Standard Page HTML</a></h3>
+  <p>If you are not <a href="#4">using the HTML template files</a>
+  described below then Hypermail generates headers and footers that
+  look similar to the following. Note that you can substitute a
+  &lt;BODY&gt; statement by either defining <strong>BODY</strong>
+  in options.h or by using the <strong>hm_body</strong> variable in
+  a list specific configuration file.</p>
+  <h4><a href="#" id="3-1-1">Index Page
+  Headers</a></h4>
+  <p>The default Index page headers used in hypermail look
+  like:</p>
+  <blockquote>
+    <strong><small>&lt;!DOCTYPE HTML PUBLIC "-//IETF//DTD
+    HTML//EN"&gt;<br />
+    &lt;HTML&gt;<br />
+    &lt;HEAD&gt;<br />
+    &lt;TITLE&gt;<em>label</em>:&nbsp;<em>indextype</em>&lt;/TITLE&gt;<br />
 
-<HR>
+    &lt;LINK REV="made"
+    HREF="mailto:<em>mailto-address</em>"&gt;<br />
+    &lt;HEAD&gt;<br />
+    &lt;BODY BGCOLOR="#ffffff" TEXT="#000000"&gt;<br />
+    &lt;H1
+    ALIGN=CENTER&gt;<em>label</em>&lt;BR&gt;By&nbsp;<em>indextype</em>&lt;/H1&gt;<br />
 
-<P>
-<STRONG>Contents:</STRONG>
-<UL>
-  <LI><A HREF="#1">Hypermail Pages</A>
-  <P>
-  <LI><A HREF="#2">Definitions</A>
-  <P>
-  <LI><A HREF="#3">Choosing the Default Look of Your Pages</A>
-    <UL>
-    <LI><A HREF="#3-1">Standard Page HTML</A>
-    <UL>
-      <LI><A HREF="#3-1-1">Index Page Headers</A>
-      <LI><A HREF="#3-1-2">Message Pages</A>
-      <LI><A HREF="#3-1-3">Page Footer</A>
-    </UL>
-    <LI><A HREF="#3-2">Table Menu Display</A>
-  </UL>
-  <P>
-  <LI><A HREF="#4">Using Template Files to Customize Your Pages</A>
-  <UL>
-    <LI><A HREF="#4-1">Substitution Cookies</A>
-    <LI><A HREF="#4-2">Specifying template file locations</A>
-    <UL>
-      <LI><A HREF="#4-2-1">Using Environment Variables</A>
-      <LI><A HREF="#4-2-2">Using Configuration File Entries</A>
-      <LI><A HREF="#4-2-3">Examples</A>
-    </UL>
-    <LI><A HREF="#4-3">Message Pages</A>
-  </UL>
-  <P>
-  <LI><A HREF="#5">Including Reference Links</A>
-  <LI><A HREF="#6">In-lining Images</A>
-  <LI><A HREF="#7">Changing The HTML File Suffix</A>
-</UL>
+    &lt;HR WIDTH=400&gt;</small></strong>
+  </blockquote>
+  <h4><a href="#" id="3-1-2">Message Pages</a></h4>
+  <p>The default Message page headers used in hypermail look
+  like:</p>
+  <blockquote>
+    <strong><small>&lt;!DOCTYPE HTML PUBLIC "-//IETF//DTD
+    HTML//EN"&gt;<br />
+    &lt;HTML&gt;<br />
+    &lt;HEAD&gt;<br />
+    &lt;TITLE&gt;<em>label:&nbsp;&nbsp;subject-of-message</em>&lt;/TITLE&gt;<br />
 
-<P><HR><P>
+    &lt;LINK REV="made"
+    HREF="mailto:<em>mailto-address</em>"&gt;<br />
+    &lt;HEAD&gt;<br />
+    &lt;BODY BGCOLOR="#ffffff" TEXT="#000000"&gt; &lt;H1
+    ALIGN=CENTER&gt;<em>subject</em>&lt;/H1&gt;<br />
+    &lt;HR&gt;</small></strong>
+  </blockquote>
+  <h4><a href="#" id="3-1-3">Page Footer</a></h4>
+  <p>The default page footer shown below is used in hypermail on
+  both the index and the message pages look like:</p>
+  <blockquote>
+    <strong><small>&lt;HR&gt;<br />
+    &lt;P&gt;<br />
+    &lt;SMALL&gt;<br />
+    &lt;EM&gt;<br />
+    This archive was generated by &nbsp;&lt;A
+    HREF="HMURL"&gt;PROGNAME VERSION&lt;/A&gt; on DATE and
+    TIME<br />
+    &lt;/EM&gt;<br />
+    &lt;/SMALL&gt;<br />
+    &lt;/BODY&gt;<br />
+    &lt;/HTML&gt;</small></strong>
+  </blockquote>
+  <h3><a href="#" id="3-2">Table Menu Display</a></h3>
+  <p>The table menu display generates pages that have a menu bar at
+  the top and the bottom of the page that looks something like the
+  following. If you have enabled the "About" and "Other Archives"
+  links are displayed if you have enabled them in options.h, the
+  environment variables or in the list configuration file. A
+  example page:</p>
+  <h1 class="center">TITLE HERE</h1>
+  <div class="center">
+    <table class="c1">
+      <tr>
+        <th><a href="mailto:hypermail@hypermail.org">New
+        Message</a></th>
+        <th><a href=
+        "mailto:hypermail@hypermail.org?subject=Re:%20TITLE%20HERE">
+        Reply</a></th>
+        <th><a href="http://www.hypermail.org/">About this
+        list</a></th>
+        <th><a href="customizing.html">Date view</a></th>
+        <th><a href="customizing.html">Thread view</a></th>
+        <th><a href="customizing.html">Subject view</a></th>
+        <th><a href="customizing.html">Author view</a></th>
+      </tr>
+    </table>
+  </div>
+  <p><strong>Kent Landfield</strong> (<a href=
+  "mailto:kent@landfield.com?subject=Re:%20TITLE%20HERE"><em>kent@landfield.com</em></a>)<br />
 
-<H2><A NAME="1" HREF="#">Hypermail Pages</A></H2>
-
-You can customize hypermail generated pages to suit your local web site
-needs as well as the needs of the list. 
-Hypermail generates three types of files:
-<UL>
-<LI>HTML index pages, 
-<LI>HTML message pages, 
-<LI>MIME enclosure attactment files.
-</UL>
-<P>
-The attachment files are a copy of the attachment the user included and 
-are not altered.  
-<P>
-This version of hypermail allows you to 
-customize both index and message pages separately as described below.
-
-<P><HR><P>
-
-<H2><A NAME="2" HREF="#">Definitions</A></H2>
-<P>
-In the examples below, the following terms are used.
-<P>
-<STRONG><EM>label</EM></STRONG> - the label passed in via the 
-command line or specified in the list configuration file.
-<P>
-<STRONG><EM>indextype</EM></STRONG> - depends on the type of index being 
-presented. It could be <STRONG><EM>By Author, By Date, By Subject, or By 
-Thread</EM></STRONG>.
-<P>
-<STRONG><EM>mailto-address</EM></STRONG> - the <STRONG>MAILTO</STRONG> 
-value compiled into hypermail, specified in the environment with the 
-<STRONG>HM_MAILTO</STRONG> variable, or specified in the 
-<STRONG>hm_mailto</STRONG> variable in the list specific 
-configuration file.
-<P>
-<STRONG><EM>subject-of-message</EM></STRONG> - the contents of the message's 
-<A HREF="http://www.faqs.org/rfcs/rfc2822.html">RFC 2822</A> Subject: 
-header.
-<P>
-<STRONG><EM>HMURL</EM></STRONG> - Used to contain a link to the Hypermail 
-Development Center. Defined in hypermail.h.
-<P>
-<STRONG><EM>PROGNAME</EM></STRONG> - contains the name of the executable. 
-Defined in hypermail.h.
-<P>
-<STRONG><EM>VERSION</EM></STRONG> - contains the version of the software that
-generated the page this appears on. Defined in src/hypermail.h.
-
-<P><HR><P>
-
-<H2><A NAME="3" HREF="#">Choosing the Default Look of Your Pages</A></H2>
-<P>
-There is no need to customize hypermail pages unless you have a specific
-need. There are two different default page layouts provided with hypermail,
-the Table Menu Display and the Standard Display.
-
-<P>
-<H3><A NAME="3-1" HREF="#">Standard Page HTML</A></H3>
-<P>
-
-If you are not <A HREF="#4">using the HTML template files</A> described 
-below then Hypermail generates headers and footers that look similar
-to the following. Note that you can substitute a &lt;BODY&gt; statement by
-either defining <STRONG>BODY</STRONG> in options.h or by using the 
-<STRONG>hm_body</STRONG> variable in a list specific configuration file.
-
-<P>
-<H4><A NAME="3-1-1" HREF="#">Index Page Headers</A></H4>
-<P>
-
-The default Index page headers used in hypermail look like:
-
-<BLOCKQUOTE>
-<STRONG>
-<SMALL>
-&lt;!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN"&gt;
-<BR>&lt;HTML&gt;
-<BR>&lt;HEAD&gt;
-<BR>&lt;TITLE&gt;<EM>label</EM>:&nbsp;<EM>indextype</EM>&lt;/TITLE&gt;
-<BR>&lt;LINK REV="made" HREF="mailto:<EM>mailto-address</EM>"&gt;
-<BR>&lt;HEAD&gt;
-<BR>&lt;BODY BGCOLOR="#ffffff" TEXT="#000000"&gt;
-<BR>&lt;H1 ALIGN=CENTER&gt;<EM>label</EM>&lt;BR&gt;By&nbsp;<EM>indextype</EM>&lt;/H1&gt;
-<BR>&lt;HR WIDTH=400&gt;
-</SMALL>
-</STRONG>
-</BLOCKQUOTE>
-
-<P>
-<H4><A NAME="3-1-2" HREF="#">Message Pages</A></H4>
-<P>
-
-The default Message page headers used in hypermail look like:
-
-<BLOCKQUOTE>
-<STRONG>
-<SMALL>
-&lt;!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN"&gt;
-<BR>&lt;HTML&gt;
-<BR>&lt;HEAD&gt;
-<BR>&lt;TITLE&gt;<EM>label:&nbsp;&nbsp;subject-of-message</EM>&lt;/TITLE&gt;
-<BR>&lt;LINK REV="made" HREF="mailto:<EM>mailto-address</EM>"&gt;
-<BR>&lt;HEAD&gt;
-<BR>&lt;BODY BGCOLOR="#ffffff" TEXT="#000000"&gt;
-&lt;H1 ALIGN=CENTER&gt;<EM>subject</EM>&lt;/H1&gt;
-<BR>&lt;HR&gt;
-</SMALL>
-</STRONG>
-</BLOCKQUOTE>
-
-<P>
-<H4><A NAME="3-1-3" HREF="#">Page Footer</A></H4>
-<P>
-
-The default page footer shown below is used in hypermail on both the 
-index and the message pages look like:
-
-<BLOCKQUOTE>
-<STRONG>
-<SMALL>
-&lt;HR&gt;
-<BR>&lt;P&gt;
-<BR>&lt;SMALL&gt;
-<BR>&lt;EM&gt;
-<BR>This archive was generated by &nbsp;&lt;A HREF="HMURL"&gt;PROGNAME VERSION&lt;/A&gt; on DATE and TIME
-<BR>&lt;/EM&gt;
-<BR>&lt;/SMALL&gt;
-<BR>&lt;/BODY&gt;
-<BR>&lt;/HTML&gt;
-</SMALL>
-</STRONG>
-</BLOCKQUOTE>
-
-<P>
-<H3><A NAME="3-2" HREF="#">Table Menu Display</A></H3>
-<P>
-
-The table menu display generates pages that have a menu bar at the top
-and the bottom of the page that looks something like the following. If
-you have enabled the "About" and "Other Archives" links are displayed if
-you have enabled them in options.h, the environment variables or in the
-list configuration file.  A example page:
-
-<H1 ALIGN=CENTER>TITLE HERE</H1>
-<P>
-<DIV ALIGN=CENTER>
-<TABLE BORDER=2 WIDTH="100%">
-<TR>
-<TH><A HREF="mailto:hypermail@hypermail.org">New Message</A></TH>
-<TH><A HREF="mailto:hypermail@hypermail.org?subject=Re:%20TITLE%20HERE">Reply</A></TH>
-<TH><A HREF="http://www.hypermail.org/">About this list</A></TH>
-<TH><A HREF="customizing.html">Date view</A></TH>
-<TH><A HREF="customizing.html">Thread view</A></TH>
-<TH><A HREF="customizing.html">Subject view</A></TH>
-<TH><A HREF="customizing.html">Author view</A></TH>
-</TR>
-</TABLE>
-</DIV>
-<P>
-<STRONG>Kent Landfield</STRONG> (<A HREF="mailto:kent@landfield.com?subject=Re:%20TITLE%20HERE"><EM>kent@landfield.com</EM></A>)<BR>
-<EM>Wed, 17 Jun 1998 22:28:29 -0500 (CDT)</EM>
-<P>
-<UL>
-<LI><STRONG>Next message:</STRONG> <A HREF="customizing.html">Kent Landfield: "Re: Getting started"</A>
-<LI><STRONG>Previous message:</STRONG> <A HREF="customizing.html">Crispen, Bob: "RE: Ideas"</A>
-<LI><STRONG>Next in thread:</STRONG> <A HREF="customizing.html">Andrew Kuchling: "Re: Getting started"</A>
-</UL>
-<HR>
-<P ALIGN=CENTER><STRONG><EM>BODY OF MESSAGE HERE</EM></STRONG></P>
-<HR>
-<P>
-<UL>
-<LI><STRONG>Next message:</STRONG> <A HREF="customizing.html">Kent Landfield: "Ideas"</A>
-<LI><STRONG>Next in thread:</STRONG> <A HREF="customizing.html">Guido van Rossum: "Re: Getting started"</A>
-</UL>
-<DIV ALIGN=CENTER>
-<TABLE BORDER=2 WIDTH="100%">
-<TR>
-<TH><A HREF="mailto:hypermail@hypermail.org">New Message</A></TH>
-<TH><A HREF="mailto:hypermail@hypermail.org?subject=Re:%20TITLE%20HERE">Reply</A></TH>
-<TH><A HREF="http://www.hypermail.org/">About this list</A></TH>
-<TH><A HREF="customizing.html">Date view</A></TH>
-<TH><A HREF="customizing.html">Thread view</A></TH>
-<TH><A HREF="customizing.html">Subject view</A></TH>
-<TH><A HREF="customizing.html">Author view</A></TH>
-</TR>
-</TABLE>
-</DIV>
-
-<P>
-<SMALL>
-<EM>
-This archive was generated by <A HREF="http://www.hypermail.org/">hypermail 2.0x</A> 
-on <EM>Thu Jun 04 1998 - 10:05:34 CDT</EM>
-</EM>
-</SMALL>
-<P>
-If you do not want to use the table display then make sure that 
-<STRONG>USETABLE</STRONG> is not defined in options.h and the 
-<STRONG>hm_usetable</STRONG> is not enabled in the list configuration file.
-When you do so you will get the standard look and feel of the hypermail 
-you have grown acustomed to.
-
-<P>
-
-Also note that <STRONG>New Message</STRONG> allows you to provide a means
-for someone to post a message to the list. This feature is currently only 
-availabe on the Table Menu Display. It can be enabled or disabled by defining
-<STRONG>HMAIL</STRONG> in options.h or by setting the <STRONG>hm_hmail</STRONG>
-variable in the list specific configuration file.
- 
-<P><HR><P>
-
-<H2><A NAME="4" HREF="#">Using Template Files to Customize Your Pages</A></H2>
-<P>
-You can customize your page headers and footers by specifying HTML template
-files. Hypermail reads template files and uses those in generating the header
-and footer sections of the index and message pages.  Template files contain 
-the actual HTML that you want used when generating the pages. Template files 
-may also contain "Substitution Cookies".
-
-<P>
-<H3><A NAME="4-1" HREF="#">Substitution Cookies</A></H3>
-<P>
-You can insert "substitution cookies" in the header and footer template 
-files so the appropriate information is filled in at runtime.
-<P>
-<STRONG>Substitution cookies supported:</STRONG>
-<P>
-<BLOCKQUOTE>
-<TABLE CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH="75%">
-<TR><TD><STRONG>%%</STRONG></TD><TD>- '%' character</TD></TR>
-<TR><TD><STRONG>%~</STRONG></TD><TD>- Storage directory</TD></TR>
-<TR><TD><STRONG>%a</STRONG></TD><TD>- Other Archives URL</TD></TR>
-<TR><TD><STRONG>%b</STRONG></TD><TD>- About Archive URL</TD></TR>
-<TR><TD><STRONG>%e</STRONG></TD><TD>- Email address of message Author - Not valid on index pages</TD></TR>
-<TR><TD><STRONG>%g</STRONG></TD><TD>- Date and time archive generated</TD></TR>
-<TR><TD><STRONG>%h</STRONG></TD><TD>- HMURL</TD></TR>
-<TR><TD><STRONG>%i</STRONG></TD><TD>- Message-id - Not valid on index pages</TD></TR>
-<TR><TD><STRONG>%l</STRONG></TD><TD>- Archive label</TD></TR>
-<TR><TD><STRONG>%m</STRONG></TD><TD>- Mailto address</TD></TR>
-<TR><TD><STRONG>%p</STRONG></TD><TD>- PROGNAME</TD></TR>
-<TR><TD><STRONG>%s</STRONG></TD><TD>- Subject of message or Index Title</TD></TR>
-<TR><TD><STRONG>%v</STRONG></TD><TD>- VERSION</TD></TR>
-<TR><TD><STRONG>%u</STRONG></TD><TD>- Expanded version link (HMURL,PROGNAME,VERSION)</TD></TR>
-<TR><TD><STRONG>\n</STRONG></TD><TD>- newline character</TD></TR>
-<TR><TD><STRONG>\t</STRONG></TD><TD>- tab character</TD></TR>
-</TABLE>
-</BLOCKQUOTE>
-<P>
-<STRONG>Additional cookies generate the complete HTML lines:</STRONG>
-<BLOCKQUOTE>
-<TABLE CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH="75%">
-<TR><TD><STRONG>%A</STRONG></TD><TD>- Author META HTML - Not valid on index pages</TD></TR>
-<TR><TD><STRONG>%B</STRONG></TD><TD>- BODY HTML statement</TD></TR>
-<TR><TD><STRONG>%S</STRONG></TD><TD>- Subject META HTML</TD></TR>
-</TABLE>
-</BLOCKQUOTE>
-
-<P>
-<H3><A NAME="4-2" HREF="#">Specifying template file locations</A></H3>
-<P>
-You can specify the location of the template files either via environment 
-variables or via entries in the list specific configuration file.
-<P>
-<H4><A NAME="4-2-1" HREF="#">Using Environment Variables</A></H4>
-<P>
-If you wish to use environment variables, make sure they are exported and
-correctly available for hypermail to use. How to do this is dependent on
-the type of shell in use. See the appropriate man pages if you need more
-information.
-<UL>
-<LI><STRONG>HM_IHTMLHEADERFILE</STRONG> - the location of the INDEX header template.
-<LI><STRONG>HM_IHTMLFOOTERFILE</STRONG> - the location of the INDEX footer template. 
-<LI><STRONG>HM_MHTMLHEADERFILE</STRONG> - the location of the MESSAGE header template. 
-<LI><STRONG>HM_MHTMLFOOTERFILE</STRONG> - the location of the MESSAGE footer template. 
-</UL>
-<P>
-<H4><A NAME="4-2-2" HREF="#">Using Configuration File Entries</A></H4>
-<P>
-An easy way is to tell hypermail where the template files are is via a
-list specific configuration file.  The following entries can be used.
-<P>
-<UL>
-<LI><STRONG>hm_ihtmlheaderfile</STRONG> - the location of the INDEX header template.
-<LI><STRONG>hm_ihtmlfooterfile</STRONG> - the location of the INDEX footer template. 
-<LI><STRONG>hm_mhtmlheaderfile</STRONG> - the location of the MESSAGE header template. 
-<LI><STRONG>hm_mhtmlfooterfile</STRONG> - the location of the MESSAGE footer template. 
-</UL>
-
-<P>
-<H4><A NAME="4-2-3" HREF="#">Examples</A></H4>
-<P>
-
-It is acceptable to have a single configuration file listed in more than
-one entry. Suppose you want to have a common footer for all pages and
-separate headers. The following example shows that.
-<P>
-<BLOCKQUOTE>
-hm_ihtmlheaderfile = /lists/wu-ftpd/wu-ftpd-index.hyp<BR>
-hm_mhtmlheaderfile = /lists/wu-ftpd/wu-ftpd-msg.hyp<BR>
-hm_ihtmlfooterfile = /lists/wu-ftpd/wu-ftpd-msgfooter.hyp<BR>
-hm_mhtmlfooterfile = /lists/wu-ftpd/wu-ftpd-msgfooter.hyp
-</BLOCKQUOTE>
-<P>
-
-If an entry is left blank and a location is not specified via an environment
-variable then the hypermail default headers are used.
-<P>
-<BLOCKQUOTE>
-hm_ihtmlheaderfile = /lists/wu-ftpd/wu-ftpd-index.hyp<BR>
-hm_ihtmlfooterfile = <BR>
-hm_mhtmlheaderfile = /lists/wu-ftpd/wu-ftpd-msg.hyp<BR>
-hm_mhtmlfooterfile = /lists/wu-ftpd/wu-ftpd-msgfooter.hyp<BR>
-</BLOCKQUOTE>
-
-The above example informs hypermail to use the template files listed for 
-the Index header and the Message header and footer. The hypermail default 
-page footer would be used on the index pages.
-<P>
-
-<STRONG>NOTE:</STRONG> While it is not necessary to provide absolute paths, 
-it is a good idea to.
-
-<P>
-<H3><A NAME="4-3" HREF="#">Message Pages</A></H3>
-<P>
-
-Each HTML file that is generated for a message contains (where applicable):
-<P>
-<UL>
-<LI>the subject of the article,
-<LI>the name and email address of the sender,
-<LI>the date the article was sent,
-<LI>links to the next and previous messages in the archive,
-<LI>a link to the message the article is in reply to, and
-<LI>a link to the message next in the current thread.
-</UL>
-
-<P><HR><P>
-
-<H3><A NAME="5" HREF="#">Including Reference Links</A></H3>
-<P>
-
-Reference links such as the following 
-
-<UL>
-<LI><STRONG>Next message:</STRONG> <A HREF="customizing.html">Kent Landfield: "Re: Getting started"</A>
-<LI><STRONG>Previous message:</STRONG> <A HREF="customizing.html">Crispen, Bob: "RE: Ideas"</A>
-<LI><STRONG>Next in thread:</STRONG> <A HREF="customizing.html">Andrew Kuchling: "Re: Getting started"</A>
-</UL>
-
-are normally included on each of the message pages. If this
-is not what you want you can disable them by using the 
-<STRONG>SHOW_MESSAGE_LINKS</STRONG>
-define in options.h or the <STRONG>hm_show_msg_links</STRONG>
-in the list's configuration file.
-
-<P>
-
-Additionally, if you want to list <STRONG>all</STRONG> replies to a message 
-such as the following,
-
-<UL>
-<LI><STRONG>In reply to:</STRONG> <A HREF="customizing.html">Kent Landfield: "Getting started"</A>
-<LI><STRONG>Reply:</STRONG> <A HREF="customizing.html">Guido van Rossum: "Re: Getting started"</A>
-<LI><STRONG>Reply:</STRONG> <A HREF="customizing.html">Andrew Kuchling: "Re: Getting started"</A>
-<LI><STRONG>Reply:</STRONG> <A HREF="customizing.html">Kent Landfield: "Re: Getting started"</A>
-</UL>
-
-you can do so by setting the <STRONG>SHOWREPLIES</STRONG>
-define in options.h or the <STRONG>hm_showreplies</STRONG>
-in the list's configuration file.
-
-<P><HR><P>
-
-<H3><A NAME="6" HREF="#">In-lining Images</A></H3>
-<P>
-It is possible to have images that are sent in email automatically
-displayed when the message is presented. To do this you need to set
-the <STRONG>hm_inline_types</STRONG> in the list configuration file.
-
-<P>
-For example, if you listed
-<BLOCKQUOTE>
-hm_inline_types = image/gif image/jpeg
-</BLOCKQUOTE>
-then both GIF files and JPEG files would be displayed as part of the
-message. Types that are not "in-lined" are linked as a simple attachment
-requiring the user to click on it to have it displayed.
-
-<P><HR><P>
-
-<H3><A NAME="7" HREF="#">Changing The HTML File Suffix</A></H3>
-<P>
-You may wish to have the pages generated use a different HTML file
-suffix other than the default &quot;.html&quot;. To do this you need
-to either set the default define <STRONG>HTMLSUFFIX</STRONG> in options.h, 
-set the environment variable <STRONG>HM_HTMLSUFFIX</STRONG> or set it in 
-the list's configuration file by using the <STRONG>hm_htmlsuffix</STRONG>
-variable.  
-<P>
-<STRONG>Note:</STRONG>
-Do not include a &quot;.&quot; in the suffix; If you do 
-you will end up with filenames that look like. &quot;..html&quot;
-
-<P><HR><P>
-<H2>See Also</H2>
-<BLOCKQUOTE>
-<STRONG>hypermail.(1)</STRONG>,
-&nbsp;
-<STRONG>hmrc.(4)</STRONG>,
-&nbsp;
-<STRONG><A HREF="hypermail.html">Hypermail</A></STRONG>
-&nbsp;
-and
-&nbsp;
-<STRONG><A HREF="hmrc.html">Hypermail List Configuration File</A></STRONG>.
-and <STRONG><A HREF="archive_search.html">Adding a Search Engines to your Hypermail Archive</A></STRONG>
-</BLOCKQUOTE>
-
-<HR>
-<SMALL><EM><STRONG>
-Last updated April 10, 2003
-</STRONG></EM></SMALL>
-
-</BODY>
-</HTML>
+  <em>Wed, 17 Jun 1998 22:28:29 -0500 (CDT)</em></p>
+  <ul>
+    <li><strong>Next message:</strong> <a href=
+    "customizing.html">Kent Landfield: "Re: Getting
+    started"</a></li>
+    <li><strong>Previous message:</strong> <a href=
+    "customizing.html">Crispen, Bob: "RE: Ideas"</a></li>
+    <li><strong>Next in thread:</strong> <a href=
+    "customizing.html">Andrew Kuchling: "Re: Getting
+    started"</a></li>
+  </ul>
+  <hr />
+  <p class="center"><strong><em>BODY OF MESSAGE
+  HERE</em></strong></p>
+  <hr />
+  <ul>
+    <li><strong>Next message:</strong> <a href=
+    "customizing.html">Kent Landfield: "Ideas"</a></li>
+    <li><strong>Next in thread:</strong> <a href=
+    "customizing.html">Guido van Rossum: "Re: Getting
+    started"</a></li>
+  </ul>
+  <div class="center">
+    <table class="c1">
+      <tr>
+          <th><a href="mailto:hypermail@hypermail.org">New
+        Message</a></th>
+        <th><a href=
+        "mailto:hypermail@hypermail.org?subject=Re:%20TITLE%20HERE">
+        Reply</a></th>
+        <th><a href="http://www.hypermail.org/">About this
+        list</a></th>
+        <th><a href="customizing.html">Date view</a></th>
+        <th><a href="customizing.html">Thread view</a></th>
+        <th><a href="customizing.html">Subject view</a></th>
+        <th><a href="customizing.html">Author view</a></th>
+      </tr>
+    </table>
+  </div>
+  <p><small><em>This archive was generated by <a href=
+  "http://www.hypermail.org/">hypermail 2.0x</a> on <em>Thu Jun 04
+  1998 - 10:05:34 CDT</em></em></small></p>
+  <p>If you do not want to use the table display then make sure
+  that <strong>USETABLE</strong> is not defined in options.h and
+  the <strong>hm_usetable</strong> is not enabled in the list
+  configuration file. When you do so you will get the standard look
+  and feel of the hypermail you have grown acustomed to.</p>
+  <p>Also note that <strong>New Message</strong> allows you to
+  provide a means for someone to post a message to the list. This
+  feature is currently only availabe on the Table Menu Display. It
+  can be enabled or disabled by defining <strong>HMAIL</strong> in
+  options.h or by setting the <strong>hm_hmail</strong> variable in
+  the list specific configuration file.</p>
+  <hr />
+  <h2><a href="#" id="4">Using Template Files to Customize
+  Your Pages</a></h2>
+  <p>You can customize your page headers and footers by specifying
+  HTML template files. Hypermail reads template files and uses
+  those in generating the header and footer sections of the index
+  and message pages. Template files contain the actual HTML that
+  you want used when generating the pages. Template files may also
+  contain "Substitution Cookies".</p>
+  <h3><a href="#" id="4-1">Substitution Cookies</a></h3>
+  <p>You can insert "substitution cookies" in the header and footer
+  template files so the appropriate information is filled in at
+  runtime.</p>
+  <p><strong>Substitution cookies supported:</strong></p>
+  <blockquote>
+    <table class="c2">
+      <tr>
+        <td><strong>%%</strong></td>
+        <td>- '%' character</td>
+      </tr>
+      <tr>
+        <td><strong>%~</strong></td>
+        <td>- Storage directory</td>
+      </tr>
+      <tr>
+        <td><strong>%a</strong></td>
+        <td>- Other Archives URL</td>
+      </tr>
+      <tr>
+        <td><strong>%b</strong></td>
+        <td>- About Archive URL</td>
+      </tr>
+      <tr>
+        <td><strong>%e</strong></td>
+        <td>- Email address of message Author - Not valid on index
+        pages</td>
+      </tr>
+      <tr>
+        <td><strong>%g</strong></td>
+        <td>- Date and time archive generated</td>
+      </tr>
+      <tr>
+        <td><strong>%h</strong></td>
+        <td>- HMURL</td>
+      </tr>
+      <tr>
+        <td><strong>%i</strong></td>
+        <td>- Message-id - Not valid on index pages</td>
+      </tr>
+      <tr>
+        <td><strong>%l</strong></td>
+        <td>- Archive label</td>
+      </tr>
+      <tr>
+        <td><strong>%m</strong></td>
+        <td>- Mailto address</td>
+      </tr>
+      <tr>
+        <td><strong>%p</strong></td>
+        <td>- PROGNAME</td>
+      </tr>
+      <tr>
+        <td><strong>%s</strong></td>
+        <td>- Subject of message or Index Title</td>
+      </tr>
+      <tr>
+        <td><strong>%v</strong></td>
+        <td>- VERSION</td>
+      </tr>
+      <tr>
+        <td><strong>%u</strong></td>
+        <td>- Expanded version link (HMURL,PROGNAME,VERSION)</td>
+      </tr>
+      <tr>
+        <td><strong>\n</strong></td>
+        <td>- newline character</td>
+      </tr>
+      <tr>
+        <td><strong>\t</strong></td>
+        <td>- tab character</td>
+      </tr>
+    </table>
+  </blockquote>
+  <p><strong>Additional cookies generate the complete HTML
+  lines:</strong></p>
+  <blockquote>
+    <table class="c2">
+      <tr>
+        <td><strong>%A</strong></td>
+        <td>- Author META HTML - Not valid on index pages</td>
+      </tr>
+      <tr>
+        <td><strong>%B</strong></td>
+        <td>- BODY HTML statement</td>
+      </tr>
+      <tr>
+        <td><strong>%S</strong></td>
+        <td>- Subject META HTML</td>
+      </tr>
+    </table>
+  </blockquote>
+  <h3><a href="#" id="4-2">Specifying template file
+  locations</a></h3>
+  <p>You can specify the location of the template files either via
+  environment variables or via entries in the list specific
+  configuration file.</p>
+  <h4><a href="#" id="4-2-1">Using Environment
+  Variables</a></h4>
+  <p>If you wish to use environment variables, make sure they are
+  exported and correctly available for hypermail to use. How to do
+  this is dependent on the type of shell in use. See the
+  appropriate man pages if you need more information.</p>
+  <ul>
+    <li><strong>HM_IHTMLHEADERFILE</strong> - the location of the
+    INDEX header template.</li>
+    <li><strong>HM_IHTMLFOOTERFILE</strong> - the location of the
+    INDEX footer template.</li>
+    <li><strong>HM_MHTMLHEADERFILE</strong> - the location of the
+    MESSAGE header template.</li>
+    <li><strong>HM_MHTMLFOOTERFILE</strong> - the location of the
+    MESSAGE footer template.</li>
+  </ul>
+  <h4><a href="#" id="4-2-2">Using Configuration File
+  Entries</a></h4>
+  <p>An easy way is to tell hypermail where the template files are
+  is via a list specific configuration file. The following entries
+  can be used.</p>
+  <ul>
+    <li><strong>hm_ihtmlheaderfile</strong> - the location of the
+    INDEX header template.</li>
+    <li><strong>hm_ihtmlfooterfile</strong> - the location of the
+    INDEX footer template.</li>
+    <li><strong>hm_mhtmlheaderfile</strong> - the location of the
+    MESSAGE header template.</li>
+    <li><strong>hm_mhtmlfooterfile</strong> - the location of the
+    MESSAGE footer template.</li>
+  </ul>
+  <h4><a href="#" id="4-2-3">Examples</a></h4>
+  <p>It is acceptable to have a single configuration file listed in
+  more than one entry. Suppose you want to have a common footer for
+  all pages and separate headers. The following example shows
+  that.</p>
+  <blockquote>
+    hm_ihtmlheaderfile = /lists/wu-ftpd/wu-ftpd-index.hyp<br />
+    hm_mhtmlheaderfile = /lists/wu-ftpd/wu-ftpd-msg.hyp<br />
+    hm_ihtmlfooterfile = /lists/wu-ftpd/wu-ftpd-msgfooter.hyp<br />
+    hm_mhtmlfooterfile = /lists/wu-ftpd/wu-ftpd-msgfooter.hyp
+  </blockquote>
+  <p>If an entry is left blank and a location is not specified via
+  an environment variable then the hypermail default headers are
+  used.</p>
+  <blockquote>
+    hm_ihtmlheaderfile = /lists/wu-ftpd/wu-ftpd-index.hyp<br />
+    hm_ihtmlfooterfile =<br />
+    hm_mhtmlheaderfile = /lists/wu-ftpd/wu-ftpd-msg.hyp<br />
+    hm_mhtmlfooterfile = /lists/wu-ftpd/wu-ftpd-msgfooter.hyp<br />
+  </blockquote>The above example informs hypermail to use the
+  template files listed for the Index header and the Message header
+  and footer. The hypermail default page footer would be used on
+  the index pages.
+  <p><strong>NOTE:</strong> While it is not necessary to provide
+  absolute paths, it is a good idea to.</p>
+  <h3><a href="#" id="4-3">Message Pages</a></h3>
+  <p>Each HTML file that is generated for a message contains (where
+  applicable):</p>
+  <ul>
+    <li>the subject of the article,</li>
+    <li>the name and email address of the sender,</li>
+    <li>the date the article was sent,</li>
+    <li>links to the next and previous messages in the
+    archive,</li>
+    <li>a link to the message the article is in reply to, and</li>
+    <li>a link to the message next in the current thread.</li>
+  </ul>
+  <hr />
+  <h3><a href="#" id="5">Including Reference
+  Links</a></h3>
+  <p>Reference links such as the following</p>
+  <ul>
+    <li><strong>Next message:</strong> <a href=
+    "customizing.html">Kent Landfield: "Re: Getting
+    started"</a></li>
+    <li><strong>Previous message:</strong> <a href=
+    "customizing.html">Crispen, Bob: "RE: Ideas"</a></li>
+    <li><strong>Next in thread:</strong> <a href=
+    "customizing.html">Andrew Kuchling: "Re: Getting
+    started"</a></li>
+  </ul>are normally included on each of the message pages. If this
+  is not what you want you can disable them by using the
+  <strong>SHOW_MESSAGE_LINKS</strong> define in options.h or the
+  <strong>hm_show_msg_links</strong> in the list's configuration
+  file.
+  <p>Additionally, if you want to list <strong>all</strong> replies
+  to a message such as the following,</p>
+  <ul>
+    <li><strong>In reply to:</strong> <a href=
+    "customizing.html">Kent Landfield: "Getting started"</a></li>
+    <li><strong>Reply:</strong> <a href="customizing.html">Guido
+    van Rossum: "Re: Getting started"</a></li>
+    <li><strong>Reply:</strong> <a href="customizing.html">Andrew
+    Kuchling: "Re: Getting started"</a></li>
+    <li><strong>Reply:</strong> <a href="customizing.html">Kent
+    Landfield: "Re: Getting started"</a></li>
+  </ul>you can do so by setting the <strong>SHOWREPLIES</strong>
+  define in options.h or the <strong>hm_showreplies</strong> in the
+  list's configuration file.
+  <hr />
+  <h3><a href="#" id="6">In-lining Images</a></h3>
+  <p>It is possible to have images that are sent in email
+  automatically displayed when the message is presented. To do this
+  you need to set the <strong>hm_inline_types</strong> in the list
+  configuration file.</p>
+  <p>For example, if you listed</p>
+  <blockquote>
+    hm_inline_types = image/gif image/jpeg
+  </blockquote>then both GIF files and JPEG files would be
+  displayed as part of the message. Types that are not "in-lined"
+  are linked as a simple attachment requiring the user to click on
+  it to have it displayed.
+  <hr />
+  <h3><a href="#" id="7">Changing The HTML File
+  Suffix</a></h3>
+  <p>You may wish to have the pages generated use a different HTML
+  file suffix other than the default ".html". To do this you need
+  to either set the default define <strong>HTMLSUFFIX</strong> in
+  options.h, set the environment variable
+  <strong>HM_HTMLSUFFIX</strong> or set it in the list's
+  configuration file by using the <strong>hm_htmlsuffix</strong>
+  variable.</p>
+  <p><strong>Note:</strong> Do not include a "." in the suffix; If
+  you do you will end up with filenames that look like.
+  "..html"</p>
+  <hr />
+  <h2>See Also</h2>
+  <blockquote>
+    <strong>hypermail.(1)</strong>, &nbsp;
+    <strong>hmrc.(4)</strong>, &nbsp; <strong><a href=
+    "hypermail.html">Hypermail</a></strong> &nbsp; and &nbsp;
+    <strong><a href="hmrc.html">Hypermail List Configuration
+    File</a></strong>. and <strong><a href=
+    "archive_search.html">Adding a Search Engines to your Hypermail
+    Archive</a></strong>
+  </blockquote>
+  <hr />
+  <small><em><strong>Last updated April 10,
+  2003</strong></em></small>
+</body>
+</html>

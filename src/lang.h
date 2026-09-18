@@ -1,3 +1,23 @@
+#ifndef _HYPERMAIL_LANG_H
+#define _HYPERMAIL_LANG_H
+/*
+** Copyright (C) 1997-2023 Hypermail Project
+** 
+** This program and library is free software; you can redistribute it and/or 
+** modify it under the terms of the GNU (Library) General Public License 
+** as published by the Free Software Foundation; either version 3
+** of the License, or any later version. 
+** 
+** This program is distributed in the hope that it will be useful, 
+** but WITHOUT ANY WARRANTY; without even the implied warranty of 
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+** GNU (Library) General Public License for more details. 
+** 
+** You should have received a copy of the GNU (Library) General Public License
+** along with this program; if not, write to the Free Software 
+** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA 
+*/
+
 /*
 ** WARNING!!! Don't muck with this file unless you know what you are
 **            getting yourself into!!!!!!
@@ -231,6 +251,19 @@ struct language_entry {
 #define MSG_EDITED                               166
 #define MSG_SENDER_DELETED                       167
 #define MSG_SUBJECT_DELETED                      168
+#define MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION      169
+#define MSG_CSORT_BY                             170
+#define MSG_EMPTY_ARCHIVE                        171
+#define MSG_ATTACHED_MESSAGE_NOTICE              172
+#define MSG_FORWARDED_MESSAGE_NOTICE             173
+#define MSG_ATTACHMENTS_NOTICE                   174
+#define MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE       175
+#define MSG_EMPTY_ARCHIVE_NOTICE                 176
+#define MSG_CSS_NORMAL_VIEW                      177
+
+/* another option that should be in hypermail.c */
+#define MSG_OPTION_Y                             178
+
 #ifdef MAIN_FILE
 
 /*
@@ -344,9 +377,9 @@ char *de[] = {       /* German */
   "Aktionsmˆglichkeiten",                 /* Mail actions (MA) header -HTML*/
   "Sende E-Mail mit neuen Titel",         /* MA New Message      -HTML*/
   "Antworte auf die E-Mail",              /* MA Reply            -HTML*/
-  "Zusammenfassung der monatlichen Index-Dateien", 
+  "zusammenfassung der monatlichen index-dateien", 
   					  /* monthly             -HTML*/
-  "Zusammenfassung der j‰hrlichen Index-Dateien",        
+  "zusammenfassung der j‰hrlichen index-dateien",        
   					  /* yearly              -HTML*/
   "Lege GDBM-Zwischenspeicher f¸r Kopfzeilen an", 
   				/* Build a GDBM header cache   -STDOUT*/
@@ -370,7 +403,7 @@ char *de[] = {       /* German */
   "Verzeichnisliste",  /* MSG_FOLDERS_INDEX                     -HTML */
   "Diese Nachricht wurde aus dem Archiv entfernt",/* MSG_DELETED -HTML */
   "Diese Nachricht ist abgelaufen",              /* MSG_EXPIRED -HTML */
-  "(gelˆschte Nachricht)",          /* MSG_DEL_SHORT            -HTML */
+  "gelˆschte Nachricht",          /* MSG_DEL_SHORT            -HTML */
   "Urspr¸nglicher Text dieser Nachricht", /* MSG_TXT_VERSION    -HTML */
   "Diese Nachricht wurde herausgefiltert",  /* MSG_FILTERED_OUT -HTML */
   "Autor",                              /* MSG_FROM              -HTML*/
@@ -418,11 +451,21 @@ char *de[] = {       /* German */
   " bis ", /* to - HTML */
   "from", /* from - HTML */
   "on", /* on - HTML */
-  "message archived in another list or period", /* unknown in reply to - HTML */
+  "Message archived in another list or period", /* unknown in reply to - HTML */
   "Diese Nachricht wurde aus dem Archiv entfernt", /* MSG_DELETED_OTHER -HTML */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
+  "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
+  "Sortieren nach", /* CSort by - HTML */
+  "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
+  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
+  "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
+  "Attachments", /* MSG_ATTACHMENTS_NOTICE */
+  "Attachments for message", /* MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE */  
+  "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */
+  "Normal view", /* MSG_CSS_NORMAL_VIEW */
+  "Do a dry-run of hypermail, without generating any file", /* MSG_OPTION_Y -  STDOUT */
   NULL,                              /* End Of Message Table - NOWHERE*/
 };
 
@@ -529,8 +572,8 @@ char *pl[] = {                      /* English */
   "Wybierz",                        /* Mail actions (MA) header -HTML*/
   "wy∂lij nowy temat",              /* MA New Message      -HTML*/
   "odpowiedz na t± wiadomo∂Ê",      /* MA Reply            -HTML*/
-  "Zestawienie miesiÍcy",           /* monthly             -HTML*/
-  "Zestawienie lat",                /* yearly              -HTML*/
+  "zestawienie miesiÍcy",           /* monthly             -HTML*/
+  "zestawienie lat",                /* yearly              -HTML*/
   "UtwÛrz cache nag≥owkÛw GDBM",    /* Build a GDBM header cache -STDOUT*/
   "GDBM header cache option not build in",
   		      /* GDBM header cache option not build in  -STDERR*/
@@ -549,7 +592,7 @@ char *pl[] = {                      /* English */
   "Lista KatalogÛw",                 /* MSG_FOLDERS_INDEX   -HTML */
   "Ta wiadomo∂Ê zosta≥a usuniÍta z archiwum", /* MSG_DELETED  -HTML */
   "Ta wiadomo∂Ê jest przedawniona",  /*MSG_EXPIRED -HTML */
-  "(usuniÍta wiadomo∂Ê)",            /* MSG_DEL_SHORT     -HTML */
+  "usuniÍta wiadomo∂Ê",            /* MSG_DEL_SHORT     -HTML */
   "Tekst tej zawarto∂ci",            /* MSG_TXT_VERSION     -HTML */
   "Ta wiadomo∂Ê zosta≥a odfiltrowana",        /* MSG_FILTERED_OUT -HTML */
   "Autor",                          /* MSG_FROM              -HTML*/
@@ -597,11 +640,21 @@ char *pl[] = {                      /* English */
   " to ", /* to - HTML */
   "from", /* from - HTML */
   "on", /* on - HTML */
-  "message archived in another list or period", /* unknown in reply to - HTML */
+  "Message archived in another list or period", /* unknown in reply to - HTML */
   "Ta wiadomo∂Ê zosta≥a usuniÍta z archiwum", /* MSG_DELETED_OTHER  -HTML */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
+  "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
+  "Sort by", /* CSort by - HTML */
+  "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
+  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
+  "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
+  "Attachments", /* MSG_ATTACHMENTS_NOTICE */
+  "Attachments for message", /* MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE */    
+  "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
+  "Normal view", /* MSG_CSS_NORMAL_VIEW */
+  "Do a dry-run of hypermail, without generating any file", /* MSG_OPTION_Y - STDOUT */  
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -709,8 +762,8 @@ char *en[] = {       /* English */
   "Mail actions",                /* Mail actions (MA) header -HTML*/
   "mail a new topic",            /* MA New Message      -HTML*/
   "respond to this message",     /* MA Reply            -HTML*/
-  "Summary of Monthly Index Files",       /* monthly             -HTML*/
-  "Summary of Yearly Index Files",        /* yearly              -HTML*/
+  "summary of monthly index files",       /* monthly             -HTML*/
+  "summary of yearly index files",        /* yearly              -HTML*/
   "Build a GDBM header cache",   /* Build a GDBM header cache   -STDOUT*/
   "GDBM header cache option not build in",
   		      /* GDBM header cache option not build in  -STDERR*/
@@ -729,7 +782,7 @@ char *en[] = {       /* English */
   "List of Folders",  /* MSG_FOLDERS_INDEX                      -HTML */
   "This message has been deleted from the archive", /* MSG_DELETED -HTML */
   "This message has expired",                       /* MSG_EXPIRED -HTML */
-  "(deleted message)", /* MSG_DEL_SHORT                            -HTML */
+  "deleted message", /* MSG_DEL_SHORT                            -HTML */
   "Original text of this message", /* MSG_TXT_VERSION                          -HTML */
   "This message has been filtered out",        /* MSG_FILTERED_OUT -HTML */
   "From",                       /* MSG_FROM                    	 -HTML*/
@@ -777,11 +830,21 @@ char *en[] = {       /* English */
   " to ", /* to - HTML */
   "from", /* from - HTML */
   "on", /* on - HTML */
-  "message archived in another list or period", /* unknown in reply to - HTML */
-  "This message has been deleted from the archive", /* MSG_DELETED_OTHER -HTML */
-  "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
-  "deleted", /* MSG_SENDER_DELETED -HTML */
-  "deleted", /* MSG_SUBJECT_DELETED -HTML */
+  "Message archived in another list or period", /* unknown in reply to - HTML */
+  "This message has been deleted from the archive", /* MSG_DELETED_OTHER - HTML */
+  "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED - HTML */
+  "deleted", /* MSG_SENDER_DELETED - HTML */
+  "deleted", /* MSG_SUBJECT_DELETED - HTML */
+  "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
+  "Sort by", /* CSort by - HTML*/
+  "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
+  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
+  "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
+  "Attachments", /* MSG_ATTACHMENTS_NOTICE */
+  "Attachments for message", /* MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE */      
+  "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
+  "Normal view", /* MSG_CSS_NORMAL_VIEW */
+  "Do a dry-run of hypermail, without generating any file", /* MSG_OPTION_Y - STDOUT */  
   NULL,                         /* End Of Message Table      - NOWHERE*/
 };
 
@@ -899,8 +962,8 @@ char *es[] = {       /* Espanol/Spanish */
   "Cabecera MA (Mail actions)",       /* Mail actions (MA) header     - HTML  */
   "Enviar un nuevo tema",             /* MA New Message     	      - HTML  */
   "responder a este mensaje",         /* MA Reply       	      - HTML  */
-  "Resumen de Ìndices mensuales",     /* monthly            	      - HTML  */
-  "Resumen de Ìndices anuales",       /* yearly              	      - HTML  */
+  "resumen de Ìndices mensuales",     /* monthly            	      - HTML  */
+  "resumen de Ìndices anuales",       /* yearly              	      - HTML  */
   "Costruir cabecera para cachÈ GDBM",/* Build a GDBM header cache    - STDOUT*/
   "Creando Ìndice gdbm... ",          /* Creating gdbm index          - STDOUT*/
   "No pudo crearse fichero gdbm... ", /* Can't create gdbm index      - STDOUT*/
@@ -919,7 +982,7 @@ char *es[] = {       /* Espanol/Spanish */
   "El mensaje ha sido borrado del archivo",
   				      /* MSG_DELETED 		      - HTML  */
   "El mensaje ha caducado",           /* MSG_EXPIRED 		      - HTML  */
-  "(mensaje borrado)",		      /* MSG_DEL_SHORT                - HTML  */
+  "mensaje borrado",		      /* MSG_DEL_SHORT                - HTML  */
   "Texto original del mensaje",       /* MSG_TXT_VERSION   	      - HTML  */
   "El mensaje ha sido filtrado",      /* MSG_FILTERED_OUT 	      - HTML  */
   "Autor",                            /* MSG_FROM 		      - HTML  */
@@ -967,12 +1030,22 @@ char *es[] = {       /* Espanol/Spanish */
   " to ", /* to - HTML */
   "from", /* from - HTML */
   "on", /* on - HTML */
-  "message archived in another list or period", /* unknown in reply to - HTML */
+  "Message archived in another list or period", /* unknown in reply to - HTML */
   "El mensaje ha sido borrado del archivo",
   				      /* MSG_DELETED_OTHER - HTML  */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
+  "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
+  "Sort by", /* CSort by - HTML*/
+  "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
+  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
+  "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */  
+  "Attachments", /* MSG_ATTACHMENTS_NOTICE */
+  "Attachments for message", /* MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE */      
+  "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
+  "Normal view", /* MSG_CSS_NORMAL_VIEW */
+  "Do a dry-run of hypermail, without generating any file", /* MSG_OPTION_Y - STDOUT */  
   NULL,                               /* End Of Message Table */
 };
 
@@ -1082,8 +1155,8 @@ char *pt[] = {                     /* Brazilian Portuguese */
   "AÁıes de E-Mail",                  /* Mail actions (MA) header -HTML*/
   "Novo tÛpico de E-Mail",            /* MA New Message      -HTML*/
   "Responder ‡ esta mensagem",        /* MA Reply            -HTML*/
-  "Sum·rio dos Arquivos Mensais de Õndice", /* monthly             -HTML*/
-  "Sum·rio dos Arquivos Anuais de Õndice",  /* yearly              -HTML*/
+  "sum·rio dos arquivos mensais de Ìndice", /* monthly             -HTML*/
+  "sum·rio dos arquivos anuais de Ìndice",  /* yearly              -HTML*/
   "Compilar cache de cabeÁalho GDBM",       /* Build a GDBM header cache   -STDOUT*/
   "OpÁ„o de cabeÁalho GDBM n„o compilada",  /* GDBM header cache option not build in  -STDERR*/
   "Criando Ìndice gdbm... ",                /* Creating gdbm index         -STDOUT*/
@@ -1102,7 +1175,7 @@ char *pt[] = {                     /* Brazilian Portuguese */
   "Lista de DiretÛrios",               /* MSG_FOLDERS_INDEX                      -HTML */
   "Esta mensagem foi removida do arquivo", /* MSG_DELETED -HTML */
   "Esta mensagem expirou",             /* MSG_EXPIRED -HTML */
-  "(mensagem removida)",               /* MSG_DEL_SHORT                            -HTML */
+  "mensagem removida",               /* MSG_DEL_SHORT                            -HTML */
   "Texto original desta mensagem",     /* MSG_TXT_VERSION                          -HTML */
   "Esta mensagem foi filtrada",        /* MSG_FILTERED_OUT -HTML */
   "De",                                /* MSG_FROM                    	 -HTML*/
@@ -1150,11 +1223,21 @@ char *pt[] = {                     /* Brazilian Portuguese */
   "por anexo",                         /* by attachment - HTML */
   "perÌodo",                           /* period - HTML */
   " para ",                            /* to - HTML */
-  "message archived in another list or period", /* unknown in reply to - HTML */
+  "Message archived in another list or period", /* unknown in reply to - HTML */
   "Esta mensagem foi removida do arquivo", /* MSG_DELETE_OTHER -HTML */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
+  "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
+  "Ordenar por",                       /* CSort by - HTML*/
+  "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
+  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
+  "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
+  "Attachments", /* MSG_ATTACHMENTS_NOTICE */
+  "Attachments for message", /* MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE */        
+  "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
+  "Normal view", /* MSG_CSS_NORMAL_VIEW */
+  "Do a dry-run of hypermail, without generating any file", /* MSG_OPTION_Y - STDOUT */  
   NULL,                                /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1260,8 +1343,8 @@ char *fi[] = {       /* Finnish */
   "Mail actions",                    /* Mail actions (MA) header -HTML*/
   "mail a new topic",                /* MA New Message      -HTML*/
   "respond to this message",         /* MA Reply            -HTML*/
-  "Summary of Monthly Index Files",      /* monthly             -HTML*/
-  "Summary of Yearly Index Files",       /* yearly              -HTML*/
+  "summary of monthly index files",      /* monthly             -HTML*/
+  "summary of yearly index files",       /* yearly              -HTML*/
   "Build a GDBM header cache",   /* Build a GDBM header cache   -STDOUT*/
   "GDBM header cache option not build in",
    		      /* GDBM header cache option not build in  -STDERR*/
@@ -1280,7 +1363,7 @@ char *fi[] = {       /* Finnish */
   "List of Folders",  /* MSG_FOLDERS_INDEX                      -HTML */
   "This message has been deleted from the archive", /* MSG_DELETED -HTML */
   "This message has expired",                       /* MSG_EXPIRED -HTML */
-  "(deleted message)", /* MSG_DEL_SHORT                            -HTML */
+  "deleted message", /* MSG_DEL_SHORT                            -HTML */
   "Original text of this message", /* MSG_TXT_VERSION                          -HTML */
   "This message has been filtered out",        /* MSG_FILTERED_OUT -HTML */
   "Kirjoittajan mukaan",                 /* MSG_FROM                  -HTML*/
@@ -1328,11 +1411,21 @@ char *fi[] = {       /* Finnish */
   " to ", /* to - HTML */
   "from", /* from - HTML */
   "on", /* on - HTML */
-  "message archived in another list or period", /* unknown in reply to - HTML */
+  "Message archived in another list or period", /* unknown in reply to - HTML */
   "This message has been deleted from the archive", /* MSG_DELETED_OTHER -HTML */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
+  "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
+  "Sort by", /* CSort by - HTML*/
+  "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
+  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
+  "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
+  "Attachments", /* MSG_ATTACHMENTS_NOTICE */
+  "Attachments for message", /* MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE */          
+  "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
+  "Normal view", /* MSG_CSS_NORMAL_VIEW */
+  "Do a dry-run of hypermail, without generating any file", /* MSG_OPTION_Y - STDOUT */  
   NULL,                              /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1443,8 +1536,8 @@ char *it[] = {       /* Italian */
   "Azioni di posta",                /* Mail actions (MA) header -HTML*/
   "spedisci un nuovo argomento",            /* MA New Message      -HTML*/
   "rispondi a questo messaggio",     /* MA Reply            -HTML*/
-  "Riepilogo dei file di indice mensili",       /* monthly             -HTML*/
-  "Riepilogo dei file di indice annuali",        /* yearly              -HTML*/
+  "riepilogo dei file di indice mensili",       /* monthly             -HTML*/
+  "riepilogo dei file di indice annuali",        /* yearly              -HTML*/
   "Costruisci una cache degli header in GDBM",   /* Build a GDBM header cache   -STDOUT*/
   "Creazione dell'indice gdbm ... ",     /* Creating gdbm index         -STDOUT*/
   "Impossibile creare l'indice gdbm ... ",  /* Can't create gdbm index     -STDOUT*/
@@ -1461,7 +1554,7 @@ char *it[] = {       /* Italian */
   "Lista delle cartelle",  /* MSG_FOLDERS_INDEX                      -HTML */
   "Questo messaggio Ë stato cancellato dall'archivio", /* MSG_DELETED -HTML */
   "Il messaggio Ë scaduto",                       /* MSG_EXPIRED -HTML */
-  "(messaggio cancellato)", /* MSG_DEL_SHORT                            -HTML */
+  "messaggio cancellato", /* MSG_DEL_SHORT                            -HTML */
   "Testo originale di questo messaggio", /* MSG_TXT_VERSION                          -HTML */
   "Questo messaggio Ë stato filtrato",        /* MSG_FILTERED_OUT -HTML */
   "From",                       /* MSG_FROM                    	 -HTML*/
@@ -1509,11 +1602,21 @@ char *it[] = {       /* Italian */
   " to ", /* to - HTML */
   "from", /* from - HTML */
   "on", /* on - HTML */
-  "message archived in another list or period", /* unknown in reply to - HTML */
+  "Message archived in another list or period", /* unknown in reply to - HTML */
   "Questo messaggio Ë stato cancellato dall'archivio", /* MSG_DELETED_OTHER -HTML */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
+  "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
+  "Sort by", /* CSort by - HTML*/
+  "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
+  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
+  "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
+  "Attachments", /* MSG_ATTACHMENTS_NOTICE */
+  "Attachments for message", /* MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE */            
+  "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
+  "Normal view", /* MSG_CSS_NORMAL_VIEW */
+  "Do a dry-run of hypermail, without generating any file", /* MSG_OPTION_Y - STDOUT */  
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1621,8 +1724,8 @@ char *fr[] = {       /* French */
   "Actions sur les mails",                 /* Mail actions (MA) header -HTML*/
   "cr&eacute;er un nouveau th&egrave;me",  /* MA New Message      -HTML*/
   "r&eacute;pondre &agrave; ce message",   /* MA Reply            -HTML*/
-  "R&eacute;capitulatif des fichiers Index mensuels",   /* monthly             -HTML*/
-  "R&eacute;capitulatif des fichiers Index annuels",         /* yearly              -HTML*/
+  "r&eacute;capitulatif des fichiers index mensuels",   /* monthly             -HTML*/
+  "r&eacute;capitulatif des fichiers index annuels",         /* yearly              -HTML*/
   "Creation d'un cache GDBM pour les en-tÍtes",  /* Build a GDBM header cache   -STDOUT*/
   "GDBM header cache option not build in",
   		      /* GDBM header cache option not build in  -STDERR*/
@@ -1641,7 +1744,7 @@ char *fr[] = {       /* French */
   "Liste des dossiers",                    /* MSG_FOLDERS_INDEX                      -HTML */
   "Ce message a &eacute;t&eacute; supprim&eacute; de l'archive", /* MSG_DELETED -HTML */
   "Ce message est trop vieux",             /* MSG_EXPIRED -HTML */
-  "(message supprim&eacute;)",              /* MSG_DEL_SHORT                            -HTML */
+  "message supprim&eacute;",              /* MSG_DEL_SHORT                            -HTML */
   "Texte original de ce message",          /* MSG_TXT_VERSION                          -HTML */
   "Ce message a &eacute;t&eacute; supprimÈ par filtrage",    /* MSG_FILTERED_OUT -HTML */
   "Auteur",                                /* MSG_FROM              -HTML*/
@@ -1669,7 +1772,7 @@ char *fr[] = {       /* French */
   "Messages r&eacute;cents par fichier attach&eacute;", /* Contemporary messages by attachments - HTML*/
   "Barre de navigation vers le niveau sup&eacute;rieur", /* Navigation bar, upper levels - HTML*/
   "Barre de navigation", /* Navigation bar - HTML*/
-  "Trier par", /* Sort by - HTML*/
+  "trier par", /* Sort by - HTML*/
   "Autres p&eacute;riodes", /* Other periods - HTML */
   "Suivant", /* Next folder - HTML */
   "Messages archives dans la p&eacute;riode suivante, tri&eacute;s par date", /* Next folder, by date - HTML link */
@@ -1689,11 +1792,21 @@ char *fr[] = {       /* French */
   " &eagrave; ", /* to - HTML */
   "from", /* from - HTML */
   "on", /* on - HTML */
-  "message archived in another list or period", /* unknown in reply to - HTML */
+  "Message archived in another list or period", /* unknown in reply to - HTML */
   "Ce message a &eacute;t&eacute; supprim&eacute; de l'archive", /* MSG_DELETED_OTHER -HTML */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
+  "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
+  "Trier par", /* CSort by - HTML*/
+  "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
+  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
+  "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
+  "Attachments", /* MSG_ATTACHMENTS_NOTICE */
+  "Attachments for message", /* MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE */              
+  "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
+  "Normal view", /* MSG_CSS_NORMAL_VIEW */
+  "Do a dry-run of hypermail, without generating any file", /* MSG_OPTION_Y - STDOUT */  
   NULL,                                    /* End Of Message Table  - NOWHERE*/
 };
 
@@ -1801,8 +1914,8 @@ char *is[] = {       /* Icelandic */
   "Mail actions",                     /* Mail actions (MA) header -HTML*/
   "mail a new topic",                 /* MA New Message      -HTML*/
   "respond to this message",          /* MA Reply            -HTML*/
-  "Summary of Monthly Index Files",   /* monthly             -HTML*/
-  "Summary of Yearly Index Files",    /* yearly              -HTML*/
+  "summary of monthly index files",   /* monthly             -HTML*/
+  "summary of yearly index files",    /* yearly              -HTML*/
   "Build a GDBM header cache",   /* Build a GDBM header cache   -STDOUT*/
   "GDBM header cache option not build in",
   		      /* GDBM header cache option not build in  -STDERR*/
@@ -1823,7 +1936,7 @@ char *is[] = {       /* Icelandic */
   "List of Folders",  /* MSG_FOLDERS_INDEX                      -HTML */
   "This message has been deleted from the archive", /* MSG_DELETED -HTML */
   "This message has expired",                       /* MSG_EXPIRED -HTML */
-  "(deleted message)", /* MSG_DEL_SHORT                            -HTML */
+  "deleted message", /* MSG_DEL_SHORT                            -HTML */
   "Original text of this message", /* MSG_TXT_VERSION                          -HTML */
   "This message has been filtered out",        /* MSG_FILTERED_OUT -HTML */
   "Hˆfundur",                         /* MSG_FROM              -HTML*/
@@ -1871,11 +1984,21 @@ char *is[] = {       /* Icelandic */
   " to ", /* to - HTML */
   "from", /* from - HTML */
   "on", /* on - HTML */
-  "message archived in another list or period", /* unknown in reply to - HTML */
+  "Message archived in another list or period", /* unknown in reply to - HTML */
   "This message has been deleted from the archive", /* MSG_DELETED_OTHER -HTML */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
+  "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
+  "Sort by", /* CSort by - HTML*/
+  "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
+  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
+  "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
+  "Attachments", /* MSG_ATTACHMENTS_NOTICE */
+  "Attachments for message", /* MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE */                
+  "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
+  "Normal view", /* MSG_CSS_NORMAL_VIEW */
+  "Do a dry-run of hypermail, without generating any file", /* MSG_OPTION_Y - STDOUT */  
   NULL,                               /* End Of Message Table      - NOWHERE*/
 };
 
@@ -1988,8 +2111,8 @@ char *sv[] = {
   "E-postfunktioner",                   /* Mail actions (MA) header -HTML*/
   "s&auml;nd ett nytt &auml;mne",               /* MA New Message      -HTML*/
   "svara p&aring; brevet",        /* MA Reply            -HTML*/
-  "Sammanfattning &ouml;ver m&aring;natliga indexfiler", /* monthly             -HTML*/
-  "Sammanfattning &ouml;ver &aring;rliga indexfiler",  /* yearly              -HTML*/
+  "sammanfattning &ouml;ver m&aring;natliga indexfiler", /* monthly             -HTML*/
+  "sammanfattning &ouml;ver &aring;rliga indexfiler",  /* yearly              -HTML*/
   "Bygger en GDBM-huvudcache",   /* Build a GDBM header cache   -STDOUT*/
   "Tillval fˆr GDBM-huvudcache inte inkompilerat",
   		      /* GDBM header cache option not build in  -STDERR*/
@@ -2008,7 +2131,7 @@ char *sv[] = {
   "Mapplista",  /* MSG_FOLDERS_INDEX                      -HTML */
   "Detta brev har tagits bort fr&aring;n arkivet", /* MSG_DELETED -HTML */
   "Detta brev har utg&aring;tt",                       /* MSG_EXPIRED -HTML */
-  "(borttaget brev)", /* MSG_DEL_SHORT                            -HTML */
+  "borttaget brev", /* MSG_DEL_SHORT                            -HTML */
   "Ursprunglig brevtext", /* MSG_TXT_VERSION                          -HTML */
   "Detta brev har filtrerats",        /* MSG_FILTERED_OUT -HTML */
   "F&ouml;rfattare",                     /* MSG_FROM             -HTML*/
@@ -2056,11 +2179,21 @@ char *sv[] = {
   " to ", /* to - HTML */
   "from", /* from - HTML */
   "on", /* on - HTML */
-  "message archived in another list or period", /* unknown in reply to - HTML */
+  "Message archived in another list or period", /* unknown in reply to - HTML */
   "Detta brev har tagits bort fr&aring;n arkivet", /* MSG_DELETED_OTHER -HTML */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
+  "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
+  "Sort by", /* CSort by - HTML*/
+  "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
+  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
+  "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
+  "Attachments", /* MSG_ATTACHMENTS_NOTICE */
+  "Attachments for message", /* MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE */                  
+  "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */
+  "Normal view", /* MSG_CSS_NORMAL_VIEW */
+  "Do a dry-run of hypermail, without generating any file", /* MSG_OPTION_Y - STDOUT */  
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 
@@ -2173,8 +2306,8 @@ char *no[] = {
   "E-postfunksjoner",                   /* Mail actions (MA) header -HTML*/
   "Lag ny trÂd",               /* MA New Message      -HTML*/
   "besvare meldingen",        /* MA Reply            -HTML*/
-  "Sammenfatning over mÂnedlige indeksfiler", /* monthly             -HTML*/
-  "Sammenfatning over Ârlige indeksfiler",  /* yearly              -HTML*/
+  "sammenfatning over mÂnedlige indeksfiler", /* monthly             -HTML*/
+  "sammenfatning over Ârlige indeksfiler",  /* yearly              -HTML*/
   "Bygger en GDBM-headercache",   /* Build a GDBM header cache   -STDOUT*/
   "GDBM header cache opsjon ikke innebygget",
   		      /* GDBM header cache option not build in  -STDERR*/
@@ -2193,7 +2326,7 @@ char *no[] = {
   "Mappeliste",  /* MSG_FOLDERS_INDEX                      -HTML */
   "Denne meldingen er fjernet fra arkivet", /* MSG_DELETED -HTML */
   "Dette meldingen har utgÂtt",                       /* MSG_EXPIRED -HTML */
-  "(slettet melding)", /* MSG_DEL_SHORT                            -HTML */
+  "slettet melding", /* MSG_DEL_SHORT                            -HTML */
   "Opprinnelig brevtekst", /* MSG_TXT_VERSION                          -HTML */
   "Denne meldingen har blitt filtrert bort",        /* MSG_FILTERED_OUT -HTML */
   "Forfatter",                     /* MSG_FROM             -HTML*/
@@ -2241,11 +2374,21 @@ char *no[] = {
   " to ", /* to - HTML */
   "from", /* from - HTML */
   "on", /* on - HTML */
-  "message archived in another list or period", /* unknown in reply to - HTML */
+  "Message archived in another list or period", /* unknown in reply to - HTML */
   "Denne meldingen er fjernet fra arkivet", /* MSG_DELETED_OTHER -HTML */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
+  "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
+  "Sort by", /* CSort by - HTML*/
+  "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
+  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
+  "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
+  "Attachments", /* MSG_ATTACHMENTS_NOTICE */
+  "Attachments for message", /* MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE */                    
+  "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
+  "Normal view", /* MSG_CSS_NORMAL_VIEW */
+  "Do a dry-run of hypermail, without generating any file", /* MSG_OPTION_Y - STDOUT */  
   NULL,                             /* End Of Message Table    - NOWHERE*/
 };
 
@@ -2363,8 +2506,8 @@ char *gr[] = {       /* Greek */
   "Mail ÂÌ›Ò„ÂÈÂÚ",                  	/* Mail actions (MA) header -HTML*/
   "”ÙÂﬂÎÂ ÂÌ· Í·ÈÌÔ˝ÒÈÔ ÏﬁÌıÏ· ",    	/* MA New Message      -HTML*/
   "¡‹ÌÙÁÛÂ ÛÂ ·ıÙ¸ ÙÔ ÏﬁÌıÏ·",      	/* MA Reply            -HTML*/
-  "–ÂÒﬂÎÁ¯Á Ù˘Ì ÏÁÌÈ·ﬂ˘Ì ÂıÒÂÙﬁÒÈ˘Ì",  	/* monthly             -HTML*/
-  "–ÂÒﬂÎÁ¯Á Ù˘Ì ÂÙﬁÛÈ˘Ì ÂıÒÂÙﬁÒÈ˘Ì",  	/* yearly              -HTML*/
+  "ÂÒﬂÎÁ¯Á Ù˘Ì ÏÁÌÈ·ﬂ˘Ì ÂıÒÂÙﬁÒÈ˘Ì",  	/* monthly             -HTML*/
+  "ÂÒﬂÎÁ¯Á Ù˘Ì ÂÙﬁÛÈ˘Ì ÂıÒÂÙﬁÒÈ˘Ì",  	/* yearly              -HTML*/
   "Build a GDBM header cache",   	/* Build a GDBM header cache   -STDOUT*/
   "ƒÁÏÈÔıÒ„˛ ÙÔ gdbm ÂıÒÂÙﬁÒÈÔ... ",   	/* Creating gdbm index         -STDOUT*/
   "ƒÂÌ ÏÔÒ˛ Ì· ‰ÁÏÈÔıÒ„ﬁÛ˘ ÙÔ gdbm ·Ò˜ÂﬂÔ... ",  /* Can't create gdbm index     -STDOUT*/
@@ -2381,7 +2524,7 @@ char *gr[] = {       /* Greek */
   "ÀﬂÛÙ· Í·Ù·Î¸„˘Ì",  			/* MSG_FOLDERS_INDEX                      -HTML */
   "¡ıÙ¸ ÙÔ ÏﬁÌıÏ· ›˜ÂÈ Û‚ÁÛÙÂﬂ ·Ô ÙÔ ·Ò˜ÂﬂÔ", /* MSG_DELETED -HTML */
   "¡ıÙ¸ ÙÔ ÏﬁÌıÏ· ›˜ÂÈ ÎﬁÓÂÈ",      	/* MSG_EXPIRED -HTML */
-  "(Û‚ÁÛÏ›ÌÔ ÏﬁÌıÏ·)", 			/* MSG_DEL_SHORT                            -HTML */
+  "Û‚ÁÛÏ›ÌÔ ÏﬁÌıÏ·", 			/* MSG_DEL_SHORT                            -HTML */
   "–Ò¸ÙıÔ ÍÂﬂÏÂÌÔ ÙÔı ÏÁÌ˝Ï·ÙÔÚ", 	/* MSG_TXT_VERSION                          -HTML */
   "¡ıÙ¸ ÙÔ ÏﬁÌıÏ· ›˜ÂÈ ˆÈÎÙÒ·ÒÈÛÙÂﬂ ",  /* MSG_FILTERED_OUT -HTML */
   "”ı„„Ò·ˆ›·Ú",       			/* MSG_FROM              -HTML*/
@@ -2427,11 +2570,21 @@ char *gr[] = {       /* Greek */
   " to ", /* to - HTML */
   "from", /* from - HTML */
   "on", /* on - HTML */
-  "message archived in another list or period", /* unknown in reply to - HTML */
+  "Message archived in another list or period", /* unknown in reply to - HTML */
   "¡ıÙ¸ ÙÔ ÏﬁÌıÏ· ›˜ÂÈ Û‚ÁÛÙÂﬂ ·Ô ÙÔ ·Ò˜ÂﬂÔ", /* MSG_DELETED_OTHER -HTML */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
+  "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
+  "Sort by", /* CSort by - HTML*/
+  "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
+  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
+  "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
+  "Attachments", /* MSG_ATTACHMENTS_NOTICE */
+  "Attachments for message", /* MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE */                      
+  "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
+  "Normal view", /* MSG_CSS_NORMAL_VIEW */
+  "Do a dry-run of hypermail, without generating any file", /* MSG_OPTION_Y - STDOUT */  
   NULL,                           	/* End Of Message Table - NOWHERE*/
 };
 
@@ -2538,8 +2691,8 @@ char *ru[] = {     /* Russian */
   "‰≈ ”‘◊…— ” –œﬁ‘œ ",                /* Mail actions (MA) header -HTML*/
   "œ”Ã¡‘ÿ Œœ◊’¿ ”‘¡‘ÿ¿",            /* MA New Message      -HTML*/
   "Ô‘◊≈‘…‘ÿ Œ¡ ‹‘œ ”œœ¬›≈Œ…≈",     /* MA Reply            -HTML*/
-  "Û’ÕÕ¡“Œœ ⁄¡ Õ≈”—√ …Œƒ≈À”ŒŸ» ∆¡ Ãœ◊",       /* monthly             -HTML*/
-  "Û’ÕÕ¡“Œœ ⁄¡ «œƒ …Œƒ≈À”ŒŸ» ∆¡ Ãœ◊",        /* yearly              -HTML*/
+  "ÛıÌÌ·ÚÓÔ ˙· ÌÂÛÒ„ ÈÓ‰ÂÎÛÓ˘Ë Ê·ÍÏÔ◊",       /* monthly             -HTML*/
+  "ÛıÌÌ·ÚÓÔ ˙· ÁÔ‰ ÈÓ‰ÂÎÛÓ˘Ë Ê·ÍÏÔ◊",        /* yearly              -HTML*/
   "œ”‘“œ≈Œ…≈ GDBM ⁄¡«œÃœ◊À¡ À‹€¡",   /* Build a GDBM header cache   -STDOUT*/
   "Ô–√…— GDBM header cache Œ≈ ◊”‘“œ≈Œ¡",/* GDBM header cache option not build in  -STDERR*/
   "Û‘“œ¿ gdbm …Œƒ≈À”... ",     /* Creating gdbm index         -STDOUT*/
@@ -2557,7 +2710,7 @@ char *ru[] = {     /* Russian */
   "Û–…”œÀ ƒ…“≈À‘œ“… ",  /* MSG_FOLDERS_INDEX                      -HTML */
   "¸‘œ ”œœ¬›≈Œ…≈ ¬ŸÃœ ’ƒ¡Ã≈Œœ …» ¡“»…◊¡", /* MSG_DELETED -HTML */
   "¸‘œ ”œœ¬›≈Œ…≈ –“œ”“œﬁ≈Œœ",                       /* MSG_EXPIRED -HTML */
-  "(’ƒ¡Ã≈ŒŒœ≈ ”œœ¬›≈Œ…≈)", /* MSG_DEL_SHORT                            -HTML */
+  "’ƒ¡Ã≈ŒŒœ≈ ”œœ¬›≈Œ…≈", /* MSG_DEL_SHORT                            -HTML */
   "È”»œƒŒŸ  ‘≈À”‘ ƒ¡ŒŒœ«œ ”œœ¬›≈Œ…—", /* MSG_TXT_VERSION                          -HTML */
   "¸‘œ ”œœ¬›≈Œ…≈ ¬ŸÃœ œ‘∆…Ãÿ‘“œ◊¡Œœ",        /* MSG_FILTERED_OUT -HTML */
   "Ô‘",                        /* MSG_FROM                      -HTML*/
@@ -2605,11 +2758,21 @@ char *ru[] = {     /* Russian */
   " to ", /* to - HTML */
   "from", /* from - HTML */
   "on", /* on - HTML */
-  "message archived in another list or period", /* unknown in reply to - HTML */
+  "Message archived in another list or period", /* unknown in reply to - HTML */
   "¸‘œ ”œœ¬›≈Œ…≈ ¬ŸÃœ ’ƒ¡Ã≈Œœ …» ¡“»…◊¡", /* MSG_DELETED_OTHER -HTML */
   "Note: this message has been edited and differs from the originally archived copy.", /* MSG_EDITED -HTML */
   "deleted", /* MSG_SENDER_DELETED -HTML */
   "deleted", /* MSG_SUBJECT_DELETED -HTML */
+  "Access mail archives by date, thread, author and subject", /* MSG_ACCESS_MAIL_ARCHIVES_BY_CAPTION - HTML */
+  "Sort by", /* CSort by - HTML*/
+  "Nothing received yet!", /* MSG_EMPTY_ARCHIVE - HTML */
+  "attached message", /* MSG_ATTACHED_MESSAGE_NOTICE - HTML */
+  "Forwarded message", /* MSG_FORWARDED_MESSAGE_NOTICE - HTML */
+  "Attachments", /* MSG_ATTACHMENTS_NOTICE */
+  "Attachments for message", /* MSG_ATTACHMENTS_FOR_MESSAGE_NOTICE */                        
+  "(no messages are available in this archive)", /* MSG_EMPTY_ARCHIVE_NOTICE */  
+  "Normal view", /* MSG_CSS_NORMAL_VIEW */
+  "Do a dry-run of hypermail, without generating any file", /* MSG_OPTION_Y - STDOUT */  
   NULL,                          /* End Of Message Table      - NOWHERE*/
 };
 
@@ -2647,3 +2810,5 @@ extern char **lang;
 extern struct language_entry ltable[];
 
 #endif
+
+#endif /* _HYPERMAIL_LANG_H */

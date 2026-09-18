@@ -185,14 +185,12 @@ static int	yyRelYear;
     enum _MERIDIAN	Meridian;
 }
 
-%token	tAGO tDAY tDAY_UNIT tDAYZONE tDST tHOUR_UNIT tID
-%token	tMERIDIAN tMINUTE_UNIT tMONTH tMONTH_UNIT
-%token	tSEC_UNIT tSNUMBER tUNUMBER tYEAR_UNIT tZONE
-
-%type	<Number>	tDAY tDAY_UNIT tDAYZONE tHOUR_UNIT tMINUTE_UNIT
-%type	<Number>	tMONTH tMONTH_UNIT
-%type	<Number>	tSEC_UNIT tSNUMBER tUNUMBER tYEAR_UNIT tZONE
-%type	<Meridian>	tMERIDIAN o_merid
+%token			tAGO tID tDST tNEVER
+%token	<Number>	tDAY tDAY_UNIT tDAYZONE tHOUR_UNIT tMINUTE_UNIT
+%token	<Number>	tMONTH tMONTH_UNIT
+%token	<Number>	tSEC_UNIT tSNUMBER tUNUMBER tYEAR_UNIT tZONE
+%token	<Meridian>	tMERIDIAN
+%type	<Meridian>	o_merid
 
 %%
 
