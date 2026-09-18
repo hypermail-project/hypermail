@@ -1,10 +1,10 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.72])
 AC_REVISION($Revision: 1.2 $)dnl
 AC_INIT
 AC_CONFIG_SRCDIR([src/hypermail.c])
-AC_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS([config.h])
 AC_PREFIX_DEFAULT(/usr/local)
 LDFLAGS=""
 LIBS=""
@@ -48,6 +48,7 @@ AC_PROG_CPP
 AC_PROG_YACC
 AC_CHECK_PROG(YACC_CHECK,$YACC,yes)
 AS_IF([test x"$YACC_CHECK" != x"yes"], [AC_MSG_ERROR([Please install either bison or yacc and run configure again])])
+AC_PROG_EGREP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
@@ -88,7 +89,7 @@ export CFLAGS CC
 AC_SUBST(INSTALL)
 
 AC_MSG_CHECKING([that the compiler works])
-AC_RUN_IFELSE([AC_LANG_SOURCE([[ main(int ac, char **av) { return 0; } ]])],[AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)
+AC_RUN_IFELSE([AC_LANG_SOURCE([[ int main(int ac, char **av) { return 0; } ]])],[AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)
     AC_MSG_ERROR(Could not compile and run even a trivial ANSI C program - check CC.)],[AC_MSG_ERROR(Could not compile and run even a trivial ANSI C program - check CC.)])
 
 dnl ===========================================================================
@@ -163,8 +164,6 @@ dnl ===========================================================================
 dnl Checks headers
 dnl ===========================================================================
 
-AC_HEADER_STDC
-
 AC_CHECK_HEADERS(alloca.h arpa/inet.h ctype.h dirent.h errno.h \
 	fcntl.h locale.h malloc.h netdb.h netinet/in.h pwd.h stdarg.h \
 	stdio.h stdlib.h string.h sys/dir.h sys/param.h sys/socket.h \
@@ -172,7 +171,6 @@ AC_CHECK_HEADERS(alloca.h arpa/inet.h ctype.h dirent.h errno.h \
 
 AC_HEADER_STAT
 AC_HEADER_DIRENT
-AC_HEADER_TIME
 
 dnl ===========================================================================
 dnl Checks for library functions.
