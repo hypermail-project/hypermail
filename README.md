@@ -1,5 +1,5 @@
 #    Hypermail 3.0.x
-    ![hypermail logo](./docs/hypermail.png)
+    ![hypermail logo](docs/hypermail.png)
 
 ## Introduction
 
@@ -122,8 +122,8 @@ be PHP or other scripts that could be interpreted by your web server.
 It is important to disable all those web server features in the directory where
 an hypermail archive will be stored. You can also customize hypermail to only
 allow some specific attachments. You can also associate a hypermail directory
-with a CSP policy to disable or restrict javascript use from within an HTML
-document.
+with a (CSP)[https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP]
+policy to disable or restrict javascript use from within an HTML document.
 
 We advise you to follow the the least-privilege principle: restrict / disable
 features available to a hypermail archive and enable them one by one as
