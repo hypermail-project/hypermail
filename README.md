@@ -1,7 +1,5 @@
-<div align="center">
-# Hypermail 3.0.x
-![hypermail logo](./docs//hypermail.png)
-</div>
+    Hypermail 3.0.x
+    ![hypermail logo](./docs//hypermail.png)
 
 ## Introduction
 
