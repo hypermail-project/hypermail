@@ -15,9 +15,9 @@ message archive.
 
 An hypermail archive is made of **indexes** and **messages**. Indexes sort the
 messages in the archive by author, subject, date, and thread. Messages show a
-configurable summary of a message's headers, the attachments, such as images. A
-message will also include links to other messages, such as next and previous
-received message or next and previous message in a thread.
+configurable summary of a message's headers and the message's attachments, such
+as images. A message will also include links to other messages, such as next
+and previous received message or next and previous message in a thread.
 
 ## Features
 
@@ -30,7 +30,7 @@ received message or next and previous message in a thread.
 
 You can see an example of hypermail in action in any of W3C's public mailing
 list archives, for example,
-[here](https://lists.w3.org/Archives/Public/public-aria/2015Dec/).  ```
+[here](https://lists.w3.org/Archives/Public/public-aria/2015Dec/).
 
 ## Project Status
 
@@ -46,7 +46,7 @@ The main branch has the on-going cutting edge development; if you want a stable
 release, please use the releases. In addition to the packaged releases, Each
 stable release is tagged.
 
-Please refer to [Release Notes](./RELEASE) and the [Changelog](./Changelog) for
+Please refer to [Release Notes](./RELEASE_NOTES) and the [Changelog](./Changelog) for
 the list of recent changes.
 
 There is no active dedicated mailing list for hypermail support or
@@ -74,9 +74,9 @@ Hypermail is written in C.
 
 Detailed instructions on dependencies, how to compile and install it are given
 in the [INSTALL](./INSTALL) file.  For a description of how to use it, see the
-[hypermail.html](./hypermail.html), [hmrc.html](./hmrc.html), and
-[hypermail-faq.html](hypermail-faq.html) files that come in the [docs/](./docs)
-directory. Take the time to read the [KNOWN_BUGS](KNOWN_BUGS) file so that you
+[hypermail.html](./docs/hypermail.html), [hmrc.html](./docs/hmrc.html), and
+[hypermail-faq.html](./docs/hypermail-faq.html) files that come in the [docs/](./docs)
+directory. Take the time to read the [KNOWN_BUGS](./KNOWN_BUGS) file so that you
 are aware of things that might affect your use of hypermail.
 
 ## Try it out
@@ -99,14 +99,14 @@ firefox /tmp/hypermail-test/index.html
 
 ## Repository organization
 
-   * archive - general archive utilites that are useful in managing
+   * [archive](./archive) - general archive utilites that are useful in managing
                list archives. Much of the functionality here has been
                rendered obsolete by the folder_by_date option.
-   * contrib - contributed hypermail related utilities
-   * configs - sample hypermail configuration files
-   * docs    - documentation and documentation support files
-   * src     - here's the beef
-   * tests   - directory for supporting local testing
+   * [contrib](./contrib) - contributed hypermail related utilities
+   * [configs](./configs) - sample hypermail configuration files
+   * [docs](./docs)    - documentation and documentation support files
+   * [src](./src)     - here's the beef
+   * [tests](./tests)   - directory for supporting local testing
 
 Please note that other than src and docs, the content in some of this
 directories is outdated.
@@ -135,7 +135,7 @@ Please read the (INSTALL)[./INSTALL] file for more info.
 
 ## Icon
 
-You'll find the image [hypermail.png](./doc/hypermail.png) included with the
+You'll find the image [hypermail.png](./docs/hypermail.png) included with the
 source; this icon is for your use in your Hypermail-related pages and links to
 them. If you are talented with graphics and would like to donate new icons and
 images to the hypermail effort, please feel free.
