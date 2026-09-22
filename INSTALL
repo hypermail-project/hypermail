@@ -6,11 +6,24 @@ PLEASE READ THE RELEASE NOTES FIRST.
 
 Quick summary:
 =============
+
+Clone the development version directly from the repository
+  https://github.com/hypermail-project/hypermail.git
+
+or get the latest stable release
+  tar -xzf hypermail-xxx.tar.gz
+
 cd hypermail_checkout_directory
 ./autogen.sh
 ./configure
 make
 make install
+
+To see all available configuration options:
+./configure --help
+
+To uninstall, run this command in the hypermail checkout directory:
+make uninstall
 
 Read the separate UPGRADE file for changes that might affect
 users of older versions.
@@ -43,7 +56,7 @@ For compiling hypermail:
 
      apt-get install pkgconf
      
-* libpcre2-dev >= 10.32 (optional)
+* libpcre2-dev >= 10.42 (optional)
   if you don't have it, hypermail will compile and link with
   it's own shipped-in version (src/pcre2)
 
@@ -115,7 +128,7 @@ Building Hypermail:
    in the past. It compiles with both gcc and clang in the following
    platforms:
 
-     Debian 12, Ubuntu 22.04.2 LTS
+     Debian 13, Ubuntu 22.04.2 LTS
 
    Previously, it used to compile against a wide variety of Unix
    platforms, MacOS, and Cygwin but we've not done it recently
