@@ -73,7 +73,7 @@ Hypermail is written in C.
 Detailed instructions on dependencies, how to compile and install it are given
 in the [INSTALL](./INSTALL) file.  For a description of how to use it, see the
 [hypermail.html](./docs/hypermail.html), [hmrc.html](./docs/hmrc.html), and
-[hypermail-faq.html](./docs/hypermail-faq.html) files that come in the [docs/](./docs)
+[faq.html](./docs/faq.html) files that come in the [docs/](./docs)
 directory. Take the time to read the [KNOWN_BUGS](./KNOWN_BUGS) file so that you
 are aware of things that might affect your use of hypermail.
 
@@ -122,14 +122,14 @@ be PHP or other scripts that could be interpreted by your web server.
 It is important to disable all those web server features in the directory where
 an hypermail archive will be stored. You can also customize hypermail to only
 allow some specific attachments. You can also associate a hypermail directory
-with a (CSP)[https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP]
+with a [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP)
 policy to disable or restrict javascript use from within an HTML document.
 
 We advise you to follow the the least-privilege principle: restrict / disable
 features available to a hypermail archive and enable them one by one as
 required, after evaluating they are safe.
 
-Please read the (INSTALL)[./INSTALL] file for more info.
+Please read the [INSTALL](./INSTALL) file for more details.
 
 ## Icon
 
