@@ -1,5 +1,5 @@
 #    Hypermail 3.0.x
-    ![hypermail logo](docs/hypermail.png)
+![hypermail logo](docs/hypermail.png)
 
 ## Introduction
 
