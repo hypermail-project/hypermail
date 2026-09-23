@@ -49,7 +49,7 @@ install:
 		bindir="$(bindir)" LIBS="$(LIBS)"
 	@cd docs; $(MAKE) install CC="$(CC)" CFLAGS="$(CFLAGS)" \
 		CPPFLAGS="$(CPPFLAGS)"  \
-		$(MAKEFLAGS) mandir="$(mandir)" htmldir="$(htmldir)"
+		mandir="$(mandir)" htmldir="$(htmldir)"
 	@cd archive; $(MAKE) install CC="$(CC)" CFLAGS="$(CFLAGS)" \
 		CPPFLAGS="$(CPPFLAGS)"  \
 		bindir="$(bindir)"

@@ -19,28 +19,26 @@ src/hypermail
 src/lang
 src/mail
 
-# PCRE (if using the bundled lib)
-src/pcre/.deps
-src/pcre/.deps/
-src/pcre/autom4te.cache/
-src/pcre/libpcre.pc
-src/pcre/libpcre16.pc
-src/pcre/libpcre32.pc
-src/pcre/libpcrecpp.pc
-src/pcre/libpcreposix.pc
-src/pcre/pcre_chartables.c
-src/pcre/pcre_scanner_unittest
-src/pcre/pcre_stringpiece.h
-src/pcre/pcre_stringpiece_unittest
-src/pcre/pcrecpp_unittest
-src/pcre/pcrecpparg.h
-src/pcre/stamp-h1
-src/pcre/pcre.h
-src/pcre/pcre-config
-src/pcre/dftables
-src/pcre/libtool
-src/pcre/pcregrep
-src/pcre/pcretest
+# PCRE2 (if using the bundled lib)
+src/pcre2/config.lt
+src/pcre2/libpcre2-16.pc
+src/pcre2/libpcre2-32.pc
+src/pcre2/libpcre2-8.pc
+src/pcre2/libpcre2-posix.pc
+src/pcre2/libtool
+src/pcre2/pcre2-config
+src/pcre2/pcre2grep
+src/pcre2/pcre2posix_test
+src/pcre2/pcre2test
+src/pcre2/src/.deps/
+src/pcre2/src/.dirstamp
+src/pcre2/src/libpcre2-16.sym
+src/pcre2/src/libpcre2-32.sym
+src/pcre2/src/libpcre2-8.sym
+src/pcre2/src/libpcre2-posix.sym
+src/pcre2/src/pcre2.h
+src/pcre2/src/pcre2_chartables.c
+src/pcre2/src/stamp-h1
 
 # other files created when compiling
 archive/msg2archive

@@ -5,9 +5,9 @@ LICENSE.txt for details). Some programs that are distributed with it
 in the archive and contrib directories have different licenses - check
 the individual files for details.
 
-Regular expression support is provided by the PCRE library package,
+Regular expression support is provided by the PCRE2 library package,
 which is open source software, written by Philip Hazel, and copyright
-by the University of Cambridge, England. See http://www.pcre.org/.
+by the University of Cambridge, England. See https://www.pcre.org/.
 
 Validation of UTF-8 strings is provided by the utf8.h package, which
 is open source software covered by The Unlicense, written by Neil

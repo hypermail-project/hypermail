@@ -28,38 +28,16 @@ Problem: Message Dates:
      Dates on messages prior to 1970 are not processed correctly.
 
 =================================================
-Problem: Not parsing correctly.
-
-     The following line is not parsing correctly.
-
-     news:fr.comp.os.ms-windows.win95 post news:34EF975C.4097FF89@club-internet.fr
-
-=================================================
 Problem: Embedded HTML 
 
      If HTML file included in message it is just putting it there 
      without concern of BASE, TITLE, HEAD, BODY ...
 
 =================================================
-Problem: Blank name not interpreted correctly.
-
-     Puts out a <STRONG></STRONG> if name is blank.
-
-=================================================
-Problem: Memory leaks
-
-     Leaking < 30 bytes per message processed.
-
-=================================================
-Problem: Empty container elements
-
-     Putting out empty container elements <P>. Should be <P>&nbsp;</P>
-
-=================================================
 Problem: No verification of link syntax
 
      Not verifying a valid HTML link syntax before converting somthing
-     with a http://.
+     with a https://.
 
 =================================================
 Problem: indextable format problem
@@ -92,11 +70,3 @@ problem I think is more related to that the "alternative parser" never really
 finishes its work until it finds the end-boundary and when the following
 "From " line starts a new mail, something bad happens.  Hypermail should 
 process corrupt messages a bit better.
-
-=================================================
-Problem: Building on DEC Alpha systems.
-
-Make sure and use the GCC compiler and not the native DEC compiler
-when building on a DEC Alpha using TRU64 (OSF1).
-
-

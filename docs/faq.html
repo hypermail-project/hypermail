@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-    	<meta charset="utf-8"  />		
+	<meta charset="utf-8"  />
 	<meta name="generator" content=
 	      "HTML Tidy for HTML5 for Linux version 5.6.0" />
 	<title>Hypermail Frequently Asked Questions</title>
-	<link rel="author" href="https://github.com/hypermail-project" />	
+	<link rel="author" href="https://github.com/hypermail-project" />
 	<link rel="stylesheet" href="hypermail-doc.css" />
 	<meta name="description" content=
 	      "Hypermail Related Software Tools" />
@@ -16,126 +16,70 @@
   <br />
   <h1 class="c1">Hypermail Frequently Asked Questions</h1>
   <hr class="centered" />
-  <p>This is the beginning of the Hypermail FAQ.
-      Don't dispair that there is little here. That will change
-      shortly.</p>
+
   <h2>Table of Contents</h2>
   <ol>
-    <li><a href="#1">Why is the License Different ?</a></li>
-    <li><a href="#2">Will hypermail run on my system ?</a></li>
-    <li><a href="#3">What Happened to EIT ?</a></li>
-    <li><a href="#4">Where in the World is Kevin Hughes ?</a></li>
-    <li><a href="#5">What is the latest version of Hypermail
+    <li><a href="#1">Will hypermail run on my system ?</a></li>
+    <li><a href="#2">Where can I get the latest stable version of Hypermail
     ?</a></li>
-    <li><a href="#6">Where can I get the latest version of
+    <li><a href="#3">Where can I get the latest development version of
     Hypermail ?</a></li>
-    <li><a href="#7">How can I split the archives into months
+    <li><a href="#4">How can I split the archives into months
     ?</a></li>
-    <li><a href="#8">How do I change the font on the pages
+    <li><a href="#5">How do I change the font on the pages
     ?</a></li>
-    <li><a href="#9">What is HM_MAILTO used for ?</a></li>
-    <li><a href="#10">Can I send a message to the list from the web
+    <li><a href="#6">What is HM_MAILTO used for ?</a></li>
+    <li><a href="#7">Can I send a message to the list from the web
     archive ?</a></li>
-    <li><a href="#11">Can I build and run this on Windows
-    98/2000/NT ?</a></li>
-    <li><a href="#12">How can I remove a listserver subject prefix
+    <li><a href="#8">How can I remove a listserver subject prefix
     ?</a></li>
-    <li><a href="#13">Which configuration file should I use
+    <li><a href="#9">Which configuration file should I use
     ?</a></li>
-    <li><a href="#14">Why is the downloaded file name different
+    <li><a href="#10">Why is the downloaded file name different
     when I download hypermail.tar.gz ?</a></li>
-    <li><a href="#15">Can I throttle hypermail's CPU usage
+    <li><a href="#11">Can I throttle hypermail's CPU usage
     ?</a></li>
-    <li><a href="#16">How can I make my archive searchable
+    <li><a href="#12">How can I make my archive searchable
     ?</a></li>
-    <li><a href="#17">How does hypermail decide whether messages
+    <li><a href="#13">How does hypermail decide whether messages
     are in the same thread?</a></li>
-    <li><a href="#18">How can I have multiple mailboxes produce one
+    <li><a href="#14">How can I have multiple mailboxes produce one
     archive?</a></li>
-    <li><a href="#19">I have received an email with attachment that
+    <li><a href="#15">I have received an email with attachment that
     needs octet-stream. What should I do?</a></li>
-    <li><a href="#20">Why is Hypermail ignoring some
+    <li><a href="#16">Why is Hypermail ignoring some
     messages?</a></li>
-    <li><a href="#21">Bogus dates are causing some emails to be put
+    <li><a href="#17">Bogus dates are causing some emails to be put
 	in a strange folder. Is there an easy way around this?</a></li>
   </ol>
   <hr class="centered" />
-  <h3><a href="#" id="1">1. Why is the License Different
-  ?</a></h3>
-  <p>Hewlett-Packard (who is now the legal owner of Hypermail,
-      since EIT was bought by VeriFone, which was bought by
-      Hewlett-Packard) has put it under the GNU license, a widely used
-      "free software" license. This means that you can use and modify
-      the source code as long as you make your changes publically
-      available and do not charge for their use (although, under GNU,
-      you can charge for their distribution). More details are
-      available at <a href=
-		      "http://www.fsf.org/">http://www.fsf.org/</a> and <a href=
-									   "http://www.fsf.org/copyleft/gpl.html">http://www.fsf.org/copyleft/gpl.html</a>.</p>
-  <hr class="centered" />
-  
-  <h3><a href="#" id="2">2. Will hypermail run on my
+
+  <h3><a href="#" id="1">1. Will hypermail run on my
   system ?</a></h3>
+
   <p>Hypermail can compile and run as-is on most of the more
-  popular UNIX systems today. If you're not sure if hypermail will
-  run on your UNIX system, try compiling it and see!</p>
+      popular UNIX systems today that support gcc or clang. If you're not sure
+      if hypermail will
+      run on your UNIX system, try compiling it and see!</p>
+
   <p>Hypermail has been reported to work on MacOSX (X.2.6), with
   the advice to use --disable-shared and manually execute make in
-  src/pcre.</p>
-  <p>People have indeed ported hypermail to DOS, Windows 95, and
-      Windows NT (but not Java ...yet). Installation advice for some
-      Windows systems is available at <a href=
-					 "http://www.hypermail.org/win32.html">win32.html</a>.</p>
+  src/pcre2.</p>
   <hr class="centered" />
-  
-  <h3><a href="#" id="3">3. What Happened to EIT
-  ?</a></h3>
-  <p>A very old and established government contractor company
-      called Electronic Instrumentation and Technology Inc. made legal
-      moves to obtain the eit.com domain. Since VeriFone/HP had no
-      interest in keeping EIT, they dissolved it completely some months
-      ago. This company had a trademark on EIT so the domain name was
-      given to them. (Thank you InterNic...)</p>
+
+  <h3><a href="#" id="2">2. Where can I get the latest stable version of Hypermail</a></h3>
+  <p>The latest stable version of hypermail, as well as previous stable releases are all available from <a href=
+			     "https://github.com/hypermail-project/hypermail/releases">https://github.com/hypermail-project/hypermail/releases</a></p>
   <hr class="centered" />
-  
-  <h3><a href="#" id="4">4. Where in the World is Kevin
-  Hughes ?</a></h3>
-  <p>Kevin has not dropped off the face of the earth but is
-  extremely busy these days as a Hypermedia Engineer at Veo
-  Systems.</p>
-  <blockquote>
-    Kevin Hughes<br />
-    <a href="mailto:kev@kevcom.com">kev@kevcom.com</a><br />
-    <a href="mailto:kevinh@veosys.com">kevinh@veosys.com</a><br />
-    (650) 858-7710 (office number)<br />
-    (650) 858-4925 (fax)<br />
-    <a href="http://www.veosystems.com/">www.veosystems.com</a>
-  </blockquote>
+
+  <h3><a href="#" id="3">3. Where can I get the latest
+      development version of Hypermail ?</a></h3>
+  <p>The latest development version of Hypermail is the main branch available from the hypermail github code repository
+      at <a href="https:/github.com/hypermail-project/hypermail">https://github.com/hypermail-project/hypermail</a></p>.
+
   <hr class="centered" />
-  
-  <h3><a href="#" id="5">5. What is the latest version of
-  Hypermail ?</a></h3>
-  <p>The latest stable version of Hypermail is Version 2.1.9. It is
-      available from <a href=
-			"http://www.hypermail-project.org">http://www.hypermail-project.org</a></p>
-  <hr class="centered" />
-  
-  <h3><a href="#" id="6">6. Where can I get the latest
-  version of Hypermail ?</a></h3>
-  <p>The latest version of Hypermail is available from the
-  Hypermail Development Center at <a href=
-  "http://sourceforge.net/projects/hypermail/">SourceForge</a>
-  and/or at</p>
-  <p style="text-align: center"><a href=
-  "http://www.hypermail-project.org">http://www.hypermail-project.org/</a></p>It
-  and past versions are also available via FTP from
-  <p style="text-align: center"><a href=
-  "ftp://ftp.hypermail.org/hypermail/">ftp://ftp.hypermail.org/hypermail/</a></p>
-  <p>The cvs server at <a href=
-  "http://cvs.hypermail.org">:pserver:cvs@cvs.hypermail.org:/CVS</a>
-  usually has a more recent but less tested version.</p>
-  <hr class="centered" />
-  <h3><a href="#" id="7">7. How can I split the archives
+
+  <h3><a href="#" id="4">4. How can I split the archives
   into months ?</a></h3>
   <p><em>I have a fat archive that I'd like to split up by month,
   like I see so many others doing. Is there a description somewhere
@@ -160,49 +104,33 @@
   for archives with a few thousand messages, but for larger
   archives I recommend splitting into multiple directories.</p>
   <p>There's a script at <a href=
-  "http://users.netrus.net/troc/perl.html">http://users.netrus.net/troc/perl.html</a>
+  "https://users.netrus.net/troc/perl.html">https://users.netrus.net/troc/perl.html</a>
   called mms (monthly mail splitter) which has also been reported
   useful.</p>
   <hr class="centered" />
 
-  <h3><a href="#" id="8">8. How do I change the font on
-  the pages ?</a></h3>
-  <p><em>What I'd like to do is change the font of the archives
-  pages. I tried doing this by adding a &lt;FONT FACE=...&gt; tag
-  in the header.hyp file and a &lt;FONT&gt; tag in the footer file,
-  but it didn't work. Is there something in the program itself
-  that's preventing me from making this change?</em></p>
-  <p>Yes and no. Let me guess... You have <strong>hm_usetable =
-  1</strong>. The code for tables is not inheriting the FONT values
-  and that they need to be set in the &lt;TH..&gt; tags. If tables
-  are not used it works as expected.</p>
-  <p>To test it put a</p>
-  <blockquote>
-    <strong><small>&lt;FONT SIZE="1"
-    FACE="GENEVA,ARIAL,HELVETICA"&gt;</small></strong>
-  </blockquote>in the test-index.hyp and test-msg.hyp. In
-  test-footer.hyp put
-  <blockquote>
-    <strong><small>&lt;/FONT&gt;</small></strong>
-  </blockquote>
-  <p>With <strong>hm_usetable = 1</strong> in the test.rc file,
-  then ran "<strong>hypermail -c test.rc -m testmail</strong>" and
-  everything between the "menus" was the right FONT but the menus
-  were not.</p>
-  <p>Then edit the test.rc file and set <strong>hm_usetable =
-  0</strong>. Next remove the existing testdir and rerun hypermail
-  again. This time the FONT works as expected.</p>
-  <p>Is this what is happening to you ? If so the code will need to
-  be modified.</p>
+  <h3><a href="#" id="5">5. How do I change the font on
+      the pages ?</a></h3>
+
+  <p>You can edit the CSS associated with the files or add an
+  external CSS. In hypermail 3.0, CSS rules are not included anymore
+  inside the message and index files generated by hypermail. By default,
+  Hypermail will generate a external hypermail.css file and include it in
+  messages and indexes by means of a link. You can change this behavior
+      thru configuration.</p>
+
+  <p>In hypermail 2.4, the CSS is embeeded inside each message and index.
+  You also have the possiblity to link external CSS files to further customize
+  the look and feel of your archive.
   <hr class="centered" />
 
-  <h3><a href="#" id="9">9. What is HM_MAILTO used for
+  <h3><a href="#" id="6">6. What is MAILTO used for
   ?</a></h3>
   <p><em>I've enabled this option in .hyprc (the configuration file
   to which the pipe script for my archive points). Unlike the other
   options, this one does not create a link to
   mailto:admin@domain.com as I would expect. Any ideas?</em></p>
-  <p>HM_MAILTO has a couple different uses. One is to trigger the
+  <p>MAILTO has a couple different uses. One is to trigger the
   insertion of the &lt;LINK REV=made HREF=mailto:...&gt; header in
   the HTML sources. This is most useable with ascii browsers such
   as lynx.</p>
@@ -239,7 +167,7 @@
   <p>In this case the %m is expanded to admin@domain.com.</p>
   <hr class="centered" />
 
-  <h3><a href="#" id="10">10. Can I send a message to the
+  <h3><a href="#" id="7">7. Can I send a message to the
   list from the web archive ?</a></h3>
   <p><em>I would like to add a link to the menu that says "Send a
   Message to the List." I read through the documentation on your
@@ -255,18 +183,7 @@
   hm_hmail = listaddr@your-site.domain</small></strong></p>
   <hr class="centered" />
 
-  <h3><a href="#" id="11">Can I build and run this on
-  Windows 98/2000/NT ?</a></h3>
-  <p><em>I would like to use Hypermail on my Windows box. Can I ?
-  If so how do I build the latest version ?</em></p>
-  <p>There is a complete description on how to build hypermail on a
-      Windows system at <a href=
-			   "http://www.hypermail.org/win32.html">win32.html</a>. This was
-      written by Bob Crispen &lt;bob.crispen@boeing.com&gt;. (Thanks
-      Bob!)</p>
-  <hr class="centered" />
-
-      <h3><a href="#" id="12">How can I remove a listserver
+      <h3><a href="#" id="8">8. How can I remove a listserver
   subject prefix ?</a></h3>
   <p><em>The Subject index page does not seem to do the right
   sorting. My list has a "subject prefix" so people can filter
@@ -296,7 +213,7 @@
   the initial messages to get it right.
   <hr class="centered" />
 
-  <h3><a href="#" id="13">Which configuration file should
+  <h3><a href="#" id="9">9. Which configuration file should
   I use ?</a></h3>
   <p><em>Which configuration file should I use ?. Is it the
   hypermail.rc file in the Configs directory? I'm trying to edit
@@ -316,12 +233,12 @@
   </blockquote>
   <hr class="centered" />
 
-  <h3><a href="#" id="14">Why is the downloaded file name
+  <h3><a href="#" id="10">10. Why is the downloaded file name
   different when I download hypermail.tar.gz ?</a></h3>
   <p><em>The source is available from</em></p>
   <blockquote>
     <em><a href=
-    "http://www.hypermail-project.org/hypermail.tar.gz">www.hypermail.org/hypermail.tar.gz</a></em>
+    "https://www.hypermail-project.org/hypermail.tar.gz">www.hypermail.org/hypermail.tar.gz</a></em>
   </blockquote><em>However: When downloading though IE v4 browser
   on an NT PC, you get a file called hypermail_tar.tar.</em>
   <p>Depending on your browser MIME type setup and support
@@ -331,7 +248,7 @@
       Use that name from that point forward.</p>
   <hr class="centered" />
 
-      <h3><a href="#" id="15">Can I throttle hypermail's CPU
+      <h3><a href="#" id="11">11. Can I throttle hypermail's CPU
   usage ?</a></h3>
   <p><em>I'm looking for a good way to throttle hypermail. When it
   runs it is taking over both CPU's on my system. Is there a way to
@@ -362,26 +279,20 @@
       reply to that message.</p>
   <hr class="centered" />
 
-  <h3><a href="#" id="16">How can I make my archive
+  <h3><a href="#" id="12">12. How can I make my archive
   searchable ?</a></h3>
   <p><em>Where can I find a program that provides an easy way of
   adding a "search this archive" feature to my hypermail
   archive?</em></p>
   <p>These seem to be the most popular choices:</p>
   <ul>
-    <li><a href="http://www.htdig.org">Htdig</a></li>
-    <li><a href="http://swish-e.org">Swish-E</a></li>
-    <li><a href="http://webglimpse.org/">Glimpse</a></li>
     <li><a href="http://www.namazu.org/">Namazu</a></li>
-    <li><a href="http://search.mnogo.ru/">mnoGoSearch</a></li>
-  </ul>Swish-E comes with a script (index_hypermail.pl) that is
-  customized for indexing Hypermail archives. <a href=
-  "index_hypermail.txt">index_hypermail.txt</a> has a description
-  of how to use it.
+  </ul>
+
   <p>You can also use search engines by putting text such as this
   on your web page (although this search produces results from an
   entire site, not just the email archive):<br />
-  &lt;form action=http://www.google.com/search&gt;<br />
+  &lt;form action=https://www.google.com/search&gt;<br />
   &lt;input type=text name=as_q&gt;<br />
   &lt;input type=hidden name=as_sitesearch
   value=hypermail-project.org&gt;<br />
@@ -389,11 +300,11 @@
   &lt;/form&gt;</p>
   <p>You can probably get more complete (but apparently not recent)
       info at: <a href=
-		  "http://www.searchenginewatch.com/resources/software.html">Search
+		  "https://www.searchenginewatch.com/resources/software.html">Search
       Engine Software For Your Web Site</a>.</p>
   <hr class="centered" />
 
-  <h3><a href="#" id="17">How does hypermail decide
+  <h3><a href="#" id="13">13. How does hypermail decide
   whether messages are in the same thread?</a></h3>
   <p>It uses the In-Reply-To: header if that is available. If not,
   it uses the References: header if that is available. If these are
@@ -411,7 +322,7 @@
       thought).</p>
   <hr class="centered" />
 
-  <h3><a href="#" id="18">How can I have multiple
+  <h3><a href="#" id="14">14. How can I have multiple
   mailboxes produce one archive?</a></h3>
   <p>One simple way is to combine them into one mailbox, and send
   that to hypermail. Something like<br /></p>
@@ -431,7 +342,7 @@
     increment=1 or increment=-1 option.</p>
 <hr class="centered" />
 
-<h3><a href="#" id="19">I have received an email with
+<h3><a href="#" id="15">15. I have received an email with
   attachment that needs octet-stream. What should I do?</a></h3>
   <p>No attachment "needs" octet-stream. octet-stream is a label
   that describes the attachment as being "a stream of octets". What
@@ -448,7 +359,7 @@
       series of bytes".</p>
   <hr class="centered" />
 
-  <h3><a href="#" id="20">Why is Hypermail ignoring some
+  <h3><a href="#" id="16">16. Why is Hypermail ignoring some
   messages?</a></h3>
   <p>One possibility is that those messages have a header
   saying</p>
@@ -467,12 +378,12 @@
   </blockquote>
   <hr class="centered" />
 
-  <h3><a href="#" id="21">Bogus dates are causing some
+  <h3><a href="#" id="17">17. Bogus dates are causing some
   emails to be put in a strange folder. Is there an easy way around
   this?</a></h3>
   <p>If the bad dates were caused by a computer with the date set
   absurdly, try running <a href=
-  "http://gradha.sdf-eu.org/program/mailbox_date_trimmer.en.html">mailbox_date_trimmer.py</a>,
+  "https://gradha.sdf-eu.org/program/mailbox_date_trimmer.en.html">mailbox_date_trimmer.py</a>,
   available in the Hypermail's contrib directory.</p>
   <p>If the bad dates are in a format that Hypermail doesn't
       understand, then you will probably need to edit them
