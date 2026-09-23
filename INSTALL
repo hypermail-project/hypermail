@@ -55,7 +55,7 @@ For compiling hypermail:
   On Debian:
 
      apt-get install pkgconf
-     
+
 * libpcre2-dev >= 10.42 (optional)
   if you don't have it, hypermail will compile and link with
   it's own shipped-in version (src/pcre2)
@@ -71,14 +71,14 @@ For compiling hypermail:
   dating from 1990-2002, when many mail clients were a bit broken.
 
   On Debian:
-  
+
      apt-get install libchardet-dev libchardet
 
   If not available in your system, you can download the source code,
   compile and install it:
-  
+
      https://github.com/Joungkyun/libchardet
-  
+
 For running hypermail:
 
 * libpcre2 >= 10.42
@@ -88,7 +88,7 @@ For running hypermail:
 * libchardet (optional)
   only needed if you linked hypermail against the system libchardet
   library
-  
+
 * libgdm (optional)
   only needed if you plan to use the usegdbm hypermail configuration option
   (unmaintained, see docs/hmrc.html)
@@ -96,23 +96,55 @@ For running hypermail:
 SECURITY WARNING:
 ================
 
-   Do not put hypermail's output anyplace where a web server might
-   have server side includes (SSI) enabled, unless you are sure you
-   know what you are doing. If in doubt, check your web server
-   configuration. If you are using Apache, look for an Options line
-   that mentions Includes or IncludesNOEXEC. The author of an email
-   normally has substantial control over what files hypermail creates,
-   particularly via attachments. Hypermail is designed to insure that
-   filenames don't end in .shtml and don't contain characters like /
-   or \, which prevent some security problems, but there are few
-   restrictions on what can go in a file (e.g. possibly malicious html
-   tags - try the "text_types = *" option or "ignore_types =
-   $NONPLAIN" option if you want to restrict this). You might also
-   want to look at the attachmentlink and unsafe_chars options to
-   restrict attachment filenames.
+   * Installation directory
+
+   Do not put hypermail's generated archive any place where a web
+   server might have server side includes (SSI) enabled, unless you
+   are sure you know what you are doing. If in doubt, check your web
+   server configuration.
+
+   If you are using Apache, look for an Options line that mentions
+   Includes or IncludesNOEXEC. The author of an email normally has
+   substantial control over what files hypermail creates, particularly
+   via attachments. Hypermail is designed to insure that filenames
+   don't end in .shtml and don't contain characters like / or \, which
+   prevent some security problems, but there are few restrictions on
+   what can go in a file (e.g. possibly malicious html tags - try the
+   "text_types = *" option or "ignore_types = $NONPLAIN" option if you
+   want to restrict this). You might also want to look at the
+   attachmentlink and unsafe_chars options to restrict attachment
+   filenames.
 
    Also, it is probably a bad idea to enable cgi execution on a
-   directory that hypermail puts files in.
+   directory that hypermail puts files if your hypermail configuration
+   allows messages or their attachments to be interpreted as CGI
+   scripts.
+
+
+   * HTML / JS Attachments and Content-Security Policy (CSP)
+
+   If your hypermail archive configuration allows HTML attachments,
+   you'll have to be careful to protect yourself against such an
+   attachment running a script or trying to access content beyond
+   where it is stored.  The script could be an embeeded javascript, an
+   external js file that is included as another attachment with this
+   or other message, or that uses a js library that's accessible to
+   your hypermail archive. This could lead to cookie reflection, XSS,
+   click-jacking or other similar attacks.
+
+   A safe way to cope with this issue is to use an HTTP
+   Content-Security Policy (CSP) header for the directory where you
+   are storing the attachments, to deactivate some of these
+   attacks. For example, the following policy disables frames, forms,
+   scripts (inline and external), external CSS and tells browser to
+   upgrade all http links to https:
+
+   Content-Security-Policy default-src
+     'none';base-uri 'self';font-src 'self' https:;
+     form-action 'none';frame-ancestors 'none';
+     img-src 'self' https:; sandbox allow-same-origin;
+     style-src 'self' 'unsafe-inline' https;
+     upgrade-insecure-requests;
 
 Before Building Hypermail:
 ==========================
@@ -146,10 +178,10 @@ Building Hypermail:
 
       You only need to do this once, when you do the clone of the
       repository.
-       
+
     1) Type "./configure". This creates the makefiles and the
-           config.h file needed to build the software.
-	   
+       config.h file needed to build the software.
+
        If you want to install Hypermail somewhere other than in
        /usr/local, run something like this instead:
        ./configure --prefix=$HOME
@@ -159,18 +191,18 @@ Building Hypermail:
        options to give paths to local checkout of the dependent libraries
        if you didn't install them on your system.
        ./configure --help
-	  
+
        Check out the configure output to see if you're missing system
        libraries. If yes, install them and launch ./configure again.
 
 
     2) Type "make". This will build the software.
-    
+
        If it has trouble finding gdbm (e.g. if it fails with a message
        such as "cannot open -lgdbm", you may need to disable gdbm
        with:
 
-        ./configure  --without-gdbm
+	./configure  --without-gdbm
 
        and type "make clean" and then "make" again. (Note that without
        gdbm, you can't do incremental updates using the folder_by_date
@@ -185,9 +217,9 @@ Building Hypermail:
 
    fixed a problem).
 
-   If the make fails at this line: 
+   If the make fails at this line:
 
-        ar cq libpcre.a maketables.o get.o study.o pcre.o
+	ar cq libpcre.a maketables.o get.o study.o pcre.o
 
    and the configure had said:
 
@@ -201,7 +233,7 @@ Building Hypermail:
 
 proto.h:99: conflicting types for `strcasestr'
 /usr/include/string.h:86: previous declaration of `strcasestr'
- 
+
    then you should try removing the line in proto.h that refers to
    strcasestr.
 
@@ -210,7 +242,7 @@ Testing Hypermail:
 
     If you wish to test the new hypermail before installing it
 
-       	- chdir to tests/
+	- chdir to tests/
 
 	- copy a mailbox you have to a local file named "testmail"
 
@@ -219,11 +251,11 @@ Testing Hypermail:
     This will generate an archive under a newly created "testdir/"
     directory.  Check it out with your favorite browser.
 
-    When you are done testing, 
+    When you are done testing,
 
-        - remove the testdir directory,
+	- remove the testdir directory,
 
-        - remove the testmail file.
+	- remove the testmail file.
 
     (See the README in tests/ for more information.)
 
@@ -233,9 +265,9 @@ Installing Hypermail:
     You may need to login as root for this step.
     To install just the Hypermail programs:
 
-        - chdir to the src/ directory
+	- chdir to the src/ directory
 
-        - Type "make install". (Or, if you prefer, just copy "hypermail" to
+	- Type "make install". (Or, if you prefer, just copy "hypermail" to
        wherever you want it).
 
     If you want a full install of Hypermail and its documentation, do
@@ -244,11 +276,11 @@ Installing Hypermail:
 
     in the main Hypermail directory (the one where you did
     ./configure).  If it fails with something like:
-    
-        mkdir: "/usr/local/apache/htdocs/hypermail": Permission denied
-	
+
+	mkdir: "/usr/local/apache/htdocs/hypermail": Permission denied
+
     then you may need to rerun ./configure giving it the directory in
     which you want to install html documentation files using this
     option:
-    
+
      --with-htmldir=/var/www/htdocs
