@@ -41,7 +41,7 @@ The main repository of hypermail is on github:
 We follow a trunk-based development model.
 
 The main branch has the on-going cutting edge development; if you want a stable
-release, please use the releases. In addition to the packaged releases, Each
+release, please select the most recent release from the [hypermail releases page](https://github.com/hypermail-project/hypermail/releases). In addition to the packaged releases, each
 stable release is tagged.
 
 Please refer to [Release Notes](./RELEASE_NOTES) and the [Changelog](./Changelog) for
@@ -52,7 +52,7 @@ development.
 
 Please use hypermail's github repository issue tracker for all bug reports,
 feature requests, patches, and other program-related things. This project is
-under low-maintenance priority.
+under low-maintenance / development priority.
 	
 If you detect an issue with hypermail, please open a new issue given your
 operating system version, hypermail version, and the steps allowing to
@@ -63,8 +63,6 @@ report.
 If you want to open a merge request that solves an issue, please first test
 your issue against the main branch. If you still have the issue, fork the
 repository, create a branch against main and then do a PR.
-
-If you want to contribute a new feature, please open first a discussion item.
 
 ## Installing
 
