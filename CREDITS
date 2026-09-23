@@ -1,0 +1,48 @@
+Creators of Hypermail
+----------------------
+
+    Tom Gruber, who originally designed and developed Hypermail in
+    Common Lisp, for the basis of a GREAT tool.
+
+    Kevin Hughes, who developed the initial C version of Hypermail.
+
+Current developer / maintainer
+------------------------------
+
+    Jose Kahan <@jkbzh>
+
+Contributors (alphabetic by last name)
+--------------------------------------
+
+    Shadi Abou-Zahra
+    Tom von Alten <tom_vonalten@boi.hp.com>
+    Darci Chapman <minerva@phix.com>
+    Bob Crispen <bob.crispen@boeing.com>
+    Baptiste Daroussin    
+    Byron C. Darrah <bdarr@sse.FU.HAC.COM>
+    @cacsar
+    Roy T. Fielding <fielding@kiwi.ics.uci.edu> 
+    John Finlay <finlay@moeraki.com>
+    Paul Haldane <Paul.Haldane@newcastle.ac.uk> 
+    I. Ioannou <roryt@hol.gr> 
+    Vivien Lacourba    
+    Kent Landfield
+    David D. Kilzer <ddkilzer@ti.com> 
+    Ashley M. Kirchner <ashley@pcraft.com> 
+    Dave Kopper <dave@birman.com> 
+    Elliot Lee <sopwith@redhat.com> 
+    Peter C. McCluskey <pcm@rahul.net>
+    Daniel Montalvo
+    Jim (@AverageGuy)    
+    Josh O'Connor
+    Gerald Oskoboiny    
+    Jared Reisinger <feety@hhhh.org> 
+    Scott Rose <srose@direct.ca>
+    @schlomif    
+    Martin Schulze <joey@infodrom.north.de>
+    Daniel Stenberg <Daniel.Stenberg@haxx.nu>
+    Jay Soffian <jay@cimedia.com> 
+    Glen Stewart <glen_stewart@associate.com> 
+    Craig A Summerhill <craig@cni.org> 
+    Roy Tennant <rtennant@library.berkeley.edu>
+    Andy Valencia (@vandys)
