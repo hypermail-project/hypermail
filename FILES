@@ -6,11 +6,13 @@
 # Top-level files 
 # 
 Changelog
+CREDITS
 COPYING
 LICENSE.txt
 RELATED_LICENSES.txt
 KNOWN_BUGS
 FILES
+HISTORY
 INSTALL
 Makefile.in
 README

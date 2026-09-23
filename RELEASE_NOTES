@@ -260,6 +260,15 @@ migrate a 2.4. to 3.0.
 
 Please consult the Changelog
 
+- CREDITS, HISTORY
+
+CREDITS is a new file that now lists all known contributors to hypermail
+
+HISTORY is a new file containing the history of hypermail, extracted
+from README
+
+Other similar "information" files were reviewed and updated or marked
+as "neets to be updated".
 
 * FIXED
 ========
