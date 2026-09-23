@@ -106,7 +106,7 @@ firefox /tmp/hypermail-test/index.html
    * [src](./src)     - here's the beef
    * [tests](./tests)   - directory for supporting local testing
 
-Please note that other than src and docs, the content in some of this
+Please note that other than src and some docs, the content in some of these
 directories is outdated.
 
 ## SECURITY WARNING
