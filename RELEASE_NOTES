@@ -260,16 +260,16 @@ migrate a 2.4. to 3.0.
 
 Please consult the Changelog
 
-- HISTORY, README.md
+- src/hypermail_history.txt, README.md
 
-HISTORY is a new file containing the history of hypermail, extracted
-from the now superseded README file
+hypermail_history is a new file containing the history of hypermail,
+extracted from the now superseded README file
 
 Replaced README with README.md as a home page for the github repository
 and project.
 
-Other similar "information" files were reviewed and updated or marked
-as "neets to be updated".
+Some, but not yet all, of the similar "information" files were reviewed and 
+updated or marked as "needs to be updated".
 
 * FIXED
 ========
