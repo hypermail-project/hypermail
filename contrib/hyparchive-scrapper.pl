@@ -40,6 +40,10 @@ Options:
    outputs all MIME attachment names, content-type and file size that
    are associated with a message. This option is disabled by default.
 
+   -c | --show-message-charset
+
+   outputs the message's charset
+
    -p | --show-fullpath
 
    outputs the fullpath to each message file and their attachments (if
@@ -55,15 +59,19 @@ HERE
 exit(0);
 }
 
-# extracts a msgid from a hypermail generated message file.
-sub get_msgid {
+# extracts a msgid and charset from a hypermail generated message file.
+sub get_message_data {
     my $filename = shift;
     my $msgid;
+    my $charset="";
 
     open (my $FILE, "<$filename") || die "Cannot open $filename: $!\n";
     while (<$FILE>) {
 	chomp;
-	if (/^<!-- id=".*" -->$/) {
+	if (m/^<meta (?:(?:(?:.*?; )charset=)|(?:charset="))(.*?)"/) {
+	    $charset = $1;
+	}
+	elsif (m/^<!-- id=".*" -->$/) {
 	    $msgid = $_;
 	    last;
 	}
@@ -73,7 +81,7 @@ sub get_msgid {
     $msgid =~ s/^<!-- id="//;
     $msgid =~ s/" -->$//;
 
-    return $msgid;
+    return ($msgid, $charset);
 }
 
 # reverts the string escapes hypermail may add to a Message-ID
@@ -150,10 +158,12 @@ sub scrap_attachments {
 ##
 {
     my $show_attachments = 0;
+    my $show_msg_charset = 0;
     my $show_fullpath = 0;
     my $unescape_msgid = 0;
 
     GetOptions("show-attachments|a" => \$show_attachments,
+	       "show-message-charset|c" => \$show_msg_charset,
 	       "show-fullpath|p" => \$show_fullpath,
 	       "unescape-message-id|u" => \$unescape_msgid,
 	       "help|h" => sub { usage_and_quit(); } )
@@ -178,8 +188,8 @@ sub scrap_attachments {
 	    next;
 	}
 
-	# extract msgid from file
-	my $msgid = get_msgid($filename);
+	# extract msgid, charset from file
+	my ($msgid, $charset) = get_message_data($filename);
 
 	# replace @ substitution
 	if ($unescape_msgid) {
@@ -192,7 +202,13 @@ sub scrap_attachments {
 	else {
 	    print $cursor;
 	}
-	print ":$msgid\n";
+	print ":$msgid";
+
+	if ($show_msg_charset) {
+	    print "; charset=\"$charset\"";
+	}
+
+	print "\n";
 
 	if ($show_attachments) {
 	    scrap_attachments ($filename, $show_fullpath);
