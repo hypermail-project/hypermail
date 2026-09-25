@@ -11,6 +11,11 @@ HYPERMAIL VERSION 3.0.0
 	history part into a stand-alone file and rewrote README into README.md,
 	following current guidelines
 
+	* src/parse.c
+	parser wasn't applying the RFC20247 mime decoder to
+	Content-Type headers, affecting specifically the header's
+	name attribute value.
+
 	* contrib/hyparchive-scrapper.pl
 	--c option for displaying charset associated with message
 
