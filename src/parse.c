@@ -927,11 +927,7 @@ header_detect_charset_and_convert_to_utf8 (char *string,  char *ct_charset, char
         
     /* RFC6532 allows for using UTF-8 as a header value; we make
        sure that it is valid UTF-8 */
-    else if ( i18n_is_valid_utf8(string) ) {
-        /* "default" UTF-8 charset */
-        strcpy(charsetsave, "UTF-8");
-        
-    } else {
+    else if ( !i18n_is_valid_utf8(string) ) {
         char header_name[129];
         char *header_value;
         struct Push pbuf;
@@ -1070,6 +1066,8 @@ extract_rfc2047_content(char *iptr)
 ** Should result in "I'm called Daniel" too.
 **
 ** Returns the newly allcated string, or the previous if nothing changed
+** If charsetsave is not NULL, returns the charset used to encode
+** the string.
 */
 
 static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
@@ -1147,9 +1145,11 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 		memcpy(output,output3,len);
 		output += len;
 		free(output3);
-		charsetlen = strlen(charset) < 255 ? strlen(charset) : 255;
-		memcpy(charsetsave,charset,charsetlen);
-		charsetsave[charsetlen] = '\0';
+                if (charsetsave) {
+                    charsetlen = strlen(charset) < 255 ? strlen(charset) : 255;
+                    memcpy(charsetsave,charset,charsetlen);
+                    charsetsave[charsetlen] = '\0';
+                }
 #else
 		for (; ptr < endptr; ptr++) {
 		    switch (*ptr) {
@@ -1180,9 +1180,11 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 		memcpy(output,output2,tmplen);
 		output += tmplen;
 		free(output2);
-		charsetlen = strlen(charset) < 255 ? strlen(charset) : 255;
-		memcpy(charsetsave,charset,charsetlen);
-		charsetsave[charsetlen] = '\0';
+                if (charsetsave) {
+                    charsetlen = strlen(charset) < 255 ? strlen(charset) : 255;
+                    memcpy(charsetsave,charset,charsetlen);
+                    charsetsave[charsetlen] = '\0';
+                }
 #else
                 int len;
                 
@@ -2306,7 +2308,16 @@ int parsemail(char *mbox,	/* file name */
                         continue;
                     
                     if (!strncasecmp(head->line, "Content-Type:", 13)) {
-			char *ptr = head->line + 13;
+                        char *ptr;
+
+                        if ( !head->demimed ) {
+                            /* we are not interested in charsets used to encode strings
+                               in this header */
+                            head->line =
+                                mdecodeRFC2047(head->line, strlen(head->line), NULL);
+                            head->demimed = TRUE;
+                        }
+                        ptr = head->line + 13;
 #define DISP_HREF 1
 #define DISP_IMG  2
 #define DISP_IGNORE 3

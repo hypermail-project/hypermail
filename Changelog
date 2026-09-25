@@ -5,11 +5,26 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 3.0.0
 ============================
 
+2026-09-25 Jose Kahan
+	* src/struct.c:message_node_get_charset()
+	Function was parsing twice the root node, thus overriding
+	any charset choices that its children could be proposing.
+
+	* src/parse.c:header_detect_charset_and_convert_to_utf8()
+	When the function detected that a header was valid UTF-8,
+	it always wrongly replaced the message's charset value
+	with 'UTF-8', even if the message had a different charset.
+
 2026-09-24 Jose Kahan
 	* docs/hypermail_history, README.md
 	In order to trim and modernize the old README file, split the hypermail
 	history part into a stand-alone file and rewrote README into README.md,
 	following current guidelines
+
+	* src/parse.c
+	parser wasn't applying the RFC20247 mime decoder to
+	Content-Type headers, affecting specifically the header's
+	name attribute value.
 
 	* contrib/hyparchive-scrapper.pl
 	--c option for displaying charset associated with message
