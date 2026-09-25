@@ -976,18 +976,6 @@ header_detect_charset_and_convert_to_utf8 (char *string,  char *ct_charset, char
                 }
             }
         
-            /* nope, let's try the previous saved_charset */
-            if ( !did_anything && charsetsave && *charsetsave) {
-                conv_string = i18n_convstring(header_value, ct_charset, "UTF-8", &conv_string_sz);
-                if (conv_string) {
-                    if ( i18n_is_valid_utf8(conv_string) ) {
-                        PushString(&pbuf, conv_string);
-                        did_anything = TRUE;
-                    }
-                    free(conv_string);
-                }        
-            }
-             
             /* nope, let's try to libchardet */
             if ( !did_anything ) {
                 detected_charset = i18n_charset_detect(header_value);
@@ -1012,7 +1000,19 @@ header_detect_charset_and_convert_to_utf8 (char *string,  char *ct_charset, char
                     free(detected_charset);
                 }
             }
-        
+
+            /* nope, let's try the previous saved_charset */
+            if ( !did_anything && charsetsave && *charsetsave) {
+                conv_string = i18n_convstring(header_value, charsetsave, "UTF-8", &conv_string_sz);
+                if (conv_string) {
+                    if ( i18n_is_valid_utf8(conv_string) ) {
+                        PushString(&pbuf, conv_string);
+                        did_anything = TRUE;
+                    }
+                    free(conv_string);
+                }        
+            }
+            
             if (!did_anything) {
                 PushString (&pbuf, "(invalid string)");            
             }
