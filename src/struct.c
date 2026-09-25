@@ -1960,7 +1960,10 @@ char *message_node_get_charset(struct message_node *root)
   if (cursor->charsetsave) {
       root_mime_charset=cursor->charsetsave;
   }
-  
+
+  /* now find the best charset in the childs */
+  cursor = cursor->attachment_child;
+
   while (cursor) {
 
       message_node_counter++;

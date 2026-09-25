@@ -5,6 +5,11 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 3.0.0
 ============================
 
+2026-09-25 Jose Kahan
+	* src/struct.c:message_node_get_charset()
+	Function was parsing twice the root node, thus overriding
+	any charset choices that its children could be proposing.
+
 2026-09-24 Jose Kahan
 	* docs/hypermail_history, README.md
 	In order to trim and modernize the old README file, split the hypermail
