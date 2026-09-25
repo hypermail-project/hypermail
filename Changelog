@@ -5,6 +5,20 @@ Version Changes for Hypermail
 HYPERMAIL VERSION 3.0.0
 ============================
 
+2026-09-26 Jose Kahan
+	* src/parse.c:header_detect_charset_and_convert_to_utf8()
+	The wrong argument was being passed to i18n_convstring
+	 which resulted in a sigsev when there was no charset 
+	associated to the Content-Type header
+
+	* src/parse.c:header_detect_charset_and_convert_to_utf8()
+	For guessing what's a missing charset, switched the
+	libchardet test so it runs before we try to use a previous
+	found chardet in the same message with iconv. iconv
+	doesn't always signal an error when you associate, e.g., 
+        CP1252 to a Big5 string and try to convert it to UTF-8,
+	resulting in mojibake.
+
 2026-09-25 Jose Kahan
 	* src/struct.c:message_node_get_charset()
 	Function was parsing twice the root node, thus overriding
