@@ -927,11 +927,7 @@ header_detect_charset_and_convert_to_utf8 (char *string,  char *ct_charset, char
         
     /* RFC6532 allows for using UTF-8 as a header value; we make
        sure that it is valid UTF-8 */
-    else if ( i18n_is_valid_utf8(string) ) {
-        /* "default" UTF-8 charset */
-        strcpy(charsetsave, "UTF-8");
-        
-    } else {
+    else if ( !i18n_is_valid_utf8(string) ) {
         char header_name[129];
         char *header_value;
         struct Push pbuf;
