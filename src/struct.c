@@ -2234,6 +2234,8 @@ void free_body(struct body *bp)
 	struct body *cp = bp->next;
 	if (bp->line)
 	    free(bp->line);
+        if (bp->charset)
+            free(bp->charset);
 	free(bp);
 	bp = cp;
     }
