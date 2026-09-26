@@ -278,6 +278,8 @@ struct body {
                                    typedef enum one day */
     char demimed;		/* if this is a header, this is set to TRUE if
 				   it has passed the decoderfc2047() function */
+    char *charset;              /* if we "demimed" the line, we store the charset
+                                   associated with the line */
     int format_flowed;          /* TRUE if this a text/plain f=f line */
     int msgnum;
     struct body *next;

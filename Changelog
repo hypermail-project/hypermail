@@ -19,6 +19,10 @@ HYPERMAIL VERSION 3.0.0
         CP1252 to a Big5 string and try to convert it to UTF-8,
 	resulting in mojibake.
 
+	* src/hypermail.h src/parse.c src/struct.c
+	Improve and simplify the convertion to UTF-8 of a header
+	value if said value was RFC2047 MIME encoded.
+
 2026-09-25 Jose Kahan
 	* src/struct.c:message_node_get_charset()
 	Function was parsing twice the root node, thus overriding

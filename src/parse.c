@@ -909,8 +909,9 @@ char *getreply(char *line)
 ** "(invalid string)" string.
 ** Input:
 ** string: RFC-822 header line to convert
+** hd_charset: the header that was found when demining the header
 ** ct_charset: charset as declared in the Content-Type line
-** charsetsave: the previous detected charset for this message
+** charsetsave: the last detected charset
 ** Output
 ** converted line (must be freed by caller)
 
@@ -919,7 +920,7 @@ char *getreply(char *line)
 ** update to the newly detected charset.
 */   
 static char *
-header_detect_charset_and_convert_to_utf8 (char *string,  char *ct_charset, char *charsetsave)
+header_detect_charset_and_convert_to_utf8 (char *string, char *hd_charset, char *ct_charset, char *charsetsave)
 {
     if ( i18n_is_valid_us_ascii(string) ) {
         /* nothing to do, passing thru */
@@ -959,13 +960,26 @@ header_detect_charset_and_convert_to_utf8 (char *string,  char *ct_charset, char
             char *conv_string;
  
             size_t conv_string_sz;
-        
+
+            /* if the hader was mimedecoded and we got a charset value,
+               use that one for decoding it */
+            if (hd_charset && *hd_charset) {
+                conv_string = i18n_convstring(header_value, hd_charset, "UTF-8", &conv_string_sz);
+                if (conv_string) {
+                    if ( i18n_is_valid_utf8(conv_string) ) {
+                        PushString(&pbuf, conv_string);
+                        did_anything = TRUE;
+                    }
+                    free(conv_string);
+                }
+            }
+                
             /*
             **consider the header_value everything after header_name:\s
             */
             
             /* let's try the charset if present in Content-Type */
-            if (ct_charset && *ct_charset) {
+            if (!did_anything && ct_charset && *ct_charset) {
                 conv_string = i18n_convstring(header_value, ct_charset, "UTF-8", &conv_string_sz);
                 if (conv_string) {
                     if ( i18n_is_valid_utf8(conv_string) ) {
@@ -2493,6 +2507,8 @@ int parsemail(char *mbox,	/* file name */
                         
                         head->line =
                             mdecodeRFC2047(head->line, strlen(head->line), charsetsave);
+                        if (charsetsave) 
+                            head->charset = strsav(charsetsave);
                         head->demimed = TRUE;
 		    }
 
@@ -2589,6 +2605,7 @@ int parsemail(char *mbox,	/* file name */
                                 continue;
                             }
                             head->line = header_detect_charset_and_convert_to_utf8 (head->line,
+                                                                                    head->charset,
                                                                                     charset,
                                                                                     charsetsave);
                             
@@ -2613,6 +2630,7 @@ int parsemail(char *mbox,	/* file name */
                         */
                         head->parsedheader = TRUE;
                         head->line = header_detect_charset_and_convert_to_utf8 (head->line,
+                                                                                head->charset,
                                                                                 charset,
                                                                                 charsetsave);
                         strlftonl(head->line);
@@ -2632,6 +2650,7 @@ int parsemail(char *mbox,	/* file name */
 		    else if (!strncasecmp(head->line, "Subject:", 8)) {
                         head->parsedheader = TRUE;
                         head->line = header_detect_charset_and_convert_to_utf8 (head->line,
+                                                                                head->charset,
                                                                                 charset,
                                                                                 charsetsave);
                         strlftonl(head->line);
