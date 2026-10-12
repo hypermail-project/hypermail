@@ -902,6 +902,50 @@ char *getreply(char *line)
     RETURN_PUSH(buff);
 }
 
+/* Controls that a header has a space between the colon after the
+** header name and the header value and adds it if needed;
+** Headers that don't have any value are left as is
+**
+** Input:
+** string: RFC-822 header line to convert
+** Output
+** converted line (must be freed by caller)
+**
+** Examples:
+** string = "Message-ID:foo"
+** will return "Message-ID: foo"
+** string = "X-Foo:"
+** won't be changed.
+*/
+static char *
+_header_normalize_colon_space (char *string)
+{
+    char *col_ptr;
+    
+    /* search the first colon in the string */
+    col_ptr = strchr (string, ':');
+    if (col_ptr && *col_ptr) {
+        char *ptr;
+
+        /* colon found, advance to next char */
+        ptr = col_ptr;
+        ptr++;
+
+        /* missing space, add it */
+        if (*ptr && *ptr != ' ' && *ptr != '\t' && *ptr != '\r' && *ptr != '\n') {
+            struct Push buff;
+
+            INIT_PUSH(buff);
+            PushNString(&buff, string, col_ptr - string);
+            PushString(&buff, ": ");
+            PushString(&buff, ptr);
+            free(string);
+            string = PUSH_STRING(buff);
+        }
+    }
+    return string;
+}
+
 /* Converts an RFC-822 header line to UTF-8. If there's no declared
 ** charset, it will try to use the Content-Type charset. If it fails,
 ** it will call the chardet library.
@@ -909,7 +953,7 @@ char *getreply(char *line)
 ** "(invalid string)" string.
 ** Input:
 ** string: RFC-822 header line to convert
-** hd_charset: the header that was found when demining the header
+** hd_charset: the header that was found when decoding the header
 ** ct_charset: charset as declared in the Content-Type line
 ** charsetsave: the last detected charset
 ** Output
@@ -942,10 +986,15 @@ header_detect_charset_and_convert_to_utf8 (char *string, char *hd_charset, char 
         PushString(&pbuf, header_name);
         
         header_value = string + strlen(header_name);
+        /* push the ':' char */
         PushByte(&pbuf, *header_value);
         header_value++;
-        PushByte(&pbuf, *header_value);
-        header_value++;
+        /* push the next char after the ':' if it's the space before
+         * the header value */
+        if (*header_value == ' ') {
+            PushByte(&pbuf, *header_value);
+            header_value++;
+        }
 
 #if defined HAVE_CHARDET && HAVE_ICONV
         {
@@ -961,7 +1010,7 @@ header_detect_charset_and_convert_to_utf8 (char *string, char *hd_charset, char 
  
             size_t conv_string_sz;
 
-            /* if the hader was mimedecoded and we got a charset value,
+            /* if the header was mimedecoded and we got a charset value,
                use that one for decoding it */
             if (hd_charset && *hd_charset) {
                 conv_string = i18n_convstring(header_value, hd_charset, "UTF-8", &conv_string_sz);
@@ -1079,7 +1128,7 @@ extract_rfc2047_content(char *iptr)
 **
 ** Should result in "I'm called Daniel" too.
 **
-** Returns the newly allcated string, or the previous if nothing changed
+** Returns the newly allocated string, or the previous if nothing changed
 ** If charsetsave is not NULL, returns the charset used to encode
 ** the string.
 */
@@ -1904,6 +1953,9 @@ static void _control_attachname(char *content_type, char *attachname, size_t att
 
 /* validates that a header name is RFC282 compliant
    returns TRUE if valid, FALSE otherwise
+
+   Note that the function rejects non-ASCII header names
+   as well as empty headers (headers without values).
 */
 static bool _validate_header(const char *header_line)
 {
@@ -1912,13 +1964,16 @@ static bool _validate_header(const char *header_line)
     
     /* control that we have a header_name: header_value */
     if (!header_line
+        /* empty header */
         || *header_line=='\0'
+        /* valid header names must end with a : */
         || !(ptr = strstr(header_line, ":"))
+        /* headers must not start with a : */
         || ptr == header_line
+        /* check that there is value following the ':' */
         || *(ptr + 1) == '\0'
-        /* relax the requirement that there's a space between header-name: value
-           as some old UA didn't respect that */
-        /* || (*(ptr + 1) != ' ' && *(ptr + 1) != '\t') */
+        /* check that the immediate value after ':' is a space */
+        || (*(ptr + 1) != ' ' && *(ptr + 1) != '\t')
         ) {
         return FALSE;
     }
@@ -1930,12 +1985,14 @@ static bool _validate_header(const char *header_line)
         /* line doesn't start with : */
         || header_line[strlen(header_name)] != ':'
         /* header name is us_ascii */
-        || !i18n_is_valid_us_ascii(header_name)) {
+        || !i18n_is_valid_us_ascii(header_name)
+        ) {
         
         return FALSE;
     }
 
-    /* control that we have a value that is not spaces */
+    /* control that we have a value that is not spaces or newline
+       (empty header) */
     ptr = header_line + strlen(header_name) + 1;
     while (*ptr) {
         if (*ptr != ' ' && *ptr != '\t' && *ptr != '\r' && *ptr != '\n') {
@@ -2320,6 +2377,9 @@ int parsemail(char *mbox,	/* file name */
                 for (head = bp; head; head = head->next) {
                     if (head->parsedheader || !head->header || head->invalid_header)
                         continue;
+
+                    /* add missing space after colon in header-name:" if needed */
+                    head->line = _header_normalize_colon_space(head->line);
                     
                     if (!strncasecmp(head->line, "Content-Type:", 13)) {
                         char *ptr;
