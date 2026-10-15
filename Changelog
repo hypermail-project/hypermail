@@ -4,6 +4,16 @@ Version Changes for Hypermail
 ============================
 HYPERMAIL VERSION 3.0.0
 ============================
+2026-10-15 Jose Kahan
+	* src/string.c:i18n_iconv_string.c()
+	Modified this function that users iconv to convert between charsets
+	to return an error code if the convertion failed.
+
+	* src/parse.c:mdecodeRFC2047()
+	When an RFC2047 can't be decoded correctly or converted to UTF-8,
+	the code now preserves the original string, filtered to remove
+	all non ASCII characters. Previously, this string was replaced by
+	an error code such as (invalid charset).
 
 2026-10-12 Jose Kahan
 	* src/parse.c:parsemail, _header_normalize_colon_space()

@@ -1826,8 +1826,9 @@ void message_node_dump(struct message_node *root_message_node)
               /* don't start the convertion until we hit the first header */
               if (header_detected && convert_to_utf8) {
                   size_t len;
+                  i18n_convstring_error_t i18n_convstring_error;
                   
-                  line = i18n_convstring(bp->line, charset, "UTF-8", &len);
+                  line = i18n_convstring(bp->line, charset, "UTF-8", &len,  &i18n_convstring_error);
               }
 #endif
 #ifdef HAVE_PCRE2

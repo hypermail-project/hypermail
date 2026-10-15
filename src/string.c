@@ -267,7 +267,7 @@ static char *i18n_canonicalize_charset(char *cs)
 ** returns the converted string and the len of the string
 ** caller must free returned string 
 */
-char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *len){
+char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *len, i18n_convstring_error_t *i18n_convstring_error) {
 
   size_t origlen,strleft,bufleft;
   size_t origbuflen;
@@ -276,6 +276,10 @@ char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *
   iconv_t iconvfd;
   size_t ret;
   int error;
+
+  /* assume convertion will work, and update status if there are
+   * errors */
+  *i18n_convstring_error = I18N_CONV_OK;
 
   if (string){
     strleft=origlen=strlen(string);
@@ -313,6 +317,7 @@ char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *
         printf("I18N: libiconv open error.\n");
       }
     }
+    *i18n_convstring_error = I18N_CONV_EINVAL;
     origlen=trio_snprintf(origconvbuf,origbuflen, "(unknown charset) %s",string);
     origconvbuf[origlen]=0x0;
     *len=origlen;
@@ -328,6 +333,7 @@ char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *
       if(set_showprogress){
 	printf("I18N: buffer overflow.\n");
       }
+      *i18n_convstring_error = I18N_CONV_E2BIG;
       origlen=trio_snprintf(origconvbuf, origbuflen,"(buffer overflow) %s",string);
       error = 1;
       break;
@@ -335,6 +341,7 @@ char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *
       if(set_showprogress){
 	printf("I18N: invalid multibyte sequence, from %s to %s: %s.\n",fromcharset,tocharset,string);
       }
+      *i18n_convstring_error = I18N_CONV_EILSEQ;
       origlen=trio_snprintf(origconvbuf, origbuflen,"(invalid string)");
       error = 1;
       break;
@@ -342,6 +349,7 @@ char *i18n_convstring(char *string, char *fromcharset, char *tocharset, size_t *
       if(set_showprogress){
 	printf("I18N: incomplete multibyte sequence, from %s to %s: %s.\n",fromcharset,tocharset,string);
       }
+      *i18n_convstring_error = I18N_CONV_EINVAL;
       origlen=trio_snprintf(origconvbuf, origbuflen,"(invalid string)");
       error = 1;
       break;
@@ -388,7 +396,7 @@ char *i18n_utf2numref(char *instr,int escape){
   char strbuf[10];
   unsigned int p;
   int i;
-  
+  i18n_convstring_error_t i18n_convstring_error;
   INIT_PUSH(buff);
 
   if (!set_i18n){
@@ -396,7 +404,7 @@ char *i18n_utf2numref(char *instr,int escape){
     RETURN_PUSH(buff);
   }
 
-  headofucs=ucs=i18n_convstring(instr, "UTF-8", "UCS-2BE", &len);
+  headofucs=ucs=i18n_convstring(instr, "UTF-8", "UCS-2BE", &len, &i18n_convstring_error);
 
   i = (int) len;
   
@@ -551,6 +559,21 @@ bool i18n_is_valid_utf8(const char *string)
     return (rv) ? FALSE : TRUE;
 }
 
+/* replaces char with a '?' if is a non-printable 7-bit ASCII
+   character;
+   returns the converted char if needed, otherwise returns the same
+   char.
+*/
+int i18n_replace_non_ascii_char(char c)
+{
+    if ((c < 0x20) && !isspace(c)
+        || (c > 0x7E)) {
+        c = '?';
+    }
+
+    return c;
+}
+
 /* replaces all non 7-bit ascii characters with a '?'
 ** returns the number of replaced chars
 */
@@ -561,7 +584,7 @@ int i18n_replace_non_ascii_chars(char *string)
   
     while (*ptr) {
         if ((*ptr < 0x20) && !isspace(*ptr)
-            || *ptr > 0x7E) {
+            || (*ptr > 0x7E)) {
             *ptr = '?';
             count++;
         }
@@ -569,6 +592,22 @@ int i18n_replace_non_ascii_chars(char *string)
     }
     
     return count;
+}
+
+/* copies n characters from src to dest, replacing
+** all non 7-bit ascii characters with a '?'
+*/
+void i18n_memcpy_replace_non_ascii_chars(char **dest, char **src, size_t n)
+{
+    if (n <= 0)
+        return;
+    
+    while (n) {
+        **dest = i18n_replace_non_ascii_char(**src);
+        (*src)++;
+        (*dest)++;
+        n--;
+    }
 }
 
 /* replaces all control characters in string with a ?
@@ -582,7 +621,7 @@ int i18n_replace_control_chars(char *string)
     int count = 0;
   
     while (*ptr) {
-        if (*ptr < 0x20 && !isspace(*ptr)) {
+        if ((*ptr < 0x20) && !isspace(*ptr)) {
             *ptr = '?';
             count++;
         }
@@ -621,7 +660,7 @@ static int _has_non_us_ascii_chars(const char *src)
     sz = strlen(src);
     for (i = 0; i < sz; i++) {
         char c = src[i];
-        if ((c < 0x20 || c > 0x7E)
+        if (((c < 0x20) || (c > 0x7E))
             && !isspace(c)) {
             rv = i;
             break;

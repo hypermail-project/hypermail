@@ -1003,19 +1003,19 @@ header_detect_charset_and_convert_to_utf8 (char *string, char *hd_charset, char 
              * in case of failure, replace the header value with "(invalid string)"
              */
             bool did_anything = FALSE;
-        
 
             char *detected_charset;
             char *conv_string;
- 
+
             size_t conv_string_sz;
+            i18n_convstring_error_t i18n_convstring_error;
 
             /* if the header was mimedecoded and we got a charset value,
                use that one for decoding it */
             if (hd_charset && *hd_charset) {
-                conv_string = i18n_convstring(header_value, hd_charset, "UTF-8", &conv_string_sz);
+                conv_string = i18n_convstring(header_value, hd_charset, "UTF-8", &conv_string_sz, &i18n_convstring_error);
                 if (conv_string) {
-                    if ( i18n_is_valid_utf8(conv_string) ) {
+                    if ((i18n_convstring_error == I18N_CONV_OK) && i18n_is_valid_utf8(conv_string) ) {
                         PushString(&pbuf, conv_string);
                         did_anything = TRUE;
                     }
@@ -1029,9 +1029,9 @@ header_detect_charset_and_convert_to_utf8 (char *string, char *hd_charset, char 
             
             /* let's try the charset if present in Content-Type */
             if (!did_anything && ct_charset && *ct_charset) {
-                conv_string = i18n_convstring(header_value, ct_charset, "UTF-8", &conv_string_sz);
+                conv_string = i18n_convstring(header_value, ct_charset, "UTF-8", &conv_string_sz, &i18n_convstring_error);
                 if (conv_string) {
-                    if ( i18n_is_valid_utf8(conv_string) ) {
+                    if ((i18n_convstring_error == I18N_CONV_OK) && i18n_is_valid_utf8(conv_string) ) {                
                         PushString(&pbuf, conv_string);
                         did_anything = TRUE;
                     }
@@ -1047,9 +1047,9 @@ header_detect_charset_and_convert_to_utf8 (char *string, char *hd_charset, char 
                     /* we detected a charset */
                     if ( detected_charset[0] != '\0' ) {
                         conv_string = i18n_convstring(header_value,
-                                                      detected_charset, "UTF-8", &conv_string_sz);
-                        if ( conv_string) {
-                            if ( i18n_is_valid_utf8(conv_string) ) {
+                                                      detected_charset, "UTF-8", &conv_string_sz, &i18n_convstring_error);
+                        if (conv_string) {
+                            if ((i18n_convstring_error == I18N_CONV_OK) && i18n_is_valid_utf8(conv_string)) {
                                 int detected_charsetlen =
                                     strlen(detected_charset) < 255 ? strlen(detected_charset) : 255;
                                 memcpy(charsetsave, detected_charset, detected_charsetlen);
@@ -1066,9 +1066,9 @@ header_detect_charset_and_convert_to_utf8 (char *string, char *hd_charset, char 
 
             /* nope, let's try the previous saved_charset */
             if ( !did_anything && charsetsave && *charsetsave) {
-                conv_string = i18n_convstring(header_value, charsetsave, "UTF-8", &conv_string_sz);
+                conv_string = i18n_convstring(header_value, charsetsave, "UTF-8", &conv_string_sz, &i18n_convstring_error);
                 if (conv_string) {
-                    if ( i18n_is_valid_utf8(conv_string) ) {
+                    if ((i18n_convstring_error == I18N_CONV_OK) && i18n_is_valid_utf8(conv_string)) {                    
                         PushString(&pbuf, conv_string);
                         did_anything = TRUE;
                     }
@@ -1160,6 +1160,8 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 	    /* This is a full, valid 'encoded-word'. Decode! */
 	    char *ptr;
 	    char *blurb = extract_rfc2047_content(iptr);
+            int iptr_new_index;
+            
 	    if (!blurb) {
 		*output++ = *iptr++;
 		/* it wasn't a real encoded-word */
@@ -1167,13 +1169,9 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 	    }
 	    ptr = blurb;
 
-	    didanything = TRUE;	/* yes, we decode something */
-
 	    /* we could've done this with a %n in the sscanf, but we know all
 	       sscanfs don't grok that */
-
-	    iptr +=
-		2 + strlen(charset) + 1 + strlen(encoding) + 1 +
+            iptr_new_index = 2 + strlen(charset) + 1 + strlen(encoding) + 1 +
 		strlen(blurb) + 2;
 
 	    if (!strcasecmp("q", encoding)) {
@@ -1181,6 +1179,7 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 #ifdef HAVE_ICONV
                 char *orig2,*output2,*output3;
                 size_t len, charsetlen;
+                i18n_convstring_error_t i18n_convstring_error;
 #endif
                 endptr = ptr + strlen(ptr);
 
@@ -1203,11 +1202,31 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 			break;
 		    }
 		}
-		output3=i18n_convstring(orig2,charset,"UTF-8",&len);
+		output3=i18n_convstring(orig2,charset,"UTF-8",&len,&i18n_convstring_error);
 		free(orig2);
+
+                if (i18n_convstring_error != I18N_CONV_OK) {
+                    /* UTF-8 convertion had an error, so we keep the original MIME-encoded
+                       string */
+                    i18n_memcpy_replace_non_ascii_chars(&output, &iptr, iptr_new_index);
+                    free(output3);
+                    free(blurb);
+                    blurb = ptr = NULL;
+                    /* to protect against invalid string attacks, we replace all
+                       characters that are not ASCII with a '?' char */
+                    continue;
+                }
+
 		memcpy(output,output3,len);
 		output += len;
 		free(output3);
+                /* yes, we decoded something and converted it to UTF-8 */
+                didanything = TRUE;  
+
+                /* advance iptr to the next position following the decoded string */
+                iptr += iptr_new_index;
+                
+                /* only save charset if iconv was succesful */
                 if (charsetsave) {
                     charsetlen = strlen(charset) < 255 ? strlen(charset) : 255;
                     memcpy(charsetsave,charset,charsetlen);
@@ -1236,14 +1255,33 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 #ifdef HAVE_ICONV
 	        size_t charsetlen;
                 size_t tmplen;
+                i18n_convstring_error_t i18n_convstring_error;
 		char *output2;
                 
 		base64_decode_string(ptr, output);
-		output2=i18n_convstring(output,charset,"UTF-8",&tmplen);
+		output2=i18n_convstring(output,charset,"UTF-8",&tmplen,&i18n_convstring_error);
+                
+                if (i18n_convstring_error != I18N_CONV_OK) {
+                    /* UTF-8 convertion had an error, so we keep the original MIME-encoded
+                       string, sanitizing it by removing any non ASCII chars */
+                    i18n_memcpy_replace_non_ascii_chars(&output, &iptr, iptr_new_index);
+                    free(output2);
+                    free(blurb);
+                    blurb = ptr = NULL;
+                    continue;
+                }
+                
 		memcpy(output,output2,tmplen);
 		output += tmplen;
 		free(output2);
-                if (charsetsave) {
+                /* yes, we decoded something and converted it to UTF-8 */
+                didanything = TRUE;
+
+                /* advance iptr to the next position following the decoded string */
+                iptr += iptr_new_index;
+
+                /* only save charset if iconv was succesful */                
+                if (charsetsave) {                
                     charsetlen = strlen(charset) < 255 ? strlen(charset) : 255;
                     memcpy(charsetsave,charset,charsetlen);
                     charsetsave[charsetlen] = '\0';
@@ -1257,8 +1295,7 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 	    }
 	    else {
 		/* unsupported encoding type */
-		strcpy(output, "<unknown>");
-		output += 9;
+                i18n_memcpy_replace_non_ascii_chars(&output, &iptr, iptr_new_index);
 	    }
 
 	    free(blurb);
@@ -1309,11 +1346,11 @@ static char *mdecodeRFC2047(char *string, int length, char *charsetsave)
 	    puts("");
 	}
 #endif
-        /* here we should add calls to validate the utf8 string,
-           to avoid security issues */
-	return storage;		/* return new */
+        /* return new */
+	return storage;
     }
     else {
+        /* return old, no decoding done */
 	free(storage);
         return string;
     }
@@ -2567,8 +2604,11 @@ int parsemail(char *mbox,	/* file name */
                         
                         head->line =
                             mdecodeRFC2047(head->line, strlen(head->line), charsetsave);
-                        if (charsetsave) 
+                        if (charsetsave) {
                             head->charset = strsav(charsetsave);
+                            /* @@ JK: is this reset needed */
+                            charsetsave[0] = '\0';
+                        }
                         head->demimed = TRUE;
 		    }
 
@@ -5393,12 +5433,13 @@ int parse_old_html(int num, struct emailinfo *ep, int parse_body,
 	if (charset){
 	  char *tmpptr;
 	  size_t tmplen=0;
+          i18n_convstring_error_t i18n_convstring_error;
 	  tmpptr=subject;
-	  subject=i18n_convstring(tmpptr,charset,"UTF-8",&tmplen);
+	  subject=i18n_convstring(tmpptr,charset,"UTF-8",&tmplen,&i18n_convstring_error);
 	  if(tmpptr)
 	    free(tmpptr);
 	  tmpptr=name;
-	  name=i18n_convstring(tmpptr,charset,"UTF-8",&tmplen);
+	  name=i18n_convstring(tmpptr,charset,"UTF-8",&tmplen,&i18n_convstring_error);
 	  if(tmpptr)
 	    free(tmpptr);
 	}

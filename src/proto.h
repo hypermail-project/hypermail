@@ -118,12 +118,14 @@ void print_default_css_file(char *);
 char *obfuscate_email_address (char *);
 char *unobfuscate_email_address (char *);
 
-char *i18n_convstring(char *, char *, char *, size_t *);
+char *i18n_convstring(char *, char *, char *, size_t *, i18n_convstring_error_t *);
 char *i18n_utf2numref(char *, int);
 unsigned char *i18n_numref2utf(char *);
 int i18n_is_valid_us_ascii(const char *);
 int i18n_truncate_inalid_us_ascii(char *);
+int i18n_replace_non_ascii_char(char);
 int i18n_replace_non_ascii_chars(char *);
+void i18n_memcpy_replace_non_ascii_chars(char **, char **, size_t);
 int i18n_replace_control_chars(char *);
 int i18n_replace_unicode_spaces(char *, size_t);
 int i18n_is_valid_utf8(const char *);

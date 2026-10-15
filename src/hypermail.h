@@ -218,6 +218,19 @@ typedef enum {
 
 } parseemail_conversion_t;
 
+/* return value from i18_convstring call, reflecting iconv rv codes */
+typedef enum {
+    I18N_CONV_OK       = 0, /* successful conversion */
+    I18N_CONV_ECHARSET = 1, /* tried to convert from an unknown
+                             * charset */
+    I18N_CONV_E2BIG    = 2, /* output buffer has no more room for the
+                             * next converted character */
+    I18N_CONV_EILSEQ   = 3, /* an invalid multibyte sequence has been
+                             * encountered in the input */
+    I18N_CONV_EINVAL   = 4  /* an incomplete multibyte sequence has been
+                             * encountered in the input */
+} i18n_convstring_error_t;
+
 /* 
  * Path separator for attachment file path generation
  */

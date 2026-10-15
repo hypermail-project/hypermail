@@ -94,8 +94,9 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
 		if (email && name) {
 #ifdef HAVE_ICONV
                   size_t tmplen;
-                    
-		  tmpptr=i18n_convstring(name,"UTF-8",charset,&tmplen);
+                  i18n_convstring_error_t i18n_convstring_error;
+
+		  tmpptr=i18n_convstring(name,"UTF-8",charset,&tmplen,&i18n_convstring_error);
 		  cp = convchars(tmpptr,charset);
 		  if(tmpptr)
 		    free(tmpptr);
@@ -202,8 +203,9 @@ int printfile(FILE *fp, char *format, char *label, char *subject,
             {
 #ifdef HAVE_ICONV
                 size_t tmplen;
-                
-	        tmpptr=i18n_convstring(subject,"UTF-8",charset, &tmplen);
+                i18n_convstring_error_t i18n_convstring_error;
+
+	        tmpptr=i18n_convstring(subject,"UTF-8",charset, &tmplen, &i18n_convstring_error);
 		fprintf(fp, "<meta name=\"Subject\" content=\"%s\" />",
 			cp = convchars(tmpptr,charset));
 #else

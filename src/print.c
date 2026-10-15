@@ -300,7 +300,8 @@ void fprint_menu0(FILE *fp, struct emailinfo *email, int pos)
 
 #ifdef HAVE_ICONV
   size_t tmplen;
-  char *tmpptr=i18n_convstring(email->subject,"UTF-8",email->charset,&tmplen);
+  i18n_convstring_error_t i18n_convstring_error;
+  char *tmpptr=i18n_convstring(email->subject,"UTF-8",email->charset,&tmplen,&i18n_convstring_error);
 #endif
 
   if (!(set_show_msg_links && set_show_msg_links != loc_cmp)
@@ -1132,7 +1133,8 @@ char *ConvURLsString(char *line, char *mailid, char *mailsubject, char *charset)
 
 #ifdef HAVE_ICONV
     size_t tmplen;
-    char *tmpptr=i18n_convstring(mailsubject,"UTF-8",charset,&tmplen);
+    i18n_convstring_error_t i18n_convstring_error;
+    char *tmpptr=i18n_convstring(mailsubject,"UTF-8",charset,&tmplen,&i18n_convstring_error);
     mailsubject=tmpptr;
 #endif
 
@@ -1291,7 +1293,8 @@ static struct body *printheaders(FILE *fp, struct emailinfo *email, struct body 
                     else {
 #ifdef HAVE_ICONV
                         size_t tmplen;
-                        char *tmpptr=i18n_convstring(header_content,"UTF-8",email->charset,&tmplen);
+                        i18n_convstring_error_t i18n_convstring_error;
+                        char *tmpptr=i18n_convstring(header_content,"UTF-8",email->charset,&tmplen,&i18n_convstring_error);
                         ConvURLs(fp, tmpptr, id, subject, email->charset);
                         if (tmpptr)
                             free(tmpptr);
@@ -1727,7 +1730,8 @@ void printbody(FILE *fp, struct emailinfo *email, int maybe_reply, int is_reply)
 #ifdef HAVE_ICONV
                 if (!prefered_charset_is_utf8) {
                     size_t tmplen;
-                    char *tmpline = i18n_convstring( bp->line, "UTF-8", email->charset, &tmplen);
+                    i18n_convstring_error_t i18n_convstring_error;
+                    char *tmpline = i18n_convstring( bp->line, "UTF-8", email->charset, &tmplen, &i18n_convstring_error);
 
                     free(bp->line);
                     bp->line = tmpline;
@@ -1906,8 +1910,9 @@ void print_headers(FILE *fp, struct emailinfo *email, int in_thread_file)
   
 #ifdef HAVE_ICONV
   size_t tmplen;
-  char *tmpsubject=i18n_convstring(email->subject,"UTF-8",email->charset,&tmplen);
-  char *tmptmpname=i18n_convstring(email->name,"UTF-8",email->charset,&tmplen); 
+  i18n_convstring_error_t i18n_convstring_error;
+  char *tmpsubject=i18n_convstring(email->subject,"UTF-8",email->charset,&tmplen,&i18n_convstring_error);
+  char *tmptmpname=i18n_convstring(email->name,"UTF-8",email->charset,&tmplen,&i18n_convstring_error);
   char *tmpname=convchars(tmptmpname,"utf-8");
   free(tmptmpname);
 #else
@@ -2055,16 +2060,19 @@ struct body *print_headers_rfc822_att(FILE *fp, struct emailinfo *email, struct 
 #ifdef HAVE_ICONV
     if (subject) {
         size_t tmplen;
+        i18n_convstring_error_t i18n_convstring_error;
+
         char *tmptmpsubject;
-        tmptmpsubject = i18n_convstring( subject, "UTF-8", email->charset, &tmplen);
+        tmptmpsubject = i18n_convstring( subject, "UTF-8", email->charset, &tmplen, &i18n_convstring_error);
         tmpsubject = convchars(tmptmpsubject, "utf-8");
         free(tmptmpsubject);
     }
     if (namep) {
         char *tmptmpname;
         size_t tmplen;
-        
-        tmptmpname = i18n_convstring(namep, "UTF-8", email->charset, &tmplen); 
+        i18n_convstring_error_t i18n_convstring_error;
+
+        tmptmpname = i18n_convstring(namep, "UTF-8", email->charset, &tmplen, &i18n_convstring_error);
         tmpname = convchars(tmptmpname, "utf-8");
         free(tmptmpname);
     }
@@ -2230,7 +2238,8 @@ static int print_links_up(FILE *fp, struct emailinfo *email, int pos, int in_thr
 	      if ((email->msgid && email->msgid[0]) || (email->subject && email->subject[0])) {
 #ifdef HAVE_ICONV
 		size_t tmplen;
-		char *tmpptr=i18n_convstring(email->subject,"UTF-8",email->charset,&tmplen);
+                i18n_convstring_error_t i18n_convstring_error;
+		char *tmpptr=i18n_convstring(email->subject,"UTF-8",email->charset,&tmplen,&i18n_convstring_error);
 		ptr = makemailcommand(set_replymsg_command, set_hmail, email->msgid, 
 				      tmpptr);
 		if (tmpptr)
@@ -2684,6 +2693,7 @@ void writearticles(int startnum, int maxnum)
 #ifdef HAVE_ICONV
     char *localsubject=NULL,*localname=NULL;
     size_t convlen=0;
+    i18n_convstring_error_t i18n_convstring_error;
 #endif
 
 
@@ -2711,9 +2721,9 @@ void writearticles(int startnum, int maxnum)
 
 #ifdef HAVE_ICONV
 	if(email->subject)
-	  localsubject= i18n_convstring(email->subject,"UTF-8",email->charset,&convlen);
+            localsubject= i18n_convstring(email->subject,"UTF-8",email->charset,&convlen,&i18n_convstring_error);
 	if(email->name)
-	  localname= i18n_convstring(email->name,"UTF-8",email->charset,&convlen);
+            localname= i18n_convstring(email->name,"UTF-8",email->charset,&convlen,&i18n_convstring_error);
 #endif
 
 	/*
