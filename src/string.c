@@ -621,7 +621,7 @@ int i18n_replace_control_chars(char *string)
     int count = 0;
   
     while (*ptr) {
-        if ((*ptr < 0x20) && !isspace(*ptr)) {
+        if (((*ptr < 0x20) || ((*ptr >= 0x7F) && (*ptr <=0x9F))) && !isspace(*ptr)) {
             *ptr = '?';
             count++;
         }
