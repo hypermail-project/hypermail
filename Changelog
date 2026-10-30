@@ -1,5 +1,33 @@
 Version Changes for Hypermail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+============================
+HYPERMAIL VERSION 2.4.2
+============================
+
+2026-10-30 Jose Kahan
+	* src/FILES
+	FILES, which lists all the files that are to be included in a hypermail
+	release tarbalk was including twice the same PCRE files. This resulted
+	in an error when unpacking the 2.4.1 tarball on OpenBSD.
+        Reported by  @jcourreges in
+        https://github.com/hypermail-project/hypermail/discussions/138
+
+	* src/getname.c
+	Backported from 3.0:
+
+        When a From: header had two email addresses, hypermail was always
+	extracting the first one, regardless if it was in a comment, while the
+	2nd one was the valid one. In some cases that address could also
+	include enclosing parenthesis. Closes #85
+
+        Remove a potential writing out of bonds issue
+
+	* src/getdate.y
+	Backported from 3.0
+
+        Fixed bison warning "POSIX yacc reserves %type to nonterminals
+	[-Wyacc]" by adapting the solution proposed for kerberos5:
+	https://github.com/krb5/krb5/commit/0108d7d7fbb1111c062ac580e69e97103662fc2b
 
 ============================
 HYPERMAIL VERSION 2.4.1:

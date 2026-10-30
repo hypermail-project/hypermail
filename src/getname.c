@@ -1,3 +1,21 @@
+/*
+** Copyright (C) 1997-2023 Hypermail Project
+** 
+** This program and library is free software; you can redistribute it and/or 
+** modify it under the terms of the GNU (Library) General Public License 
+** as published by the Free Software Foundation; either version 3
+** of the License, or any later version. 
+** 
+** This program is distributed in the hope that it will be useful, 
+** but WITHOUT ANY WARRANTY; without even the implied warranty of 
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+** GNU (Library) General Public License for more details. 
+** 
+** You should have received a copy of the GNU (Library) General Public License
+** along with this program; if not, write to the Free Software 
+** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA 
+*/
+
 #include "hypermail.h"
 #include "getname.h"
 #include "setup.h"
@@ -56,6 +74,12 @@ static int blankstring(char *str)
 **
 ** This is an interesting new one (1998-11-26):
 ** From: <name.hidden@era.ericsson.se>›Name.Hidden@era.ericsson.seœ
+**
+** Another case that was not yet handled, when there are two @ chars
+** in the line, one in comments, and one for the address. The code was only
+** detecting the first one and including the parenthesis as part of the address.
+** (2023-04-27):
+**   From: "Roy T. Fielding (fielding@kiwi.ics.uci.edu)" <fielding@kiwi.ics.uci.edu>
 */
 
 /* AUDIT biege: this code is really tricky and may lead to BOFs in email[] and/or name[] */
@@ -64,6 +88,7 @@ void getname(char *line, char **namep, char **emailp)
     int i;
     int len;
     char *c;
+    int offset;
     int comment_fnd;
 
     char email[MAILSTRLEN];
@@ -84,7 +109,17 @@ void getname(char *line, char **namep, char **emailp)
     /* EMail Processing First:
     ** First, is there an '@' sign we can use as an anchor ?
     */
-    if ((c = hm_strchr(line, '@')) == NULL) {
+    
+    /* email is often found between <> chars, let's try to find it there
+       to cover the case of the @ char found in comments and between <> */
+    c = hm_strchr(line, '<');
+    if (c && hm_strchr(c, '@')) {
+        offset = c - line;
+    } else {
+        offset = 0;
+    }
+    
+    if ((c = hm_strchr(line + offset, '@')) == NULL) {
         /* 
         ** No '@' sign here so ...
         */
@@ -204,7 +239,12 @@ void getname(char *line, char **namep, char **emailp)
         for (i = 0, len = NAMESTRLEN - 1; *c && *c != '\"' && *c != '[' && *c != '\n' && i < len; c++)
             name[i++] = *c;
 
-        name[--i] = '\0';
+	if (i > 0) {
+	  --i;
+	} else {
+	  i = 0;
+	}
+        name[i] = '\0';
         comment_fnd = 1;
     }
     else {
